@@ -1,0 +1,174 @@
+/* ------------------ */
+/* --- Card Container (Global Look) --- */
+/* ------------------ */
+.base-card {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px; /* Slightly more modern/softer corners */
+    margin-bottom: 16px;
+    padding: 16px;
+    display: flex; 
+    gap: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* More pronounced, clean shadow */
+    max-width: 100%; /* Ensures it never exceeds the parent width */
+    width: 100%; /* Full width within its parent container */
+    min-height: 120px; /* Ensure a minimum height for consistency */
+    transition: transform 0.2s ease-in-out;
+}
+
+.base-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* ------------------ */
+/* --- Image/Thumbnail Area --- */
+/* ------------------ */
+.card-image-container {
+    flex-shrink: 0;
+    width: 120px; /* Desktop width */
+    height: 120px; 
+    overflow: hidden;
+    border-radius: 6px;
+    border: 1px solid #f0f0f0; /* Subtle border around image */
+}
+
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ------------------ */
+/* --- Content Area --- */
+/* ------------------ */
+.card-content {
+    flex-grow: 1; 
+    display: flex;
+    flex-direction: column; /* Stack details vertically */
+}
+
+.card-meta {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: #555;
+    flex-wrap: wrap; /* Allow meta tags/title to wrap if necessary */
+}
+
+.card-title {
+    font-size: 1.15rem; /* Slightly larger title */
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+    line-height: 1.2;
+}
+.card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+/* Rating Badge Styling */
+.rating-badge {
+    background-color: #28a745; /* Standard success green */
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+/* ------------------ */
+/* --- Action Buttons (The most critical responsive part) --- */
+/* ------------------ */
+.card-actions {
+    display: flex;
+    flex-wrap: wrap; /* Allows buttons to wrap to the next line on smaller screens */
+    gap: 8px; /* Consistent spacing between buttons */
+    margin-top: auto; /* Pushes buttons to the bottom of the card-content */
+    padding-top: 10px;
+}
+
+.card-action-button {
+    flex-grow: 1; /* Allows buttons to share space */
+    min-width: 100px; /* Prevents buttons from getting too small */
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    border: none;
+    transition: all 0.2s ease;
+    color: white; /* Default color for all action buttons */
+}
+
+/* Specific Button Styles */
+.phone-button {
+    background-color: #ff8c00; /* Orange for Phone */
+    border: 1px solid #ff8c00;
+}
+.whatsapp-button {
+    background-color: #25d366;
+    border: 1px solid #25d366;
+}
+.enquiry-button {
+    background-color: #007bff;
+    border: 1px solid #007bff;
+}
+
+.card-action-button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+
+/* ------------------ */
+/* --- RESPONSIVENESS (Mobile/Tablet) --- */
+/* ------------------ */
+
+/* Tablet View (max-width: 992px) */
+@media (max-width: 992px) {
+    .base-card {
+        padding: 12px;
+        gap: 12px;
+    }
+}
+
+/* Mobile View (max-width: 600px) */
+@media (max-width: 600px) {
+    .base-card {
+        flex-direction: column; /* Stack image on top of content */
+        align-items: flex-start;
+        padding: 12px;
+    }
+    
+    .card-image-container {
+        /* On mobile, make the image wider but keep it contained */
+        width: 100%; 
+        height: 150px; 
+    }
+
+    .card-content {
+        width: 100%;
+    }
+
+    /* Force buttons to stack completely on super small screens */
+    .card-actions {
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+    }
+
+    .card-action-button {
+        width: 100%; /* Full width buttons */
+        min-width: unset;
+    }
+
+    .card-title {
+        font-size: 1.1rem;
+    }
+}

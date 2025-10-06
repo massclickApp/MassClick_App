@@ -1,0 +1,236 @@
+/* --- Global Section Container (FIXED WHITE SPACE) --- */
+.recent-activities-section {
+    position: relative;
+    max-width: 1580px;
+    /* FIX: Reduced top/bottom margin and removed excessive padding */
+    margin: 40px auto; 
+    padding: 0 20px; /* Only horizontal padding for alignment */
+    /* FIX: Removed background and shadow from this main wrapper to eliminate the large white box */
+    box-shadow: none; 
+    background-color: transparent; 
+    border-radius: 0; /* Remove border radius if you don't want the box look */
+    overflow: hidden;
+}
+
+/* --- Section Title --- */
+.section-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #E65100; 
+    margin-bottom: 25px;
+}
+
+.carousel-container-v2 {
+    position: relative;
+    /* FIX: Removed vertical padding */
+    padding: 0; 
+}
+
+/* --- Cards Wrapper (Scrollable Area) --- */
+.cards-wrapper-v2 {
+    display: flex;
+    overflow-x: scroll;
+    flex-wrap: nowrap;
+    gap: 20px;
+    scroll-snap-type: x mandatory;
+    padding: 0 10px; 
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.cards-wrapper-v2::-webkit-scrollbar {
+    display: none;
+}
+
+/* --- Individual Activity Card --- */
+.activity-card {
+    flex: 0 0 auto;
+    width: 280px; /* Decrease this value for a smaller width */
+    max-width: 300px; 
+    
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
+    overflow: hidden;
+    scroll-snap-align: start;
+    
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+    border: 1px solid rgba(0, 0, 0, 0.05); 
+}
+
+.activity-card:hover {
+    transform: translateY(-4px); 
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); 
+}
+
+.card-header {
+    padding: 15px 15px 5px 15px;
+}
+
+.card-title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.card-location {
+    margin: 4px 0 0 0;
+    font-size: 0.85rem;
+    color: #777;
+    text-transform: capitalize;
+}
+
+/* --- Image Section --- */
+.card-image-wrapper-v2 {
+    height: 220px; 
+    width: 100%;
+    overflow: hidden;
+}
+
+.card-image-v2 {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s ease;
+}
+
+.activity-card:hover .card-image-v2 {
+    transform: scale(1.03); 
+}
+
+/* --- Card Actions (WhatsApp Button) --- */
+.card-actions {
+    padding: 15px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.whatsapp-button {
+    display: flex;
+    align-items: center;
+    background-color: #FF6F00; 
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 18px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(255, 111, 0, 0.3);
+    transition: all 0.2s ease;
+}
+
+.whatsapp-button:hover {
+    background-color: #e56300; 
+    box-shadow: 0 6px 15px rgba(255, 111, 0, 0.4);
+}
+
+
+/* --- Navigation Arrows Styling (FIXED VISIBILITY) --- */
+.nav-arrow {
+    position: absolute;
+    top: 55%; 
+    transform: translateY(-50%);
+    
+    background-color: white;
+    color: #FF6F00; 
+    border: 1px solid #FF6F00;
+    border-radius: 50%;
+    width: 48px; 
+    height: 48px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15); 
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+    
+    /* FIX: Changed default to 'flex' to show arrows by default */
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    opacity: 0.9;
+}
+
+.nav-arrow:hover {
+    background-color: #FF6F00;
+    color: white;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    transform: translateY(-50%) scale(1.05); 
+}
+
+.nav-arrow.right {
+    right: 5px;
+}
+
+.nav-arrow.left {
+    left: 5px;
+}
+
+/* --- RESPONSIVENESS --- */
+
+/* Extra Small Mobile View: Hide arrows, rely on swipe */
+@media (max-width: 480px) {
+    .nav-arrow {
+        display: none;
+    }
+}
+
+
+/* Tablet View (2 or 3 cards visible) */
+@media (min-width: 600px) {
+    .cards-wrapper-v2 {
+        padding: 0 10px;
+    }
+    
+    .activity-card {
+        width: calc(50% - 10px);
+    }
+    
+    /* Show arrows and center them correctly */
+    .nav-arrow {
+        display: flex;
+        top: calc(50% + 10px); 
+    }
+}
+
+/* Larger Tablet/Small Desktop (3 cards visible - Matches the image) */
+@media (min-width: 900px) {
+    
+    .activity-card {
+        width: calc(33.33% - 13.33px); 
+    }
+    
+    .cards-wrapper-v2 {
+        padding: 0 10px; 
+    }
+    
+    /* Push arrows out slightly */
+    .nav-arrow.right {
+        right: -20px;
+    }
+
+    .nav-arrow.left {
+        left: -20px;
+    }
+}
+
+/* Desktop View (4+ cards visible) */
+@media (min-width: 1200px) {
+    .activity-card {
+        width: calc(25% - 15px); 
+    }
+    
+    /* Move arrows further out of the main wrapper area */
+    .cards-wrapper-v2 {
+        padding: 0 20px; 
+    }
+    
+    .nav-arrow.right {
+        right: -40px;
+    }
+
+    .nav-arrow.left {
+        left: -40px;
+    }
+}

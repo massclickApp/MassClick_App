@@ -1,0 +1,194 @@
+/* --- Global Variables --- */
+:root {
+    --brand-orange: #E67E22;
+    --brand-orange-light: #fcece3;
+    --card-bg-color: white;
+    --container-bg-color: #f7f7f7;
+    --card-shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.15);
+    --card-shadow-hover: 0 12px 30px rgba(0, 0, 0, 0.25);
+    --transition-smooth: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    --card-gap: 20px;
+}
+
+/* --- Base Carousel Container --- */
+.carousel-container {
+    position: relative;
+    margin: 60px auto;
+    padding: 30px 0;
+    max-width: 1530px;
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.05), 0 0 4px rgba(0, 0, 0, 0.03);
+    border-radius: 20px;
+    background-color: var(--container-bg-color);
+    overflow: hidden; /* Important for containing the carousel wrapper */
+}
+
+.section-title {
+    padding-bottom: 20px;
+    color: #333;
+    padding-left: 20px; /* Added left padding for mobile/desktop title alignment */
+}
+
+/* --- Cards Wrapper (The Scrollable Area) --- */
+.cards-wrapper {
+    display: flex;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    gap: var(--card-gap);
+    scroll-snap-type: x mandatory;
+    -ms-overflow-style: none; 
+    scrollbar-width: none; 
+    padding: 0 20px; /* Default padding for mobile */
+}
+.cards-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+/* --- Individual Card Styling (Mostly unchanged) --- */
+.card {
+    flex: 0 0 auto;
+    width: calc(100% - 40px);
+    max-width: 320px;
+    box-shadow: var(--card-shadow-soft);
+    border-radius: 12px;
+    overflow: hidden;
+    scroll-snap-align: start;
+    background-color: var(--card-bg-color);
+    transition: var(--transition-smooth);
+    cursor: pointer;
+}
+
+.card:hover {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: var(--card-shadow-hover);
+}
+
+.card-image-wrapper {
+    height: 200px;
+    overflow: hidden;
+}
+
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s ease-out;
+}
+
+.card:hover .card-image {
+    transform: scale(1.1);
+}
+
+.card-content {
+    /* Background color should be set inline based on card data */
+    padding: 25px 20px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-height: 120px;
+    justify-content: space-between;
+}
+
+.card-title {
+    margin: 0 0 20px 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    line-height: 1.2;
+}
+
+.enquire-button {
+    background-color: var(--card-bg-color);
+    color: var(--brand-orange);
+    border: none;
+    border-radius: 8px;
+    padding: 14px 30px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease-out;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.enquire-button:hover {
+    background-color: var(--brand-orange-light);
+    color: var(--brand-orange);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+}
+
+/* --- Navigation Arrow Styling (KEY CHANGES HERE) --- */
+.nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: var(--card-bg-color);
+    color: var(--brand-orange);
+    border: none;
+    border-radius: 50%;
+    width: 55px; 
+    height: 55px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: none; /* Hide by default */
+    justify-content: center;
+    align-items: center;
+    opacity: 0.95;
+    
+    /* New: Position slightly inside (10px from the container edge) */
+    right: 10px; 
+    left: 10px; /* Will be overridden by the specific class */
+}
+
+.nav-arrow.right {
+    left: auto;
+}
+
+.nav-arrow.left {
+    right: auto;
+}
+
+.nav-arrow:hover {
+    background-color: var(--brand-orange);
+    color: white;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    transform: translateY(-50%) scale(1.05);
+    opacity: 1;
+}
+
+/* --- RESPONSIVENESS (Media Queries) --- */
+
+/* Tablet View (2 Cards Visible) */
+@media (min-width: 650px) {
+    .card {
+        width: calc(50% - (var(--card-gap) / 2)); 
+        max-width: none;
+    }
+
+    /* Reduce wrapper padding to keep cards centered while arrows are inside */
+    .cards-wrapper {
+        padding: 0 60px; 
+    }
+
+    .nav-arrow {
+        display: flex; /* Show arrows on tablets and up */
+    }
+}
+
+/* Desktop View (3 Cards Visible) */
+@media (min-width: 1024px) {
+    .card {
+        width: calc(33.333% - (2 * var(--card-gap) / 3)); 
+    }
+}
+
+/* Large Desktop View (4 Cards Visible) */
+@media (min-width: 1350px) {
+    .card {
+        width: calc(25% - (3 * var(--card-gap) / 4)); 
+    }
+}

@@ -1,0 +1,211 @@
+/* --- Global Container Styles (Desktop/Default) --- */
+.massclick-banner-container {
+    position: relative; /* Context for absolute shapes */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1530px; /* Updated Max Width */
+    height: 250px; 
+    padding: 20px;
+    margin: 40px auto;
+    border: 1px solid rgba(0, 0, 0, 0.15); /* Light black border around the whole card */
+    border-radius: 15px;
+    overflow: hidden; /* CRUCIAL: Hides the parts of the shapes that extend outside */
+    background-color: white;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    font-family: 'Inter', sans-serif;
+}
+
+/* --- Background Shapes (Positioned Absolutely) --- */
+
+/* Top Right Semicircle */
+.massclick-shape-top-right {
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    /* Gradient: Matches the top-right small circle */
+    background: linear-gradient(135deg, #FFB74D 0%, #FF9800 100%); 
+    opacity: 1; 
+    z-index: 0;
+}
+
+/* Large Bottom Center Arc/Semicircle */
+.massclick-shape-bottom-center {
+    position: absolute;
+    bottom: -250px; /* Pulls the circle up, revealing only the top arc */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 700px;
+    height: 700px; 
+    border-radius: 50%;
+    /* Gradient: Matches the large arc shape */
+    background: linear-gradient(180deg, #FFAB40 0%, #FF7043 100%);
+    opacity: 0.9;
+    z-index: 0;
+}
+
+/* --- Content Layout (Ensures text sits on top) --- */
+.massclick-content {
+    position: relative;
+    z-index: 1; /* Puts content above the background shapes */
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+/* --- Left Section (Logo & Text) --- */
+.massclick-logo-section {
+    flex-basis: 60%;
+    display: flex;
+    flex-direction: column;
+}
+
+.massclick-logo {
+    font-size: 38px;
+    font-weight: 900;
+    line-height: 1;
+    display: flex;
+    align-items: flex-start;
+}
+
+.massclick-text-mass {
+    color: #FF9800; /* Primary Orange */
+}
+
+.massclick-text-click {
+    color: #424242; /* Darker text */
+    margin-left: 2px;
+}
+
+.massclick-trademark {
+    font-size: 0.5em;
+    color: #FF9800;
+    vertical-align: super;
+    margin-left: 0;
+}
+
+.massclick-tagline {
+    font-size: 14px;
+    color: #757575;
+    margin: 0 0 20px 0;
+    font-weight: 500;
+}
+
+.massclick-headline {
+    font-size: 28px;
+    color: #0D47A1; /* Dark Blue for headline */
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.3;
+    max-width: 80%;
+}
+
+/* --- Right Section (CTA & Price) --- */
+.massclick-cta-section {
+    flex-basis: 40%;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center; /* Center vertically for cleaner alignment */
+}
+
+.massclick-cta-text {
+    font-size: 24px;
+    color: #0D47A1; /* Dark Blue */
+    font-weight: 500;
+    margin-bottom: 15px;
+    line-height: 1.2;
+}
+
+.massclick-cta-brand {
+    font-weight: 700;
+    color: #FF9800; /* Orange highlight for MassClick */
+}
+
+/* Price Button/Pill Styling */
+.massclick-price-button {
+    font-size: 20px;
+    font-weight: 600;
+    padding: 10px 30px;
+    border-radius: 50px; /* Creates the pill shape */
+    color: white;
+    /* Gradient for the button */
+    background: linear-gradient(90deg, #FFB74D 0%, #FF8A65 100%);
+    box-shadow: 0 4px 8px rgba(255, 152, 0, 0.4);
+    display: inline-block; /* Allows width to shrink to content */
+}
+
+.massclick-price-amount {
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    margin-left: 5px;
+}
+
+
+@media (max-width: 768px) {
+    /* Main Container Adaptation */
+    .massclick-banner-container {
+        height: auto; /* Allow height to expand for stacked content */
+        padding: 30px 20px; /* Increase vertical padding */
+        margin: 20px auto;
+        flex-direction: column; /* Stack content vertically */
+    }
+    
+    /* Content Layout Adaptation */
+    .massclick-content {
+        flex-direction: column;
+        align-items: center; /* Center content horizontally */
+        text-align: center;
+        padding: 0;
+    }
+
+    /* Left Section (Text/Logo) Adaptation */
+    .massclick-logo-section {
+        flex-basis: auto;
+        align-items: center; /* Center logo elements */
+        margin-bottom: 30px;
+    }
+
+    .massclick-logo {
+        align-items: center;
+    }
+
+    .massclick-headline {
+        font-size: 24px; /* Slightly reduce font size */
+        max-width: 100%; /* Use full width */
+        text-align: center;
+    }
+
+    /* Right Section (CTA/Price) Adaptation */
+    .massclick-cta-section {
+        flex-basis: auto;
+        align-items: center; /* Center price button and CTA text */
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .massclick-cta-text {
+        font-size: 20px;
+    }
+    
+    .massclick-shape-top-right {
+        width: 100px;
+        height: 100px;
+        top: -30px;
+        right: -30px;
+    }
+
+    .massclick-shape-bottom-center {
+        width: 500px;
+        height: 500px;
+        bottom: -250px; 
+        opacity: 0.5; 
+    }
+}

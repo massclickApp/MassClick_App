@@ -1,0 +1,257 @@
+/* --- Global Section Container --- */
+.trendingSection {
+    max-width: 1530px;
+    margin: 40px auto;
+    padding: 30px 0;
+
+    background-color: #ffffff;
+    position: relative;
+
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    /* Deeper, softer shadow */
+    border-radius: 12px;
+    /* Increased border-radius for a modern look */
+    overflow: hidden;
+    /* Important for containing the carousel */
+}
+
+/* --- Header & Title Styling --- */
+.headerContent {
+    padding: 0 30px;
+    margin-bottom: 20px;
+}
+
+.sectionTitle {
+    color: #FF6F00;
+    /* Primary brand color */
+    font-size: 1.8rem;
+    /* Larger title */
+    font-weight: 800;
+    /* Bolder font */
+    margin: 0;
+}
+
+.sectionSubtitle {
+    color: #6c757d;
+    /* Muted subtitle text */
+    font-size: 1rem;
+    margin-top: 5px;
+    font-weight: 400;
+}
+
+/* --- Carousel Container --- */
+.carouselWrapper {
+    position: relative;
+}
+
+.carouselContainer {
+    display: flex;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    padding: 0 30px 20px 30px;
+    /* Padding for the cards */
+
+    /* Hide scrollbar */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    /* Snap scrolling for better UX */
+}
+
+.carouselContainer::-webkit-scrollbar {
+    display: none;
+}
+
+/* --- Card Styling --- */
+.cardLink {
+    text-decoration: none;
+    flex-shrink: 0;
+
+    /* Set a fixed height for the entire horizontal card */
+    height: 120px;
+
+    /* Increased Width and Min-Width for horizontal emphasis */
+    width: 380px;
+    min-width: 380px;
+
+    margin-right: 25px;
+
+    display: flex;
+    /* Crucial: make it a flex container */
+    flex-direction: row;
+    /* Crucial: arrange children horizontally */
+    align-items: center;
+    /* Vertically center content */
+
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+
+    background-color: #ffffff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    /* Nicer default shadow */
+    border: 1px solid #e0e0e0;
+    /* Add a subtle border like in the image */
+    scroll-snap-align: start;
+}
+
+.cardLink:hover {
+    transform: translateY(-2px);
+    /* Subtle lift */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border-color: #FF6F00;
+}
+
+.cardImageWrapper {
+    width: 40%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.cardImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+.cardLink:hover .cardImage {
+    transform: scale(1.05);
+}
+
+.cardInfo {
+    width: 60%;
+    padding: 15px 20px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+}
+
+.cardName {
+    font-size: 1.4em;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+    margin-bottom: 5px;
+}
+
+.exploreLink {
+    display: flex;
+    align-items: center;
+    font-size: 1em;
+    font-weight: 600;
+    color: #FF6F00;
+    margin-top: 0;
+}
+
+.exploreArrow {
+    font-size: 1.1em !important;
+    margin-left: 2px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.cardLink:hover .exploreArrow {
+    transform: translateX(3px);
+}
+
+.carouselControls {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    padding: 0 10px;
+    z-index: 20;
+}
+
+.scrollIndicator {
+    width: 45px;
+    height: 45px;
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 1px solid #dee2e6;
+    border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.scrollIndicator:hover {
+    background-color: #f8f9fa;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+}
+
+.arrow {
+    color: #FF6F00;
+    font-size: 1.8rem !important;
+    font-weight: 900;
+}
+
+
+@media (min-width: 640px) {
+    .trendingSection {
+        padding: 40px 0;
+    }
+
+    .headerContent {
+        padding: 0 40px;
+    }
+
+    .carouselContainer {
+        padding: 0 40px 25px 40px;
+    }
+
+    .cardLink {
+        height: 110px;
+        width: 320px;
+        min-width: 320px;
+        margin-right: 20px;
+    }
+
+    .cardImageWrapper {
+        width: 45%;
+    }
+
+    .cardInfo {
+        width: 55%;
+    }
+
+    .carouselControls {
+        padding: 0 20px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .sectionTitle {
+        font-size: 2rem;
+    }
+
+    .cardLink {
+        height: 140px;
+        width: 420px;
+        min-width: 420px;
+        margin-right: 30px;
+    }
+
+    .cardImageWrapper {
+        width: 35%;
+    }
+
+    .cardInfo {
+        width: 65%;
+    }
+
+    .carouselControls {
+        padding: 0 0px;
+    }
+}

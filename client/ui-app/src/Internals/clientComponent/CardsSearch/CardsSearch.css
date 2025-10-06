@@ -1,0 +1,175 @@
+/* Import Font Awesome for Icons (if not already in your project's index.html) */
+/* @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'); */
+
+.topbar-wrapper {
+    /* Define the look of the full-width top bar container */
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the inner content box */
+    padding: 0; /* Padding is managed by the inner Box in JSX for responsiveness */
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    width: 100%; 
+    box-sizing: border-box; 
+    position: sticky; 
+    top: 0;
+    z-index: 100;
+        min-height: 100px; /* Example: Ensures a substantial minimum height */
+
+}
+
+/* ------------------ */
+/* LOGO STYLES */
+/* ------------------ */
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo-icon {
+    width: 40px; /* Placeholder for logo image */
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid orange; /* Orange ring effect */
+    background-color: #f7f7f7;
+    margin-right: 10px;
+    /* Simulate the small blue icon inside */
+    position: relative;
+}
+.logo-icon::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 15px;
+    height: 15px;
+    background-color: #1e3a8a; /* Dark blue color */
+    border-radius: 3px;
+}
+
+.main-logo-text {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+    line-height: 1;
+}
+
+.sub-logo-text {
+    font-size: 12px;
+    color: #666;
+    margin: 0;
+    line-height: 1.2;
+}
+
+/* ------------------ */
+/* SEARCH BAR STYLES */
+/* ------------------ */
+.search-bar-container {
+
+}
+
+.search-input {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.search-input i {
+    color: #ff9900; /* Orange color for the icon */
+    margin-right: 8px;
+}
+
+.search-input input {
+    border: none;
+    outline: none;
+    font-size: 15px;
+    padding: 0;
+}
+
+/* Specific input widths */
+.location-input {
+    width: 150px;
+}
+
+.category-input {
+    width: 180px;
+}
+
+.main-search-input {
+    width: 350px; /* Main search bar is the widest */
+    padding: 10px 15px;
+    border: 1px solid #ddd; /* Light border */
+    box-shadow: none; /* Remove shadow for main input */
+}
+
+.main-search-input input {
+    flex-grow: 1;
+}
+
+.main-search-icon {
+    color: #888;
+    margin-right: 0;
+    cursor: pointer;
+}
+
+/* ------------------ */
+/* ACTION BUTTONS */
+/* ------------------ */
+.action-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-weight: 600;
+    font-size: 15px;
+    color: white;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    white-space: nowrap; /* Prevents text from wrapping */
+}
+
+.action-button:hover {
+    opacity: 0.9;
+}
+
+/* Gradient for Search Button (Orange/Yellow) */
+.search-button {
+    background: linear-gradient(to right, #ff9900, #ffc107);
+    box-shadow: 0 4px 6px rgba(255, 153, 0, 0.4);
+}
+
+/* Gradient for Add Business Button (Orange/Red) */
+.add-business-button {
+    background: linear-gradient(to right, #ff9900, #ff4d00);
+    box-shadow: 0 4px 6px rgba(255, 153, 0, 0.4);
+}
+
+.add-business-button i {
+    margin-right: 5px;
+}
+@media (max-width: 1200px) {
+    /* This can be adjusted based on the screen where it currently breaks */
+    .search-bar-container {
+        /* You might want to remove the category field or make it smaller */
+        /* For example, hide the category input below 1200px */
+        /*
+        & > :nth-child(2) {
+            display: none;
+        }
+        */
+    }
+}
+@media (max-width: 768px) {
+    .topbar-wrapper {
+        flex-direction: column; /* Stack logo and search bar */
+        align-items: flex-start;
+        padding: 10px 15px;
+                min-height: auto; /* Let content dictate height */
+
+    }
+   
+}
