@@ -24,17 +24,7 @@ import LanguageIcon from '@mui/icons-material/Language';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import Footer from "../footer/footer.js";
 
-const buildImageSrc = (base64String, defaultType = "webp") => {
-    if (!base64String) {
-        return "https://via.placeholder.com/120x100?text=Image+Missing";
-    }
-    const clean = base64String.replace(/[\r\n\s]/g, "");
-    if (clean.startsWith("data:")) return clean;
-    let mimeType = defaultType;
-    if (clean.startsWith("/9j")) mimeType = "jpeg";
-    else if (clean.startsWith("iVBOR")) mimeType = "png";
-    return `data:image/${mimeType};base64,${clean}`;
-};
+
 
 const BusinessDetail = () => {
     const { id } = useParams();
@@ -52,11 +42,12 @@ const BusinessDetail = () => {
         return <div className="page-wrapper"><p>No business found for this ID.</p></div>;
     }
 
-const galleryImageSrcs = business.businessImages?.map((img) => buildImageSrc(img)) || [];
-const firstImage = business.businessImage || galleryImageSrcs[0] || null;
-const bannerImageSrc = mainImage || buildImageSrc(firstImage);
-    
-      const displayedAverageRating = '4.7';
+    const galleryImageSrcs = business.businessImages || [];
+    const firstImage = business.bannerImage || galleryImageSrcs[0] || null;
+    const bannerImageSrc = mainImage || firstImage;
+
+
+    const displayedAverageRating = '4.7';
 
     const fullAddress = `${business.plotNumber || ''} ${business.street || ''}, ${business.location || ''}`;
     const quickFacts = [
@@ -64,7 +55,7 @@ const bannerImageSrc = mainImage || buildImageSrc(firstImage);
         'Open until 8:00 pm',
         `${business.experience} Years in Business`,
         'Pure Veg'
-    ]; 	
+    ];
 
     const getQuickFactIcon = (index) => {
         switch (index) {
@@ -81,14 +72,18 @@ const bannerImageSrc = mainImage || buildImageSrc(firstImage);
 
                 <div className="image-gallery">
                     <div className="main-image-container">
-                        <img src={bannerImageSrc} alt={business.businessName} className="business-banner-image" />
+                        <img
+                            src={bannerImageSrc || "https://via.placeholder.com/120x100?text=Logo"}
+                            alt={business.businessName
+
+                            } className="business-banner-image" />
                     </div>
 
                     <div className="gallery-thumbnails">
                         {galleryImageSrcs.map((src, index) => (
                             <img
                                 key={index}
-                                src={src}
+                                src={src || "https://via.placeholder.com/80x80?text=No+Image"}
                                 alt={`${business.businessName} ${index + 1}`}
                                 className="thumbnail-image"
                                 onClick={() => setMainImage(src)}

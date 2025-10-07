@@ -5,21 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllBusinessList } from "../../../../redux/actions/businessListAction.js";
 import CardsSearch from "../../CardsSearch/CardsSearch.js";
 
-const buildImageSrc = (base64String, defaultType = "webp") => {
-    if (!base64String) {
-        return "https://via.placeholder.com/120x100?text=Logo";
-    }
-
-    const clean = base64String.replace(/[\r\n\s]/g, "");
-
-    if (clean.startsWith("data:")) return clean;
-
-    let mimeType = defaultType;
-    if (clean.startsWith("/9j")) mimeType = "jpeg";
-    else if (clean.startsWith("iVBOR")) mimeType = "png";
-
-    return `data:image/${mimeType};base64,${clean}`;
-};
 
 const HospitalsCards = () => {
     const dispatch = useDispatch();
@@ -31,9 +16,12 @@ const HospitalsCards = () => {
         dispatch(getAllBusinessList());
     }, [dispatch]);
 
-    const hospitals = businessList.filter((b) =>
-        b.businessName?.toLowerCase().includes("Hospitals".toLowerCase())
-    );
+   const hospitals = businessList.filter(
+    (b) =>
+        b.category &&
+        /hospital/i.test(b.category) 
+);
+
 
     if (hospitals.length === 0) {
         return <p>No matching businesses found with the name "Hospitals".</p>;
@@ -45,7 +33,6 @@ const HospitalsCards = () => {
 
             <div className="restaurants-list-wrapper">
                 {hospitals.map((business) => {
-                    const imageSource = buildImageSrc(business.bannerImage);
 
                     return (
                         <CardDesign
@@ -55,7 +42,7 @@ const HospitalsCards = () => {
                             whatsapp={business.whatsappNumber}
                             address={`${business.plotNumber ? business.plotNumber + ", " : ""}${business.street}, ${business.location}, Pincode: ${business.pincode}`}
                             details={`Experience: ${business.experience} | Category: ${business.category}`}
-                            imageSrc={imageSource}
+                            imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
                             rating="4.5"
                             reviews="250"
                             to={`/business/${business._id}`}

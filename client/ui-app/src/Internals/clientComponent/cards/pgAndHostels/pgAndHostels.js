@@ -5,21 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllBusinessList } from "../../../../redux/actions/businessListAction.js";
 import CardsSearch from "../../CardsSearch/CardsSearch.js";
 
-const buildImageSrc = (base64String, defaultType = "webp") => {
-    if (!base64String) {
-        return "https://via.placeholder.com/120x100?text=Logo";
-    }
-
-    const clean = base64String.replace(/[\r\n\s]/g, "");
-
-    if (clean.startsWith("data:")) return clean;
-
-    let mimeType = defaultType;
-    if (clean.startsWith("/9j")) mimeType = "jpeg";
-    else if (clean.startsWith("iVBOR")) mimeType = "png";
-
-    return `data:image/${mimeType};base64,${clean}`;
-};
 
 const PgAndHostelsCards = () => {
     const dispatch = useDispatch();
@@ -31,10 +16,10 @@ const PgAndHostelsCards = () => {
         dispatch(getAllBusinessList());
     }, [dispatch]);
 
-    const pgAndHostels = businessList.filter((b) =>
-        b.businessName?.toLowerCase().includes("pg") ||
-        b.businessName?.toLowerCase().includes("hostels")
-    );
+   const pgAndHostels = businessList.filter((b) =>
+    /pg|hostel/i.test(b.category)
+);
+
 
     if (pgAndHostels.length === 0) {
         return <p>No matching businesses found with the name "Pg And Hostels".</p>;
@@ -46,7 +31,6 @@ const PgAndHostelsCards = () => {
 
             <div className="restaurants-list-wrapper">
                 {pgAndHostels.map((business) => {
-                    const imageSource = buildImageSrc(business.bannerImage);
 
                     return (
                         <CardDesign
@@ -56,7 +40,7 @@ const PgAndHostelsCards = () => {
                             whatsapp={business.whatsappNumber}
                             address={`${business.plotNumber ? business.plotNumber + ", " : ""}${business.street}, ${business.location}, Pincode: ${business.pincode}`}
                             details={`Experience: ${business.experience} | Category: ${business.category}`}
-                            imageSrc={imageSource}
+                            imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
                             rating="4.5"
                             reviews="250"
                             to={`/business/${business._id}`}

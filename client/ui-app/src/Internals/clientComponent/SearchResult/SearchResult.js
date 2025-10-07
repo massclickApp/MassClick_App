@@ -10,14 +10,6 @@ const SearchResults = () => {
     const locationState = useLocation();
     const results = locationState.state?.results || [];
 
-    // Helper function to handle image sources (base64 or URL)
-    const buildImageSrc = (bannerImage) => {
-        if (!bannerImage) return 'https://via.placeholder.com/120x100?text=Logo';
-        return bannerImage.startsWith('data:image')
-            ? bannerImage
-            : `data:image/png;base64,${bannerImage}`;
-    };
-
     return (
         <>
             {/* 🔍 Top Search Bar */}
@@ -45,7 +37,6 @@ const SearchResults = () => {
                     ) : (
                         <div className="restaurants-list-wrapper">
                             {results.map((business) => {
-                                const imageSource = buildImageSrc(business.bannerImage);
 
                                 return (
                                     <CardDesign
@@ -55,7 +46,7 @@ const SearchResults = () => {
                                         whatsapp={business.whatsappNumber}
                                         address={`${business.plotNumber ? business.plotNumber + ', ' : ''}${business.street}, ${business.location}, Pincode: ${business.pincode}`}
                                         details={`Experience: ${business.experience || 'N/A'} | Category: ${business.category || 'N/A'}`}
-                                        imageSrc={imageSource}
+                            imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
                                         rating={business.rating || '4.5'}
                                         reviews={business.reviews || '250'}
                                         to={`/business/${business._id}`}

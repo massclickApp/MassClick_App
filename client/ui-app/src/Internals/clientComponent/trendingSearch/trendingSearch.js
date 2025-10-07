@@ -14,7 +14,7 @@ import trendingCards from './trendingCard';
 export const trendingServices = [
   { id: 1, name: "Hostels", image: CarMechanic, alt: "Electrician", path: "/trending/hostels", component: trendingCards },
   { id: 2, name: "Parlours", image: Parlours, alt: "Parlour", path: "/trending/parlours", component: trendingCards },
-  { id: 3, name: "M sand", image: Msand, alt: "Spa", path: "/trending/msand", component: trendingCards },
+  { id: 3, name: "M sand", image: Msand, alt: "Spa", path: "/trending/realestate", component: trendingCards },
   { id: 4, name: "Hotel", image: Hotels, alt: "Saloon", path: "/trending/hotel", component: trendingCards },
 ];
 

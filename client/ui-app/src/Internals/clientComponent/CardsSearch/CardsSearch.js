@@ -166,8 +166,8 @@ const CardsSearch = () => {
         const filteredBusinesses = businessList.filter((business) => {
             const matchesSearchTerm =
                 !searchTerm ||
-                (business.businessName &&
-                    business.businessName.toLowerCase().includes(searchTerm.toLowerCase()));
+                (business.category &&
+                    business.category.toLowerCase().includes(searchTerm.toLowerCase()));
 
             const matchesCategory =
                 !categoryName ||

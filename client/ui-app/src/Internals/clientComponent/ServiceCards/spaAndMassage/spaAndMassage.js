@@ -5,21 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllBusinessList } from "../../../../redux/actions/businessListAction.js";
 import CardsSearch from "../../../clientComponent/CardsSearch/CardsSearch.js";
 
-const buildImageSrc = (base64String, defaultType = "webp") => {
-    if (!base64String) {
-        return "https://via.placeholder.com/120x100?text=Logo";
-    }
-
-    const clean = base64String.replace(/[\r\n\s]/g, "");
-
-    if (clean.startsWith("data:")) return clean;
-
-    let mimeType = defaultType;
-    if (clean.startsWith("/9j")) mimeType = "jpeg";
-    else if (clean.startsWith("iVBOR")) mimeType = "png";
-
-    return `data:image/${mimeType};base64,${clean}`;
-};
 
 const SpaAndMassageCards = () => {
     const dispatch = useDispatch();
@@ -31,9 +16,14 @@ const SpaAndMassageCards = () => {
         dispatch(getAllBusinessList());
     }, [dispatch]);
 
-    const spaAndMassage = businessList.filter((b) =>
-        b.businessName?.toLowerCase().includes("Spa And Massage".toLowerCase())
-    );
+    const keywords = ["beauty", "spa", "parlour", "salon", "beauty parlour"];
+
+    const spaAndMassage = businessList.filter((b) => {
+        if (!b.category) return false;
+        const name = b.category.toLowerCase();
+        return keywords.some((keyword) => name.includes(keyword.toLowerCase()));
+    });
+
 
     if (spaAndMassage.length === 0) {
         return <p>No matching businesses found with the name "spaAndMassage".</p>;
@@ -45,7 +35,6 @@ const SpaAndMassageCards = () => {
 
             <div className="restaurants-list-wrapper">
                 {spaAndMassage.map((business) => {
-                    const imageSource = buildImageSrc(business.bannerImage);
 
                     return (
                         <CardDesign
@@ -55,7 +44,7 @@ const SpaAndMassageCards = () => {
                             whatsapp={business.whatsappNumber}
                             address={`${business.plotNumber ? business.plotNumber + ", " : ""}${business.street}, ${business.location}, Pincode: ${business.pincode}`}
                             details={`Experience: ${business.experience} | Category: ${business.category}`}
-                            imageSrc={imageSource}
+                            imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
                             rating="4.5"
                             reviews="250"
                             to={`/business/${business._id}`}
