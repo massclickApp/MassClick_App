@@ -1,99 +1,77 @@
 import React from 'react';
 import './footer.css';
+import { Link } from 'react-router-dom'; 
 
-const quickLinks = [
-    { name: 'About Us', url: '#' },
-    { name: 'Testimonials', url: '#' },
-    { name: 'Feedbacks', url: '#' },
-    { name: 'Customer Care', url: '#' },
-    { name: 'Media / Gallery Portfolio', url: '#' },
-];
-
-const businessPolicy = [
-    { name: 'Terms and Conditions', url: '#' },
-    { name: 'Privacy Policy', url: '#' },
-    { name: 'Refund Policy', url: '#' },
-    { name: 'Enquiry Now', url: '#' },
-];
-
-const otherServices = [
-    { name: 'Web Design & Development', url: '#' },
-    { name: 'Digital Marketing', url: '#' },
-    { name: 'Graphic Design', 'url': '#' },
-    { name: 'SEO', 'url': '#' },
-];
-
-const socialMedia = [
-    { label: 'Facebook', iconText: 'F', url: '#', id: 'facebook' },
-    { label: 'Instagram', iconText: 'IG', url: '#', id: 'instagram' },
-    { label: 'Twitter/X', iconText: 'X', url: '#', id: 'twitter' }, 
-    { label: 'LinkedIn', iconText: 'L', url: '#', id: 'linkedin' }, 
-];
-
-const logoText = "MassClick™";
-const tagline = "India's Leading Local Search Engine";
+// Import Material-UI Icons
+import FacebookIcon from '@mui/icons-material/Facebook';
+import TwitterIcon from '@mui/icons-material/Twitter';
+import InstagramIcon from '@mui/icons-material/Instagram';
+import YouTubeIcon from '@mui/icons-material/YouTube';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 const Footer = () => {
+   const FooterLink = ({ children, to = "#" }) => (
+    <li className="footer-link-item">
+        <ChevronRightIcon className="link-bullet-icon" /> 
+        <Link to={to} className="footer-link-anchor">{children}</Link>
+    </li>
+);
+
     return (
         <footer className="footer-container">
-            <div className="footer-top-section">
-                <div className="footer-content-wrapper">
-
-                    <div className="footer-column">
-                        <h3 className="column-heading">Quick Links</h3>
-                        <ul className="link-list">
-                            {quickLinks.map((link, index) => (
-                                <li key={index}><a href={link.url} className="footer-link">{link.name}</a></li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    <div className="footer-column">
-                        <h3 className="column-heading">Business Listing Policy</h3>
-                        <ul className="link-list">
-                            {businessPolicy.map((link, index) => (
-                                <li key={index}><a href={link.url} className="footer-link">{link.name}</a></li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    <div className="footer-column">
-                        <h3 className="column-heading">Other Services</h3>
-                        <ul className="link-list">
-                            {otherServices.map((link, index) => (
-                                <li key={index}><a href={link.url} className="footer-link">{link.name}</a></li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    <div className="footer-column footer-social-column">
-                        <h3 className="column-heading">Follow us on</h3>
-                        <div className="social-icons">
-                            {socialMedia.map((social) => (
-                                <a 
-                                    key={social.id}
-                                    href={social.url} 
-                                    aria-label={`Follow us on ${social.label}`} 
-                                    className="social-icon"
-                                >
-                                    {social.iconText}
-                                </a>
-                            ))}
-                        </div>
-                        
-                        <div className="footer-logo-block">
-                            <span className="footer-logo-text">{logoText}</span>
-                            <p className="footer-logo-tagline">{tagline}</p>
-                        </div>
-                    </div>
-
+            <div className="footer-content-area">
+                
+                <div className="footer-section quick-links">
+                    <h3 className="footer-heading">Quick Links</h3>
+                    <ul className="footer-link-list">
+                        <FooterLink to="/aboutus">About Us</FooterLink>
+                        <FooterLink to="/testimonials">Testimonials</FooterLink>
+                        <FooterLink to="/feedbacks">Feedbacks</FooterLink>
+                        <FooterLink to="/customercare">Customer Care</FooterLink>
+                        <FooterLink to="/portfolio">Media / Gallery Portfolio</FooterLink>
+                    </ul>
                 </div>
+
+                <div className="footer-section policy">
+                    <h3 className="footer-heading">Business Listing Policy</h3>
+                    <ul className="footer-link-list">
+                        <FooterLink to="/terms">Terms and Conditions</FooterLink>
+                        <FooterLink to="/privacy">Privacy Policy</FooterLink>
+                        <FooterLink to="/refund">Refund Policy</FooterLink>
+                        <FooterLink to="/enquiry">Enquiry Now</FooterLink>
+                    </ul>
+                </div>
+
+                <div className="footer-section services">
+                    <h3 className="footer-heading">Other Services</h3>
+                    <ul className="footer-link-list">
+                        <FooterLink to="/services/web">Web Design & Development</FooterLink>
+                        <FooterLink to="/services/digital">Digital Marketing</FooterLink>
+                        <FooterLink to="/services/graphic">Graphic Design</FooterLink>
+                        <FooterLink to="/services/seo">SEO</FooterLink>
+                    </ul>
+                </div>
+
+                <div className="footer-section follow-us-logo">
+                    <h3 className="footer-heading social-heading">Follow us on</h3>
+                    <div className="social-icons">
+                        {/* External links keep the <a> tag */}
+                        <a href="https://facebook.com" aria-label="Facebook"><FacebookIcon className="social-icon" /></a>
+                        <a href="https://twitter.com" aria-label="Twitter"><TwitterIcon className="social-icon" /></a>
+                        <a href="https://instagram.com" aria-label="Instagram"><InstagramIcon className="social-icon" /></a>
+                        <a href="https://youtube.com" aria-label="YouTube"><YouTubeIcon className="social-icon" /></a>
+                    </div>
+                    
+                    <div className="logo-placeholder">
+                        <span className="logo-text">MassClick™</span>
+                        <p className="logo-tagline">India's Leading Local Search Engine</p>
+                    </div>
+                </div>
+
             </div>
 
-            <div className="footer-bottom-section">
-                <p className="copyright-text">
-                    &copy; {new Date().getFullYear()} {logoText}. All Rights Reserved.
-                </p>
+                <div className="footer-copyright-area">
+                <p>&copy; {new Date().getFullYear()} Massclick All Rights Reserved</p>
             </div>
         </footer>
     );

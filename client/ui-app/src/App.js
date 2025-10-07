@@ -24,12 +24,35 @@ import SearchResults from './Internals/clientComponent/SearchResult/SearchResult
 import { categoriesServices } from './Internals/clientComponent/serviceCard.js';
 import TrendingCards from './Internals/clientComponent/trendingSearch/trendingCard.js';
 import BusinessDetails from './Internals/clientComponent/cards/cardDetails.js';
+import AboutUsPage from './Internals/clientComponent/footer/aboutUs/aboutUsPage.js';
+import Testimonials from './Internals/clientComponent/footer/testimonials/testimonials.js';
+import FeedbackComponent from './Internals/clientComponent/footer/feedback/feedback.js';
+import CustomerCareComponent from './Internals/clientComponent/footer/customerCare/customerCare.js';
+import Portfolio from './Internals/clientComponent/footer/portfolio/portfolio.js';
+import TermsAndConditions from './Internals/clientComponent/footer/termsAndConditions/termsAndCondition.js';
+
 
 const ComingSoon = ({ title }) => (
   <div style={{ textAlign: 'center', marginTop: '20%' }}>
     <h2>{title} Page Coming Soon!</h2>
   </div>
 );
+
+const FooterRoutes = [
+    { path: 'aboutus', title: 'About Us', element: <AboutUsPage /> }, 
+    { path: 'testimonials', title: 'Testimonials', element: <Testimonials /> },
+    { path: 'feedbacks', title: 'Feedbacks', element: <FeedbackComponent /> },
+    { path: 'customercare', title: 'Customer Care', element: <CustomerCareComponent /> },
+    { path: 'portfolio', title: 'Portfolio', element: <Portfolio />  },
+    { path: 'terms', title: 'Terms and Conditions', element: <TermsAndConditions />  },
+    { path: 'privacy', title: 'Privacy Policy' },
+    { path: 'refund', title: 'Refund Policy' },
+    { path: 'enquiry', title: 'Enquiry Now' },
+    { path: 'services/web', title: 'Web Design & Development' },
+    { path: 'services/digital', title: 'Digital Marketing' },
+    { path: 'services/graphic', title: 'Graphic Design' },
+    { path: 'services/seo', title: 'SEO' },
+];
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -95,6 +118,13 @@ function App() {
               }
             />
             <Route path="home" element={<BusinessListing />} />
+             {FooterRoutes.map((route) => (
+                <Route 
+                    key={route.path} 
+                    path={route.path} 
+                    element={route.element || <ComingSoon title={route.title} />} 
+                />
+            ))}
             <Route path="/:location/:category/:searchTerm" element={<SearchResults />} />
             <Route path="/trending/:categorySlug" element={<TrendingCards />} />
             
