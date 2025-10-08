@@ -30,6 +30,9 @@ import FeedbackComponent from './Internals/clientComponent/footer/feedback/feedb
 import CustomerCareComponent from './Internals/clientComponent/footer/customerCare/customerCare.js';
 import Portfolio from './Internals/clientComponent/footer/portfolio/portfolio.js';
 import TermsAndConditions from './Internals/clientComponent/footer/termsAndConditions/termsAndCondition.js';
+import PrivacyPolicy from './Internals/clientComponent/footer/privacyPolicy/privacyPolicy.js';
+import RefundPolicy from './Internals/clientComponent/footer/refund/refundPolicy.js';
+import EnquiryNow from './Internals/clientComponent/footer/enquiry/enquiry.js';
 
 
 const ComingSoon = ({ title }) => (
@@ -45,9 +48,9 @@ const FooterRoutes = [
     { path: 'customercare', title: 'Customer Care', element: <CustomerCareComponent /> },
     { path: 'portfolio', title: 'Portfolio', element: <Portfolio />  },
     { path: 'terms', title: 'Terms and Conditions', element: <TermsAndConditions />  },
-    { path: 'privacy', title: 'Privacy Policy' },
-    { path: 'refund', title: 'Refund Policy' },
-    { path: 'enquiry', title: 'Enquiry Now' },
+    { path: 'privacy', title: 'Privacy Policy' , element: <PrivacyPolicy />},
+    { path: 'refund', title: 'Refund Policy' , element: <RefundPolicy /> },
+    { path: 'enquiry', title: 'Enquiry Now', element: <EnquiryNow /> },
     { path: 'services/web', title: 'Web Design & Development' },
     { path: 'services/digital', title: 'Digital Marketing' },
     { path: 'services/graphic', title: 'Graphic Design' },

@@ -7,7 +7,9 @@ export const Collections = {
     CATEGORY: 'category',
     BUSINESSLIST: 'businesslist',
     ROLES: 'roles',
-    LOGSEARCH: 'logsearch'
+    LOGSEARCH: 'logsearch',
+    ENQUIRY: 'enquiry'
+
 };
 
 export const {
@@ -19,6 +21,7 @@ export const {
     CATEGORY,
     BUSINESSLIST,
     ROLES,
-    LOGSEARCH
+    LOGSEARCH,
+    ENQUIRY
 
-}= Collections;
+} = Collections;

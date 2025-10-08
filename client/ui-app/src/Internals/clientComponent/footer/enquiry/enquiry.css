@@ -1,0 +1,130 @@
+/* --- Color Variables (Consistent with your Orange scheme) --- */
+:root {
+    --color-primary: #ff6600;      /* Orange Accent */
+    --color-primary-dark: #e65100; /* Darker Orange for hover */
+    --color-text-dark: #212529;
+    --color-text-light: #ffffff; 
+    --color-text-grey: #6c757d;
+    --color-background-white: #ffffff; 
+    --font-family-primary: 'Inter', sans-serif;
+}
+
+/* ========================================================= */
+/* --- 1. HERO BANNER STYLE --- */
+/* ========================================================= */
+
+.enquiry-hero-banner {
+    height: 250px; 
+    width: 100%;
+    background-size: cover;
+    background-position: center;
+    background-attachment: scroll; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: var(--font-family-primary);
+    text-align: center;
+}
+
+.banner-content {
+    z-index: 10;
+}
+
+.banner-title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--color-text-light);
+    margin-bottom: 5px;
+}
+
+.banner-breadcrumb {
+    font-size: 1rem;
+    color: var(--color-text-light);
+    opacity: 0.8;
+}
+
+/* ========================================================= */
+/* --- 2. MAIN FORM SECTION LAYOUT --- */
+/* ========================================================= */
+
+.enquiry-form-section {
+    padding: 60px 20px;
+    background-color: var(--color-background-white); 
+}
+
+.enquiry-form-container-clean {
+    max-width: 900px;
+    margin: 0 auto;
+    /* Removed box-shadow and border for a cleaner look that relies on MUI's depth */
+    padding: 40px;
+}
+
+.enquiry-intro-header-clean {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.enquiry-title-clean {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--color-text-dark);
+    margin-bottom: 10px;
+}
+
+.enquiry-subtitle-clean {
+    font-size: 1.05rem;
+    color: var(--color-text-grey);
+    max-width: 650px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* ========================================================= */
+/* --- 3. FORM GRID (Crucial for responsiveness) --- */
+/* ========================================================= */
+
+.enquiry-form-grid {
+    display: grid;
+    /* Grid layout for two columns on larger screens */
+    grid-template-columns: 1fr; 
+    gap: 20px;
+}
+
+/* MUI components use the full-width class to span the grid */
+.full-width {
+    grid-column: 1 / -1;
+}
+
+/* Adjusting font size for MUI labels on smaller screens if necessary */
+/* This is often handled by MUI, but good practice for ensuring readability */
+@media (max-width: 600px) {
+    .MuiInputLabel-root {
+        font-size: 0.9rem !important;
+    }
+}
+
+/* --- Privacy Note --- */
+.privacy-note {
+    font-size: 0.85rem;
+    color: var(--color-text-grey); 
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* ========================================================= */
+/* --- 4. RESPONSIVENESS (Tablet/Desktop) --- */
+/* ========================================================= */
+
+@media (min-width: 600px) {
+    .enquiry-form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .enquiry-form-container-clean {
+        padding: 50px;
+    }
+    
+    .enquiry-title-clean {
+        font-size: 3rem; 
+    }
+}
