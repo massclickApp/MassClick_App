@@ -1,0 +1,327 @@
+/* ======================================= */
+/* GLOBAL/BASE STYLES & VARIABLES          */
+/* ======================================= */
+:root {
+    --primary-orange: #ff6600;
+    --dark-text: #1a1a1a;
+    --light-bg: #f5f7fa;
+    --card-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
+    --mobile-padding: 30px 20px;
+}
+
+.digital-marketing-page {
+    font-family: 'Helvetica Neue', Arial, sans-serif; 
+    color: var(--dark-text);
+    line-height: 1.5;
+}
+
+/* Base style for the vibrant orange background sections */
+.dm-intro-section,
+.dm-cta-section {
+    background-color: var(--primary-orange); 
+    color: #ffffff;
+    padding: var(--mobile-padding);
+    display: flex;
+    flex-direction: column; 
+    gap: 40px; 
+}
+
+/* ======================================= */
+/* SECTION 1: INTRO (Mobile First)         */
+/* ======================================= */
+.dm-intro-section {
+    padding-top: 60px;
+    padding-bottom: 60px;
+}
+
+.dm-intro-content {
+    order: 2; 
+}
+
+.dm-title {
+    font-size: 2.8em;
+    margin-bottom: 25px;
+    font-weight: 800; 
+    letter-spacing: -0.5px;
+}
+
+.dm-text {
+    font-size: 1.05em;
+    line-height: 1.7;
+    margin-bottom: 20px;
+}
+
+.dm-visual-container {
+    order: 1; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px; 
+}
+
+/* NEW: Style for the digitmarketing.jpg image */
+.dm-main-graphic-image {
+    width: 100%; /* Make it fill its container */
+    max-width: 400px; /* Limit max size for large screens */
+    height: auto;
+    border-radius: 15px; /* Slightly rounded corners for a modern touch */
+    object-fit: contain; /* Ensures the whole image is visible, scales down */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
+}
+
+
+/* --- REMOVED OLD GRAPHIC PLACEHOLDER STYLES --- */
+/*
+.dm-graphic-placeholder { ... }
+.dm-graphic-text { ... }
+.dm-graphic-text-marketing { ... }
+.dm-graphic-ring { ... }
+.social-icons-cluster .icon { ... }
+*/
+
+
+/* ======================================= */
+/* SECTION 2: SERVICES (Mobile First)      */
+/* ======================================= */
+.dm-services-section {
+    padding: 60px 20px;
+    background-color: var(--light-bg); 
+    text-align: center;
+}
+
+.services-title {
+    font-size: 2.2em;
+    margin-bottom: 50px;
+    color: var(--dark-text);
+    font-weight: 700;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 25px;
+}
+
+.service-card {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px; 
+    box-shadow: var(--card-shadow);
+    text-align: left;
+    transition: all 0.3s ease-in-out;
+    position: relative;
+    border-top: 4px solid transparent; 
+}
+
+.service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+    border-top: 4px solid var(--primary-orange); 
+}
+
+.service-icon {
+    display: block;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--primary-orange);
+    margin-bottom: 15px;
+    opacity: 0.7;
+    position: relative;
+    /* Add specific icon content/backgrounds here for each service if needed */
+}
+/* Example for an icon placeholder - replace with actual icon fonts or SVGs */
+.icon-seo::after { content: '🔍'; font-size: 1.5em; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white;}
+.icon-ppc::after { content: '💰'; font-size: 1.5em; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white;}
+.icon-social::after { content: '🗣️'; font-size: 1.5em; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white;}
+.icon-sem::after { content: '📈'; font-size: 1.5em; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white;}
+.icon-gmb::after { content: '📍'; font-size: 1.5em; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white;}
+.icon-email::after { content: '📧'; font-size: 1.5em; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white;}
+
+
+.service-heading {
+    font-size: 1.3em;
+    font-weight: 700;
+    color: var(--dark-text); 
+    margin-bottom: 10px;
+}
+
+.service-description {
+    font-size: 1em;
+    color: #555;
+}
+
+/* ======================================= */
+/* SECTION 3: CTA (Mobile First)           */
+/* ======================================= */
+.dm-cta-section {
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.cta-left-visual {
+    order: 1; 
+    padding: 0;
+}
+
+.cta-local-image {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.cta-right-content {
+    order: 2; 
+    text-align: left;
+}
+
+.cta-title {
+    font-size: 2.2em;
+    margin-bottom: 20px;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.cta-text {
+    font-size: 1.05em;
+    line-height: 1.7;
+    margin-bottom: 30px;
+}
+
+.cta-button {
+    background-color: white;
+    color: var(--primary-orange);
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.cta-button:hover {
+    background-color: #f7f7f7;
+    color: #cc5200;
+}
+
+/* ======================================= */
+/* MEDIA QUERIES (TABLET)                  */
+/* ======================================= */
+@media (min-width: 768px) {
+    .dm-intro-section,
+    .dm-cta-section {
+        padding: 80px 40px;
+    }
+
+    /* SECTION 1: INTRO */
+    .dm-intro-section {
+        flex-direction: row; 
+        text-align: left;
+    }
+
+    .dm-intro-content {
+        flex: 1;
+        padding-right: 40px;
+    }
+
+    .dm-visual-container {
+        flex: 1;
+        min-height: auto;
+        order: 2; 
+        display: flex; /* Ensure image is centered in its container */
+        justify-content: center;
+        align-items: center;
+    }
+
+    .dm-main-graphic-image {
+        max-width: 100%; /* Adjust max-width for tablet */
+        max-height: 450px; /* Add a max height if desired */
+    }
+
+    .dm-title {
+        font-size: 3.5em;
+    }
+
+    /* SECTION 2: SERVICES */
+    .dm-services-section {
+        padding: 80px 40px;
+    }
+
+    .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 900px;
+    }
+
+    /* SECTION 3: CTA */
+    .dm-cta-section {
+        flex-direction: row; 
+        text-align: left;
+    }
+
+    .cta-left-visual {
+        flex: 1;
+        order: 1;
+        padding-right: 30px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .cta-right-content {
+        flex: 1;
+        order: 2;
+        padding-left: 30px;
+    }
+
+    .cta-local-image {
+        max-width: 100%; 
+    }
+}
+
+
+/* ======================================= */
+/* MEDIA QUERIES (DESKTOP)                 */
+/* ======================================= */
+@media (min-width: 1024px) {
+    .dm-intro-section,
+    .dm-cta-section,
+    .dm-services-section {
+        padding-left: 80px;
+        padding-right: 80px;
+    }
+
+    .digital-marketing-page > section {
+        max-width: 1400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .dm-intro-section {
+        padding-top: 100px;
+        padding-bottom: 100px;
+    }
+
+    .dm-main-graphic-image {
+        max-width: 550px; /* Larger max width for desktop */
+    }
+
+    .dm-title {
+        font-size: 4.5em;
+    }
+
+    /* SECTION 2: SERVICES */
+    .services-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+        max-width: 1200px;
+    }
+
+    /* SECTION 3: CTA */
+    .cta-title {
+        font-size: 3em;
+    }
+}

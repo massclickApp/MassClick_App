@@ -8,7 +8,8 @@ export const Collections = {
     BUSINESSLIST: 'businesslist',
     ROLES: 'roles',
     LOGSEARCH: 'logsearch',
-    ENQUIRY: 'enquiry'
+    ENQUIRY: 'enquiry',
+    STARTPROJECT: 'startproject'
 
 };
 
@@ -22,6 +23,7 @@ export const {
     BUSINESSLIST,
     ROLES,
     LOGSEARCH,
-    ENQUIRY
+    ENQUIRY,
+    STARTPROJECT
 
 } = Collections;

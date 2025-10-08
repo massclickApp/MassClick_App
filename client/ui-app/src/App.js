@@ -33,6 +33,10 @@ import TermsAndConditions from './Internals/clientComponent/footer/termsAndCondi
 import PrivacyPolicy from './Internals/clientComponent/footer/privacyPolicy/privacyPolicy.js';
 import RefundPolicy from './Internals/clientComponent/footer/refund/refundPolicy.js';
 import EnquiryNow from './Internals/clientComponent/footer/enquiry/enquiry.js';
+import WebDevSection from './Internals/clientComponent/footer/webDev/webDevSection.js';
+import DigitalMarketing from './Internals/clientComponent/footer/digitalMarketing/digitalMarketing.js';
+import GraphicDesign from './Internals/clientComponent/footer/graphicDesign/graphicDesign.js';
+import Seo from './Internals/clientComponent/footer/seo/seo.js';
 
 
 const ComingSoon = ({ title }) => (
@@ -51,10 +55,10 @@ const FooterRoutes = [
     { path: 'privacy', title: 'Privacy Policy' , element: <PrivacyPolicy />},
     { path: 'refund', title: 'Refund Policy' , element: <RefundPolicy /> },
     { path: 'enquiry', title: 'Enquiry Now', element: <EnquiryNow /> },
-    { path: 'services/web', title: 'Web Design & Development' },
-    { path: 'services/digital', title: 'Digital Marketing' },
-    { path: 'services/graphic', title: 'Graphic Design' },
-    { path: 'services/seo', title: 'SEO' },
+    { path: 'services/web', title: 'Web Design & Development' , element: <WebDevSection />},
+    { path: 'services/digital', title: 'Digital Marketing' , element: <DigitalMarketing />},
+    { path: 'services/graphic', title: 'Graphic Design', element: <GraphicDesign /> },
+    { path: 'services/seo', title: 'SEO', element: <Seo /> },
 ];
 
 function App() {
