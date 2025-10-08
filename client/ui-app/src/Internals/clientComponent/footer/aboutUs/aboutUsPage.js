@@ -22,7 +22,6 @@ const Card = ({ Icon, title, description }) => (
     </div>
 );
 
-// Reusable Feature List Component
 const FeatureList = ({ features }) => (
     <div className="feature-grid">
         {features.map((feature, index) => (

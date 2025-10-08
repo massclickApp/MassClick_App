@@ -239,7 +239,7 @@ const SearchBar = ({
                 />
 
                 {/* Category Autocomplete */}
-                <Autocomplete
+                {/* <Autocomplete
                     options={safeCategoryOptions}
                     value={safeCategoryOptions.find(opt => opt.label === categoryName) || null}
                     onChange={(event, newValue) => setCategoryName(newValue ? newValue.label : "")}
@@ -280,7 +280,7 @@ const SearchBar = ({
                             InputProps={{ ...params.InputProps }}
                         />
                     )}
-                />
+                /> */}
 
                 {/* Search Term Field */}
                 <CustomTextField

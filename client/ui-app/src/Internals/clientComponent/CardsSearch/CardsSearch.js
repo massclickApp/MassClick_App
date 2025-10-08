@@ -295,7 +295,7 @@ const CardsSearch = () => {
                     />
 
                     {/* Category Autocomplete - Desktop */}
-                    <Autocomplete
+                    {/* <Autocomplete
                         options={categoryOptions}
                         getOptionLabel={(option) => option.label || ""}
                         value={categoryOptions.find(opt => opt.label === categoryName) || null}
@@ -308,7 +308,7 @@ const CardsSearch = () => {
                         renderInput={(params) => (
                             <CustomTextField {...params} placeholder="Category" InputProps={{ ...params.InputProps }} />
                         )}
-                    />
+                    /> */}
 
                     {/* Main Search Input - Desktop */}
                     <CustomTextField

@@ -115,7 +115,6 @@
 }
 
 .card-icon-wrapper {
-    background-color: var(--color-primary);
     width: 70px;
     height: 70px;
     border-radius: 50%;
@@ -127,7 +126,7 @@
 }
 
 .card-icon {
-    color: var(--color-card-background);
+    color: var(--color-card-background); 
     font-size: 3rem !important;
 }
 
