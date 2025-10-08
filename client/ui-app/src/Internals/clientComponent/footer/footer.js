@@ -55,11 +55,18 @@ const Footer = () => {
                 <div className="footer-section follow-us-logo">
                     <h3 className="footer-heading social-heading">Follow us on</h3>
                     <div className="social-icons">
-                        {/* External links keep the <a> tag */}
-                        <a href="https://facebook.com" aria-label="Facebook"><FacebookIcon className="social-icon" /></a>
-                        <a href="https://twitter.com" aria-label="Twitter"><TwitterIcon className="social-icon" /></a>
-                        <a href="https://instagram.com" aria-label="Instagram"><InstagramIcon className="social-icon" /></a>
-                        <a href="https://youtube.com" aria-label="YouTube"><YouTubeIcon className="social-icon" /></a>
+                        <a href="https://www.facebook.com/massClicks" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
+                            <FacebookIcon className="social-icon" />
+                        </a>
+                        <a href="https://www.facebook.com/massClicks" aria-label="Twitter" target="_blank" rel="noopener noreferrer">
+                            <TwitterIcon className="social-icon" />
+                        </a>
+                        <a href="https://www.instagram.com/massclick_/" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+                            <InstagramIcon className="social-icon" />
+                        </a>
+                        <a href="https://www.facebook.com/massClicks" aria-label="YouTube" target="_blank" rel="noopener noreferrer">
+                            <YouTubeIcon className="social-icon" />
+                        </a>
                     </div>
                     
                     <div className="logo-placeholder">
