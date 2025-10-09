@@ -1,5 +1,51 @@
 import mongoose from "mongoose"
 
+
+
+
+const reviewSchema = new mongoose.Schema({
+  // Store the numerical rating
+  rating: {
+    type: Number,
+    required: true,
+    min: 0.5,
+    max: 5
+  },
+  // Store the user's written experience
+  ratingExperience: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  // Store the user's selected tags/likes
+  ratingLove: {
+    type: [String], // Array of strings for multiple tags
+    default: []
+  },
+  // Store the user's ID and Username for display
+  userId: { // Recommended: Store the user's ID
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+            default: null, // Set default to null if it's missing
+ // Reference to your User model if you have one
+  },
+  username: { // Store the username directly
+    type: String,
+    trim: true
+  },
+  // Store the photo URLs
+  ratingPhotos: [{
+    type: String,
+    default: ''
+  }],
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  // You can add more fields like 'helpfulCount', 'flagged', etc.
+});
+
+
 const businessListSchema = new mongoose.Schema({
   clientId: { type: String, default: '', },
   businessName: { type: String, default: '', required: true },
@@ -35,13 +81,11 @@ const businessListSchema = new mongoose.Schema({
   linkedin: { type: String, default: '', },
   businessDetails: { type: String, default: '', },
   globalAddress: { type: String, default: '', },
-  ratings: {
-    type: [Number],
-    default: [],
+  reviews: {
+    type: [reviewSchema], // An array of Review subdocuments
+    default: []
   },
-  ratingExperience: { type: String, default: '', },
-  ratingLove: { type: String, default: '', },
-  ratingPhotos: [{ type: String, default: '' }],
+
   averageRating: {
     type: Number,
     default: 0,

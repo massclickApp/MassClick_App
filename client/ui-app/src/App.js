@@ -37,6 +37,7 @@ import WebDevSection from './Internals/clientComponent/footer/webDev/webDevSecti
 import DigitalMarketing from './Internals/clientComponent/footer/digitalMarketing/digitalMarketing.js';
 import GraphicDesign from './Internals/clientComponent/footer/graphicDesign/graphicDesign.js';
 import Seo from './Internals/clientComponent/footer/seo/seo.js';
+import WriteReviewPage from './Internals/clientComponent/rating/submitReviewPage.js';
 
 
 const ComingSoon = ({ title }) => (
@@ -140,6 +141,11 @@ function App() {
               return <Route key={service.path} path={service.path} element={<Component />} />;
             })}
             <Route path="/business/:id" element={<BusinessDetails />} />
+
+            <Route
+              path="/write-review/:businessId/:ratingValue"
+              element={<WriteReviewPage />}
+            />
 
             {categoriesServices.flatMap((category) =>
               category.items.map((item) => {

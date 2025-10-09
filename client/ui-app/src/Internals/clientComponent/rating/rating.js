@@ -3,7 +3,8 @@ import Rating from '@mui/material/Rating';
 import Box from '@mui/material/Box';
 import StarIcon from '@mui/icons-material/Star';
 import { useDispatch } from 'react-redux';
-import { editBusinessList } from '../../../redux/actions/businessListAction';
+// import { editBusinessList } from '../../../redux/actions/businessListAction';
+import { useNavigate } from 'react-router-dom'; // <-- Import useNavigate
 
 const labels = {
     0.5: 'Useless',
@@ -21,36 +22,25 @@ const labels = {
 export default function UserRatingWidget({ 
     businessId,
      initialValue = 0, 
-     currentRatings = [] 
 }) {
     const dispatch = useDispatch();
+    const navigate = useNavigate(); // <-- Initialize useNavigate
 
     const [value, setValue] = React.useState(initialValue);
     const [hover, setHover] = React.useState(-1);
 
-    const handleRatingChange = async (event, newValue) => {
+        const handleRatingChange = (event, newValue) => {
         if (!newValue) return;
 
+        // 1. Update local state to show the user their selection instantly
         setValue(newValue);
-        console.log(`User rated business ${newValue} stars.`);
 
-        try {
-            const updatedRatings = [...currentRatings, newValue];
-
-            const averageRating =
-                updatedRatings.reduce((sum, rating) => sum + rating, 0) / updatedRatings.length;
-
-            await dispatch(
-                editBusinessList(businessId, {
-                    ratings: updatedRatings,
-                    averageRating,
-                })
-            );
-
-            console.log("Rating updated successfully.");
-        } catch (err) {
-            console.error("Error updating rating:", err);
-        }
+        // 2. Redirect the user to the new review page
+        // We pass the businessId and the selected rating value (e.g., 3.5)
+        navigate(`/write-review/${businessId}/${newValue}`);
+        
+        // The Redux update (editBusinessList) will now happen on the /write-review page
+        // when the user clicks 'Submit' there.
     };
     return (
         <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>

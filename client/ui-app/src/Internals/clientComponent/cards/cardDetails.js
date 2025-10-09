@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react"; // <-- Import useRef
 import { useParams, useNavigate } from "react-router-dom"; // <-- Import useNavigate
 import { useDispatch, useSelector } from "react-redux";
 import { getAllBusinessList } from "../../../redux/actions/businessListAction";
@@ -32,6 +32,20 @@ import LinkIcon from '@mui/icons-material/Link';
 import Footer from "../footer/footer.js";
 
 const SimpleModal = ({ children, onClose, title }) => (
+    <div className="modal-overlay" onClick={onClose}>
+        <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+                <h3 className="modal-title">{title}</h3>
+                <CloseIcon className="modal-close-btn" onClick={onClose} />
+            </div>
+            <div className="modal-body">
+                {children}
+            </div>
+        </div>
+    </div>
+);
+
+const OverView = ({ children, onClose, title }) => (
     <div className="modal-overlay" onClick={onClose}>
         <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
@@ -95,7 +109,14 @@ const BusinessDetail = () => {
     const [showFullHours, setShowFullHours] = useState(false);
     const [showShareOptions, setShowShareOptions] = useState(false); // Manages the share popup
     const [showContactModal, setShowContactModal] = useState(false);
+ const [activeTab, setActiveTab] = useState('Overview');
 
+    // ✅ NEW: Refs for each major section to scroll to
+    const overviewRef = useRef(null);
+    const quickInfoRef = useRef(null);
+    const servicesRef = useRef(null); // Assuming a services section exists or will be added
+    const photosRef = useRef(null);
+    const reviewsRef = useRef(null);
     useEffect(() => {
         dispatch(getAllBusinessList());
     }, [dispatch]);
@@ -112,7 +133,7 @@ const BusinessDetail = () => {
     const restaurantOptions = business.restaurantOptions;
 
     const displayedAverageRating = business.averageRating?.toFixed(1) || 0;
-    const totalRatings = business.ratings?.length || 0;
+    const totalRatings = business?.reviews?.length || 0;
     const fullAddress = `${business.plotNumber || ''} ${business.street || ''}, ${business.location || ''}`;
 
     const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -235,6 +256,38 @@ const BusinessDetail = () => {
             setShowContactModal(false);
         }
     }
+    const handleTabClick = (tabName) => {
+        setActiveTab(tabName);
+        let ref;
+        switch (tabName) {
+            case 'Overview':
+                ref = overviewRef;
+                break;
+            case 'Quick Info':
+                ref = quickInfoRef;
+                break;
+            case 'Services':
+                ref = servicesRef;
+                break;
+            case 'Photos':
+                ref = photosRef;
+                break;
+            case 'Reviews':
+                ref = reviewsRef;
+                break;
+            default:
+                return;
+        }
+
+        if (ref.current) {
+            ref.current.scrollIntoView({
+                behavior: 'smooth',
+                // Optional: Scroll to the top of the viewport minus any fixed header height
+                block: 'start', 
+                // block: 'start' is usually best, but you can try 'center' too
+            });
+        }
+    };
 
     const currentUrl = encodeURIComponent(window.location.href);
     const currentTitle = encodeURIComponent(`Check out ${business.businessName}`);
@@ -366,11 +419,36 @@ const BusinessDetail = () => {
 
                         <div className="tabs-container-wrapper">
                             <div className="nav-tabs">
-                                <span className="tab active">Overview</span>
-                                <span className="tab">Quick Info</span>
-                                <span className="tab">Services</span>
-                                <span className="tab">Photos</span>
-                                <span className="tab">Reviews</span>
+                                <span 
+                                    className={`tab ${activeTab === 'Overview' ? 'active' : ''}`}
+                                    onClick={() => handleTabClick('Overview')}
+                                >
+                                    Overview
+                                </span>
+                                <span 
+                                    className={`tab ${activeTab === 'Quick Info' ? 'active' : ''}`}
+                                    onClick={() => handleTabClick('Quick Info')}
+                                >
+                                    Quick Info
+                                </span>
+                                <span 
+                                    className={`tab ${activeTab === 'Services' ? 'active' : ''}`}
+                                    onClick={() => handleTabClick('Services')}
+                                >
+                                    Services
+                                </span>
+                                <span 
+                                    className={`tab ${activeTab === 'Photos' ? 'active' : ''}`}
+                                    onClick={() => handleTabClick('Photos')}
+                                >
+                                    Photos
+                                </span>
+                                <span 
+                                    className={`tab ${activeTab === 'Reviews' ? 'active' : ''}`}
+                                    onClick={() => handleTabClick('Reviews')}
+                                >
+                                    Reviews
+                                </span>
                             </div>
                         </div>
 

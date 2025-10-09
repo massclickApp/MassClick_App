@@ -74,6 +74,53 @@ export const updateBusinessList = async (id, data) => {
     const business = await businessListModel.findById(id);
     if (!business) throw new Error("Business not found");
 
+    // =========================================================
+    // ✅ NEW: Review Submission Logic (Now stores S3 KEY consistently)
+    // =========================================================
+    if (data.reviewData) {
+        const { reviewData } = data;
+        
+        // 1. Handle Photo Uploads for the Review (Store S3 Key)
+        const uploadedPhotoKeys = [];
+        if (Array.isArray(reviewData.ratingPhotos) && reviewData.ratingPhotos.length > 0) {
+            const photoUploadPromises = reviewData.ratingPhotos.map(async (img, i) => {
+                if (img.startsWith("data:image")) {
+                    const uploadResult = await uploadImageToS3(
+                        img,
+                        `businessList/reviews/${business._id}/photo-${Date.now()}-${i}`
+                    );
+                    // 💡 CONSISTENT: Store the S3 Key
+                    return uploadResult.key; 
+                }
+                return null;
+            });
+
+            // Push only the valid S3 keys
+            uploadedPhotoKeys.push(...(await Promise.all(photoUploadPromises)).filter(key => key));
+        }
+
+        // 2. Prepare the new review object
+        const newReview = {
+            ...reviewData, // Contains rating, experience, love, userId, username
+            ratingPhotos: uploadedPhotoKeys, // Use the uploaded S3 Keys
+            createdAt: new Date() // Set the creation time
+        };
+
+        // 3. Push the new review to the business document
+        business.reviews.push(newReview);
+        
+        // 4. Recalculate Average Rating (Crucial Step)
+        const totalRating = business.reviews.reduce((sum, review) => sum + review.rating, 0);
+        business.averageRating = business.reviews.length > 0
+            ? parseFloat((totalRating / business.reviews.length).toFixed(1))
+            : 0;
+            
+        delete data.reviewData;
+    }
+   
+
+
+
     if (data.bannerImage?.startsWith("data:image")) {
         const uploadResult = await uploadImageToS3(
             data.bannerImage,
@@ -104,20 +151,28 @@ export const updateBusinessList = async (id, data) => {
     } else if (data.businessImages === null) {
         business.businessImagesKey = [];
     }
-
     delete data.businessImages;
 
     Object.keys(data).forEach(key => {
-        business[key] = data[key];
+        if (key !== 'reviews' && key !== 'averageRating' && key !== 'clientId') {
+            business[key] = data[key];
+        }
     });
 
     await business.save();
 
     const result = business.toObject();
+    
+  
     if (business.bannerImageKey) result.bannerImage = getSignedUrlByKey(business.bannerImageKey);
     if (business.businessImagesKey?.length > 0) {
         result.businessImages = business.businessImagesKey.map(key => getSignedUrlByKey(key));
     }
+    
+    result.reviews = result.reviews.map(review => ({
+        ...review,
+        ratingPhotos: review.ratingPhotos.map(key => getSignedUrlByKey(key))
+    }));
 
     return result;
 };
