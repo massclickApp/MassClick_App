@@ -32,7 +32,8 @@ const RestaurantsCards = () => {
             <CardsSearch />
             <div className="restaurants-list-wrapper">
                 {restaurants.map((business) => {
-
+                    const averageRating = business.averageRating?.toFixed(1) || 0;
+                    const totalRatings = business.ratings?.length || 0;
                     return (
                         <CardDesign
                             key={business._id}
@@ -42,8 +43,8 @@ const RestaurantsCards = () => {
                             address={`${business.plotNumber ? business.plotNumber + ", " : ""}${business.street}, ${business.location}, Pincode: ${business.pincode}`}
                             details={`Experience: ${business.experience} | Category: ${business.category}`}
                             imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
-                            rating="4.5"
-                            reviews="250"
+                            rating={averageRating}
+                            reviews={totalRatings}
                             to={`/business/${business._id}`}
                         />
                     );

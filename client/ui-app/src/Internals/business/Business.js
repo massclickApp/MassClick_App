@@ -50,7 +50,7 @@ export default function BusinessList() {
     });
 
     const handleGalleryImageChange = (e) => {
-        const files = Array.from(e.target.files); // multiple files
+        const files = Array.from(e.target.files);
         const readers = files.map((file) => {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -64,30 +64,43 @@ export default function BusinessList() {
             setNewGalleryImages((prev) => [...prev, ...images]);
         });
     };
-    const handleUploadGalleryImages = async () => {
-        if (!galleryDialog.data?._id) return;
+  const handleUploadGalleryImages = async () => {
+    if (!galleryDialog.data?._id) return;
 
-        const updatedData = {
-            ...galleryDialog.data,
-            businessImages: [...(galleryDialog.data.businessImages || []), ...newGalleryImages],
+    try {
+        const uploadPayload = {
+            businessImages: newGalleryImages.length > 0 ? newGalleryImages : null,
         };
 
-        try {
-            await dispatch(editBusinessList(galleryDialog.data._id, updatedData));
+        const updatedBusiness = await dispatch(
+            editBusinessList(galleryDialog.data._id, uploadPayload)
+        );
 
-            setGalleryDialog((prev) => ({
-                ...prev,
-                data: { ...prev.data, businessImages: updatedData.businessImages },
-            }));
+        setGalleryDialog((prev) => ({
+            ...prev,
+            data: { ...prev.data, businessImages: updatedBusiness.businessImages },
+        }));
 
-            setNewGalleryImages([]);
-            handleCloseGallery()
-            await dispatch(getAllBusinessList());
-        } catch (err) {
-            console.error("Upload failed:", err);
-        }
-    };
+        setNewGalleryImages([]);
+        handleCloseGallery();
+        await dispatch(getAllBusinessList());
+    } catch (err) {
+        console.error("Upload failed:", err);
+    }
+};
 
+
+
+
+    const defaultOpeningHours = [
+        { day: "Monday", open: "", close: "", isClosed: false },
+        { day: "Tuesday", open: "", close: "", isClosed: false },
+        { day: "Wednesday", open: "", close: "", isClosed: false },
+        { day: "Thursday", open: "", close: "", isClosed: false },
+        { day: "Friday", open: "", close: "", isClosed: false },
+        { day: "Saturday", open: "", close: "", isClosed: false },
+        { day: "Sunday", open: "", close: "", isClosed: false },
+    ];
 
 
 
@@ -131,6 +144,8 @@ export default function BusinessList() {
         twitter: "",
         linkedin: "",
         businessDetails: "",
+        openingHours: defaultOpeningHours,
+
     });
 
     const [preview, setPreview] = useState(null);
@@ -214,7 +229,17 @@ export default function BusinessList() {
         setBusinessValue(content);
         setFormData((prev) => ({ ...prev, businessDetails: content }));
     };
-
+    const handleOpeningHourChange = (index, field, value) => {
+        setFormData((prev) => {
+            const updatedHours = [...(prev.openingHours || defaultOpeningHours)];
+            updatedHours[index][field] = value;
+            if (field === "isClosed" && value) {
+                updatedHours[index].open = "";
+                updatedHours[index].close = "";
+            }
+            return { ...prev, openingHours: updatedHours };
+        });
+    };
     useEffect(() => {
         dispatch(getAllBusinessList());
         dispatch(getAllLocation());
@@ -229,8 +254,10 @@ export default function BusinessList() {
     const handleEdit = (row) => {
         setEditMode(true);
         setEditId(row.id);
-        setFormData({ ...row });
-        setBusinessValue(row.businessDetails || "");
+        setFormData({
+            ...row,
+            openingHours: row.openingHours?.length ? row.openingHours : defaultOpeningHours,
+        }); setBusinessValue(row.businessDetails || "");
         setPreview(row.bannerImage || null);
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
@@ -271,6 +298,8 @@ export default function BusinessList() {
             twitter: "",
             linkedin: "",
             businessDetails: "",
+            openingHours: defaultOpeningHours,
+
         });
         setBusinessValue("");
         setPreview(null);
@@ -340,7 +369,9 @@ export default function BusinessList() {
         pinterest: bl.pinterest || "-",
         twitter: bl.twitter || "-",
         linkedin: bl.linkedin || "-",
-        businessDetails: bl.businessDetails || "-"
+        businessDetails: bl.businessDetails || "-",
+        openingHours: bl.openingHours || defaultOpeningHours,
+
     }));
 
 
@@ -384,14 +415,14 @@ export default function BusinessList() {
             filterable: false,
             renderCell: (params) => (
                 <div style={{ display: "flex", gap: "8px" }}>
-                    <IconButton   color="primary"
+                    <IconButton color="primary"
                         size="small"
-                     onClick={() => handleEdit(params.row)}>
+                        onClick={() => handleEdit(params.row)}>
                         <EditRoundedIcon fontSize="small" />
                     </IconButton>
-                    <IconButton   color="error"
+                    <IconButton color="error"
                         size="small"
-                     onClick={() => handleDelete(params.row)}>
+                        onClick={() => handleDelete(params.row)}>
                         <DeleteOutlineRoundedIcon fontSize="small" />
                     </IconButton>
                 </div>
@@ -797,7 +828,9 @@ export default function BusinessList() {
                             error={Boolean(errors.businessvalue)}
                             helperText={errors.businessvalue || ""}
                         />
-                    </Grid>
+                    </Grid><br />
+                    <Grid item xs={12}> <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>Opening Hours</Typography> {formData.openingHours.map((hour, index) => (<Grid container spacing={2} alignItems="center" key={hour.day} sx={{ mb: 1 }}> <Grid item xs={2}> <TextField fullWidth variant="standard" label={hour.day} value={hour.day} disabled /> </Grid> <Grid item xs={3}> <TextField fullWidth type="time" variant="standard" label="Open" value={hour.open} onChange={(e) => handleOpeningHourChange(index, "open", e.target.value)} disabled={hour.isClosed} InputLabelProps={{ shrink: true }} /> </Grid>
+                        <Grid item xs={3}> <TextField fullWidth type="time" variant="standard" label="Close" value={hour.close} onChange={(e) => handleOpeningHourChange(index, "close", e.target.value)} disabled={hour.isClosed} InputLabelProps={{ shrink: true }} /> </Grid> <Grid item xs={2}> <TextField fullWidth select label="Closed" variant="standard" value={hour.isClosed} onChange={(e) => handleOpeningHourChange(index, "isClosed", e.target.value === "true")} > <MenuItem value={false}>Open</MenuItem> <MenuItem value={true}>Closed</MenuItem> </TextField> </Grid> </Grid>))} </Grid>
                     <Grid item xs={12}>
                         <Box sx={{ display: "flex", mt: 10, gap: 2 }}>
                             <Button

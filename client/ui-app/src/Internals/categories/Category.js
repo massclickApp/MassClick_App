@@ -225,7 +225,7 @@ export default function Category() {
   ];
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+<Container maxWidth="xl" sx={{ mt: 4, mb: 4,}}>
       <Paper elevation={3} sx={{ p: 3, borderRadius: 2, mb: 4 }}>
         <Typography variant="h6" gutterBottom>
           {editMode ? "Edit Category" : "Add New Category"}

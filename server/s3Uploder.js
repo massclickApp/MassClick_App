@@ -21,7 +21,7 @@ export const uploadImageToS3 = async (base64Image, uploadPath) => {
 
     const extension = matches[1];
     const imageBuffer = Buffer.from(matches[2], "base64");
-    const s3Key = `${uploadPath}.${extension}`; 
+    const s3Key = `${uploadPath}.${extension}`;
 
     const params = {
         Bucket: assetsBucket,
@@ -31,17 +31,17 @@ export const uploadImageToS3 = async (base64Image, uploadPath) => {
     };
 
     await s3.upload(params).promise();
-    return { key: s3Key }; 
+    return { key: s3Key };
 };
 
-export const getSignedUrlByKey = (key, bucketName, expiryTime = null) => {
-    if (!key) return ''; 
-    
+export const getSignedUrlByKey = (key, bucketName, expiryTime = 3600) => {
+    if (!key) return "";
+
     const params = {
-        Bucket: bucketName ?? assetsBucket, 
+        Bucket: bucketName ?? assetsBucket,
         Key: key,
-        Expires: expiryTime || 3600, 
+        Expires: expiryTime,
     };
 
-    return s3.getSignedUrl('getObject', params);
+    return s3.getSignedUrl("getObject", params);
 };
