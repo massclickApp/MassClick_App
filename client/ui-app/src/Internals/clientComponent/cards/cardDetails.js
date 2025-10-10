@@ -25,9 +25,9 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import LanguageIcon from '@mui/icons-material/Language';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import CloseIcon from '@mui/icons-material/Close';
-import FacebookIcon from '@mui/icons-material/Facebook'; 
-import InstagramIcon from '@mui/icons-material/Instagram'; 
-import LinkIcon from '@mui/icons-material/Link'; 
+import FacebookIcon from '@mui/icons-material/Facebook';
+import InstagramIcon from '@mui/icons-material/Instagram';
+import LinkIcon from '@mui/icons-material/Link';
 
 import Footer from "../footer/footer.js";
 
@@ -109,8 +109,8 @@ const BusinessDetail = () => {
     const [showFullHours, setShowFullHours] = useState(false);
     const [showShareOptions, setShowShareOptions] = useState(false); // Manages the share popup
     const [showContactModal, setShowContactModal] = useState(false);
- const [activeTab, setActiveTab] = useState('Overview');
-
+    const [activeTab, setActiveTab] = useState('Overview');
+    const [reviewLimit, setReviewLimit] = useState(3);
     // ✅ NEW: Refs for each major section to scroll to
     const overviewRef = useRef(null);
     const quickInfoRef = useRef(null);
@@ -258,39 +258,26 @@ const BusinessDetail = () => {
     }
     const handleTabClick = (tabName) => {
         setActiveTab(tabName);
-        let ref;
-        switch (tabName) {
-            case 'Overview':
-                ref = overviewRef;
-                break;
-            case 'Quick Info':
-                ref = quickInfoRef;
-                break;
-            case 'Services':
-                ref = servicesRef;
-                break;
-            case 'Photos':
-                ref = photosRef;
-                break;
-            case 'Reviews':
-                ref = reviewsRef;
-                break;
-            default:
-                return;
-        }
-
-        if (ref.current) {
-            ref.current.scrollIntoView({
-                behavior: 'smooth',
-                // Optional: Scroll to the top of the viewport minus any fixed header height
-                block: 'start', 
-                // block: 'start' is usually best, but you can try 'center' too
-            });
-        }
+        const refMap = { 'Overview': overviewRef, 'Quick Info': quickInfoRef, 'Services': servicesRef, 'Photos': photosRef, 'Reviews': reviewsRef };
+        const ref = refMap[tabName];
+        if (ref?.current) ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
-
+    const handleRateClick = (e) => {
+        if (e) {
+            e.stopPropagation();
+        }
+        handleTabClick('Reviews');
+    };
+    const handleViewMoreReviews = () => {
+        setReviewLimit(prevLimit => prevLimit + 3);
+    };
     const currentUrl = encodeURIComponent(window.location.href);
     const currentTitle = encodeURIComponent(`Check out ${business.businessName}`);
+
+    const allReviews = business.reviews || [];
+    const reviewsToDisplay = allReviews.slice(0, reviewLimit);
+    const hasMoreReviews = allReviews.length > reviewLimit;
+
 
     return (
         <>
@@ -416,43 +403,154 @@ const BusinessDetail = () => {
                                 </div>
                             </div>
                         </div>
-
                         <div className="tabs-container-wrapper">
                             <div className="nav-tabs">
-                                <span 
-                                    className={`tab ${activeTab === 'Overview' ? 'active' : ''}`}
-                                    onClick={() => handleTabClick('Overview')}
-                                >
-                                    Overview
-                                </span>
-                                <span 
-                                    className={`tab ${activeTab === 'Quick Info' ? 'active' : ''}`}
-                                    onClick={() => handleTabClick('Quick Info')}
-                                >
-                                    Quick Info
-                                </span>
-                                <span 
-                                    className={`tab ${activeTab === 'Services' ? 'active' : ''}`}
-                                    onClick={() => handleTabClick('Services')}
-                                >
-                                    Services
-                                </span>
-                                <span 
-                                    className={`tab ${activeTab === 'Photos' ? 'active' : ''}`}
-                                    onClick={() => handleTabClick('Photos')}
-                                >
-                                    Photos
-                                </span>
-                                <span 
-                                    className={`tab ${activeTab === 'Reviews' ? 'active' : ''}`}
-                                    onClick={() => handleTabClick('Reviews')}
-                                >
-                                    Reviews
-                                </span>
+                                {['Overview', 'Quick Info', 'Services', 'Photos', 'Reviews'].map(tab => (
+                                    <span
+                                        key={tab}
+                                        className={`tab ${activeTab === tab ? 'active' : ''}`}
+                                        onClick={() => handleTabClick(tab)}
+                                    >
+                                        {tab}
+                                    </span>
+                                ))}
                             </div>
                         </div>
+                        <div className="tab-content">
+                            {activeTab === 'Overview' && (
+                                <div>
+                                    <h2>Overview Content</h2>
+                                    <p>This is some example content for the Overview tab.</p>
+                                </div>
+                            )}
+                            {activeTab === 'Quick Info' && (
+                                <div>
+                                    <h2>Quick Info Content</h2>
+                                    <p>Here is Quick Info content.</p>
+                                </div>
+                            )}
+                            {activeTab === 'Services' && (
+                                <div>
+                                    <h2>Services Content</h2>
+                                    <p>Here are the Services details.</p>
+                                </div>
+                            )}
+                            {activeTab === 'Photos' && (
+                                <div>
+                                    <h2>Photos Content</h2>
+                                    <p>Here are some photos.</p>
+                                </div>
+                            )}
+                            {activeTab === 'Reviews' && (
+                                <div className="reviews-section" ref={reviewsRef}>
+                                    <div className="ratings-summary-header">
+                                        <h2 className="section-title">Reviews & Ratings</h2>
+                                        <div className="average-rating-block">
+                                            <span className="avg-score">{displayedAverageRating}</span>
+                                            <span className="total-ratings">{totalRatings} Ratings</span>
+                                            <p className="rating-source">MassClick rating index based on {totalRatings} ratings across the web</p>
+                                        </div>
+                                    </div>
 
-                        <div className="info-block">
+                                    <div className="start-review-section">
+                                        <h3 className="start-review-title">Start your Review</h3>
+                                        <UserRatingWidget
+                                            businessId={business._id}
+                                            initialValue={business.averageRating || 0}
+                                            currentRatings={business.ratings || []}
+                                        />
+                                    </div>
+
+                                    <div className="rating-trend-section">
+                                        <h3 className="rating-trend-title">Recent rating trend</h3>
+                                        <div className="rating-trend-placeholder" style={{ height: '30px', border: '1px solid #eee', borderRadius: '4px', background: '#f9f9f9', display: 'flex', justifyContent: 'space-around', alignItems: 'center', padding: '0 10px' }}>
+                                        </div>
+                                    </div>
+
+                                    <div className="user-reviews-list">
+                                        <h3 className="reviews-list-title">User Reviews</h3>
+                                        <div className="reviews-filter-tabs">
+                                            <button className="filter-tab active">Relevant</button>
+                                            <button className="filter-tab">Latest</button>
+                                            <button className="filter-tab">High to Low</button>
+                                        </div>
+
+                                        {reviewsToDisplay.length > 0 ? (
+                                            reviewsToDisplay.map((review, index) => (
+                                                <div key={review._id || index} className="review-card">
+
+                                                    <div className="review-header">
+                                                        {/* 1. User Avatar and Info - Assume a generic user since userId is null */}
+                                                        <img
+                                                            src={review.userAvatar || "https://via.placeholder.com/40"}
+                                                            alt={review.userName || 'Anonymous'}
+                                                            className="user-avatar"
+                                                        />
+                                                        <div className="user-info">
+                                                            <p className="user-name">{review.userName || 'Anonymous User'}</p>
+                                                            {/* Displaying the review ID for debugging/reference */}
+                                                        </div>
+                                                        {/* 2. Date */}
+                                                        <span className="review-date">
+                                                            {review.createdAt ? new Date(review.createdAt).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A'}
+                                                        </span>
+                                                    </div>
+
+                                                    <div className="review-star-rating">
+                                                        {Array.from({ length: 5 }).map((_, starIndex) => (
+                                                            <StarIcon
+                                                                key={starIndex}
+                                                                style={{
+                                                                    color: starIndex < review.rating ? 'orange' : 'lightgray',
+                                                                    fontSize: '18px'
+                                                                }}
+                                                            />
+                                                        ))}
+                                                    </div>
+
+                                                    <p className="review-text">
+                                                        **Comment:** {review.ratingExperience || 'No comment provided.'}
+                                                    </p>
+
+                                                    <div className="review-advanced-info">
+                                                        {review.ratingLove && review.ratingLove.length > 0 && (
+                                                            <p className="advanced-detail">
+                                                                **Likes:** {review.ratingLove.join(', ')}
+                                                            </p>
+                                                        )}
+                                                        {review.ratingPhotos && review.ratingPhotos.length > 0 && (
+                                                            <div className="review-photos-list">
+                                                                **Photos ({review.ratingPhotos.length}):**
+                                                                <span style={{ marginLeft: '5px', color: 'var(--color-primary)' }}>View Photos</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="review-actions">
+                                                        <span className="action-link"><CheckCircleIcon style={{ fontSize: '16px', marginRight: '4px' }} /> Helpful (0)</span>
+                                                        <span className="action-link"><NoteAltIcon style={{ fontSize: '16px', marginRight: '4px' }} /> Comment</span>
+                                                        <span className="action-link"><ShareIcon style={{ fontSize: '16px', marginRight: '4px' }} /> Share</span>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p>Be the first to leave a review!</p>
+                                        )}
+
+                                        {hasMoreReviews && (
+                                            <div className="view-more-container">
+                                                <button onClick={handleViewMoreReviews} className="btn-view-more">
+                                                    View More Reviews ({allReviews.length - reviewLimit} remaining)
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+
+                        {/* <div className="info-block">
                             <h2>Quick Information</h2>
                             <div className="info-grid">
                                 <div className="info-item">
@@ -464,7 +562,7 @@ const BusinessDetail = () => {
                                     <span className="info-value">{business.yearOfEstablishment || 'N/A'}</span>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
 
                         {/* Google Map iframe */}
                         {business.googleMap && (
@@ -549,8 +647,14 @@ const BusinessDetail = () => {
                                 <li className="list-item"><span className="icon-placeholder"><EmailIcon /></span>Send Enquiry by Email</li>
                                 <li className="list-item highlight"><span className="icon-placeholder"><InsertDriveFileIcon /></span>Get info via SMS/Email</li>
                                 <li className="list-item"><span className="icon-placeholder"><ShareIcon /></span>Share</li>
-                                <li className="list-item"><span className="icon-placeholder"><StarIcon /></span>Tap to rate</li>
-                                <li className="list-item"><span className="icon-placeholder"><EditIcon /></span>Edit this Listing</li>
+                                <li
+                                    className="list-item"
+                                    onClick={handleRateClick}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    <span className="icon-placeholder"><StarIcon /></span>
+                                    Tap to rate
+                                </li>                                <li className="list-item"><span className="icon-placeholder"><EditIcon /></span>Edit this Listing</li>
                                 <li className="list-item"><span className="icon-placeholder"><CheckCircleIcon /></span>Claim this business</li>
                                 <li className="list-item"><span className="icon-placeholder"><LanguageIcon /></span>Visit our Website</li>
                             </ul>

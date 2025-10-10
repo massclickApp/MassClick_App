@@ -80,7 +80,6 @@ export const updateBusinessList = async (id, data) => {
     if (data.reviewData) {
         const { reviewData } = data;
         
-        // 1. Handle Photo Uploads for the Review (Store S3 Key)
         const uploadedPhotoKeys = [];
         if (Array.isArray(reviewData.ratingPhotos) && reviewData.ratingPhotos.length > 0) {
             const photoUploadPromises = reviewData.ratingPhotos.map(async (img, i) => {

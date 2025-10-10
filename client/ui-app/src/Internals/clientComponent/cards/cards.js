@@ -31,11 +31,15 @@ const Cards = ({
     alert('Enquiry form will open!');
   };
 
+  const safeRating =
+    typeof rating === 'object' ? (Array.isArray(rating) ? rating.length : 0) : rating || 0;
+  const safeReviews =
+    typeof reviews === 'object' ? (Array.isArray(reviews) ? reviews.length : 0) : reviews || 0;
+
   return (
     <Link to={to} className="card-link">
       <div className="base-card" {...props}>
         <div className="card-image-container">
-          {/* ✅ Lazy load image with blur placeholder */}
           <LazyLoadImage
             src={imageSrc}
             alt={`${title} thumbnail`}
@@ -49,8 +53,8 @@ const Cards = ({
 
         <div className="card-content">
           <div className="card-meta">
-            <span className="rating-badge">{rating}</span>
-            <span style={{ marginRight: '10px' }}>{reviews} Ratings</span>
+            <span className="rating-badge">{safeRating}</span>
+            <span style={{ marginRight: '10px' }}>{safeReviews} Ratings</span>
             <h2 className="card-title" style={{ marginLeft: '10px' }}>
               {title}
             </h2>
