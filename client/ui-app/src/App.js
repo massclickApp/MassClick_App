@@ -38,7 +38,7 @@ import DigitalMarketing from './Internals/clientComponent/footer/digitalMarketin
 import GraphicDesign from './Internals/clientComponent/footer/graphicDesign/graphicDesign.js';
 import Seo from './Internals/clientComponent/footer/seo/seo.js';
 import WriteReviewPage from './Internals/clientComponent/rating/submitReviewPage.js';
-
+// import { userMenuItems } from './Internals/clientComponent/categoryBar.js';
 
 const ComingSoon = ({ title }) => (
   <div style={{ textAlign: 'center', marginTop: '20%' }}>
@@ -126,16 +126,19 @@ function App() {
               }
             />
             <Route path="home" element={<BusinessListing />} />
-             {FooterRoutes.map((route) => (
-                <Route 
-                    key={route.path} 
-                    path={route.path} 
-                    element={route.element || <ComingSoon title={route.title} />} 
-                />
+            {/* {userMenuItems.map((item) => {
+              const Component = item.component || (() => <ComingSoon title={item.name} />);
+              return <Route key={item.path} path={item.path} element={<Component />} />;
+            })} */}
+            {FooterRoutes.map((route) => (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={route.element || <ComingSoon title={route.title} />}
+              />
             ))}
             <Route path="/:location/:category/:searchTerm" element={<SearchResults />} />
             <Route path="/trending/:categorySlug" element={<TrendingCards />} />
-            
             {featuredServices.map((service) => {
               const Component = service.component || (() => <ComingSoon title={service.name} />);
               return <Route key={service.path} path={service.path} element={<Component />} />;

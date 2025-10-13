@@ -9,6 +9,7 @@ import businessListReducer from './reducers/businessListReducer.js'
 import rolesReducer from './reducers/rolesReducer.js';
 import enquiryReducer from './reducers/enquiryReducer.js';
 import startProjectReducer from './reducers/startProjectReducer.js'
+import otpReducer from './reducers/otpReducer.js'
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -19,7 +20,8 @@ const rootReducer = combineReducers({
     businessListReducer: businessListReducer,
     rolesReducer: rolesReducer,
     enquiryReducer: enquiryReducer,
-    startProjectReducer: startProjectReducer
+    startProjectReducer: startProjectReducer,
+    otpReducer: otpReducer
     
 });
 
