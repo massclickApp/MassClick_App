@@ -24,11 +24,10 @@ import backgroundImage from "../../assets/background.png";
 import { useNavigate } from 'react-router-dom';
 import qs from 'qs'; // optional, for query string formatting
 
-// Refined custom-styled TextField component
 const CustomTextField = styled(TextField)(({ theme }) => ({
     "& .MuiOutlinedInput-root": {
         borderRadius: "40px",
-        height: "65px",
+        height: "65px", 
         backgroundColor: "rgba(255, 255, 255, 0.95)",
         boxShadow: "0px 8px 30px rgba(0,0,0,0.15)",
         backdropFilter: "blur(5px)",
@@ -166,7 +165,7 @@ const HeroSection = ({ searchTerm, setSearchTerm, setSearchResults }) => {
 
     const handleSearch = () => {
         const logCategory = categoryName || searchTerm || 'All Categories';
-        const logLocation = locationName || 'Global'; 
+        const logLocation = locationName || 'Global';
 
         dispatch(logSearchActivity(logCategory, logLocation));
 
@@ -196,8 +195,6 @@ const HeroSection = ({ searchTerm, setSearchTerm, setSearchResults }) => {
 
         navigate(`/${loc}/${cat}/${term}`, { state: { results: filteredBusinesses } });
     };
-
-
 
 
     return (
@@ -275,25 +272,22 @@ const HeroSection = ({ searchTerm, setSearchTerm, setSearchResults }) => {
                             width: { xs: "100%", sm: "85%" },
                             maxWidth: 1000,
                             mt: { xs: 2, sm: 3 },
-                            alignSelf: "flex-start",
-                            justifyContent: "flex-start",
-                            ml: { xs: 0, sm: 30 },
-
+                            // 👇 CENTERING THE SEARCH BAR BLOCK
+                            mx: 'auto', // Centers the search bar block
                         }}
                     >
+                        {/* 1. LOCATION AUTOCOMPLETE (Using CustomTextField) */}
                         <Autocomplete
+                            sx={{ flex: 1, minWidth: { xs: '100%', sm: 300 } }}
+
                             freeSolo
                             disableClearable
                             options={locationOptions}
                             getOptionLabel={(option) => option.label || ""}
-                            value={locationOptions.find(opt => opt.label === locationName) || null} // ✅ bind value
-
+                            value={locationOptions.find(opt => opt.label === locationName) || null}
                             onChange={(event, newValue) => setLocationName(newValue ? newValue.label : "")}
-                            sx={{ flex: 1, minWidth: { xs: '100%', sm: 250 } }}
-
-                            // 💡 Use the custom Listbox for the Location header/title
+                            // Increased minWidth slightly for better flow
                             ListboxComponent={LocationListbox}
-
                             renderOption={(props, option) => {
                                 const { key, ...restProps } = props;
                                 return (
@@ -302,15 +296,22 @@ const HeroSection = ({ searchTerm, setSearchTerm, setSearchResults }) => {
                                     </ListItemButton>
                                 );
                             }}
-
                             renderInput={(params) => (
+                                // Use CustomTextField for consistent styling and height
                                 <CustomTextField
+                                    sx={{
+                                        '& .MuiOutlinedInput-root': {
+                                            borderTopRightRadius: 0,
+                                            borderBottomRightRadius: 0,
+                                            borderRight: 'none', // Remove border line to truly merge the fields
+                                        },
+                                    }}
                                     {...params}
                                     placeholder="Location"
                                     InputProps={{
                                         ...params.InputProps,
                                         startAdornment: (
-                                            <InputAdornment position="start">
+                                            <InputAdornment position="start" sx={{ ml: 1 }}>
                                                 <LocationOnIcon sx={{ color: "#ea6d11", fontSize: 24 }} />
                                             </InputAdornment>
                                         ),
@@ -318,61 +319,24 @@ const HeroSection = ({ searchTerm, setSearchTerm, setSearchResults }) => {
                                 />
                             )}
                         />
-                        {/* <Autocomplete
-                            freeSolo
-                            disableClearable
-                            options={categoryOptions}
-                            getOptionLabel={(option) => option.label || ""}
-                            value={categoryOptions.find(opt => opt.label === categoryName) || null} // ✅ bind value
 
-                            onChange={(event, newValue) => setCategoryName(newValue ? newValue.label : "")}
-                            sx={{ flex: 1, minWidth: { xs: "100%", sm: 350 } }}
-                            ListboxComponent={TrendingListbox}
-                            renderInput={(params) => (
-                                <CustomTextField
-                                    {...params}
-                                    placeholder="Select Category"
-                                    InputProps={{ ...params.InputProps }}
-                                />
-                            )}
-                            renderOption={(props, option) => {
-                                const { key, ...restProps } = props;
-                                return (
-                                    <Box key={option.id} component="li" {...restProps} sx={{ padding: "8px 16px !important" }}>
-                                        <Box
-                                            sx={{
-                                                display: "flex",
-                                                alignItems: "center",
-                                                backgroundColor: "#ff6600",
-                                                padding: "6px",
-                                                borderRadius: "4px",
-                                                marginRight: "12px",
-                                            }}
-                                        >
-                                            <TrendingUpIcon sx={{ color: "white", fontSize: "18px" }} />
-                                        </Box>
-                                        <Box>
-                                            <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                                                {option.label}
-                                            </Typography>
-                                            <Typography variant="caption" sx={{ color: "gray" }}>
-                                                Category
-                                            </Typography>
-                                        </Box>
-                                    </Box>
-                                );
-                            }}
-                        /> */}
-                        {/* FIRST FIELD: Search Term */}
+                        {/* 2. SEARCH TEXT FIELD (Using CustomTextField) */}
                         <CustomTextField
-                            sx={{ flex: 1, minWidth: { xs: '100%', sm: 400 } }}
+                            sx={{
+                                flex: 2,
+                                minWidth: { xs: '100%', sm: 400 },
+                                width: '100%',
+                                '& .MuiOutlinedInput-root': {
+                                    // Remove rounding on both sides
+                                    borderRadius: 0,
+                                },
+                            }}
                             placeholder="Search for Spa, Salons..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position="end">
-                                        <SearchIcon sx={{ color: "text.secondary", fontSize: 24 }} />
                                         <IconButton>
                                             <MicIcon sx={{ color: "#ea6d11" }} />
                                         </IconButton>
@@ -381,33 +345,27 @@ const HeroSection = ({ searchTerm, setSearchTerm, setSearchResults }) => {
                             }}
                         />
 
-                        {/* SECOND FIELD: Category */}
-
-
-                        {/* THIRD FIELD: Location */}
-
-
-                        {/* Search Button */}
+                        {/* Search Button (Height fixed at 65px to match inputs) */}
                         <Button
                             variant="contained"
                             onClick={handleSearch}
                             sx={{
                                 flexShrink: 0,
-                                width: { xs: "100%", sm: "15%" },
                                 background: "linear-gradient(45deg, #FF7B00, #FFD166)",
                                 color: "white",
                                 textTransform: "none",
                                 fontSize: "1.1rem",
                                 fontWeight: 600,
-                                borderRadius: "40px",
-                                height: "60px",
+                                height: "65px",
                                 px: 5,
                                 whiteSpace: "nowrap",
                                 boxShadow: "0 6px 20px rgba(255, 123, 0, 0.4)",
                                 "&:hover": { background: "linear-gradient(45deg, #FF5B00, #FFC044)" },
+                                // 👇 FIX: FLATTEN THE LEFT SIDE OF THE BUTTON
+                                borderTopLeftRadius: 0,
+                                borderBottomLeftRadius: 0,
                             }}
                         >
-                            Search
                             <SearchIcon sx={{ ml: 1, fontSize: 28 }} />
                         </Button>
                     </Box>

@@ -38,7 +38,7 @@ import DigitalMarketing from './Internals/clientComponent/footer/digitalMarketin
 import GraphicDesign from './Internals/clientComponent/footer/graphicDesign/graphicDesign.js';
 import Seo from './Internals/clientComponent/footer/seo/seo.js';
 import WriteReviewPage from './Internals/clientComponent/rating/submitReviewPage.js';
-// import { userMenuItems } from './Internals/clientComponent/categoryBar.js';
+import { userMenuItems } from './Internals/clientComponent/categoryBar.js';
 
 const ComingSoon = ({ title }) => (
   <div style={{ textAlign: 'center', marginTop: '20%' }}>
@@ -126,10 +126,10 @@ function App() {
               }
             />
             <Route path="home" element={<BusinessListing />} />
-            {/* {userMenuItems.map((item) => {
+            {userMenuItems.map((item) => {
               const Component = item.component || (() => <ComingSoon title={item.name} />);
               return <Route key={item.path} path={item.path} element={<Component />} />;
-            })} */}
+            })}
             {FooterRoutes.map((route) => (
               <Route
                 key={route.path}

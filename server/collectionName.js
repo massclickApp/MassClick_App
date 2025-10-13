@@ -9,7 +9,9 @@ export const Collections = {
     ROLES: 'roles',
     LOGSEARCH: 'logsearch',
     ENQUIRY: 'enquiry',
-    STARTPROJECT: 'startproject'
+    STARTPROJECT: 'startproject',
+    MESSAGE91: 'message91',
+    MSGUSERS: 'msgusers'
 
 };
 
@@ -24,6 +26,8 @@ export const {
     ROLES,
     LOGSEARCH,
     ENQUIRY,
-    STARTPROJECT
+    STARTPROJECT,
+    MESSAGE91,
+    MSGUSERS
 
 } = Collections;

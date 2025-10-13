@@ -1,5 +1,5 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // <-- added useEffect
+import { useNavigate, useLocation } from "react-router-dom";
 import {
     Box,
     Button,
@@ -8,17 +8,66 @@ import {
     IconButton,
     Menu,
     Typography,
-    MenuItem
+    MenuItem,
+    Dialog,
+    DialogTitle,
+    List,
+    ListItem,
+    ListItemAvatar,
+    Avatar,
+    ListItemButton,
+    ListItemText,
+    SwipeableDrawer,
+    ListItemIcon,
+
 } from "@mui/material";
-import ListAltIcon from "@mui/icons-material/ListAlt";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import CampaignIcon from "@mui/icons-material/Campaign";
-import MailIcon from "@mui/icons-material/Mail";
-import MenuIcon from "@mui/icons-material/Menu";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import AddIcon from '@mui/icons-material/Add';
-import MI from "../../assets/Mi.png"; 
-import AddBusinessModal from "./AddBusinessModel.js"; 
+import {
+    ListAlt as ListAltIcon,
+    Notifications as NotificationsIcon,
+    Campaign as CampaignIcon,
+    Mail as MailIcon,
+    Menu as MenuIcon,
+    AccountCircle as AccountCircleIcon,
+    Add as AddIcon,
+    Close as CloseIcon,
+    ExitToApp as ExitToAppIcon,
+    Language as LanguageIcon
+
+} from "@mui/icons-material";
+import MI from "../../assets/Mi.png";
+import AddBusinessModal from "./AddBusinessModel.js";
+
+
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+import EditIcon from "@mui/icons-material/Edit";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
+import HeadsetMicIcon from "@mui/icons-material/HeadsetMic";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import PolicyIcon from "@mui/icons-material/Policy";
+import FeedbackIcon from "@mui/icons-material/Feedback";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import { Divider } from "@mui/material";
+
+
+
+import DashboardPage from "../clientComponent/userMenu/DashboardPage/Dashboard.js";
+import AccountPage from "../clientComponent/userMenu/AccountPage/AccountPage.js";
+import BusinessListPage from "../clientComponent/userMenu/BusinessList/BusinessListPage.js";
+import FavoritesPage from "../clientComponent/userMenu/FavouritePage/FavouritePage.js";
+import SavedPage from "../clientComponent/userMenu/SavedPage/SavedPage.js";
+import EditProfilePage from "../clientComponent/userMenu/EditProfile/EditProfilePage.js";
+import MyTransactionPage from "../clientComponent/userMenu/MyTransaction/MyTransaction.js";
+import NotificationsPage from "../clientComponent/userMenu/NotificationPage/NotificaPage.js";
+import CustomerServicePage from "../clientComponent/userMenu/CustomerService/CustomerServicePage.js";
+import InvestorRelationsPage from "../clientComponent/userMenu/InvesterRelation/InvestorRelationPage.js";
+import PolicyPage from "../clientComponent/userMenu/PolicyPage/PolicyPage.js";
+import FeedbackPage from "../clientComponent/userMenu/FeedbackPage/FeedBackPage.js";
+import HelpPage from "../clientComponent/userMenu/HelpPage/HelpPage.js";
 
 const categories = [
     { name: "Leads", icon: <MailIcon /> },
@@ -34,16 +83,206 @@ const languages = [
     { name: "Telugu", nativeName: "తెలుగు" },
 ];
 
+
+export const userMenuItems = [
+    { name: "User Dashboard", path: "/user_dashboard", icon: <DashboardIcon color="action" />, component: DashboardPage },
+    { name: "User Account", path: "/user_account", icon: <AccountBoxIcon color="action" />, component: AccountPage },
+    { name: "User BusinessList", path: "/user_business-list", icon: <BusinessCenterIcon color="action" />, component: BusinessListPage },
+    { name: "User Favorites", path: "/user_favorites", icon: <FavoriteBorderIcon color="action" />, component: FavoritesPage },
+    { name: "User Saved", path: "/user_saved", icon: <BookmarkBorderIcon color="action" />, component: SavedPage },
+    { name: "User Edit Profile", path: "/user_edit-profile", icon: <EditIcon color="action" />, component: EditProfilePage },
+    { name: "User My Transaction", path: "/user_my-transaction", icon: <AccountBalanceWalletIcon color="action" />, component: MyTransactionPage },
+    { name: "User Notifications", path: "/user_notifications", icon: <NotificationsActiveIcon color="action" />, component: NotificationsPage },
+    { name: "User Customer Service", path: "/user_customer-service", icon: <HeadsetMicIcon color="action" />, component: CustomerServicePage },
+    { name: "User Investor Relations", path: "/user_investor-relations", icon: <TrendingUpIcon color="action" />, component: InvestorRelationsPage },
+    { name: "User Policy", path: "/user_policy", icon: <PolicyIcon color="action" />, component: PolicyPage },
+    { name: "User Feedback", path: "/user_feedback", icon: <FeedbackIcon color="action" />, component: FeedbackPage },
+    { name: "User Help", path: "/user_help", icon: <HelpOutlineIcon color="action" />, component: HelpPage },
+    { name: "Change Language", isLanguageSwitch: true, icon: <LanguageIcon color="action" /> }, // <-- NEW: Custom item flag
+    { name: "Logout", isLogout: true, path: "/logout", icon: <ExitToAppIcon color="action" /> }, // <-- NEW: Logout item flag
+];
+
+
+
+
+
 const CategoryBar = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
+
     const [selectedLanguage, setSelectedLanguage] = useState("English");
     const [anchorEl, setAnchorEl] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    // <-- NEW: Add login state
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
     const handleMenuClose = () => setAnchorEl(null);
 
     const handleOpenModal = () => setIsModalOpen(true);
     const handleCloseModal = () => setIsModalOpen(false);
+
+    const checkLogin = () => {
+        const token = localStorage.getItem("authToken");
+        setIsLoggedIn(!!token);
+    };
+
+    const handleLogout = () => {
+    localStorage.removeItem("authToken");   
+    setIsLoggedIn(false);                   
+    setIsDrawerOpen(false);                 
+    navigate("/home");                      
+    window.dispatchEvent(new Event('authChange')); 
+};
+
+      useEffect(() => {
+        checkLogin(); 
+        
+        window.addEventListener("storage", checkLogin);
+        
+        window.addEventListener("authChange", checkLogin);
+
+        return () => {
+            window.removeEventListener("storage", checkLogin);
+            window.removeEventListener("authChange", checkLogin); 
+        };
+    }, []);
+
+    const handleDrawerToggle = (open) => (event) => {
+        if (event && event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
+            return;
+        }
+        setIsDrawerOpen(open);
+    };
+
+    const handleDrawerItemClick = (item) => {
+        setIsDrawerOpen(false);
+        if (item.isLogout) {
+            handleLogout();
+        } else if (item.path) {
+            navigate(item.path);
+        }
+    };
+
+
+
+    const drawerList = (currentPath) => (
+        <Box sx={{ width: 320 }} role="presentation" onClick={handleDrawerToggle(false)} onKeyDown={handleDrawerToggle(false)}>
+
+            <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                p: 3, // Increased padding for a premium feel
+                bgcolor: '#fafafa', // Subtle background
+                borderBottom: '1px solid #eee'
+            }}>
+                {/* Close Button on the left */}
+                <IconButton onClick={handleDrawerToggle(false)} sx={{ color: 'text.secondary', mr: 2, p: 0 }}>
+                    <CloseIcon />
+                </IconButton>
+
+                {/* Profile Info (right side) */}
+                <Box sx={{ flexGrow: 1, textAlign: 'right' }}>
+                    <Typography variant="subtitle1" fontWeight={700} sx={{ lineHeight: 1.2 }}>
+                        Prem
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary" sx={{
+                        fontSize: '0.75rem',
+                        cursor: 'pointer',
+                        '&:hover': { textDecoration: 'underline' }
+                    }}>
+                        Click to view profile
+                    </Typography>
+                </Box>
+
+                {/* Avatar */}
+                <Avatar sx={{ width: 48, height: 48, ml: 2, bgcolor: '#F7941D' }}>P</Avatar> {/* Added an initial for visual */}
+            </Box>
+
+            {/* === B. LIST OF MENU ITEMS (Refined) === */}
+            <List disablePadding>
+                {userMenuItems.map((item, index) => {
+
+                    const isActive = currentPath === item.path;
+
+                    /* Special Case 1: Language Selector */
+                    if (item.isLanguageSwitch) {
+                        return (
+                            <ListItem key={item.name} disablePadding sx={{ py: 1.5, px: 3, borderTop: '1px solid #f0f0f0' }}>
+                                <ListItemIcon sx={{ minWidth: 40, color: 'text.secondary' }}>
+                                    {item.icon}
+                                </ListItemIcon>
+                                <ListItemText primary={item.name} sx={{ m: 0, flex: 'none', color: 'text.primary', fontWeight: 500 }} />
+                                <FormControl size="small" sx={{ ml: 'auto', minWidth: 100 }}>
+                                    <Select
+                                        value={selectedLanguage}
+                                        onChange={(e) => setSelectedLanguage(e.target.value)}
+                                        // Prevents closing the drawer when interacting with the select
+                                        onClick={(e) => e.stopPropagation()}
+                                        sx={{
+                                            fontSize: "0.9rem",
+                                            height: 36,
+                                            boxShadow: 'none',
+                                            '& fieldset': { border: '1px solid #ddd !important' },
+                                            '.MuiSelect-select': { py: '6px' }
+                                        }}
+                                    >
+                                        {languages.map((lang) => (
+                                            <MenuItem key={lang.name} value={lang.name} sx={{ fontSize: "0.9rem" }}>
+                                                {lang.nativeName}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </ListItem>
+                        );
+                    }
+
+                    /* Standard Menu Item */
+                    return (
+                        <React.Fragment key={index}>
+                            {(item.name === "User Edit Profile" || item.name === "User Policy") && (
+                                <Divider sx={{ my: 1, borderColor: '#f0f0f0' }} />
+                            )}
+
+                            <ListItem disablePadding>
+                                <ListItemButton
+                                    onClick={() => handleDrawerItemClick(item)}
+                                    sx={{
+                                        py: 1.2,
+                                        px: 3, // Consistent padding
+                                        // Highlight for active/logout items
+                                        bgcolor: isActive ? 'rgba(247, 148, 29, 0.08)' : (item.isLogout ? 'rgba(255, 0, 0, 0.05)' : 'transparent'),
+                                        '&:hover': {
+                                            bgcolor: isActive ? 'rgba(247, 148, 29, 0.15)' : (item.isLogout ? 'rgba(255, 0, 0, 0.1)' : 'rgba(0, 0, 0, 0.04)')
+                                        }
+                                    }}
+                                >
+                                    <ListItemIcon sx={{ minWidth: 40 }}>
+                                        {/* Use a Box to control icon color and size */}
+                                        <Box sx={{ color: isActive ? '#F7941D' : (item.isLogout ? 'error.main' : 'text.secondary') }}>
+                                            {item.icon}
+                                        </Box>
+                                    </ListItemIcon>
+                                    <ListItemText
+                                        primary={item.name.startsWith('User ') ? item.name.replace('User ', '') : item.name} // Clean up redundant "User" prefix
+                                        primaryTypographyProps={{
+                                            fontWeight: isActive ? 600 : 500,
+                                            fontSize: '0.95rem',
+                                            color: isActive ? '#F7941D' : (item.isLogout ? 'error.main' : 'text.primary')
+                                        }}
+                                    />
+                                </ListItemButton>
+                            </ListItem>
+                        </React.Fragment>
+                    );
+                })}
+            </List>
+        </Box>
+    );
 
     return (
         <Box
@@ -80,9 +319,7 @@ const CategoryBar = () => {
                             bgcolor: "#fff",
                             boxShadow: "0 6px 15px rgba(234, 109, 17, 0.4)",
                             transition: "transform 0.3s ease",
-                            "&:hover": {
-                                transform: "scale(1.05)",
-                            },
+                            "&:hover": { transform: "scale(1.05)" },
                         }}
                     >
                         <img
@@ -124,7 +361,7 @@ const CategoryBar = () => {
                     </Box>
                 </Box>
 
-                {/* Desktop Navigation (Existing code) */}
+                {/* Desktop Navigation */}
                 <Box
                     sx={{
                         display: { xs: "none", sm: "flex" },
@@ -146,9 +383,7 @@ const CategoryBar = () => {
                                 color: "text.primary",
                                 "& .MuiSelect-select": { py: 1, px: 2.5 },
                                 boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-                                "&:hover": {
-                                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                                },
+                                "&:hover": { boxShadow: "0 4px 12px rgba(0,0,0,0.1)" },
                                 "& fieldset": { border: "none" },
                             }}
                         >
@@ -160,7 +395,6 @@ const CategoryBar = () => {
                         </Select>
                     </FormControl>
 
-                    {/* Categories */}
                     {categories.map((category, index) => (
                         <Button
                             key={index}
@@ -191,9 +425,7 @@ const CategoryBar = () => {
                                     transition: "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
                                     transform: "translateX(-50%)",
                                 },
-                                "&:hover:after": {
-                                    width: "80%",
-                                },
+                                "&:hover:after": { width: "80%" },
                             }}
                         >
                             {category.name}
@@ -201,6 +433,7 @@ const CategoryBar = () => {
                     ))}
                 </Box>
 
+                {/* Desktop Right Section */}
                 <Box
                     sx={{
                         display: { xs: "none", sm: "flex" },
@@ -208,33 +441,52 @@ const CategoryBar = () => {
                         gap: { sm: 1.5, md: 2 },
                     }}
                 >
-                    {/* Desktop "Add Your Business" Button - ADDED onClick handler */}
-                    <Button
-  variant="contained"
-  startIcon={<AddIcon />}
-  onClick={handleOpenModal}
-  sx={{
-    background: "linear-gradient(45deg, #FF6F00, #F7941D)",
-    color: "white",
-    textTransform: "none",
-    fontSize: { xs: "0.9rem", sm: "1rem" },
-    borderRadius: "30px",
-    px: { xs: 2.5, sm: 3.5 },
-    py: { xs: 1, sm: 1.2 },
-    whiteSpace: "nowrap",
-    boxShadow: "0 10px 30px rgba(255, 123, 0, 0.4)",
-    transition: "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
-    "&:hover": {
-      background: "linear-gradient(45deg, #cc5a0f, #ff8a2d)",
-      boxShadow: "0 15px 40px rgba(255, 123, 0, 0.5)",
-    },
-  }}
->
-  Add Your Business
-</Button>
+                    {/* <-- UPDATED: Conditional rendering based on login */}
+                    {!isLoggedIn ? (
+                        <Button
+                            variant="contained"
+                            startIcon={<AddIcon />}
+                            onClick={handleOpenModal}
+                            sx={{
+                                background: "linear-gradient(45deg, #FF6F00, #F7941D)",
+                                color: "white",
+                                textTransform: "none",
+                                fontSize: { xs: "0.9rem", sm: "1rem" },
+                                borderRadius: "30px",
+                                px: { xs: 2.5, sm: 3.5 },
+                                py: { xs: 1, sm: 1.2 },
+                                whiteSpace: "nowrap",
+                                boxShadow: "0 10px 30px rgba(255, 123, 0, 0.4)",
+                                transition: "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
+                                "&:hover": {
+                                    background: "linear-gradient(45deg, #cc5a0f, #ff8a2d)",
+                                    boxShadow: "0 15px 40px rgba(255, 123, 0, 0.5)",
+                                },
+                            }}
+                        >
+                            Add Your Business
+                        </Button>
+                    ) : (
+                        <IconButton
+                            onClick={handleDrawerToggle(true)}
+                            sx={{
+                                color: "gray",
+                                bgcolor: "rgba(0,0,0,0.04)",
+                                width: 48,
+                                height: 48,
+                                transition: "all 0.3s ease",
+                                "&:hover": {
+                                    color: "white",
+                                    background: "linear-gradient(45deg, #ea6d11, #ff9c3b)",
+                                    boxShadow: "0 4px 12px rgba(234,109,17,0.35)",
+                                    transform: "scale(1.1)",
+                                },
+                            }}
+                        >
+                            <AccountCircleIcon sx={{ fontSize: 28 }} />
+                        </IconButton>
+                    )}
 
-
-                    {/* Icons (Existing code) */}
                     <IconButton
                         sx={{
                             color: "gray",
@@ -252,26 +504,9 @@ const CategoryBar = () => {
                     >
                         <NotificationsIcon sx={{ fontSize: 26 }} />
                     </IconButton>
-                    <IconButton
-                        sx={{
-                            color: "gray",
-                            bgcolor: "rgba(0,0,0,0.04)",
-                            width: 48,
-                            height: 48,
-                            transition: "all 0.3s ease",
-                            "&:hover": {
-                                color: "white",
-                                background: "linear-gradient(45deg, #ea6d11, #ff9c3b)",
-                                boxShadow: "0 4px 12px rgba(234,109,17,0.35)",
-                                transform: "scale(1.1)",
-                            },
-                        }}
-                    >
-                        <AccountCircleIcon sx={{ fontSize: 28 }} />
-                    </IconButton>
                 </Box>
 
-                {/* Mobile Navigation (Existing code) */}
+                {/* Mobile Section */}
                 <Box
                     sx={{
                         display: { xs: "flex", sm: "none" },
@@ -279,30 +514,35 @@ const CategoryBar = () => {
                         gap: 2,
                     }}
                 >
-                    {/* Mobile "Add Your Business" Button - ADDED onClick handler */}
-                    <Button
-                        variant="contained"
-                        onClick={handleOpenModal} // ADDED onClick handler
-                        sx={{
-                            background: "linear-gradient(45deg, #ea6d11, #ff9c3b)",
-                            color: "white",
-                            textTransform: "none",
-                            fontSize: "0.85rem",
-                            borderRadius: "20px",
-                            px: 2.5,
-                            py: 1,
-                            whiteSpace: "nowrap",
-                            boxShadow: "0 3px 10px rgba(234,109,17,0.35)",
-                            "&:hover": { background: "linear-gradient(45deg, #cc5a0f, #ff8a2d)" },
-                        }}
-                    >
-                        Add Your Business
-                    </Button>
+                    {!isLoggedIn ? (
+                        <Button
+                            variant="contained"
+                            onClick={handleOpenModal}
+                            sx={{
+                                background: "linear-gradient(45deg, #ea6d11, #ff9c3b)",
+                                color: "white",
+                                textTransform: "none",
+                                fontSize: "0.85rem",
+                                borderRadius: "20px",
+                                px: 2.5,
+                                py: 1,
+                                whiteSpace: "nowrap",
+                                boxShadow: "0 3px 10px rgba(234,109,17,0.35)",
+                                "&:hover": { background: "linear-gradient(45deg, #cc5a0f, #ff8a2d)" },
+                            }}
+                        >
+                            Add Your Business
+                        </Button>
+                    ) : (
+                        <IconButton
+                            sx={{ color: "gray" }}
+                        >
+                            <AccountCircleIcon />
+                        </IconButton>
+                    )}
+
                     <IconButton
-                        sx={{
-                            color: "text.primary",
-                            display: { xs: "inline-flex", sm: "none" },
-                        }}
+                        sx={{ color: "text.primary", display: { xs: "inline-flex", sm: "none" } }}
                         onClick={handleMenuClick}
                     >
                         <MenuIcon sx={{ fontSize: 28 }} />
@@ -310,7 +550,7 @@ const CategoryBar = () => {
                 </Box>
             </Box>
 
-            {/* Mobile Menu (Existing code) */}
+            {/* Mobile Menu */}
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
                 <MenuItem disabled>
                     <FormControl size="small" sx={{ minWidth: 120 }}>
@@ -348,11 +588,16 @@ const CategoryBar = () => {
                 </MenuItem>
             </Menu>
 
-            {/* 4. RENDER THE NEW MODAL COMPONENT */}
-            <AddBusinessModal
-                open={isModalOpen}
-                handleClose={handleCloseModal}
-            />
+            {/* Add Business Modal */}
+            <AddBusinessModal open={isModalOpen} handleClose={handleCloseModal} />
+            <SwipeableDrawer
+                anchor="right"
+                open={isDrawerOpen}
+                onClose={handleDrawerToggle(false)}
+                onOpen={handleDrawerToggle(true)}
+            >
+                {drawerList(location.pathname)}
+            </SwipeableDrawer>
         </Box>
     );
 };

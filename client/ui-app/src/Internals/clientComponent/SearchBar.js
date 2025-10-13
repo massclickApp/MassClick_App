@@ -14,33 +14,31 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import MicIcon from "@mui/icons-material/Mic";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import { styled } from "@mui/system";
-import MI from "../../assets/Mi.png"; // Assuming this is your logo
-import MenuIcon from "@mui/icons-material/Menu";
+import MI from "../../assets/Mi.png"; 
 import AddIcon from '@mui/icons-material/Add';
-import AddBusinessModel from "./AddBusinessModel.js"
+import AddBusinessModel from "./AddBusinessModel.js"; 
 
-// --- CustomTextField and Listbox Components (Unchanged) ---
 const CustomTextField = styled(TextField)(({ theme }) => ({
     "& .MuiOutlinedInput-root": {
-        borderRadius: "35px",
-        height: "55px",
+        borderRadius: "40px",
+        height: "50px", 
         backgroundColor: "rgba(255, 255, 255, 0.95)",
-        boxShadow: "0px 6px 20px rgba(0,0,0,0.12)",
+        boxShadow: "0px 2px 10px rgba(0,0,0,0.05)", 
         backdropFilter: "blur(5px)",
         border: "1px solid rgba(255,255,255,0.4)",
-        transition: "all 0.3s ease-in-out",
+        transition: "all 0.4s ease-in-out",
         "&:hover": {
-            boxShadow: "0px 10px 30px rgba(0,0,0,0.15)",
-            transform: "translateY(-1px)",
+            boxShadow: "0px 5px 15px rgba(0,0,0,0.1)",
+            transform: "none",
         },
         "&.Mui-focused": {
-            boxShadow: `0 0 0 3px #FFD166, 0px 8px 25px rgba(0,0,0,0.18)`,
-            border: `1px solid #FF7B00`,
+            boxShadow: `0 0 0 4px ${theme.palette.primary.light}, 0px 5px 15px rgba(0,0,0,0.1)`,
+            border: `1px solid ${theme.palette.primary.main}`,
         },
     },
     "& .MuiInputBase-input": {
-        padding: "12px 20px",
-        fontSize: "1rem",
+        padding: "10px 20px", 
+        fontSize: "1rem", 
         color: "#333",
     },
 }));
@@ -72,42 +70,40 @@ const SearchBar = ({
     isSearching = false, // Critical prop
 }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    // Removed anchorEl and handleMenuClick as they aren't used in this file's context.
 
     const handleOpenModal = () => setIsModalOpen(true);
     const handleCloseModal = () => setIsModalOpen(false);
 
     const safeLocationOptions = locationOptions || [];
-    const safeCategoryOptions = categoryOptions || [];
-
-    // --- CRITICAL LOGIC FOR VISIBILITY ---
+ 
     const isVisible = isScrolled || isSearching;
 
     return (
-        <Box
-            sx={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                zIndex: 1200,
-                bgcolor: 'white',
-                
-                // 🚀 FIX: Show the bar if it's scrolled OR if we are on the search results page.
-                transform: isVisible ? 'translateY(0)' : 'translateY(-120%)',
-                transition: 'transform 0.3s ease-in-out',
-                boxShadow: isVisible ? '0 4px 12px rgba(0,0,0,0.1)' : 'none',
-                
-                padding: { xs: '10px 15px', sm: '10px 40px' },
-                display: "flex",
-                flexDirection: { xs: "row", sm: "row" },
-                gap: { xs: 1.5, sm: 2 },
-                justifyContent: { xs: 'space-between', sm: 'center' },
-                alignItems: 'center',
-                flexWrap: "nowrap",
-                height: { xs: 'auto', sm: 'auto' },
-            }}
-        >
+       <Box
+    sx={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1200,
+        bgcolor: 'white',
+        
+        // FIXED HEADER VISIBILITY LOGIC
+        transform: isVisible ? 'translateY(0)' : 'translateY(-120%)',
+        transition: 'transform 0.3s ease-in-out',
+        boxShadow: isVisible ? '0 4px 12px rgba(0,0,0,0.1)' : 'none',
+        
+        padding: { xs: '10px 15px', sm: '10px 40px' },
+        display: "flex",
+        flexDirection: { xs: "row", sm: "row" },
+        gap: { xs: 1.5, sm: 2 },
+        // ✅ CHANGE: Use 'center' for desktop (sm and up) and 'space-between' for mobile (xs)
+        justifyContent: { xs: 'space-between', sm: 'center' }, 
+        alignItems: 'center',
+        flexWrap: "nowrap",
+        height: { xs: 'auto', sm: 'auto' },
+    }}
+>
             {/* Logo and Title */}
             <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 1, sm: 2 }, flexShrink: 0 }}>
                 <Box
@@ -190,7 +186,6 @@ const SearchBar = ({
                 >
                     Add Your Business
                 </Button>
-                {/* Removed MenuIcon IconButton as its handler (handleMenuClick) was not fully defined in this component */}
             </Box>
 
             {/* Desktop Search Fields and Buttons (Hidden on mobile) */}
@@ -199,19 +194,22 @@ const SearchBar = ({
                     display: { xs: "none", sm: "flex" }, // Hide on mobile, show on sm+
                     flexDirection: "row",
                     gap: { xs: 1.5, sm: 2 },
-                    justifyContent: 'center',
+                    // Allow search bar to take remaining space and center its content
+                    justifyContent: 'flex-start', 
                     alignItems: 'center',
+                    flexGrow: 1, // Allows it to take up the remaining space
                     maxWidth: 1200,
-                    width: '100%',
                     flexWrap: "nowrap",
+                    ml: { sm: 4, md: 8 } // Add margin to separate from the logo
                 }}
             >
-                {/* Location Autocomplete */}
+                {/* 1. Location Autocomplete */}
                 <Autocomplete
                     options={safeLocationOptions}
                     value={safeLocationOptions.find(opt => opt.label === locationName) || null}
                     onChange={(event, newValue) => setLocationName(newValue ? newValue.label : "")}
-                    sx={{ flex: 1, minWidth: 150 }}
+                    // Adjusted flex to make this input visually balanced
+                    sx={{ width: 200, flexShrink: 0 }} 
                     freeSolo
                     disableClearable
                     disablePortal
@@ -238,53 +236,10 @@ const SearchBar = ({
                     )}
                 />
 
-                {/* Category Autocomplete */}
-                {/* <Autocomplete
-                    options={safeCategoryOptions}
-                    value={safeCategoryOptions.find(opt => opt.label === categoryName) || null}
-                    onChange={(event, newValue) => setCategoryName(newValue ? newValue.label : "")}
-                    sx={{ flex: 1, minWidth: 150 }}
-                    freeSolo
-                    disableClearable
-                    disablePortal
-                    getOptionLabel={(option) => option.label || ""}
-                    ListboxComponent={TrendingListbox}
-                    renderOption={(props, option) => (
-                        <Box key={option.id} component="li" {...props} sx={{ padding: "8px 16px !important" }}>
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    backgroundColor: "#ff6600",
-                                    padding: "6px",
-                                    borderRadius: "4px",
-                                    marginRight: "12px",
-                                }}
-                            >
-                                <TrendingUpIcon sx={{ color: "white", fontSize: "18px" }} />
-                            </Box>
-                            <Box>
-                                <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                                    {option.label}
-                                </Typography>
-                                <Typography variant="caption" sx={{ color: "gray" }}>
-                                    Category
-                                </Typography>
-                            </Box>
-                        </Box>
-                    )}
-                    renderInput={(params) => (
-                        <CustomTextField
-                            {...params}
-                            placeholder="Select Category"
-                            InputProps={{ ...params.InputProps }}
-                        />
-                    )}
-                /> */}
-
-                {/* Search Term Field */}
+                {/* 2. Search Term Field (Main Search) */}
                 <CustomTextField
-                    sx={{ flex: 2, minWidth: 250 }}
+                    // Flex grow allows this to take the primary search space
+                    sx={{ flex: 1, minWidth: 250, maxWidth: 500 }}
                     placeholder="Search for Spa, Salons..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -305,12 +260,13 @@ const SearchBar = ({
                     }}
                 />
 
+                {/* 3. Search Button */}
                 <Button
                     variant="contained"
                     onClick={handleSearch}
                     sx={{
                         flexShrink: 0,
-                        width: { xs: "120px", sm: "140px" },
+                        width: "120px", // Fixed width for consistency
                         height: "50px",
                         background: "linear-gradient(45deg, #FF7B00, #FFD166)",
                         color: "white",
@@ -328,13 +284,16 @@ const SearchBar = ({
                     <SearchIcon sx={{ ml: 1, fontSize: 24 }} />
                 </Button>
 
-
+                {/* 4. Add Business Button */}
                 <Button
                     variant="contained"
                     startIcon={<AddIcon />}
                     onClick={handleOpenModal}
                     sx={{
                         display: { xs: "none", sm: "flex" },
+                        flexShrink: 0,
+                        width: "200px", // Fixed width
+                        height: "50px",
                         background: "linear-gradient(45deg, #FF6F00, #F7941D)",
                         color: "white",
                         textTransform: "none",
@@ -356,6 +315,7 @@ const SearchBar = ({
                 </Button>
             </Box>
 
+            {/* Modal Component */}
             <AddBusinessModel
                 open={isModalOpen}
                 handleClose={handleCloseModal}

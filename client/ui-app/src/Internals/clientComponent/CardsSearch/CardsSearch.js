@@ -25,33 +25,31 @@ import LocationSearchingIcon from "@mui/icons-material/LocationSearching";
 import MI from "../../../assets/Mi.png";
 import AddIcon from '@mui/icons-material/Add';
 
-// Keep CustomTextField styling as it is good
 const CustomTextField = styled(TextField)(({ theme }) => ({
     "& .MuiOutlinedInput-root": {
         borderRadius: "40px",
-        height: "50px", // 🔽 Reduced height from 65px to 50px
+        height: "50px", 
         backgroundColor: "rgba(255, 255, 255, 0.95)",
-        boxShadow: "0px 2px 10px rgba(0,0,0,0.05)", // 🔽 Reduced shadow
+        boxShadow: "0px 2px 10px rgba(0,0,0,0.05)", 
         backdropFilter: "blur(5px)",
         border: "1px solid rgba(255,255,255,0.4)",
         transition: "all 0.4s ease-in-out",
         "&:hover": {
-            boxShadow: "0px 5px 15px rgba(0,0,0,0.1)", // 🔽 Reduced hover shadow
-            transform: "none", // ❌ Removed translateY for stability
+            boxShadow: "0px 5px 15px rgba(0,0,0,0.1)",
+            transform: "none",
         },
         "&.Mui-focused": {
-            boxShadow: `0 0 0 4px ${theme.palette.primary.light}, 0px 5px 15px rgba(0,0,0,0.1)`, // 🔽 Reduced focus shadow
+            boxShadow: `0 0 0 4px ${theme.palette.primary.light}, 0px 5px 15px rgba(0,0,0,0.1)`,
             border: `1px solid ${theme.palette.primary.main}`,
         },
     },
     "& .MuiInputBase-input": {
-        padding: "10px 20px", // 🔽 Adjusted padding
-        fontSize: "1rem", // 🔽 Slightly smaller font
+        padding: "10px 20px", 
+        fontSize: "1rem", 
         color: "#333",
     },
 }));
 
-// LocationListbox and TrendingListbox remain the same for functionality
 
 const LocationListbox = React.forwardRef(function ListboxComponent(props, ref) {
     const { children, ...other } = props;
@@ -196,7 +194,7 @@ const CardsSearch = () => {
     return (
         <>
             <div className="topbar-wrapper">
-                {/* --- 1. Logo and Title Section --- */}
+                {/* --- 1. Logo and Title Section (No changes here) --- */}
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 1.5, sm: 2 } }}>
                         <Box
@@ -255,19 +253,19 @@ const CardsSearch = () => {
                     </Box>
                 </Box>
 
-                {/* --- 2. DESKTOP/TABLET Search Bar (Show on md and up) --- */}
+          
                 <Box
                     className="search-bar-container-desktop"
                     sx={{
-                        display: { xs: 'none', md: 'flex' }, // 🛑 Hides on mobile
+                        display: { xs: 'none', md: 'flex' },
                         alignItems: "center",
                         gap: 1.5,
                         flexGrow: 1,
-                        justifyContent: "center",// 💡 CHANGED from "flex-end" to "center"
-                        ml: 2,
+                        justifyContent: "center", 
+                        mr: 2, 
                     }}
                 >
-                    {/* Location Autocomplete - Desktop */}
+                    {/* Location Autocomplete - Desktop (Field 1) */}
                     <Autocomplete
                         options={locationOptions}
                         getOptionLabel={(option) => option.label || ""}
@@ -276,7 +274,7 @@ const CardsSearch = () => {
                             setLocationName(newValue ? newValue.label : "");
                         }}
                         isOptionEqualToValue={(option, value) => option.id === value.id}
-                        sx={{ width: 180 }}
+                        sx={{ width: 250 }} 
                         ListboxComponent={LocationListbox}
                         renderInput={(params) => (
                             <CustomTextField
@@ -284,6 +282,12 @@ const CardsSearch = () => {
                                 placeholder="Location"
                                 InputProps={{
                                     ...params.InputProps,
+                                    // Remove the default Autocomplete dropdown indicator
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            {params.InputProps.endAdornment}
+                                        </InputAdornment>
+                                    ),
                                     startAdornment: (
                                         <InputAdornment position="start">
                                             <LocationOnIcon sx={{ color: "#ea6d11", fontSize: 20 }} />
@@ -294,25 +298,11 @@ const CardsSearch = () => {
                         )}
                     />
 
-                    {/* Category Autocomplete - Desktop */}
-                    {/* <Autocomplete
-                        options={categoryOptions}
-                        getOptionLabel={(option) => option.label || ""}
-                        value={categoryOptions.find(opt => opt.label === categoryName) || null}
-                        onChange={(event, newValue) => {
-                            setCategoryName(newValue ? newValue.label : "");
-                        }}
-                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                        sx={{ width: 200 }}
-                        ListboxComponent={TrendingListbox}
-                        renderInput={(params) => (
-                            <CustomTextField {...params} placeholder="Category" InputProps={{ ...params.InputProps }} />
-                        )}
-                    /> */}
-
-                    {/* Main Search Input - Desktop */}
+                    {/* Main Search Input - Desktop (Field 2) */}
+                    {/* Note: The image implies searching for Spa, Salons (the business/category) here. */}
                     <CustomTextField
-                        sx={{ width: 300 }}
+                        // ✅ Adjusted width for the two-field layout
+                        sx={{ width: 500 }} 
                         placeholder="Search for Spa, Salons..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -333,8 +323,8 @@ const CardsSearch = () => {
                         onClick={handleSearch}
                         sx={{
                             flexShrink: 0,
-                            width: 120,
-                            height: "50px", // Match input height
+                            width: 80,
+                            height: "50px", 
                             background: "linear-gradient(45deg, #FF7B00, #FFD166)",
                             color: "white", textTransform: "none", fontSize: "1rem", fontWeight: 600,
                             borderRadius: "40px", px: 3,
@@ -343,7 +333,6 @@ const CardsSearch = () => {
                         }}
                     >
                         <SearchIcon sx={{ fontSize: 20, mr: 0.5 }} />
-                        Search
                     </Button>
 
                     {/* Add Business Button - Desktop */}
@@ -351,8 +340,8 @@ const CardsSearch = () => {
                         variant="contained"
                         sx={{
                             flexShrink: 0,
-                            width: 230,
-                            height: "50px", // Match input height
+                            width: 250, 
+                            height: "50px",
                             background: "linear-gradient(45deg, #ff9900, #ff4d00)",
                             color: "white", textTransform: "none", fontSize: "1rem", fontWeight: 600,
                             borderRadius: "40px", px: 3,
@@ -366,14 +355,12 @@ const CardsSearch = () => {
                 </Box>
             </div >
 
-            {/* --- 3. MOBILE Search Bar (Show only on xs - ALL THREE FIELDS STACKED) --- */}
-            {/* This box is OUTSIDE the topbar-wrapper for full-width search bar below the logo. */}
             <Box
                 className="search-bar-container-mobile"
                 sx={{
-                    display: { xs: 'flex', md: 'none' }, // ✅ Show only on XS (mobile)
-                    flexDirection: 'column',            // 💡 STACKS FIELDS VERTICALLY
-                    gap: 1,                             // Space between stacked fields
+                    display: { xs: 'flex', md: 'none' },
+                    flexDirection: 'column',
+                    gap: 1,
                     p: 1.5,
                     width: '100%',
                     bgcolor: 'white',
@@ -390,7 +377,7 @@ const CardsSearch = () => {
                         setLocationName(newValue ? newValue.label : "");
                     }}
                     isOptionEqualToValue={(option, value) => option.id === value.id}
-                    sx={{ width: '100%' }} // Make it full width
+                    sx={{ width: '100%' }}
                     ListboxComponent={LocationListbox}
                     renderInput={(params) => (
                         <CustomTextField
@@ -408,7 +395,6 @@ const CardsSearch = () => {
                     )}
                 />
 
-                {/* 3b. Category Autocomplete - Mobile (Full Width) */}
                 <Autocomplete
                     options={categoryOptions}
                     getOptionLabel={(option) => option.label || ""}
@@ -417,7 +403,7 @@ const CardsSearch = () => {
                         setCategoryName(newValue ? newValue.label : "");
                     }}
                     isOptionEqualToValue={(option, value) => option.id === value.id}
-                    sx={{ width: '100%' }} // Make it full width
+                    sx={{ width: '100%' }}
                     ListboxComponent={TrendingListbox}
                     renderInput={(params) => (
                         <CustomTextField
@@ -428,11 +414,10 @@ const CardsSearch = () => {
                     )}
                 />
 
-                {/* 3c. Main Search Input and Search Button - Mobile */}
                 <Box sx={{ display: 'flex', gap: 1, width: '100%' }}>
-                    {/* Main Search Input */}
                     <CustomTextField
-                        fullWidth // Take remaining space
+                        sx={{ flexGrow: 1 }}
+                        fullWidth
                         placeholder="Search for Spa, Salons..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -447,15 +432,14 @@ const CardsSearch = () => {
                         }}
                     />
 
-                    {/* Search Button (Icon only) */}
                     <Button
                         variant="contained"
-                        onClick={handleMobileSearch} // Use the new handler or main handler
+                        onClick={handleMobileSearch}
                         sx={{
                             flexShrink: 0,
                             width: 50,
                             minWidth: 50,
-                            height: "50px", // Match input height
+                            height: "50px",
                             background: "linear-gradient(45deg, #FF7B00, #FFD166)",
                             color: "white",
                             borderRadius: "40px",
@@ -479,7 +463,7 @@ const CardsSearch = () => {
                         borderRadius: "40px",
                         boxShadow: "0 4px 15px rgba(255, 123, 0, 0.3)",
                         "&:hover": { background: "linear-gradient(45deg, #FF5B00, #FFC044)" },
-                        mt: 1, // Margin top to separate it slightly
+                        mt: 1,
                     }}
                 >
                     <AddIcon sx={{ fontSize: 20, mr: 0.5, transform: 'rotate(90deg)' }} />
