@@ -79,7 +79,7 @@ export const updateBusinessList = async (id, data) => {
     // =========================================================
     if (data.reviewData) {
         const { reviewData } = data;
-        
+
         const uploadedPhotoKeys = [];
         if (Array.isArray(reviewData.ratingPhotos) && reviewData.ratingPhotos.length > 0) {
             const photoUploadPromises = reviewData.ratingPhotos.map(async (img, i) => {
@@ -89,7 +89,7 @@ export const updateBusinessList = async (id, data) => {
                         `businessList/reviews/${business._id}/photo-${Date.now()}-${i}`
                     );
                     // 💡 CONSISTENT: Store the S3 Key
-                    return uploadResult.key; 
+                    return uploadResult.key;
                 }
                 return null;
             });
@@ -107,16 +107,16 @@ export const updateBusinessList = async (id, data) => {
 
         // 3. Push the new review to the business document
         business.reviews.push(newReview);
-        
+
         // 4. Recalculate Average Rating (Crucial Step)
         const totalRating = business.reviews.reduce((sum, review) => sum + review.rating, 0);
         business.averageRating = business.reviews.length > 0
             ? parseFloat((totalRating / business.reviews.length).toFixed(1))
             : 0;
-            
+
         delete data.reviewData;
     }
-   
+
 
 
 
@@ -161,13 +161,13 @@ export const updateBusinessList = async (id, data) => {
     await business.save();
 
     const result = business.toObject();
-    
-  
+
+
     if (business.bannerImageKey) result.bannerImage = getSignedUrlByKey(business.bannerImageKey);
     if (business.businessImagesKey?.length > 0) {
         result.businessImages = business.businessImagesKey.map(key => getSignedUrlByKey(key));
     }
-    
+
     result.reviews = result.reviews.map(review => ({
         ...review,
         ratingPhotos: review.ratingPhotos.map(key => getSignedUrlByKey(key))
@@ -179,10 +179,30 @@ export const updateBusinessList = async (id, data) => {
 export const deleteBusinessList = async (id) => {
     if (!ObjectId.isValid(id)) throw new Error("Invalid business ID");
 
-    const deletedBusiness = await businessListModel.findByIdAndDelete(id);
-    if (!deletedBusiness) throw new Error("Business not found");
+    const deletedBusiness = await businessListModel.findByIdAndUpdate(
+        id,
+        { isActive: false, updatedAt: new Date() },
+        { new: true }
+    );
+
+    if (!deletedBusiness) {
+        throw new Error("Business not found");
+    }
 
     return deletedBusiness;
+};
+export const restoreBusinessList = async (id) => {
+  if (!mongoose.Types.ObjectId.isValid(id)) throw new Error("Invalid business ID");
+
+  const restoredBusiness = await businessListModel.findByIdAndUpdate(
+    id,
+    { isActive: true, updatedAt: new Date() },
+    { new: true }
+  );
+
+  if (!restoredBusiness) throw new Error("Business not found");
+
+  return restoredBusiness;
 };
 
 export const activeBusinessList = async (id, newStatus) => {

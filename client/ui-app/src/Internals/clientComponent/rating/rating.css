@@ -2,7 +2,7 @@
 
 /* Define CSS Variables for Theming */
 :root {
-    --color-primary: #008744; /* Example primary color (Green) */
+    --primary-color: #FF8C00;      
     --color-secondary: #FF8C00; /* Example accent color (Orange) */
     --color-text-dark: #1a1a1a;
     --color-text-medium: #555;

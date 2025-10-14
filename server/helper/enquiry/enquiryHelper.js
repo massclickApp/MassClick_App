@@ -88,17 +88,20 @@ export const updateEnquiry = async (id, data) => {
 
 
 export const deleteEnquiry = async (id) => {
-    try {
-        if (!ObjectId.isValid(id)) throw new Error("Invalid Enquiry ID");
+  try {
+    if (!mongoose.Types.ObjectId.isValid(id)) throw new Error("Invalid Enquiry ID");
 
-        // Changed to findByIdAndDelete for a true DELETE operation
-        const deletedEnquiry = await enquiryModel.findByIdAndDelete(id); 
+    const deletedEnquiry = await enquiryModel.findByIdAndUpdate(
+      id,
+      { isActive: false, updatedAt: new Date() },
+      { new: true }
+    );
 
-        if (!deletedEnquiry) throw new Error("Enquiry not found");
+    if (!deletedEnquiry) throw new Error("Enquiry not found");
 
-        return deletedEnquiry;
-    } catch (error) {
-        console.error("Error deleting enquiry:", error);
-        throw error;
-    }
+    return deletedEnquiry;
+  } catch (error) {
+    console.error("Error deleting enquiry:", error);
+    throw error;
+  }
 };

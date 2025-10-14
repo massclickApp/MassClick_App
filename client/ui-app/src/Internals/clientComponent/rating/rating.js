@@ -18,6 +18,7 @@ const labels = {
     4.5: 'Excellent',
     5: 'Excellent+',
 };
+const CUSTOM_STAR_COLOR = '#FF8C00'; 
 
 export default function UserRatingWidget({ 
     businessId,
@@ -32,19 +33,14 @@ export default function UserRatingWidget({
         const handleRatingChange = (event, newValue) => {
         if (!newValue) return;
 
-        // 1. Update local state to show the user their selection instantly
         setValue(newValue);
 
-        // 2. Redirect the user to the new review page
-        // We pass the businessId and the selected rating value (e.g., 3.5)
         navigate(`/write-review/${businessId}/${newValue}`);
-        
-        // The Redux update (editBusinessList) will now happen on the /write-review page
-        // when the user clicks 'Submit' there.
+      
     };
     return (
         <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-            <p style={{ margin: '0 0 5px 0', fontSize: '14px', color: '#666' }}>Click to Rate</p>
+            <p style={{ margin: '0 0 5px 0', fontSize: '16px', color:  '#FF8C00' }}>Click to Rate</p>
             <Rating
                 name="user-rating-input"
                 value={value}
@@ -55,6 +51,14 @@ export default function UserRatingWidget({
 
                 emptyIcon={<StarIcon style={{ opacity: 0.2 }} fontSize="inherit" />}
                 size="large"
+                  sx={{
+                '& .MuiRating-icon': {
+                    fontSize: '2rem', 
+                },
+                '& .MuiRating-iconFilled, & .MuiRating-iconHover': {
+                        color: CUSTOM_STAR_COLOR,
+                    },
+            }}
             />
 
             {value !== null && (

@@ -119,7 +119,7 @@ export const deleteCategory = async (id) => {
 
         const deletedCategory = await categoryModel.findByIdAndUpdate(
             id,
-            { isActive: false },
+            { isActive: false ,  updatedAt: new Date()},
             { new: true }
         );
         if (!deletedCategory) throw new Error("Category not found");

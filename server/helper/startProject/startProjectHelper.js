@@ -74,16 +74,20 @@ export const updateStartYourProject = async (id, data) => {
 
 
 export const deleteStartYourProject = async (id) => {
-    try {
-        if (!ObjectId.isValid(id)) throw new Error("Invalid Project ID");
+  try {
+    if (!mongoose.Types.ObjectId.isValid(id)) throw new Error("Invalid Project ID");
 
-        const deletedProject = await startProjectModel.findByIdAndDelete(id); 
+    const deletedProject = await startProjectModel.findByIdAndUpdate(
+      id,
+      { isActive: false, updatedAt: new Date() },
+      { new: true } 
+    );
 
-        if (!deletedProject) throw new Error("Project enquiry not found");
+    if (!deletedProject) throw new Error("Project enquiry not found");
 
-        return deletedProject;
-    } catch (error) {
-        console.error("Error deleting project enquiry:", error);
-        throw error;
-    }
+    return deletedProject;
+  } catch (error) {
+    console.error("Error deleting project enquiry:", error);
+    throw error;
+  }
 };

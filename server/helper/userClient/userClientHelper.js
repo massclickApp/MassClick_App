@@ -69,14 +69,15 @@ export const updateUserClients = async (id, data) => {
 };
 
 export const deleteUserClients = async (id) => {
-    if (!ObjectId.isValid(id)) throw new Error("Invalid user ID");
+  if (!mongoose.Types.ObjectId.isValid(id)) throw new Error("Invalid user ID");
 
   const user = await userClientModel.findByIdAndUpdate(
     id,
-    { isActive: false },
+    { isActive: false, updatedAt: new Date() }, 
     { new: true } 
   );
 
   if (!user) throw new Error("UserClient not found");
+
   return user;
 };
