@@ -7,6 +7,7 @@ import {
     deleteLocation,
 } from "../../redux/actions/locationAction.js";
 import CustomizedDataGrid from "../../components/CustomizedDataGrid";
+import './location.css'
 import {
     Box,
     Button,
@@ -132,8 +133,9 @@ export default function Location() {
         setDeleteDialogOpen(true);
     };
 
-    const confirmDelete = () => {debugger
-    if (selectedRow?.id) { 
+    const confirmDelete = () => {
+        debugger
+        if (selectedRow?.id) {
             dispatch(deleteLocation(selectedRow.id))
                 .then(() => {
                     dispatch(getAllLocation());
@@ -150,7 +152,7 @@ export default function Location() {
     };
 
     const rows = location
-  .filter((loc) => loc.isActive) 
+        .filter((loc) => loc.isActive)
 
         .map((loc, index) => ({
             id: loc._id || index,
@@ -211,107 +213,96 @@ export default function Location() {
     ];
 
     return (
-        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-            <Paper elevation={3} sx={{ p: 3, borderRadius: 2, mb: 4 }}>
-                <Typography variant="h6" gutterBottom>
+
+        <div className="location-page">
+            <div className="location-card location-form-section">
+                <h2 className="location-card-title">
                     {editingId ? "Edit Location" : "Add New Location"}
-                </Typography>
-                <Box component="form" onSubmit={handleSubmit}>
-                    <Grid container spacing={2}>
-                        {fields.map((field, i) => (
-                            <Grid item xs={12} key={i}>
-                                <TextField
-                                    fullWidth
-                                    type={field.type}
-                                    label={field.label}
-                                    name={field.name}
-                                    variant="standard"
-                                    value={formData[field.name]}
-                                    onChange={handleChange}
-                                    error={Boolean(errors[field.name])}
-                                    helperText={errors[field.name] || ""}
-                                    sx={{
-                                        "& .MuiInputBase-root": {
-                                            height: 50,
-                                            fontSize: "1.1rem",
-                                        },
-                                        "& .MuiInputLabel-root": {
-                                            fontSize: "1rem",
-                                        },
-                                    }}
-                                />
-                            </Grid>
-                        ))}
-                        <Grid item xs={12}>
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    gap: 2,
-                                    justifyContent: { xs: "flex-end", sm: "flex-start" },
-                                    mt: 4,
-                                }}
+                </h2>
+
+                <form onSubmit={handleSubmit} className="location-form-grid">
+                    {fields.map(({ label, name }) => (
+                        <div key={name} className="location-form-input-group">
+                            <label htmlFor={name} className="location-input-label">
+                                {label}
+                            </label>
+                            <input
+                                type="text"
+                                id={name}
+                                name={name}
+                                className={`location-text-input ${errors[name] ? "error" : ""
+                                    }`}
+                                value={formData[name]}
+                                onChange={handleChange}
+                            />
+                            {errors[name] && (
+                                <p className="location-error-text">{errors[name]}</p>
+                            )}
+                        </div>
+                    ))}
+
+                    <div className="location-form-input-group location-col-span-all location-upload-section">
+                        <div className="location-upload-content">
+                            <button
+                                type="submit"
+                                className="location-submit-button"
+                                disabled={loading}
                             >
-                                <Button
-                                    type="submit"
-                                    variant="contained"
-                                    disabled={loading}
-                                    sx={{ minWidth: 150 }}
-                                >
-                                    {loading ? (
-                                        <CircularProgress size={24} />
-                                    ) : editingId ? (
-                                        "Update Location"
-                                    ) : (
-                                        "Create Location"
-                                    )}
-                                </Button>
-                                {editingId && (
-                                    <Button
-                                        variant="outlined"
-                                        color="secondary"
-                                        onClick={resetForm}
-                                    >
-                                        Cancel
-                                    </Button>
+                                {loading ? (
+                                    <CircularProgress size={24} color="inherit" />
+                                ) : editingId ? (
+                                    "Update Location"
+                                ) : (
+                                    "Create Location"
                                 )}
-                            </Box>
-                        </Grid>
-                    </Grid>
-                </Box>
+                            </button>
+
+                            {editingId && (
+                                <button
+                                    type="button"
+                                    className="location-upload-button"
+                                    onClick={resetForm}
+                                >
+                                    Cancel
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </form>
+
                 {error && (
-                    <Typography color="error" sx={{ mt: 2 }}>
+                    <p className="location-error-text" style={{ marginTop: "16px" }}>
                         {typeof error === "string"
                             ? error
                             : error.message || JSON.stringify(error)}
-                    </Typography>
+                    </p>
                 )}
-            </Paper>
 
-            <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
-                <Typography variant="h6" gutterBottom>
-                    Location Table
-                </Typography>
-                <Box sx={{ height: 500, width: "100%" }}>
-                    <CustomizedDataGrid rows={rows} columns={locationList} />
-                </Box>
-            </Paper>
+                <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
+                    <Typography variant="h6" gutterBottom>
+                        Location Table
+                    </Typography>
+                    <Box sx={{ height: 500, width: "100%" }}>
+                        <CustomizedDataGrid rows={rows} columns={locationList} />
+                    </Box>
+                </Paper>
 
-            {/* 🔹 Delete Confirmation Dialog */}
-            <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
-                <DialogTitle>Confirm Delete</DialogTitle>
-                <DialogContent>
-                    Are you sure you want to delete{" "}
-                    <strong>{selectedRow?.city || "this location"}</strong>?
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={cancelDelete} color="secondary">
-                        Cancel
-                    </Button>
-                    <Button onClick={confirmDelete} color="error" variant="contained">
-                        Delete
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </Container>
+                <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
+                    <DialogTitle>Confirm Delete</DialogTitle>
+                    <DialogContent>
+                        Are you sure you want to delete{" "}
+                        <strong>{selectedRow?.city || "this location"}</strong>?
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={cancelDelete} color="secondary">
+                            Cancel
+                        </Button>
+                        <Button onClick={confirmDelete} color="error" variant="contained">
+                            Delete
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+        </div>
     );
 }

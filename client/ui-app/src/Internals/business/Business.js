@@ -7,6 +7,7 @@ import CustomizedDataGrid from "../../components/CustomizedDataGrid";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import './business.css'
 
 import {
     Box,
@@ -446,428 +447,336 @@ export default function BusinessList() {
     ];
 
     return (
-        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-            <Paper elevation={3} sx={{ p: 3, borderRadius: 2, mb: 4 }}>
-                <Typography variant="h6" gutterBottom>
-                    {editMode ? "Edit Business" : "Add New Business"}
-                </Typography>
-                <Box component="form" onSubmit={handleSubmit}>
-                    <Grid container spacing={8}>
-                        {/* Client ID */}
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="Client ID"
-                                name="clientId"
-                                variant="standard"
-                                value={formData.clientId}
-                                onChange={handleChange}
-                                sx={textFieldStyle}
-                                style={{ minWidth: 260 }}
-                                error={Boolean(errors.clientId)}
-                                helperText={errors.clientId || ""}
-                            />
-                        </Grid>
+     <div className="business-page">
+  {/* Business Form Card */}
+  <div className="business-card form-section">
+    <h2 className="card-title">
+      {editMode ? "Edit Business" : "Add New Business"}
+    </h2>
 
-                        {/* Business Name */}
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="Business Name"
-                                name="businessName"
-                                variant="standard"
-                                value={formData.businessName}
-                                onChange={handleChange}
-                                sx={textFieldStyle}
-                                style={{ minWidth: 260 }}
-                                error={Boolean(errors.businessName)}
-                                helperText={errors.businessName || ""}
+    <form onSubmit={handleSubmit} className="form-grid">
+      {/* Client ID */}
+      <div className="form-input-group">
+        <label htmlFor="clientId" className="input-label">Client ID</label>
+        <input
+          type="text"
+          id="clientId"
+          name="clientId"
+          className={`text-input ${errors.clientId ? "error" : ""}`}
+          value={formData.clientId}
+          onChange={handleChange}
+        />
+        {errors.clientId && <p className="error-text">{errors.clientId}</p>}
+      </div>
 
-                            />
-                        </Grid>
+      {/* Business Name */}
+      <div className="form-input-group">
+        <label htmlFor="businessName" className="input-label">Business Name</label>
+        <input
+          type="text"
+          id="businessName"
+          name="businessName"
+          className={`text-input ${errors.businessName ? "error" : ""}`}
+          value={formData.businessName}
+          onChange={handleChange}
+        />
+        {errors.businessName && <p className="error-text">{errors.businessName}</p>}
+      </div>
 
-                        {/* Plot Number */}
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="Plot Number"
-                                name="plotNumber"
-                                variant="standard"
-                                value={formData.plotNumber}
-                                onChange={handleChange}
-                                sx={textFieldStyle}
-                                style={{ minWidth: 260 }}
-                                error={Boolean(errors.plotNumber)}
-                                helperText={errors.plotNumber || ""}
-                            />
-                        </Grid>
+      {/* Plot Number */}
+      <div className="form-input-group">
+        <label htmlFor="plotNumber" className="input-label">Plot Number</label>
+        <input
+          type="text"
+          id="plotNumber"
+          name="plotNumber"
+          className="text-input"
+          value={formData.plotNumber}
+          onChange={handleChange}
+        />
+      </div>
 
-                        {/* Street */}
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="Street"
-                                name="street"
-                                variant="standard"
-                                value={formData.street}
-                                onChange={handleChange}
-                                sx={textFieldStyle}
-                                style={{ minWidth: 260 }}
-                            />
-                        </Grid>
+      {/* Street */}
+      <div className="form-input-group">
+        <label htmlFor="street" className="input-label">Street</label>
+        <input
+          type="text"
+          id="street"
+          name="street"
+          className="text-input"
+          value={formData.street}
+          onChange={handleChange}
+        />
+      </div>
 
-                        {/* Pincode */}
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="Pincode"
-                                name="pincode"
-                                variant="standard"
-                                value={formData.pincode}
-                                onChange={handleChange}
-                                sx={textFieldStyle}
-                                style={{ minWidth: 260 }}
-                                error={Boolean(errors.pincode)}
-                                helperText={errors.pincode || ""}
-                            />
-                        </Grid>
+      {/* Pincode */}
+      <div className="form-input-group">
+        <label htmlFor="pincode" className="input-label">Pincode</label>
+        <input
+          type="text"
+          id="pincode"
+          name="pincode"
+          className={`text-input ${errors.pincode ? "error" : ""}`}
+          value={formData.pincode}
+          onChange={handleChange}
+        />
+        {errors.pincode && <p className="error-text">{errors.pincode}</p>}
+      </div>
 
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="Email"
-                                name="email"
-                                variant="standard"
-                                value={formData.email}
-                                onChange={handleChange}
-                                sx={textFieldStyle}
-                                style={{ minWidth: 260 }}
-                                error={Boolean(errors.email)}
-                                helperText={errors.email || ""}
-                            />
-                        </Grid>
+      {/* Email */}
+      <div className="form-input-group">
+        <label htmlFor="email" className="input-label">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          className={`text-input ${errors.email ? "error" : ""}`}
+          value={formData.email}
+          onChange={handleChange}
+        />
+        {errors.email && <p className="error-text">{errors.email}</p>}
+      </div>
 
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="Contact"
-                                name="contact"
-                                variant="standard"
-                                value={formData.contact}
-                                onChange={handleChange}
-                                sx={textFieldStyle}
-                                style={{ minWidth: 260 }}
-                                error={Boolean(errors.contact)}
-                                helperText={errors.contact || ""}
-                            />
-                        </Grid>
+      {/* Contact */}
+      <div className="form-input-group">
+        <label htmlFor="contact" className="input-label">Contact</label>
+        <input
+          type="text"
+          id="contact"
+          name="contact"
+          className={`text-input ${errors.contact ? "error" : ""}`}
+          value={formData.contact}
+          onChange={handleChange}
+        />
+        {errors.contact && <p className="error-text">{errors.contact}</p>}
+      </div>
 
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="Contact List"
-                                name="contactList"
-                                variant="standard"
-                                value={formData.contactList}
-                                onChange={handleChange}
-                                sx={textFieldStyle}
-                                style={{ minWidth: 260 }}
-                            />
-                        </Grid>
+      {/* Contact List */}
+      <div className="form-input-group">
+        <label htmlFor="contactList" className="input-label">Contact List</label>
+        <input
+          type="text"
+          id="contactList"
+          name="contactList"
+          className="text-input"
+          value={formData.contactList}
+          onChange={handleChange}
+        />
+      </div>
 
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="GSTIN"
-                                name="gstin"
-                                variant="standard"
-                                value={formData.gstin}
-                                onChange={handleChange}
-                                sx={textFieldStyle}
-                                style={{ minWidth: 260 }}
-                                error={Boolean(errors.gstin)}
-                                helperText={errors.gstin || ""}
-                            />
-                        </Grid>
+      {/* GSTIN */}
+      <div className="form-input-group">
+        <label htmlFor="gstin" className="input-label">GSTIN</label>
+        <input
+          type="text"
+          id="gstin"
+          name="gstin"
+          className={`text-input ${errors.gstin ? "error" : ""}`}
+          value={formData.gstin}
+          onChange={handleChange}
+        />
+        {errors.gstin && <p className="error-text">{errors.gstin}</p>}
+      </div>
 
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="Whatsapp Number"
-                                name="whatsappNumber"
-                                variant="standard"
-                                value={formData.whatsappNumber}
-                                onChange={handleChange}
-                                sx={textFieldStyle}
-                                style={{ minWidth: 260 }}
-                                error={Boolean(errors.whatsappNumber)}
-                                helperText={errors.whatsappNumber || ""}
-                            />
-                        </Grid>
+      {/* Whatsapp Number */}
+      <div className="form-input-group">
+        <label htmlFor="whatsappNumber" className="input-label">Whatsapp Number</label>
+        <input
+          type="text"
+          id="whatsappNumber"
+          name="whatsappNumber"
+          className={`text-input ${errors.whatsappNumber ? "error" : ""}`}
+          value={formData.whatsappNumber}
+          onChange={handleChange}
+        />
+        {errors.whatsappNumber && <p className="error-text">{errors.whatsappNumber}</p>}
+      </div>
 
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="Experience"
-                                name="experience"
-                                variant="standard"
-                                value={formData.experience}
-                                onChange={handleChange}
-                                sx={textFieldStyle}
-                                style={{ minWidth: 260 }}
-                                error={Boolean(errors.experience)}
-                                helperText={errors.experience || ""}
-                            />
+      {/* Experience */}
+      <div className="form-input-group">
+        <label htmlFor="experience" className="input-label">Experience</label>
+        <input
+          type="text"
+          id="experience"
+          name="experience"
+          className={`text-input ${errors.experience ? "error" : ""}`}
+          value={formData.experience}
+          onChange={handleChange}
+        />
+        {errors.experience && <p className="error-text">{errors.experience}</p>}
+      </div>
 
-                        </Grid>
+      {/* Location Select */}
+      <div className="form-input-group">
+        <label htmlFor="location" className="input-label">Location</label>
+        <select
+          id="location"
+          name="location"
+          className={`select-input ${errors.location ? "error" : ""}`}
+          value={formData.location}
+          onChange={handleChange}
+        >
+          <option value="">-- Select Location --</option>
+          {location.map((loc) => (
+            <option key={loc._id} value={loc.city}>{loc.city}</option>
+          ))}
+        </select>
+        {errors.location && <p className="error-text">{errors.location}</p>}
+      </div>
 
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                select
-                                fullWidth
-                                label="Location"
-                                name="location"
-                                variant="standard"
-                                value={formData.location}
-                                onChange={handleChange}
-                                sx={textFieldStyle}
-                                style={{ minWidth: 260 }}
-                                error={Boolean(errors.location)}
-                                helperText={errors.location || ""}
-                            >
-                                {location.map((loc) => (
-                                    <MenuItem key={loc._id} value={loc.city}>
-                                        {loc.city}
-                                    </MenuItem>
-                                ))}
-                            </TextField>
-                        </Grid>
+      {/* Category Select */}
+      <div className="form-input-group">
+        <label htmlFor="category" className="input-label">Category</label>
+        <select
+          id="category"
+          name="category"
+          className={`select-input ${errors.category ? "error" : ""}`}
+          value={formData.category}
+          onChange={handleChange}
+        >
+          <option value="">-- Select Category --</option>
+          {category.map((cat) => (
+            <option key={cat._id} value={cat.category}>{cat.category}</option>
+          ))}
+        </select>
+        {errors.category && <p className="error-text">{errors.category}</p>}
+      </div>
 
+      {/* Google Map */}
+      <div className="form-input-group">
+        <label htmlFor="googleMap" className="input-label">Google Map</label>
+        <input
+          type="text"
+          id="googleMap"
+          name="googleMap"
+          className="text-input"
+          value={formData.googleMap}
+          onChange={handleChange}
+        />
+      </div>
 
-                        {/* Category */}
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                select
-                                fullWidth
-                                label="Category"
-                                name="category"
-                                variant="standard"
-                                value={formData.category}
-                                onChange={handleChange}
-                                sx={textFieldStyle}
-                                style={{ minWidth: 260 }}
-                                error={Boolean(errors.category)}
-                                helperText={errors.category || ""}
-                            >
+      {/* Website */}
+      <div className="form-input-group">
+        <label htmlFor="website" className="input-label">Website</label>
+        <input
+          type="text"
+          id="website"
+          name="website"
+          className="text-input"
+          value={formData.website}
+          onChange={handleChange}
+        />
+      </div>
 
-                                {category.map((cat) => (
-                                    <MenuItem key={cat._id} value={cat.category}>
-                                        {cat.category}
-                                    </MenuItem>
-                                ))}
-                            </TextField>
-                        </Grid>
+      {/* Social Links */}
+      {["facebook", "instagram", "youtube", "pinterest", "twitter", "linkedin"].map((field) => (
+        <div className="form-input-group" key={field}>
+          <label htmlFor={field} className="input-label">{field.charAt(0).toUpperCase() + field.slice(1)}</label>
+          <input
+            type="text"
+            id={field}
+            name={field}
+            className="text-input"
+            value={formData[field]}
+            onChange={handleChange}
+          />
+        </div>
+      ))}
 
-                        {/* Google Map */}
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="Google Map"
-                                name="googleMap"
-                                variant="standard"
-                                value={formData.googleMap}
-                                onChange={handleChange}
-                                sx={textFieldStyle}
-                                style={{ minWidth: 260 }}
-                            />
-                        </Grid>
+      {/* Upload Image */}
+      <div className="form-input-group col-span-all upload-section">
+        <div className="upload-content">
+          <Button
+            variant="contained"
+            startIcon={<CloudUploadIcon />}
+            component="label"
+            className="upload-button"
+          >
+            Upload Image
+            <input
+              type="file"
+              accept="image/*"
+              hidden
+              ref={fileInputRef}
+              onChange={handleImageChange}
+            />
+          </Button>
+          {preview && <Avatar src={preview} sx={{ width: 56, height: 56 }} className="preview-avatar" />}
+          <button type="submit" className="submit-button" disabled={loading}>
+            {loading ? <CircularProgress size={24} color="inherit" /> : editMode ? "Update Business" : "Create Business"}
+          </button>
+        </div>
+      </div>
 
-                        {/* Website */}
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="Website"
-                                name="website"
-                                variant="standard"
-                                value={formData.website}
-                                onChange={handleChange}
-                                sx={textFieldStyle}
-                                style={{ minWidth: 260 }}
-                            />
-                        </Grid>
+      {/* Business Details Quill */}
+      <div className="form-input-group col-span-all">
+        <ReactQuill
+          theme="snow"
+          value={businessvalue}
+          onChange={handleBusinessChange}
+          modules={modules}
+          formats={formats}
+          placeholder="Type business details here..."
+          style={{ height: "200px" }}
+        />
+      </div>
 
-                        {/* Facebook */}
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="Facebook"
-                                name="facebook"
-                                variant="standard"
-                                value={formData.facebook}
-                                onChange={handleChange}
-                                sx={textFieldStyle}
-                                style={{ minWidth: 260 }}
-                            />
-                        </Grid>
+      {/* Opening Hours */}
+  <div className="form-input-group col-span-all">
+    <h3 style={{ marginBottom: "15px" }}>Opening Hours</h3>
+    <div className="opening-hours-container">
+    {formData.openingHours.map((hour, index) => (
+      <div 
+        key={hour.day} 
+        className="opening-hours-row"
+        data-closed={hour.isClosed} // Use this attribute for styling the disabled state
+      >
+        {/* 1. Day Label */}
+        <div className="day-label">
+            {hour.day}
+        </div>
 
-                        {/* Instagram */}
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="Instagram"
-                                name="instagram"
-                                variant="standard"
-                                value={formData.instagram}
-                                onChange={handleChange}
-                                sx={textFieldStyle}
-                                style={{ minWidth: 260 }}
-                            />
-                        </Grid>
+        {/* 2. Time Group (Open/Close) */}
+        <div className="time-group">
+            <input 
+                type="time" 
+                value={hour.open} 
+                onChange={(e) => handleOpeningHourChange(index, "open", e.target.value)} 
+                disabled={hour.isClosed} 
+                className="text-input" 
+                placeholder="Open Time"
+            />
+            <input 
+                type="time" 
+                value={hour.close} 
+                onChange={(e) => handleOpeningHourChange(index, "close", e.target.value)} 
+                disabled={hour.isClosed} 
+                className="text-input" 
+                placeholder="Close Time"
+            />
+        </div>
 
-                        {/* YouTube */}
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="YouTube"
-                                name="youtube"
-                                variant="standard"
-                                value={formData.youtube}
-                                onChange={handleChange}
-                                sx={textFieldStyle}
-                                style={{ minWidth: 260 }}
-                            />
-                        </Grid>
+        {/* 3. Status Select */}
+        <div style={{ justifySelf: 'end' }}>
+            <select 
+                value={hour.isClosed} 
+                onChange={(e) => handleOpeningHourChange(index, "isClosed", e.target.value === "true")} 
+                className="select-input"
+            >
+              <option value={false}>Open</option>
+              <option value={true}>Closed</option>
+            </select>
+        </div>
+      </div>
+    ))}
+    </div>
+</div>
 
-                        {/* Pinterest */}
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="Pinterest"
-                                name="pinterest"
-                                variant="standard"
-                                value={formData.pinterest}
-                                onChange={handleChange}
-                                sx={textFieldStyle}
-                                style={{ minWidth: 260 }}
-                            />
-                        </Grid>
+    </form>
+  </div>
 
-                        {/* Twitter */}
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="Twitter"
-                                name="twitter"
-                                variant="standard"
-                                value={formData.twitter}
-                                onChange={handleChange}
-                                sx={textFieldStyle}
-                                style={{ minWidth: 260 }}
-                            />
-                        </Grid>
-
-                        {/* LinkedIn */}
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="LinkedIn"
-                                name="linkedin"
-                                variant="standard"
-                                value={formData.linkedin}
-                                onChange={handleChange}
-                                sx={textFieldStyle}
-                                style={{ minWidth: 260 }}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                                <Box>
-                                    <Button
-                                        variant="contained"
-                                        startIcon={<CloudUploadIcon />}
-                                        component="label"
-                                        sx={{ minWidth: 150 }}
-                                    >
-                                        Upload Image
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            hidden
-                                            ref={fileInputRef}
-                                            onChange={handleImageChange}
-                                        />
-                                    </Button>
-                                    {errors?.businessList && (
-                                        <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
-                                            {errors.businessList}
-                                        </Typography>
-                                    )}
-                                </Box>
-
-                                {preview && (
-                                    <Avatar
-                                        src={preview}
-                                        sx={{ width: 56, height: 56 }}
-                                    />
-                                )}
-                            </Box>
-                        </Grid>
-                        {/* Business Details */}
-
-
-                    </Grid>
-                    <Grid item xs={12}>
-                        <ReactQuill
-                            theme="snow"
-                            value={businessvalue}
-                            onChange={handleBusinessChange}
-                            modules={modules}
-                            formats={formats}
-                            placeholder="Type business details here..."
-                            style={{ height: '200px' }}
-                            error={Boolean(errors.businessvalue)}
-                            helperText={errors.businessvalue || ""}
-                        />
-                    </Grid><br />
-                    <Grid item xs={12}> <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>Opening Hours</Typography> {formData.openingHours.map((hour, index) => (<Grid container spacing={2} alignItems="center" key={hour.day} sx={{ mb: 1 }}> <Grid item xs={2}> <TextField fullWidth variant="standard" label={hour.day} value={hour.day} disabled /> </Grid> <Grid item xs={3}> <TextField fullWidth type="time" variant="standard" label="Open" value={hour.open} onChange={(e) => handleOpeningHourChange(index, "open", e.target.value)} disabled={hour.isClosed} InputLabelProps={{ shrink: true }} /> </Grid>
-                        <Grid item xs={3}> <TextField fullWidth type="time" variant="standard" label="Close" value={hour.close} onChange={(e) => handleOpeningHourChange(index, "close", e.target.value)} disabled={hour.isClosed} InputLabelProps={{ shrink: true }} /> </Grid> <Grid item xs={2}> <TextField fullWidth select label="Closed" variant="standard" value={hour.isClosed} onChange={(e) => handleOpeningHourChange(index, "isClosed", e.target.value === "true")} > <MenuItem value={false}>Open</MenuItem> <MenuItem value={true}>Closed</MenuItem> </TextField> </Grid> </Grid>))} </Grid>
-                    <Grid item xs={12}>
-                        <Box sx={{ display: "flex", mt: 10, gap: 2 }}>
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                disabled={loading}
-                                sx={{ minWidth: 150 }}
-                            >
-                                {loading ? (
-                                    <CircularProgress size={24} />
-                                ) : editMode ? (
-                                    "Update Business"
-                                ) : (
-                                    "Create Business"
-                                )}
-                            </Button>
-                            {editMode && (
-                                <Button
-                                    variant="outlined"
-                                    color="secondary"
-                                    onClick={resetForm}
-                                >
-                                    Cancel
-                                </Button>
-                            )}
-                        </Box>
-                    </Grid>
-                </Box>
-                {error && (
-                    <Typography color="error" sx={{ mt: 2 }}>
-                        {typeof error === "string" ? error : error.message || JSON.stringify(error)}
-                    </Typography>
-                )}
-            </Paper>
-
-            {/* Category Table */}
-            <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
+  {/* Business Table */}
+  <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
                 <Typography variant="h6" gutterBottom>
                     BusinessList Table
                 </Typography>
@@ -875,78 +784,42 @@ export default function BusinessList() {
                     <CustomizedDataGrid rows={rows} columns={businessListTable} />
                 </Box>
             </Paper>
-            <Dialog
-                open={deleteDialog.open}
-                onClose={() => setDeleteDialog({ open: false, id: null, name: "" })}
-            >
-                <DialogTitle>Confirm Delete</DialogTitle>
-                <DialogContent>
-                    Are you sure you want to delete{" "}
-                    <strong>{deleteDialog.name || "this business"}</strong>?
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        onClick={() => setDeleteDialog({ open: false, id: null, name: "" })}
-                        color="secondary"
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        color="error"
-                        variant="contained"
-                        onClick={confirmDelete}
-                    >
-                        Delete
-                    </Button>
-                </DialogActions>
-            </Dialog>
-            <Dialog open={galleryDialog.open} onClose={handleCloseGallery} maxWidth="md" fullWidth>
-                <DialogTitle>Gallery - {galleryDialog.data?.businessName}</DialogTitle>
-                <DialogContent dividers>
-                    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-                        {/* Existing images */}
-                        {galleryDialog.data?.businessImages?.map((img, idx) => (
-                            <Avatar key={idx} src={img} sx={{ width: 100, height: 100 }} />
-                        ))}
 
-                        {/* New selected images */}
-                        {newGalleryImages.map((img, idx) => (
-                            <Avatar
-                                key={idx}
-                                src={img}
-                                sx={{ width: 100, height: 100, border: "2px dashed green" }}
-                            />
-                        ))}
-                    </Box>
+  {/* Delete Dialog */}
+  <Dialog open={deleteDialog.open} onClose={() => setDeleteDialog({ open: false, id: null, name: "" })}>
+    <DialogTitle>Confirm Delete</DialogTitle>
+    <DialogContent>
+      Are you sure you want to delete <strong>{deleteDialog.name || "this business"}</strong>?
+    </DialogContent>
+    <DialogActions>
+      <Button onClick={() => setDeleteDialog({ open: false, id: null, name: "" })} color="secondary">
+        Cancel
+      </Button>
+      <Button color="error" variant="contained" onClick={confirmDelete}>
+        Delete
+      </Button>
+    </DialogActions>
+  </Dialog>
 
-                    {/* Upload input */}
-                    <Button variant="contained" component="label" sx={{ mt: 2 }}>
-                        Upload Images
-                        <input
-                            type="file"
-                            hidden
-                            multiple
-                            accept="image/*"
-                            onChange={handleGalleryImageChange}
-                        />
-                    </Button>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseGallery} color="secondary">
-                        Close
-                    </Button>
-                    <Button
-                        onClick={handleUploadGalleryImages}
-                        color="primary"
-                        variant="contained"
-                        disabled={newGalleryImages.length === 0}
-                    >
-                        Upload
-                    </Button>
-                </DialogActions>
-            </Dialog>
+  {/* Gallery Dialog */}
+  <Dialog open={galleryDialog.open} onClose={handleCloseGallery} maxWidth="md" fullWidth>
+    <DialogTitle>Gallery - {galleryDialog.data?.businessName}</DialogTitle>
+    <DialogContent dividers>
+      <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+        {galleryDialog.data?.businessImages?.map((img, idx) => <Avatar key={idx} src={img} sx={{ width: 100, height: 100 }} />)}
+        {newGalleryImages.map((img, idx) => <Avatar key={idx} src={img} sx={{ width: 100, height: 100, border: "2px dashed green" }} />)}
+      </div>
+      <Button variant="contained" component="label" sx={{ mt: 2 }}>
+        Upload Images
+        <input type="file" hidden multiple accept="image/*" onChange={handleGalleryImageChange} />
+      </Button>
+    </DialogContent>
+    <DialogActions>
+      <Button onClick={handleCloseGallery} color="secondary">Close</Button>
+      <Button onClick={handleUploadGalleryImages} color="primary" variant="contained" disabled={newGalleryImages.length === 0}>Upload</Button>
+    </DialogActions>
+  </Dialog>
+</div>
 
-
-        </Container>
     );
 }

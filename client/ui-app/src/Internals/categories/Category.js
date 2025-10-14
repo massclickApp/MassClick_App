@@ -7,6 +7,7 @@ import {
   deleteCategory,
 } from "../../redux/actions/categoryAction";
 import CustomizedDataGrid from "../../components/CustomizedDataGrid";
+import './categories.css'
 import {
   Box,
   Button,
@@ -225,202 +226,155 @@ export default function Category() {
   ];
 
   return (
-<Container maxWidth="xl" sx={{ mt: 4, mb: 4,}}>
-      <Paper elevation={3} sx={{ p: 3, borderRadius: 2, mb: 4 }}>
-        <Typography variant="h6" gutterBottom>
-          {editMode ? "Edit Category" : "Add New Category"}
-        </Typography>
-        <Box component="form" onSubmit={handleSubmit}>
-          <Grid container spacing={6}>
+  <div className="category-page">
+        {/* Category Form - Replacing MUI Paper/Container/Grid with pure CSS */}
+        <div className="category-card form-section">
+          <h2 className="card-title">
+            {editMode ? "Edit Category" : "Add New Category"}
+          </h2>
+          <form onSubmit={handleSubmit} className="form-grid">
+
             {/* Category Field */}
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                label="Category"
+            <div className="form-input-group">
+              <label htmlFor="category" className="input-label">Category</label>
+              <input
+                type="text"
+                id="category"
                 name="category"
-                variant="standard"
+                className={`text-input ${errors.category ? 'error' : ''}`}
                 value={formData.category}
                 onChange={handleChange}
-                sx={textFieldStyle}
-                error={Boolean(errors.category)}
-                helperText={errors.category || ""}
               />
-            </Grid>
+              {errors.category && <p className="error-text">{errors.category}</p>}
+            </div>
 
-            {/* Category Type */}
-            <FormControl
-              variant="standard"
-              sx={textFieldStyle}
-              style={{ minWidth: 220 }}
-            >
-              <InputLabel id="category-type-label">Category Type</InputLabel>
-              <Select
-                labelId="category-type-label"
+            {/* Category Type Select */}
+            <div className="form-input-group">
+              <label htmlFor="categoryType" className="input-label">Category Type</label>
+              <select
+                id="categoryType"
+                name="categoryType"
+                className={`select-input ${errors.categoryType ? 'error' : ''}`}
                 value={formData.categoryType}
-                onChange={(event) =>
-                  setFormData({ ...formData, categoryType: event.target.value })
-                }
-                error={Boolean(errors.categoryType)}
-                helperText={errors.categoryType || ""}
-                input={<Input />}
+                onChange={handleChange}
               >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                <MenuItem value="Primary Category" sx={menuItemStyle}>
-                  Primary Category
-                </MenuItem>
-                <MenuItem value="Sub Category" sx={menuItemStyle}>
-                  Sub Category
-                </MenuItem>
-              </Select>
-            </FormControl>
+                <option value="">-- Select Type --</option>
+                <option value="Primary Category">Primary Category</option>
+                <option value="Sub Category">Sub Category</option>
+              </select>
+              {errors.categoryType && <p className="error-text">{errors.categoryType}</p>}
+            </div>
 
-            {/* Sub Category Type */}
+            {/* Sub Category Type Select (Conditional) */}
             {formData.categoryType === "Sub Category" && (
-              <Grid item xs={12} sm={4}>
-                <FormControl
-                  variant="standard"
-                  sx={textFieldStyle}
-                  style={{ minWidth: 220 }}
+              <div className="form-input-group">
+                <label htmlFor="subCategoryType" className="input-label">Sub Category Type</label>
+                <select
+                  id="subCategoryType"
+                  name="subCategoryType"
+                  className={`select-input ${errors.subCategoryType ? 'error' : ''}`}
+                  value={formData.subCategoryType}
+                  onChange={handleChange}
                 >
-                  <InputLabel id="sub-category-type-label">
-                    Sub Category Type
-                  </InputLabel>
-                  <Select
-                    labelId="sub-category-type-label"
-                    value={formData.subCategoryType}
-                    onChange={(event) =>
-                      setFormData({
-                        ...formData,
-                        subCategoryType: event.target.value,
-                      })
-                    }
-
-                    input={<Input />}
-                  >
-                    {subCategories.map((sub) => (
-                      <MenuItem key={sub} value={sub} sx={menuItemStyle}>
-                        {sub}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
+                  <option value="">-- Select Sub Category --</option>
+                  {subCategories.map((sub) => (
+                    <option key={sub} value={sub}>{sub}</option>
+                  ))}
+                </select>
+                {errors.subCategoryType && <p className="error-text">{errors.subCategoryType}</p>}
+              </div>
             )}
 
-            {/* Title Field */}
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                label="Title"
+            <div className="form-input-group">
+              <label htmlFor="title" className="input-label">Title</label>
+              <input
+                type="text"
+                id="title"
                 name="title"
-                variant="standard"
+                className={`text-input ${errors.title ? 'error' : ''}`}
                 value={formData.title}
                 onChange={handleChange}
-                sx={textFieldStyle}
-                error={Boolean(errors.title)}
-                helperText={errors.title || ""}
               />
-            </Grid>
+              {errors.title && <p className="error-text">{errors.title}</p>}
+            </div>
 
-            {/* Keywords Field */}
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                label="Keywords"
+            <div className="form-input-group">
+              <label htmlFor="keywords" className="input-label">Keywords</label>
+              <input
+                type="text"
+                id="keywords"
                 name="keywords"
-                variant="standard"
+                className={`text-input ${errors.keywords ? 'error' : ''}`}
                 value={formData.keywords}
                 onChange={handleChange}
-                sx={textFieldStyle}
-                error={Boolean(errors.keywords)}
-                helperText={errors.keywords || ""}
               />
-            </Grid>
+              {errors.keywords && <p className="error-text">{errors.keywords}</p>}
+            </div>
 
-            {/* Description Field */}
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Description"
+            <div className={`form-input-group description-field ${formData.categoryType !== "Sub Category" ? 'col-span-2' : ''}`}>
+              <label htmlFor="description" className="input-label">Description</label>
+              <textarea
+                id="description"
                 name="description"
-                variant="standard"
+                className={`text-input text-area ${errors.description ? 'error' : ''}`}
                 value={formData.description}
                 onChange={handleChange}
-                sx={textFieldStyle}
-                error={Boolean(errors.description)}
-                helperText={errors.description || ""}
-              />
-            </Grid>
+                rows="3"
+              ></textarea>
+              {errors.description && <p className="error-text">{errors.description}</p>}
+            </div>
 
-            {/* Image Upload Field */}
-            <Grid item xs={12}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 4 }}>
-                <Box>
-                  <Button
-                    variant="contained"
-                    startIcon={<CloudUploadIcon />}
-                    component="label"
-                    sx={{ minWidth: 150 }}
-                  >
-                    Upload Image
-                    <input
-                      type="file"
-                      accept="image/*"
-                      hidden
-                      ref={fileInputRef}
-                      onChange={handleImageChange}
-                    />
-                  </Button>
-                  {errors?.category && (
-                    <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
-                      {errors.category}
-                    </Typography>
-                  )}
-                </Box>
-
+            <div className="form-input-group col-span-all upload-section">
+              <div className="upload-content">
+                <Button
+                  variant="contained"
+                  startIcon={<CloudUploadIcon />}
+                  component="label"
+                  className="upload-button"
+                >
+                  Upload Image
+                  <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    ref={fileInputRef}
+                    onChange={handleImageChange}
+                  />
+                </Button>
                 {preview && (
                   <Avatar
                     src={preview}
                     sx={{ width: 56, height: 56 }}
+                    className="preview-avatar"
                   />
                 )}
-              </Box>
-            </Grid>
+                 <button
+                type="submit"
+                className="submit-button"
+                disabled={loading}
+              >
+                {loading ? (
+                  <CircularProgress size={24} color="inherit" />
+                ) : editMode ? (
+                  "Update Category"
+                ) : (
+                  "Create Category"
+                )}
+              </button>
+              </div>
+            </div>
 
-            {/* Submit Button */}
-            <Grid item xs={12}>
-              <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  disabled={loading}
-                  sx={{ minWidth: 150 }}
-                >
-                  {loading ? (
-                    <CircularProgress size={24} />
-                  ) : editMode ? (
-                    "Update Category"
-                  ) : (
-                    "Create Category"
-                  )}
-                </Button>
-              </Box>
-            </Grid>
-          </Grid>
-        </Box>
-        {error && (
-          <Typography color="error" sx={{ mt: 2 }}>
-            {typeof error === "string"
-              ? error
-              : error.message || JSON.stringify(error)}
-          </Typography>
-        )}
-      </Paper>
+          
+          </form>
+          {error && (
+              <p className="error-text" style={{ marginTop: '16px' }}>
+                {typeof error === "string" ? error : error.message || JSON.stringify(error)}
+              </p>
+            )}
+        </div>
 
-      {/* Category Table */}
-      <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
+        {/* Category Table Section */}
+         <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
         <Typography variant="h6" gutterBottom>
           Category Table
         </Typography>
@@ -429,29 +383,29 @@ export default function Category() {
         </Box>
       </Paper>
 
-      {/* Delete Confirm Dialog */}
-      <Dialog
-        open={deleteConfirm.open}
-        onClose={() => setDeleteConfirm({ open: false, id: null })}
-      >
-        <DialogTitle>Confirm Delete</DialogTitle>
-        <DialogContent>
-          Are you sure you want to delete{" "}
-          <strong>{deleteConfirm.itemName || "this category"}</strong>?
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteConfirm({ open: false, id: null })} color="secondary">
-            Cancel
-          </Button>
-          <Button
-            color="error"
-            variant="contained"
-            onClick={confirmDelete}
-          >
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+        {/* Delete Confirm Dialog (MUI Dialog retained for simple function) */}
+        <Dialog
+          open={deleteConfirm.open}
+          onClose={() => setDeleteConfirm({ open: false, id: null, itemName: "" })}
+        >
+          <DialogTitle>Confirm Delete</DialogTitle>
+          <DialogContent>
+            Are you sure you want to delete{" "}
+            <strong>{deleteConfirm.itemName || "this category"}</strong>?
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setDeleteConfirm({ open: false, id: null, itemName: "" })} color="secondary">
+              Cancel
+            </Button>
+            <Button
+              color="error"
+              variant="contained"
+              onClick={confirmDelete}
+            >
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
   );
 }

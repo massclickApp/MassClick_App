@@ -24,6 +24,7 @@ import {
 } from "@mui/material";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import './roles.css'
 
 export default function Roles() {
     const dispatch = useDispatch();
@@ -183,83 +184,44 @@ export default function Roles() {
     ];
 
     return (
-        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-            <Paper elevation={3} sx={{ p: 3, borderRadius: 2, mb: 4 }}>
-                <Typography variant="h6" gutterBottom>
-                    {editingId ? "Edit Roles" : "Add New Roles"}
-                </Typography>
-                <Box component="form" onSubmit={handleSubmit}>
-                    <Grid container spacing={2}>
-                        {fields.map((field, i) => (
-                            <Grid item xs={12} key={i}>
-                                <TextField
-                                    fullWidth
-                                    type={field.type}
-                                    label={field.label}
-                                    name={field.name}
-                                    variant="standard"
-                                    value={formData[field.name]}
-                                    onChange={handleChange}
-                                    error={Boolean(errors[field.name])}
-                                    helperText={errors[field.name] || ""}
-                                    sx={{
-                                        "& .MuiInputBase-root": {
-                                            height: 50,
-                                            fontSize: "1.1rem",
-                                        },
-                                        "& .MuiInputLabel-root": {
-                                            fontSize: "1rem",
-                                        },
-                                    }}
-                                />
-                            </Grid>
-                        ))}
-                        <Grid item xs={12}>
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    gap: 2,
-                                    justifyContent: { xs: "flex-end", sm: "flex-start" },
-                                    mt: 4,
-                                }}
-                            >
-                                <Button
-                                    type="submit"
-                                    variant="contained"
-                                    disabled={loading}
-                                    sx={{ minWidth: 150 }}
-                                >
-                                    {loading ? (
-                                        <CircularProgress size={24} />
-                                    ) : editingId ? (
-                                        "Update Roles"
-                                    ) : (
-                                        "Create Roles"
-                                    )}
-                                </Button>
-                                {editingId && (
-                                    <Button
-                                        variant="outlined"
-                                        color="secondary"
-                                        onClick={resetForm}
-                                    >
-                                        Cancel
-                                    </Button>
-                                )}
-                            </Box>
-                        </Grid>
-                    </Grid>
-                </Box>
-                {error && (
-                    <Typography color="error" sx={{ mt: 2 }}>
-                        {typeof error === "string"
-                            ? error
-                            : error.message || JSON.stringify(error)}
-                    </Typography>
-                )}
-            </Paper>
+      <div className="role-page">
+    <div className="role-card form-section">
+        <h2 className="role-card-title">{editingId ? "Edit Roles" : "Add New Roles"}</h2>
+        <form onSubmit={handleSubmit} className="role-form-grid">
+            {fields.map((field, i) => (
+                <div key={i} className="role-form-input-group">
+                    <label htmlFor={field.name} className="role-input-label">{field.label}</label>
+                    <input
+                        type={field.type}
+                        id={field.name}
+                        name={field.name}
+                        value={formData[field.name]}
+                        onChange={handleChange}
+                        className={`role-text-input ${errors[field.name] ? "error" : ""}`}
+                    />
+                    {errors[field.name] && (
+                        <p className="role-error-text">{errors[field.name]}</p>
+                    )}
+                </div>
+            ))}
 
-            <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
+            <div className="role-button-group col-span-all">
+                <button type="submit" className="role-submit-button" disabled={loading}>
+                    {loading ? "Loading..." : editingId ? "Update Roles" : "Create Roles"}
+                </button>
+                {editingId && (
+                    <button type="button" className="role-cancel-button" onClick={resetForm}>
+                        Cancel
+                    </button>
+                )}
+            </div>
+        </form>
+        {error && <p className="role-error-text" style={{ marginTop: "16px" }}>{typeof error === "string" ? error : error.message || JSON.stringify(error)}</p>}
+    </div>
+
+    {/* 🔹 Roles Table Section */}
+        <h3>Roles Table</h3>
+        <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
                 <Typography variant="h6" gutterBottom>
                     Roles Table
                 </Typography>
@@ -268,22 +230,18 @@ export default function Roles() {
                 </Box>
             </Paper>
 
-            {/* 🔹 Delete Confirmation Dialog */}
-            <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
-                <DialogTitle>Confirm Delete</DialogTitle>
-                <DialogContent>
-                    Are you sure you want to delete{" "}
-                    <strong>{selectedRow?.city || "this location"}</strong>?
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={cancelDelete} color="secondary">
-                        Cancel
-                    </Button>
-                    <Button onClick={confirmDelete} color="error" variant="contained">
-                        Delete
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </Container>
+    {/* 🔹 Delete Confirmation Dialog */}
+    <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+            Are you sure you want to delete <strong>{selectedRow?.roleName || "this role"}</strong>?
+        </DialogContent>
+        <DialogActions>
+            <Button onClick={cancelDelete} color="secondary">Cancel</Button>
+            <Button onClick={confirmDelete} color="error" variant="contained">Delete</Button>
+        </DialogActions>
+    </Dialog>
+</div>
+
     );
 }

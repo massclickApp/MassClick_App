@@ -6,24 +6,19 @@ import { getAllRoles } from "../../redux/actions/rolesAction.js";
 import {
   Box,
   Button,
-  Container,
-  Grid,
+ 
   Paper,
-  TextField,
   Typography,
-  CircularProgress,
   IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  MenuItem,
-  InputAdornment
+
 } from "@mui/material";
+import './user.css'
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 export default function User() {
   const dispatch = useDispatch();
@@ -60,9 +55,7 @@ export default function User() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleClickShowPassword = () => {
-    setShowPassword((prev) => !prev);
-  };
+ 
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -103,7 +96,7 @@ export default function User() {
   const handleEdit = (row) => {
     setFormData({
       userName: row.userName,
-      password: "", 
+      password: "",
       contact: row.contact,
       role: row.role,
       emailId: row.emailId,
@@ -202,110 +195,103 @@ export default function User() {
   ];
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Paper elevation={3} sx={{ p: 3, borderRadius: 2, mb: 4 }}>
-        <Typography variant="h6" gutterBottom>
+    <div className="user-page">
+      <div className="user-card form-section">
+        <h2 className="user-card-title">
           {isEditMode ? "Edit User" : "Add New User"}
-        </Typography>
-        <Box component="form" onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
-            {fields.map((field, i) => (
-              <Grid
-                item
-                xs={12}
-                sm={field.name === "userName" || field.name === "contact" || field.name === "password" ? 4 : 12}
-                key={i}
-              >
-                {field.type === "select" && field.name === "role" ? (
-                  <TextField
-                    select
-                    fullWidth
-                    label="Role"
+        </h2>
+
+        <form onSubmit={handleSubmit} className="user-form-grid">
+          {fields.map((field, i) => {
+            const isPassword = field.type === "password";
+            const isRole = field.type === "select" && field.name === "role";
+
+            return (
+              <div key={i} className="user-form-input-group">
+                <label htmlFor={field.name} className="user-input-label">
+                  {field.label}
+                </label>
+
+                {isRole ? (
+                  <select
+                    id={field.name}
                     name="role"
-                    variant="standard"
                     value={formData.role}
                     onChange={handleChange}
-                    error={Boolean(errors.role)}
-                    helperText={errors.role || ""}
-                    style={{ minWidth: 230 }}
-                    sx={{
-                      "& .MuiInputBase-root": { height: 50, fontSize: "1.1rem" },
-                      "& .MuiInputLabel-root": { fontSize: "1rem" },
-                    }}
+                    className={`user-select-input ${errors.role ? "error" : ""}`}
                   >
+                    <option value="">Select Role</option>
                     {roles.map((role) => (
-                      <MenuItem key={role._id} value={role.roleName}>
+                      <option key={role._id} value={role.roleName}>
                         {role.roleName}
-                      </MenuItem>
+                      </option>
                     ))}
-                  </TextField>
-                ) : field.type === "password" ? (
-                  <TextField
-                    fullWidth
-                    type={showPassword ? "text" : "password"}
-                    label="Password"
-                    name="password"
-                    variant="standard"
-                    value={formData.password || ""}
-                    placeholder={isEditMode ? "Enter new password" : ""}
-                    onChange={handleChange}
-                    error={Boolean(errors.password)}
-                    helperText={errors.password || ""}
-                    autoComplete="new-password"
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end" sx={{ mr: 0 }}>
-                          <IconButton onClick={handleClickShowPassword} edge="end" sx={{ p: 0.25 }}>
-                            {showPassword ? <VisibilityOff sx={{ fontSize: 15 }} /> : <Visibility sx={{ fontSize: 15 }} />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                    sx={{
-                      "& .MuiInputBase-root": { height: 50, fontSize: "1rem" },
-                      "& .MuiInputLabel-root": { fontSize: "1rem" },
-                    }}
-                  />
+                  </select>
+                ) : isPassword ? (
+                  <div className="password-wrapper">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      id={field.name}
+                      name={field.name}
+                      placeholder={isEditMode ? "Enter new password" : ""}
+                      value={formData.password || ""}
+                      onChange={handleChange}
+                      className={`user-text-input ${errors.password ? "error" : ""}`}
+                      autoComplete="new-password"
+                    />
+                    <button
+                      type="button"
+                      className="password-toggle-btn"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                    >
+                      {showPassword ? "Hide" : "Show"}
+                    </button>
+                  </div>
                 ) : (
-                  <TextField
-                    fullWidth
+                  <input
                     type={field.type}
-                    label={field.label}
+                    id={field.name}
                     name={field.name}
-                    variant="standard"
                     value={formData[field.name]}
                     onChange={handleChange}
-                    error={Boolean(errors[field.name])}
-                    helperText={errors[field.name] || ""}
-                    autoComplete={field.name === "userName" ? "off" : "on"}
-                    sx={{
-                      "& .MuiInputBase-root": { height: 50, fontSize: "1.1rem" },
-                      "& .MuiInputLabel-root": { fontSize: "1rem" },
-                    }}
+                    className={`user-text-input ${errors[field.name] ? "error" : ""}`}
                   />
                 )}
-              </Grid>
-            ))}
-            <Grid item xs={12}>
-              <Box sx={{ display: "flex", justifyContent: { xs: "flex-end", sm: "flex-start" }, mt: 4 }}>
-                <Button type="submit" variant="contained" disabled={loading} sx={{ minWidth: 150 }}>
-                  {loading ? <CircularProgress size={24} /> : isEditMode ? "Update User" : "Create User"}
-                </Button>
-                {isEditMode && (
-                  <Button variant="outlined" color="secondary" onClick={resetForm} sx={{ ml: 2 }}>
-                    Cancel
-                  </Button>
+
+                {errors[field.name] && (
+                  <p className="user-error-text">{errors[field.name]}</p>
                 )}
-              </Box>
-            </Grid>
-          </Grid>
-        </Box>
+              </div>
+            );
+          })}
+
+          <div className="user-button-group col-span-all">
+            <button type="submit" className="user-submit-button" disabled={loading}>
+              {loading
+                ? "Loading..."
+                : isEditMode
+                  ? "Update User"
+                  : "Create User"}
+            </button>
+
+            {isEditMode && (
+              <button
+                type="button"
+                className="user-cancel-button"
+                onClick={resetForm}
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+        </form>
+
         {error && (
-          <Typography color="error" sx={{ mt: 2 }}>
+          <p className="user-error-text" style={{ marginTop: "16px" }}>
             {typeof error === "string" ? error : error.message || JSON.stringify(error)}
-          </Typography>
+          </p>
         )}
-      </Paper>
+      </div>
 
       <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
         <Typography variant="h6" gutterBottom>
@@ -319,7 +305,8 @@ export default function User() {
       <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
-          Are you sure you want to delete <strong>{selectedUser?.userName || "this user"}</strong>?
+          Are you sure you want to delete{" "}
+          <strong>{selectedUser?.userName || "this user"}</strong>?
         </DialogContent>
         <DialogActions>
           <Button onClick={cancelDelete} color="secondary">
@@ -330,6 +317,6 @@ export default function User() {
           </Button>
         </DialogActions>
       </Dialog>
-    </Container>
+    </div>
   );
 }

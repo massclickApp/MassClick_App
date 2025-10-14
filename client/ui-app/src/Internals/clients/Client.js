@@ -24,6 +24,7 @@ import {
 } from "@mui/material";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import './clients.css'
 
 export default function UserClients() {
   const dispatch = useDispatch();
@@ -200,57 +201,70 @@ export default function UserClients() {
   ];
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      {/* Form */}
-      <Paper elevation={3} sx={{ p: 3, borderRadius: 2, mb: 4 }}>
-        <Typography variant="h6" gutterBottom>
-          {isEditMode ? "Edit Client" : "Add New Client"}
-        </Typography>
-        <Box component="form" onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
-            {fields.map((field, i) => (
-              <Grid item xs={12} sm={6} key={i}>
-                <TextField
-                  fullWidth
-                  type={field.type}
-                  label={field.label}
-                  name={field.name}
-                  variant="standard"
-                  value={formData[field.name]}
-                  onChange={handleChange}
-                  error={!!errors[field.name]}
-                  helperText={errors[field.name] || ""}
-                  sx={{
-                    "& .MuiInputBase-root": { height: 50, fontSize: "1.1rem" },
-                    "& .MuiInputLabel-root": { fontSize: "1rem" },
-                  }}
-                />
-              </Grid>
-            ))}
-            <Grid item xs={12}>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: { xs: "flex-end", sm: "flex-start" },
-                  mt: 4,
-                }}
-              >
-                <Button type="submit" variant="contained" disabled={loading} sx={{ minWidth: 150 }}>
-                  {loading ? <CircularProgress size={24} /> : isEditMode ? "Update Client" : "Create Client"}
-                </Button>
-              </Box>
-            </Grid>
-          </Grid>
-        </Box>
-        {error && (
-          <Typography color="error" sx={{ mt: 2 }}>
-            {typeof error === "string" ? error : error.message || JSON.stringify(error)}
-          </Typography>
-        )}
-      </Paper>
+  <div className="client-page">
+  <div className="client-card form-section">
+    <h2 className="client-card-title">
+      {isEditMode ? "Edit Client" : "Add New Client"}
+    </h2>
 
-      {/* Table */}
-      <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
+    <form onSubmit={handleSubmit} className="client-form-grid">
+      {fields.map((field, i) => (
+        <div key={i} className="client-form-input-group">
+          <label htmlFor={field.name} className="client-input-label">
+            {field.label}
+          </label>
+          <input
+            type={field.type}
+            id={field.name}
+            name={field.name}
+            className={`client-text-input ${errors[field.name] ? "error" : ""}`}
+            value={formData[field.name]}
+            onChange={handleChange}
+          />
+          {errors[field.name] && (
+            <p className="client-error-text">{errors[field.name]}</p>
+          )}
+        </div>
+      ))}
+
+      <div className="client-button-group col-span-all">
+        <button
+          type="submit"
+          className="client-submit-button"
+          disabled={loading}
+        >
+          {loading ? (
+            <CircularProgress size={24} color="inherit" />
+          ) : isEditMode ? (
+            "Update Client"
+          ) : (
+            "Create Client"
+          )}
+        </button>
+
+        {isEditMode && (
+          <button
+            type="button"
+            className="client-cancel-button"
+            onClick={resetForm}
+          >
+            Cancel
+          </button>
+        )}
+      </div>
+    </form>
+
+    {error && (
+      <p className="client-error-text" style={{ marginTop: "16px" }}>
+        {typeof error === "string"
+          ? error
+          : error.message || JSON.stringify(error)}
+      </p>
+    )}
+  </div>
+
+  {/* Table Section */}
+ <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
         <Typography variant="h6" gutterBottom>
           Client Table
         </Typography>
@@ -259,21 +273,25 @@ export default function UserClients() {
         </Box>
       </Paper>
 
-      {/* 🔹 Delete Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
-        <DialogTitle>Confirm Delete</DialogTitle>
-        <DialogContent>
-          Are you sure you want to delete <strong>{selectedUser?.name || "this client"}</strong>?
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={cancelDelete} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={confirmDelete} color="error" variant="contained">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+  {/* Delete Confirmation Dialog */}
+  <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
+    <DialogTitle className="client-dialog-title">
+      Confirm Delete
+    </DialogTitle>
+    <DialogContent className="client-dialog-content">
+      Are you sure you want to delete{" "}
+      <strong>{selectedUser?.name || "this client"}</strong>?
+    </DialogContent>
+    <DialogActions>
+      <Button onClick={cancelDelete} color="secondary">
+        Cancel
+      </Button>
+      <Button onClick={confirmDelete} color="error" variant="contained">
+        Delete
+      </Button>
+    </DialogActions>
+  </Dialog>
+</div>
+
   );
 }

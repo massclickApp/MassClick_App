@@ -1,0 +1,347 @@
+/* --- Global Reset and Base Styles --- */
+:root {
+    --color-background: #f8f9fb;
+    --color-card-bg: #ffffff;
+    --color-text-primary: #1f2937;
+    --color-text-secondary: #6b7280;
+    --color-border: #e5e7eb;
+    /* --- ORANGE THEME --- */
+    --color-primary-orange: #FF8C00; /* Vibrant Orange from Homepage CTA */
+    --color-primary-hover: #D97800; /* Darker shade of orange for hover */
+    --color-disabled-orange: #ffc280; /* Light orange for disabled state */
+    --color-error: #ef4444;
+}
+
+body {
+    background-color: var(--color-background);
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    padding: 0; 
+    color: var(--color-text-primary);
+    line-height: 1.5;
+}
+
+.business-page {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 16px; 
+}
+
+/* --- Card/Paper Replacement --- */
+.business-card {
+    background-color: var(--color-card-bg);
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--color-border);
+    margin-bottom: 30px;
+    transition: box-shadow 0.3s ease;
+}
+
+.business-card:hover {
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+}
+
+.card-title {
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: 30px;
+    border-bottom: 3px solid var(--color-primary-orange); 
+    width: fit-content;
+    padding-bottom: 8px;
+}
+
+/* --- Form Grid Layout --- */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px 20px;
+}
+
+/* Helper classes */
+.col-span-all {
+    grid-column: 1 / -1;
+}
+
+/* --- Input Group Styling --- */
+.form-input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-label {
+    font-size: 0.95rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.text-input,
+.select-input,
+.text-area {
+    width: 100%;
+    /* Reduced padding/height for the new opening hours design will be done by a specific class */
+    padding: 0 16px; 
+    font-size: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background-color: var(--color-card-bg);
+    transition: border-color 0.3s, box-shadow 0.3s;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.text-input,
+.select-input {
+    height: 48px;
+}
+
+.select-input {
+    /* Custom arrow for select */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236B7280'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 16px;
+}
+
+.text-area {
+    min-height: 120px;
+    resize: vertical;
+    padding: 12px 16px;
+    height: auto !important;
+}
+
+/* Input Focus State (Primary Orange Glow) */
+.text-input:focus,
+.select-input:focus,
+.text-area:focus {
+    outline: none;
+    border-color: var(--color-primary-orange);
+    box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.2);
+}
+
+.text-input.error,
+.select-input.error,
+.text-area.error {
+    border-color: var(--color-error);
+}
+
+.error-text {
+    color: var(--color-error);
+    font-size: 0.85rem;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+.upload-button,
+.submit-button {
+    height: 48px;
+    padding: 0 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s, box-shadow 0.3s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.upload-button,
+.submit-button {
+    background-color: var(--color-primary-orange);
+    color: white;
+}
+
+.upload-button:hover,
+.submit-button:hover:not(:disabled) {
+    background-color: var(--color-primary-hover);
+    box-shadow: 0 4px 10px rgba(255, 140, 0, 0.4);
+}
+.upload-button:active {
+    transform: scale(0.98);
+}
+
+.submit-button:disabled {
+    background-color: var(--color-disabled-orange);
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.upload-section {
+    padding-top: 20px;
+}
+
+.upload-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.preview-avatar {
+    border: 2px solid var(--color-border) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-input-group .ql-toolbar {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-color: var(--color-border);
+    background-color: var(--color-background);
+}
+
+.form-input-group .ql-container {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-color: var(--color-border) !important;
+}
+.form-input-group .ql-container:focus-within {
+    border-color: var(--color-primary-orange) !important;
+    box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.2);
+}
+
+
+/* ---------------------------------------------------------------------- */
+/* --- NEW OPENING HOURS (INTERNATIONAL LOOK) STYLES --- */
+/* ---------------------------------------------------------------------- */
+
+/* 1. Day Card Styling & Improved Grid Layout (Desktop) */
+.opening-hours-row {
+    display: grid;
+    /* Day (Fixed) | Time Group (Shared) | Status (Narrow, max-content) */
+    grid-template-columns: 100px 1fr max-content; 
+    gap: 20px; 
+    align-items: center;
+    padding: 15px 20px; 
+    border-radius: 12px;
+    background-color: var(--color-background); 
+    border: 1px solid var(--color-border);
+    margin-bottom: 12px; 
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.opening-hours-row:hover {
+    background-color: #f0f2f5; 
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+/* 2. Style the Day Label */
+.day-label {
+    font-weight: 700;
+    color: var(--color-text-primary);
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    height: 100%; 
+}
+
+/* 3. Group the Time Inputs */
+.time-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Open and Close fields share space */
+    gap: 15px; 
+    align-items: center;
+}
+
+/* 4. Refined Input/Select Styling for Density (Overrides Base) */
+.opening-hours-row .text-input,
+.opening-hours-row .select-input {
+    height: 40px; /* Reduced height */
+    padding: 0 12px; /* Reduced horizontal padding */
+    border-radius: 8px; /* Smaller border radius */
+}
+
+/* 5. Improved Disabled State */
+.opening-hours-row[data-closed="true"] {
+    opacity: 0.7; 
+    background-color: #fbfbfb;
+    border-color: #f0f2f5;
+}
+
+.opening-hours-row[data-closed="true"] .text-input {
+    background-color: #f0f2f5; 
+    color: var(--color-text-secondary);
+}
+
+
+/* ---------------------------------------------------------------------- */
+/* --- MEDIA QUERIES (RESPONSIVENESS) --- */
+/* ---------------------------------------------------------------------- */
+
+@media (max-width: 1024px) {
+    .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px 16px;
+    }
+    
+    /* Tablet opening hours (Still 3 main columns) */
+    .opening-hours-row {
+        grid-template-columns: 90px 1fr max-content; 
+        gap: 15px;
+        padding: 12px 15px;
+    }
+    .time-group {
+        gap: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 18px 0;
+    }
+    .col-span-all {
+        grid-column: span 1;
+    }
+    .business-card {
+        padding: 20px;
+    }
+    .card-title {
+        font-size: 1.5rem;
+        margin-bottom: 22px;
+    }
+    .upload-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .upload-button,
+    .submit-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .MuiPaper-root {
+        margin: 0 -16px;
+        width: calc(100% + 32px);
+        box-shadow: none !important;
+    }
+
+    /* Mobile opening hours (Stacking) */
+    .opening-hours-row {
+        grid-template-columns: 1fr; /* Stack the main sections: Day | Time Group | Status */
+        gap: 12px !important; 
+    }
+    .time-group {
+        grid-template-columns: 1fr; /* Stack the Open/Close times */
+        gap: 10px;
+    }
+    .day-label {
+        height: auto;
+        padding-bottom: 5px;
+        border-bottom: 1px dashed var(--color-border);
+        justify-content: flex-start;
+    }
+}
+
+/* Small Mobile Devices */
+@media (max-width: 480px) {
+    .business-page {
+        padding: 0 8px;
+    }
+    .business-card {
+        padding: 16px;
+    }
+}
