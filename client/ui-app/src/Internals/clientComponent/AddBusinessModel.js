@@ -54,10 +54,15 @@ const OTPLoginModal = ({ open, handleClose }) => {
 
             console.log("OTP Sent:", response.otp);
             setOtpSent(true);
+            localStorage.setItem("mobileNumber", mobileNumber);
         } catch (err) {
             console.error("Error sending OTP:", err);
         }
     };
+React.useEffect(() => {
+    const storedMobile = localStorage.getItem("mobileNumber");
+    if (storedMobile) setMobileNumber(storedMobile);
+}, []);
 
     const handleVerifyOtp = async () => {
         if (!otp) return;

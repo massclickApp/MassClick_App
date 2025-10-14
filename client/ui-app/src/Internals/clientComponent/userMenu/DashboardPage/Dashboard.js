@@ -27,7 +27,8 @@ const ShareIcon = ({ className }) => <span className={className}>🔗</span>;
 
 export default function DashboardPage() {
   return (
-  
+  <>
+  <CardsSearch />
     <div className="dashboard-page-container">
       <h1 className="dashboard-main-title">Analytics Overview</h1>
       <hr className="title-separator" />
@@ -63,6 +64,7 @@ export default function DashboardPage() {
         />
       </section>
     </div>
-   
+    <Footer />
+   </>
   );
 }

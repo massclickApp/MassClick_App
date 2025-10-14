@@ -13,7 +13,8 @@ const PinIcon = () => <span className="input-icon">📌</span>; // Pincode
 
 export default function AccountPage() {
   return (
- 
+ <>
+ <CardsSearch/>
  <div className="account-details-container">
       <div className="card-header">
         <h2 className="card-title">Account Details</h2>
@@ -87,5 +88,7 @@ export default function AccountPage() {
         </div>
       </form>
     </div>  
+    <Footer/>
+    </>
   )
 }

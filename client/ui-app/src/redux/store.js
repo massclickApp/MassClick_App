@@ -13,16 +13,15 @@ import otpReducer from './reducers/otpReducer.js'
 
 const rootReducer = combineReducers({
   auth: authReducer,
-    userReducer: userReducer,
-    userClientReducer: userClientReducer,
-    locationReducer: locationReducer,
-    categoryReducer: categoryReducer,
-    businessListReducer: businessListReducer,
-    rolesReducer: rolesReducer,
-    enquiryReducer: enquiryReducer,
-    startProjectReducer: startProjectReducer,
-    otpReducer: otpReducer
-    
+  userReducer: userReducer,
+  userClientReducer: userClientReducer,
+  locationReducer: locationReducer,
+  categoryReducer: categoryReducer,
+  businessListReducer: businessListReducer,
+  rolesReducer: rolesReducer,
+  enquiryReducer: enquiryReducer,
+  startProjectReducer: startProjectReducer,
+  otpReducer: otpReducer   
 });
 
 export const store = createStore(rootReducer, applyMiddleware(thunk));

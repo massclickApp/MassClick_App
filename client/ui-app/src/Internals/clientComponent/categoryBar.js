@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react"; // <-- added useEffect
 import { useNavigate, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { viewOtpUser } from "../../redux/actions/otpAction.js";
+
 import {
     Box,
     Button,
@@ -109,10 +112,20 @@ export const userMenuItems = [
 const CategoryBar = () => {
     const navigate = useNavigate();
     const location = useLocation();
+  const dispatch = useDispatch();
 
     const [selectedLanguage, setSelectedLanguage] = useState("English");
     const [anchorEl, setAnchorEl] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const otpState = useSelector((state) => state.otpReducer || {});
+    const { viewResponse, verifyResponse } = otpState;
+    const userName = viewResponse?.user?.userName || '';
+    useEffect(() => {
+    const mobile = localStorage.getItem("mobileNumber"); 
+    if (mobile) {
+        dispatch(viewOtpUser(mobile));
+    }
+}, [dispatch]);
 
     // <-- NEW: Add login state
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -130,23 +143,25 @@ const CategoryBar = () => {
     };
 
     const handleLogout = () => {
-    localStorage.removeItem("authToken");   
-    setIsLoggedIn(false);                   
-    setIsDrawerOpen(false);                 
-    navigate("/home");                      
-    window.dispatchEvent(new Event('authChange')); 
-};
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("mobileNumber");
 
-      useEffect(() => {
-        checkLogin(); 
-        
+        setIsLoggedIn(false);
+        setIsDrawerOpen(false);
+        navigate("/home");
+        window.dispatchEvent(new Event('authChange'));
+    };
+
+    useEffect(() => {
+        checkLogin();
+
         window.addEventListener("storage", checkLogin);
-        
+
         window.addEventListener("authChange", checkLogin);
 
         return () => {
             window.removeEventListener("storage", checkLogin);
-            window.removeEventListener("authChange", checkLogin); 
+            window.removeEventListener("authChange", checkLogin);
         };
     }, []);
 
@@ -175,19 +190,17 @@ const CategoryBar = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                p: 3, // Increased padding for a premium feel
-                bgcolor: '#fafafa', // Subtle background
+                p: 3,
+                bgcolor: '#fafafa',
                 borderBottom: '1px solid #eee'
             }}>
-                {/* Close Button on the left */}
                 <IconButton onClick={handleDrawerToggle(false)} sx={{ color: 'text.secondary', mr: 2, p: 0 }}>
                     <CloseIcon />
                 </IconButton>
 
-                {/* Profile Info (right side) */}
                 <Box sx={{ flexGrow: 1, textAlign: 'right' }}>
                     <Typography variant="subtitle1" fontWeight={700} sx={{ lineHeight: 1.2 }}>
-                        Prem
+                        {userName}
                     </Typography>
                     <Typography variant="caption" color="text.secondary" sx={{
                         fontSize: '0.75rem',
@@ -198,11 +211,9 @@ const CategoryBar = () => {
                     </Typography>
                 </Box>
 
-                {/* Avatar */}
                 <Avatar sx={{ width: 48, height: 48, ml: 2, bgcolor: '#F7941D' }}>P</Avatar> {/* Added an initial for visual */}
             </Box>
 
-            {/* === B. LIST OF MENU ITEMS (Refined) === */}
             <List disablePadding>
                 {userMenuItems.map((item, index) => {
 

@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const message91UsersSchema = new mongoose.Schema({
   title: { type: String, enum: ["Mr", "Ms"], default: "Ms" },
   userName: { type: String, },
-  profileImage: { type: String, default: "" },
+  profileImageKey: { type: String, default: "" },
   email: { type: String, },
   emailVerified: { type: Boolean, default: false },
   mobileNumber1: { type: String, unique: true, required: true },

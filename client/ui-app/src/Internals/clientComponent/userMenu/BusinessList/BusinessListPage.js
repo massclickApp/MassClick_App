@@ -13,7 +13,8 @@ export default function BusinessListPage() {
     // Or, call a backend API that initiates the PhonePe flow.
   };
   return (
-  
+  <>
+  <CardsSearch />
       <div className="cta-page-container">
         <div className="listing-cta-card">
           <h3 className="cta-title">List Your Business on</h3>
@@ -35,5 +36,7 @@ export default function BusinessListPage() {
           <p className="payment-note">Secure payment powered by PhonePe & other gateways.</p>
         </div>
       </div>    
+      <Footer />
+      </>
   )
 }
