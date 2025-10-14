@@ -19,11 +19,9 @@ const popularSearches = [
 const PopularCategories = () => {
     return (
         <div className="popular-categories-container-text">
-            {/* The heading uses the orange color from your image */}
             <h2 className="popular-categories-heading-text">Popular Search</h2>
             <div className="search-links-wrapper">
                 {popularSearches.map((link, index) => (
-                    // We render the link followed by a separator except for the last one
                     <React.Fragment key={index}>
                         <a 
                             href={`/search?q=${link.toLowerCase().replace(/ /g, '-')}`} 

@@ -1,3 +1,9 @@
+import Policy from "../../footer/privacyPolicy/privacyPolicy"
+
 export default function PolicyPage() {
-  return <h2>Dashboard Page</h2>;
+  return (
+    <div>
+      <Policy />
+    </div>
+  );
 }

@@ -8,46 +8,55 @@
     --card-shadow-hover: 0 12px 30px rgba(0, 0, 0, 0.25);
     --transition-smooth: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
     --card-gap: 20px;
+    --card-fixed-width: 270px; /* Fixed width for predictable layout */
 }
 
 /* --- Base Carousel Container --- */
 .carousel-container {
     position: relative;
     margin: 60px auto;
-    padding: 30px 0;
+    /* max-width is now tighter to center the content well */
     max-width: 1530px;
+    padding: 30px 20px; /* Padding for mobile screens */
     box-shadow: 0 10px 50px rgba(0, 0, 0, 0.05), 0 0 4px rgba(0, 0, 0, 0.03);
     border-radius: 20px;
-    background-color: var(--container-bg-color);
-    overflow: hidden; /* Important for containing the carousel wrapper */
+    background-color: var(--card-bg-color); /* Changed to white for better look based on image */
+    /* Remove overflow: hidden; here to keep the shadow simple, use it on cards-wrapper if needed */
 }
 
 .section-title {
     padding-bottom: 20px;
     color: #333;
-    padding-left: 20px; /* Added left padding for mobile/desktop title alignment */
+    font-size: 2rem; /* Adjusted for consistency */
+    font-weight: 700;
+    text-align: center; /* Center the title */
+    margin: 0 auto;
 }
 
 /* --- Cards Wrapper (The Scrollable Area) --- */
 .cards-wrapper {
     display: flex;
-    overflow-x: auto;
+    overflow-x: scroll; /* Enable horizontal scrolling */
     flex-wrap: nowrap;
     gap: var(--card-gap);
     scroll-snap-type: x mandatory;
-    -ms-overflow-style: none; 
-    scrollbar-width: none; 
-    padding: 0 20px; /* Default padding for mobile */
+    padding: 20px 0; /* Vertical padding */
+    margin: 0 auto;
+    /* For smaller screens, we use padding on the carousel-container. 
+       The cards-wrapper should be full width to scroll seamlessly. */
 }
 .cards-wrapper::-webkit-scrollbar {
     display: none;
 }
+.cards-wrapper {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
 
-/* --- Individual Card Styling (Mostly unchanged) --- */
+/* --- Individual Card Styling --- */
 .card {
-    flex: 0 0 auto;
-    width: calc(100% - 40px);
-    max-width: 320px;
+    flex: 0 0 var(--card-fixed-width); /* Set fixed width */
+    height: 340px; /* Fixed height for consistent look */
     box-shadow: var(--card-shadow-soft);
     border-radius: 12px;
     overflow: hidden;
@@ -57,13 +66,14 @@
     cursor: pointer;
 }
 
+/* ... (Remaining card styles for hover, image, content are good) ... */
 .card:hover {
     transform: translateY(-8px) scale(1.01);
     box-shadow: var(--card-shadow-hover);
 }
 
 .card-image-wrapper {
-    height: 200px;
+    height: 65%; /* Adjusted for better image/content balance */
     overflow: hidden;
 }
 
@@ -80,23 +90,20 @@
 }
 
 .card-content {
-    /* Background color should be set inline based on card data */
-    padding: 25px 20px;
+    height: 35%;
+    padding: 20px;
     color: white;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    min-height: 120px;
     justify-content: space-between;
 }
 
 .card-title {
-    margin: 0 0 20px 0;
-    font-size: 1.75rem;
+    margin: 0 0 15px 0;
+    font-size: 1.5rem;
     font-weight: 700;
-    letter-spacing: 0.8px;
     text-transform: uppercase;
-    line-height: 1.2;
 }
 
 .enquire-button {
@@ -104,8 +111,8 @@
     color: var(--brand-orange);
     border: none;
     border-radius: 8px;
-    padding: 14px 30px;
-    font-size: 1rem;
+    padding: 10px 20px;
+    font-size: 0.9rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease-out;
@@ -119,76 +126,72 @@
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
 }
 
-/* --- Navigation Arrow Styling (KEY CHANGES HERE) --- */
+
+/* --- Navigation Arrow Styling (FIXED AND IMPROVED) --- */
 .nav-arrow {
     position: absolute;
-    top: 50%;
+    top: 55%; /* Adjust from 50% to visually center better */
     transform: translateY(-50%);
     background-color: var(--card-bg-color);
     color: var(--brand-orange);
-    border: none;
+    border: 1px solid rgba(0, 0, 0, 0.1); /* Added a subtle border */
     border-radius: 50%;
-    width: 55px; 
-    height: 55px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    width: 50px; 
+    height: 50px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     cursor: pointer;
     z-index: 10;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    display: none; /* Hide by default */
+    display: none; /* HIDE BY DEFAULT (MOBILE FIRST) */
     justify-content: center;
     align-items: center;
-    opacity: 0.95;
-    
-    /* New: Position slightly inside (10px from the container edge) */
-    right: 10px; 
-    left: 10px; /* Will be overridden by the specific class */
+    opacity: 1;
 }
 
 .nav-arrow.right {
-    left: auto;
+    right: 5px; /* Position closer to the edge */
 }
 
 .nav-arrow.left {
-    right: auto;
+    left: 5px; /* Position closer to the edge */
 }
 
 .nav-arrow:hover {
     background-color: var(--brand-orange);
     color: white;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-    transform: translateY(-50%) scale(1.05);
-    opacity: 1;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    transform: translateY(-50%) scale(1.1);
 }
+
 
 /* --- RESPONSIVENESS (Media Queries) --- */
 
-/* Tablet View (2 Cards Visible) */
-@media (min-width: 650px) {
-    .card {
-        width: calc(50% - (var(--card-gap) / 2)); 
-        max-width: none;
+/* Tablet View (768px and up) */
+@media (min-width: 768px) {
+    .carousel-container {
+        padding: 40px; /* More padding on tablet/desktop */
     }
-
-    /* Reduce wrapper padding to keep cards centered while arrows are inside */
     .cards-wrapper {
-        padding: 0 60px; 
+        /* Center the cards wrapper and ensure horizontal overflow is visible */
+        justify-content: flex-start;
+        padding: 0 40px; /* Space for the arrows */
+        margin: 0 -40px; /* Compensate for the padding */
     }
-
     .nav-arrow {
-        display: flex; /* Show arrows on tablets and up */
+        display: flex; /* SHOW ARROWS */
+        /* Position arrows outside the scrollable area, inside the container */
+    }
+    .nav-arrow.right {
+        right: 20px;
+    }
+    .nav-arrow.left {
+        left: 20px;
     }
 }
 
-/* Desktop View (3 Cards Visible) */
+/* Desktop View (1024px and up) */
 @media (min-width: 1024px) {
-    .card {
-        width: calc(33.333% - (2 * var(--card-gap) / 3)); 
-    }
-}
-
-/* Large Desktop View (4 Cards Visible) */
-@media (min-width: 1350px) {
-    .card {
-        width: calc(25% - (3 * var(--card-gap) / 4)); 
+    .section-title {
+        font-size: 2.25rem;
     }
 }

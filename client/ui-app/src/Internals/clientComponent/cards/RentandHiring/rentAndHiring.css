@@ -12,7 +12,85 @@
     padding: 0 20px; /* Horizontal padding for desktop/tablet screens */
     box-sizing: border-box; /* Include padding/border in element's total width */
 }
+/* Styling for the No Results Message */
 
+/* --- INTERNATIONAL-LEVEL NO RESULTS DESIGN --- */
+
+.no-results-container {
+    /* Center and define boundaries */
+    max-width: 650px; /* Slightly wider for better space */
+    margin: 80px auto; /* More vertical space */
+    padding: 50px 30px;
+    
+    /* Modern container style */
+    text-align: center;
+    border: none; /* Remove the dashed border */
+    border-radius: 12px; /* Smoother, larger radius */
+    background: #ffffff; /* Crisp white background */
+    
+    /* Stronger, professional shadow */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Deeper, softer shadow */
+}
+
+/* 1. Visual Element (The Icon/Emoji) */
+.no-results-title {
+    font-size: 32px; /* Larger, more authoritative title */
+    font-weight: 700;
+    color: #1a1a1a; /* Very dark text for contrast */
+    margin-bottom: 5px;
+    
+    /* Add an impactful, larger icon/emoji */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.no-results-title::before {
+    /* Use a visually strong, neutral icon */
+    content: "🔎"; /* Magnifying glass, or use a proper icon library */
+    font-size: 40px; 
+    margin-right: 15px;
+}
+
+
+/* 2. Core Messaging */
+.no-results-suggestion {
+    font-size: 18px; /* Slightly larger, easier to read */
+    color: #666; /* Soft gray for body text */
+    margin-top: 15px;
+    line-height: 1.6;
+}
+
+/* 3. Call to Action (The most important part after the message) */
+.no-results-action {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333; /* Make this suggestion stand out */
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+/* 4. The Button (Make it look like a primary action) */
+.go-home-button {
+    background-color: #007bff; /* Primary Brand Color */
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    
+    /* Separation from other elements */
+    margin-top: 15px;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3); /* Subtle button shadow */
+}
+
+.go-home-button:hover {
+    background-color: #0056b3; /* Darker on hover */
+    transform: translateY(-2px); /* Slight lift effect */
+}
 
 @media (max-width: 992px) {
     .restaurants-list-wrapper {

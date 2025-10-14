@@ -27,7 +27,7 @@ import qs from 'qs'; // optional, for query string formatting
 const CustomTextField = styled(TextField)(({ theme }) => ({
     "& .MuiOutlinedInput-root": {
         borderRadius: "40px",
-        height: "65px", 
+        height: "65px",
         backgroundColor: "rgba(255, 255, 255, 0.95)",
         boxShadow: "0px 8px 30px rgba(0,0,0,0.15)",
         backdropFilter: "blur(5px)",
@@ -173,8 +173,8 @@ const HeroSection = ({ searchTerm, setSearchTerm, setSearchResults }) => {
         const filteredBusinesses = businessList.filter((business) => {
             const matchesSearchTerm =
                 !searchTerm ||
-                (business.category &&
-                    business.category.toLowerCase().includes(searchTerm.toLowerCase()));
+                (business.category && business.category.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                (business.businessName && business.businessName.includes(searchTerm));
 
             const matchesCategory =
                 !categoryName ||

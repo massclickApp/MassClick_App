@@ -17,44 +17,44 @@ import StudioShopImage from "../../../assets/Popular/Photography.png"
 
 // Use data that matches the image structure (Title, Location, City, Image)
 const cardsData = [
-    { 
-        title: 'Matahn hotel', 
-        location: 'woralaiyur', 
-        city: 'Tichy', 
-        image: MooseImage, 
+    {
+        title: 'Matahn hotel',
+        location: 'woralaiyur',
+        city: 'Tichy',
+        image: MooseImage,
         alt: 'Matshn hotel surrounded by nature',
         type: 'hotel'
     },
-    { 
-        title: 'Studio Shop Photography', 
-        location: 'Srirangam', 
-        city: 'Tichy', 
-        image: StudioShopImage, 
+    {
+        title: 'Studio Shop Photography',
+        location: 'Srirangam',
+        city: 'Tichy',
+        image: StudioShopImage,
         alt: 'Studio Shop Photography logo',
         type: 'photography'
     },
-    { 
-        title: 'Zara Pest Control', 
-        location: 'chennai', 
-        city: '', 
-        image: PestControlImage, 
+    {
+        title: 'Zara Pest Control',
+        location: 'chennai',
+        city: '',
+        image: PestControlImage,
         alt: 'Person in protective suit spraying for pest control',
         type: 'pest-control'
     },
     // Adding more data to ensure horizontal scrolling works well
-    { 
-        title: 'Tech Repair Hub', 
-        location: 'karanai', 
-        city: 'Tichy', 
-        image: MooseImage, 
+    {
+        title: 'Tech Repair Hub',
+        location: 'karanai',
+        city: 'Tichy',
+        image: MooseImage,
         alt: 'Computer repair service',
         type: 'repair'
     },
-    { 
-        title: 'The Organic Market', 
-        location: 'velachery', 
-        city: 'chennai', 
-        image: StudioShopImage, 
+    {
+        title: 'The Organic Market',
+        location: 'velachery',
+        city: 'chennai',
+        image: StudioShopImage,
         alt: 'Fresh organic produce',
         type: 'market'
     },
@@ -72,19 +72,22 @@ const RecentActivities = () => {
             const gap = 20; // Matches the CSS gap
             const scrollAmount = cardWidth + gap;
 
-            containerRef.current.scrollBy({ 
-                left: direction === 'right' ? scrollAmount : -scrollAmount, 
-                behavior: 'smooth' 
+            containerRef.current.scrollBy({
+                left: direction === 'right' ? scrollAmount : -scrollAmount,
+                behavior: 'smooth'
             });
         }
     };
 
     return (
         <div className="recent-activities-section">
-            <h2 className="section-title">Recent Activities</h2>
-            
+            <h1
+                className="section-title text-3xl font-bold text-gray-800 mb-6"
+                style={{ color: '#E67E22', textAlign: 'start' }}
+            >Recent Activities</h1>
+
             <div className="carousel-container-v2">
-                
+
                 {/* Scroll Buttons */}
                 <button className="nav-arrow left" onClick={() => scroll('left')}>
                     <KeyboardDoubleArrowLeftIcon />
@@ -94,7 +97,7 @@ const RecentActivities = () => {
                 <div className="cards-wrapper-v2" ref={containerRef}>
                     {cardsData.map((card, index) => (
                         <div className="activity-card" key={index}>
-                            
+
                             {/* Card Header (Details) */}
                             <div className="card-header">
                                 <h3 className="card-title">{card.title}</h3>

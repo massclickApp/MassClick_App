@@ -20,22 +20,33 @@ import AddBusinessModel from "./AddBusinessModel.js";
 
 const CustomTextField = styled(TextField)(({ theme }) => ({
     "& .MuiOutlinedInput-root": {
+        // Pill Shape
         borderRadius: "40px",
         height: "50px", 
+        // Glassy/Modern Look
         backgroundColor: "rgba(255, 255, 255, 0.95)",
         boxShadow: "0px 2px 10px rgba(0,0,0,0.05)", 
+        // Subtle Border & Glass Effect
         backdropFilter: "blur(5px)",
         border: "1px solid rgba(255,255,255,0.4)",
         transition: "all 0.4s ease-in-out",
+        // Hover State
         "&:hover": {
             boxShadow: "0px 5px 15px rgba(0,0,0,0.1)",
             transform: "none",
+            border: "1px solid rgba(255,255,255,0.8)", // Slightly bolder on hover
         },
+        // Focus State (The primary color border/shadow on activation)
         "&.Mui-focused": {
-            boxShadow: `0 0 0 4px ${theme.palette.primary.light}, 0px 5px 15px rgba(0,0,0,0.1)`,
-            border: `1px solid ${theme.palette.primary.main}`,
+            boxShadow: `0 0 0 4px rgba(255, 123, 0, 0.2), 0px 5px 15px rgba(0,0,0,0.1)`, // Orange-tinted outline
+            border: `1px solid #FF7B00`, // Primary orange border
         },
+        // Remove default fieldset border
+        "& fieldset": {
+            border: 'none',
+        }
     },
+    // Input Text Styling
     "& .MuiInputBase-input": {
         padding: "10px 20px", 
         fontSize: "1rem", 

@@ -45,19 +45,7 @@ const SimpleModal = ({ children, onClose, title }) => (
     </div>
 );
 
-const OverView = ({ children, onClose, title }) => (
-    <div className="modal-overlay" onClick={onClose}>
-        <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-                <h3 className="modal-title">{title}</h3>
-                <CloseIcon className="modal-close-btn" onClick={onClose} />
-            </div>
-            <div className="modal-body">
-                {children}
-            </div>
-        </div>
-    </div>
-);
+
 
 const FullScreenGallery = ({ images, initialIndex, onClose }) => {
     const [index, setIndex] = useState(initialIndex);

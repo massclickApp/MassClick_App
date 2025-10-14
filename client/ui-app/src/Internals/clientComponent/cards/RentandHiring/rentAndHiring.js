@@ -4,11 +4,14 @@ import CardDesign from "../cards.js";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllBusinessList } from "../../../../redux/actions/businessListAction.js";
 import CardsSearch from "../../CardsSearch/CardsSearch.js";
+import { useNavigate } from 'react-router-dom';
 
 
 
 const RentAndHiringCards = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+
     const { businessList = [] } = useSelector(
         (state) => state.businessListReducer || {}
     )
@@ -18,13 +21,24 @@ const RentAndHiringCards = () => {
     }, [dispatch]);
 
 
-   const rentAndHiring = businessList.filter(b => 
-    b.category && 
-    ["rent", "hiring"].includes(b.category.toLowerCase())
-);
+    const rentAndHiring = businessList.filter(b =>
+        b.category &&
+        ["rent", "hiring"].includes(b.category.toLowerCase())
+    );
 
     if (rentAndHiring.length === 0) {
-        return <p>No matching businesses found with the name "Rent And Hiring".</p>;
+        return (
+            <div className="no-results-container">
+                <p className="no-results-title">No Rent or Hiring Businesses Found Yet 😔</p>
+                <p className="no-results-suggestion">
+                    It looks like we don't have any businesses matching "Rent" or "Hiring" in our data right now.
+                </p>
+                <p className="no-results-action">
+                    Please try another category or check back later!
+                </p>
+                <button className="go-home-button" onClick={() => navigate('/home')}>Go to Homepage</button>
+            </div>
+        );
     }
 
     return (
