@@ -327,99 +327,87 @@ const { loading, error } = useSelector(state => state.startProjectReducer);
             <Footer /> 
 
             <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="quick-project-enquiry-title"
-                aria-describedby="quick-project-enquiry-description"
-            >
-                <Box sx={modalStyle}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                        <Typography id="quick-project-enquiry-title" variant="h5" component="h2" sx={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, color: darkOrange }}>
-                            Start Your Project
-                        </Typography>
-                        <IconButton onClick={handleClose} aria-label="close">
-                            <CloseIcon />
-                        </IconButton>
-                    </Box>
-                    
-                    <Typography id="quick-project-enquiry-description" sx={{ mt: 1, mb: 3, color: 'text.secondary' }}>
-                        Tell us a little about your project, and we'll get back to you within 24 hours.
-                    </Typography>
-
-                    {submissionSuccess && (
-                        <Alert severity="success" sx={{ mb: 2 }}>
-                            Your enquiry has been submitted successfully! We'll contact you soon.
-                        </Alert>
-                    )}
-                    {error && (
-                        <Alert severity="error" sx={{ mb: 2 }}>
-                            Submission failed: {error.message || "An unknown error occurred."}
-                        </Alert>
-                    )}
-
-                    <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                        <TextField 
-                            required 
-                            fullWidth 
-                            label="Your Name" 
-                            name="name" 
-                            value={formData.name}
-                            onChange={handleChange}
-                            variant="outlined" 
-                            size="small"
-                        />
-                        <TextField 
-                            required 
-                            fullWidth 
-                            label="Email Address" 
-                            name="email" 
-                            value={formData.email}
-                            onChange={handleChange}
-                            type="email"
-                            variant="outlined" 
-                            size="small"
-                        />
-                        <TextField 
-                            fullWidth 
-                            label="Phone Number (Optional)" 
-                            name="phone" 
-                            value={formData.phone}
-                            onChange={handleChange}
-                            type="tel"
-                            variant="outlined" 
-                            size="small"
-                        />
-                        <TextField
-                            required
-                            fullWidth
-                            label="Tell Us About Your Project"
-                            name="message" // IMPORTANT: Add name attribute
-                            value={formData.message}
-                            onChange={handleChange}
-                            multiline
-                            rows={4}
-                            variant="outlined"
-                        />
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            fullWidth
-                            disabled={loading} // Disable button when loading
-                            sx={{
-                                mt: 2,
-                                backgroundColor: darkOrange,
-                                '&:hover': {
-                                    backgroundColor: primaryOrange,
-                                },
-                                padding: '10px 0',
-                                fontWeight: 600,
-                            }}
-                        >
-                            {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Submit Enquiry'}
-                        </Button>
-                    </Box>
-                </Box>
-            </Modal>
+                           open={open}
+                           onClose={handleClose}
+                           aria-labelledby="quick-project-enquiry-title"
+                           aria-describedby="quick-project-enquiry-description"
+                       >
+                           <Box sx={modalStyle}>
+                               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                                   {/* ... (Modal Header) ... */}
+                               </Box>
+                               
+                               <Typography id="quick-project-enquiry-description" sx={{ mt: 1, mb: 3, color: 'text.secondary' }}>
+                                   Tell us a little about your project, and we'll get back to you within 24 hours.
+                               </Typography>
+           
+                               {/* ... (Alerts for submission success/error) ... */}
+           
+                               <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                   
+                                   {/* 1. Your Name Input */}
+                                   <input
+                                       required 
+                                       className="custom-form-input" // Custom class for styling
+                                       placeholder="Your Name *" 
+                                       name="name" 
+                                       value={formData.name}
+                                       onChange={handleChange}
+                                       type="text"
+                                   />
+                                   
+                                   {/* 2. Email Address Input */}
+                                   <input
+                                       required 
+                                       className="custom-form-input" // Custom class for styling
+                                       placeholder="Email Address *" 
+                                       name="email" 
+                                       value={formData.email}
+                                       onChange={handleChange}
+                                       type="email"
+                                   />
+                                   
+                                   {/* 3. Phone Number Input */}
+                                   <input
+                                       className="custom-form-input" // Custom class for styling
+                                       placeholder="Phone Number (Optional)" 
+                                       name="phone" 
+                                       value={formData.phone}
+                                       onChange={handleChange}
+                                       type="tel"
+                                   />
+                                   
+                                   {/* 4. Project Message Textarea */}
+                                   <textarea
+                                       required
+                                       className="custom-form-textarea" // Custom class for styling
+                                       placeholder="Tell Us About Your Project *"
+                                       name="message" 
+                                       value={formData.message}
+                                       onChange={handleChange}
+                                       rows={4}
+                                   />
+           
+                                   <Button
+                                       type="submit"
+                                       variant="contained"
+                                       fullWidth
+                                       disabled={loading}
+                                       sx={{
+                                           mt: 2,
+                                           backgroundColor: darkOrange,
+                                           '&:hover': {
+                                               backgroundColor: primaryOrange,
+                                           },
+                                           padding: '10px 0',
+                                           fontWeight: 600,
+                                       }}
+                                   >
+                                       {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Submit Enquiry'}
+                                   </Button>
+                               </Box>
+                           </Box>
+                       </Modal>
         </>
     );
 };

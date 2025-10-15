@@ -121,7 +121,33 @@
     background-size: 1.25em;
     padding-right: 40px; /* Space for the custom arrow */
 }
+.enquiry-hero-banner {
+    position: relative;
+    min-height: 400px; /* Adjust height as needed */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 
+    background-size: cover; /* Make the image cover the section */
+    background-position: center center; /* Center the image */
+    background-repeat: no-repeat;
+    color: var(--color-text-light);
+}
+.enquiry-hero-banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 102, 0, 0.7);
+    z-index: 1;
+}
+.banner-content {
+    position: relative;
+    z-index: 2;
+}
 /* --- Helper Text Below Input (For description) --- */
 .helper-text {
     font-size: 0.85rem;

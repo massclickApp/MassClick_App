@@ -110,7 +110,6 @@ const EnquiryNow = () => {
         <>
             <CardsSearch /><br/><br/><br/>
 
-            {/* HERO BANNER SECTION (Unchanged) */}
             <section
                 className="enquiry-hero-banner"
                 style={{ backgroundImage: `linear-gradient(rgba(255,102,0,0.7), rgba(255,102,0,0.7)), url(${EnquiryImage})` }}

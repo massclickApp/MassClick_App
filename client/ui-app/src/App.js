@@ -39,6 +39,7 @@ import GraphicDesign from './Internals/clientComponent/footer/graphicDesign/grap
 import Seo from './Internals/clientComponent/footer/seo/seo.js';
 import WriteReviewPage from './Internals/clientComponent/rating/submitReviewPage.js';
 import { userMenuItems } from './Internals/clientComponent/categoryBar.js';
+import PopularCategoryPage from './Internals/clientComponent/popularCategories/popularCategoriesPage.js';
 
 const ComingSoon = ({ title }) => (
   <div style={{ textAlign: 'center', marginTop: '20%' }}>
@@ -126,6 +127,7 @@ function App() {
               }
             />
             <Route path="home" element={<BusinessListing />} />
+            <Route path="/category/:categorySlug" element={<PopularCategoryPage />} />
             {userMenuItems.map((item) => {
               const Component = item.component || (() => <ComingSoon title={item.name} />);
               return <Route key={item.path} path={item.path} element={<Component />} />;

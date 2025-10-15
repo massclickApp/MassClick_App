@@ -61,25 +61,30 @@ const { loading, error } = useSelector(state => state.startProjectReducer);
             setTimeout(() => {
                 handleClose(); 
             }, 3000);
-handleClose()
         } catch (err) {
         
             console.error("Project submission failed:", err);
         }
     };
 
-    const modalStyle = {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: { xs: '90%', sm: 400, md: 500 },
-        bgcolor: 'background.paper',
-        borderRadius: '12px',
-        boxShadow: 24,
-        p: 4,
-        outline: 'none',
-    };
+// Updated modal style to ensure max-width and proper placement
+const modalStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    // Change 'width' to 'maxWidth' to control size without forcing overflow
+    maxWidth: { xs: '90%', sm: 400, md: 500 }, // Use maxWidth for proper constraint
+    width: '100%', // Use width: 100% so it respects maxWidth
+    bgcolor: 'background.paper',
+    borderRadius: '12px',
+    boxShadow: 24,
+    p: 4,
+    outline: 'none',
+    // Optional: Add overflowY for scrolling if the form gets too long on small screens
+    maxHeight: '90vh',
+    overflowY: 'auto', 
+};
 
     return (
         <>
@@ -194,7 +199,7 @@ handleClose()
             </div><br/>
             <Footer />
 
-             <Modal
+            <Modal
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="quick-project-enquiry-title"
@@ -202,77 +207,65 @@ handleClose()
             >
                 <Box sx={modalStyle}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                        <Typography id="quick-project-enquiry-title" variant="h5" component="h2" sx={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, color: darkOrange }}>
-                            Start Your Project
-                        </Typography>
-                        <IconButton onClick={handleClose} aria-label="close">
-                            <CloseIcon />
-                        </IconButton>
+                        {/* ... (Modal Header) ... */}
                     </Box>
                     
                     <Typography id="quick-project-enquiry-description" sx={{ mt: 1, mb: 3, color: 'text.secondary' }}>
                         Tell us a little about your project, and we'll get back to you within 24 hours.
                     </Typography>
 
-                    {submissionSuccess && (
-                        <Alert severity="success" sx={{ mb: 2 }}>
-                            Your enquiry has been submitted successfully! We'll contact you soon.
-                        </Alert>
-                    )}
-                    {error && (
-                        <Alert severity="error" sx={{ mb: 2 }}>
-                            Submission failed: {error.message || "An unknown error occurred."}
-                        </Alert>
-                    )}
+                    {/* ... (Alerts for submission success/error) ... */}
 
                     <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                        <TextField 
+                        
+                        {/* 1. Your Name Input */}
+                        <input
                             required 
-                            fullWidth 
-                            label="Your Name" 
+                            className="custom-form-input" // Custom class for styling
+                            placeholder="Your Name *" 
                             name="name" 
                             value={formData.name}
                             onChange={handleChange}
-                            variant="outlined" 
-                            size="small"
+                            type="text"
                         />
-                        <TextField 
+                        
+                        {/* 2. Email Address Input */}
+                        <input
                             required 
-                            fullWidth 
-                            label="Email Address" 
+                            className="custom-form-input" // Custom class for styling
+                            placeholder="Email Address *" 
                             name="email" 
                             value={formData.email}
                             onChange={handleChange}
                             type="email"
-                            variant="outlined" 
-                            size="small"
                         />
-                        <TextField 
-                            fullWidth 
-                            label="Phone Number (Optional)" 
+                        
+                        {/* 3. Phone Number Input */}
+                        <input
+                            className="custom-form-input" // Custom class for styling
+                            placeholder="Phone Number (Optional)" 
                             name="phone" 
                             value={formData.phone}
                             onChange={handleChange}
                             type="tel"
-                            variant="outlined" 
-                            size="small"
                         />
-                        <TextField
+                        
+                        {/* 4. Project Message Textarea */}
+                        <textarea
                             required
-                            fullWidth
-                            label="Tell Us About Your Project"
-                            name="message" // IMPORTANT: Add name attribute
+                            className="custom-form-textarea" // Custom class for styling
+                            placeholder="Tell Us About Your Project *"
+                            name="message" 
                             value={formData.message}
                             onChange={handleChange}
-                            multiline
                             rows={4}
-                            variant="outlined"
                         />
+
                         <Button
                             type="submit"
                             variant="contained"
                             fullWidth
-                            disabled={loading} // Disable button when loading
+                            disabled={loading}
                             sx={{
                                 mt: 2,
                                 backgroundColor: darkOrange,

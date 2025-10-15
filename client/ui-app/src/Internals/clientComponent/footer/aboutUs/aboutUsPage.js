@@ -65,7 +65,7 @@ const AboutUsPage = () => {
     // Restructured Stats Data
     const statsData = [
         { Icon: AccessTimeIcon, number: "7+", label: "Years Experience" },
-        { Icon: PeopleIcon, number: "500+", label: "Clients Globally" },
+        { Icon: PeopleIcon, number: "5000+", label: "Clients Globally" },
         { Icon: BusinessCenterIcon, number: "15+", label: "Talented Employees" },
     ];
 

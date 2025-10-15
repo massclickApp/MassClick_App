@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useEffect } from "react";
 import './popularCategories.css';
+import { useDispatch } from "react-redux";
+import { getAllBusinessList } from "../../../redux/actions/businessListAction";
+import { useNavigate } from "react-router-dom"; 
 
 const popularSearches = [
-    'Dealers', 'Mandapam', 'Pediatric Hospital', 'Color Therapy', 'Ultrasound Scan', 
+    'Dealers','Gym', 'Mandapam', 'Pediatric Hospital', 'Color Therapy', 'Ultrasound Scan', 
     'Homeo Clinic', 'Interior Designer', 'Live Music Concert', 'Tattoo Shop', 
     'Boutique Halls', 'Catering Services', 'Women Beauty Salon', 'Naturopathy', 
     'Aariworks Services', 'Moles and Warts', 'Yenp', 'Visa Booking', 'Janavasam', 
@@ -17,20 +20,34 @@ const popularSearches = [
 ];
 
 const PopularCategories = () => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        dispatch(getAllBusinessList());
+    }, [dispatch]);
+
+    const handleCategoryClick = (category) => {
+        navigate(`/category/${category.toLowerCase().replace(/ /g, '-')}`);
+    };
+
     return (
         <div className="popular-categories-container-text">
             <h2 className="popular-categories-heading-text">Popular Search</h2>
             <div className="search-links-wrapper">
                 {popularSearches.map((link, index) => (
                     <React.Fragment key={index}>
-                        <a 
-                            href={`/search?q=${link.toLowerCase().replace(/ /g, '-')}`} 
-                            className="search-link" 
+                        <a
+                            href="#"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleCategoryClick(link);
+                            }}
+                            className="search-link"
                             title={`Search for ${link}`}
                         >
                             {link}
                         </a>
-                        {/* Add the separator pipe if it's not the last item */}
                         {index < popularSearches.length - 1 && (
                             <span className="link-separator"> | </span>
                         )}

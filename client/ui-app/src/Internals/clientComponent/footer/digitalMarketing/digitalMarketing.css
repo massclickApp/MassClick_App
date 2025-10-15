@@ -14,7 +14,46 @@
     color: var(--dark-text);
     line-height: 1.5;
 }
+/* ======================================= */
+/* CUSTOM FORM INPUT STYLES (New Section)  */
+/* ======================================= */
 
+/* Base style for both input and textarea */
+.custom-form-input,
+.custom-form-textarea {
+    width: 100%; /* Ensures full width and responsiveness within the modal's maxWidth */
+    padding: 15px 20px; /* Generous padding for a modern, spacious look */
+    border: 2px solid #ddd; /* Light gray border */
+    border-radius: 8px; /* Rounded corners for attractiveness */
+    font-size: 1em;
+    font-family: inherit;
+    color: var(--dark-text);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box; /* Crucial for responsive width calculation */
+    /* Remove default focus styles */
+    outline: none; 
+}
+
+/* Focused State for Interaction/Attractiveness */
+.custom-form-input:focus,
+.custom-form-textarea:focus {
+    border-color: var(--primary-orange); /* Highlight border on focus */
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.3); /* Subtle orange glow */
+    background-color: #fff;
+}
+
+/* Placeholder Styling for clarity and modern feel */
+.custom-form-input::placeholder,
+.custom-form-textarea::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
+/* Specific styling for the textarea */
+.custom-form-textarea {
+    resize: vertical; /* Allow vertical resizing, prevent horizontal */
+    min-height: 120px; /* Ensures enough space for the project description */
+}
 /* Base style for the vibrant orange background sections */
 .dm-intro-section,
 .dm-cta-section {
