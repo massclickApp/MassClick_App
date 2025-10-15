@@ -107,9 +107,7 @@
   font-weight: 500;
 }
 
-/* ===========================
-   🧡 Buttons
-   =========================== */
+
 .location-upload-section {
   padding-top: 20px;
   grid-column: 1 / -1;
@@ -117,9 +115,9 @@
 
 .location-upload-content {
   display: flex;
-  align-items: center;
+  align-items: start;
   gap: 20px;
-  justify-content: center;
+  justify-content: start;
 }
 
 .location-submit-button,

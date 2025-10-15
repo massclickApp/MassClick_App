@@ -702,9 +702,21 @@ export default function BusinessList() {
             />
           </Button>
           {preview && <Avatar src={preview} sx={{ width: 56, height: 56 }} className="preview-avatar" />}
-          <button type="submit" className="submit-button" disabled={loading}>
-            {loading ? <CircularProgress size={24} color="inherit" /> : editMode ? "Update Business" : "Create Business"}
-          </button>
+        <div style={{ marginBottom: "10px" }}>  {/* was 20px before */}
+                         <button
+                        type="submit"
+                        className="submit-button"
+                        disabled={loading}
+                      >
+                        {loading ? (
+                          <CircularProgress size={24} color="inherit" />
+                        ) : editMode ? (
+                          "Update Business"
+                        ) : (
+                          "Create Business"
+                        )}
+                      </button>
+                      </div>
         </div>
       </div>
 
@@ -771,7 +783,21 @@ export default function BusinessList() {
     ))}
     </div>
 </div>
-
+<div style={{ marginBottom: "10px" }}>  {/* was 20px before */}
+                 <button
+                type="submit"
+                className="submit-button"
+                disabled={loading}
+              >
+                {loading ? (
+                  <CircularProgress size={24} color="inherit" />
+                ) : editMode ? (
+                  "Update Category"
+                ) : (
+                  "Create Category"
+                )}
+              </button>
+              </div>
     </form>
   </div>
 

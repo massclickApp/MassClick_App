@@ -348,6 +348,7 @@ export default function Category() {
                     className="preview-avatar"
                   />
                 )}
+<div style={{ marginBottom: "10px" }}>  {/* was 20px before */}
                  <button
                 type="submit"
                 className="submit-button"
@@ -362,6 +363,8 @@ export default function Category() {
                 )}
               </button>
               </div>
+              </div>
+              <div></div>
             </div>
 
           
