@@ -4,11 +4,14 @@ import CardDesign from "../cards.js";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllBusinessList } from "../../../../redux/actions/businessListAction.js";
 import CardsSearch from "../../CardsSearch/CardsSearch.js";
+import { useNavigate } from 'react-router-dom';
 
 
 
 const EstateAgentCards = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+
     const { businessList = [] } = useSelector(
         (state) => state.businessListReducer || {}
     )
@@ -18,22 +21,34 @@ const EstateAgentCards = () => {
     }, [dispatch]);
 
 
-   const estateAgent = businessList.filter(
-    (b) => b.category && /\b(agent|agents|estate agent|estate agents)\b/i.test(b.category)
-);
+    const estateAgent = businessList.filter(
+        (b) => b.category && /\b(agent|agents|estate agent|estate agents)\b/i.test(b.category)
+    );
 
 
     if (estateAgent.length === 0) {
-        return <p>No matching businesses found with the name "Estate Agent".</p>;
+        return (
+            <div className="no-results-container">
+                <p className="no-results-title">No estateAgent Found Yet 😔</p>
+                <p className="no-results-suggestion">
+                    It looks like we don't have any businesses matching "estateAgent"  in our data right now.
+                </p>
+                <p className="no-results-action">
+                    Please try another category or check back later!
+                </p>
+                <button className="go-home-button" onClick={() => navigate('/home')}>Go to Homepage</button>
+            </div>
+        );
     }
 
     return (
         <>
-            <CardsSearch /><br/><br/><br/>
+            <CardsSearch /><br /><br /><br />
 
             <div className="restaurants-list-wrapper">
                 {estateAgent.map((business) => {
-
+                    const averageRating = business.averageRating?.toFixed(1) || 0;
+                    const totalRatings = business.reviews?.length || 0;
                     return (
                         <CardDesign
                             key={business._id}
@@ -43,8 +58,8 @@ const EstateAgentCards = () => {
                             address={`${business.plotNumber ? business.plotNumber + ", " : ""}${business.street}, ${business.location}, Pincode: ${business.pincode}`}
                             details={`Experience: ${business.experience} | Category: ${business.category}`}
                             imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
-                            rating="4.5"
-                            reviews="250"
+                            rating={averageRating}
+                            reviews={totalRatings}
                             to={`/business/${business._id}`}
 
                         />
