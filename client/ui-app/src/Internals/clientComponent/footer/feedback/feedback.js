@@ -77,7 +77,7 @@ const FeedbackCard = ({ feedback }) => (
 const FeedbackComponent = () => {
     return (
         <>
-            <CardsSearch />
+            <CardsSearch /><br/><br/><br/>
 
             <section className="section-feedback-grid">
                 <div className="feedback-header-wrapper">

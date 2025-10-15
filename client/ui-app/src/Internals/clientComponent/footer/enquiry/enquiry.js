@@ -1,22 +1,15 @@
-import React, { useEffect, useMemo, useState } from "react"; 
-import './enquiry.css';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import CircularProgress from '@mui/material/CircularProgress';
-// 💡 Import Alert component from MUI
-import Alert from '@mui/material/Alert'; 
-import SendIcon from '@mui/icons-material/Send';
+import React, { useEffect, useMemo, useState } from "react";
+import './enquiry.css'; // Import the new CSS file
+// Removed all MUI imports except Alert (which is good for global messages)
+import Alert from '@mui/material/Alert';
+import SendIcon from '@mui/icons-material/Send'; // Keep the icon for the button
 
 import EnquiryImage from '../../../../assets/enquiry.png';
 import CardsSearch from '../../CardsSearch/CardsSearch';
 import Footer from '../footer';
 import { useDispatch, useSelector } from "react-redux";
-import { getAllBusinessList } from "../../../../redux/actions/businessListAction"; 
-import { createEnquiry } from "../../../../redux/actions/enquiryAction"; 
+import { getAllBusinessList } from "../../../../redux/actions/businessListAction";
+import { createEnquiry } from "../../../../redux/actions/enquiryAction";
 
 
 const serviceInterests = [
@@ -27,42 +20,42 @@ const serviceInterests = [
 
 const EnquiryNow = () => {
     const dispatch = useDispatch();
-    
+
     const [formData, setFormData] = useState({
         name: '',
         businessName: '',
         contactNumber: '',
         email: '',
-        address: '',
+        // Renamed 'address' to 'message' for clarity with the large field
+        message: '', 
     });
 
     const [category, setCategory] = useState('');
     const [service, setService] = useState('');
-    
+
     const [isSubmitting, setIsSubmitting] = useState(false);
-    // submitMessage will control the Alert: text (message), type (success/error)
-    const [submitMessage, setSubmitMessage] = useState({ text: '', type: '' }); 
+    const [submitMessage, setSubmitMessage] = useState({ text: '', type: '' });
 
 
     const { businessList = [] } = useSelector(
         (state) => state.businessListReducer || {}
     );
-    
+
     const uniqueCategories = useMemo(() => {
         if (!businessList || businessList.length === 0) {
             return [];
         }
         const categories = businessList
             .map(business => business.category)
-            .filter(category => category); 
+            .filter(category => category);
         return [...new Set(categories)];
-    }, [businessList]); 
+    }, [businessList]);
 
     useEffect(() => {
         dispatch(getAllBusinessList());
     }, [dispatch]);
 
-    // Handler for text inputs
+    // Handler for all standard inputs (Name, Business Name, Contact, Email, Message)
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
         setSubmitMessage({ text: '', type: '' });
@@ -86,24 +79,26 @@ const EnquiryNow = () => {
         setSubmitMessage({ text: '', type: '' });
 
         const payload = {
-            ...formData,
+            name: formData.name,
+            businessName: formData.businessName,
+            contactNumber: formData.contactNumber,
+            email: formData.email,
+            address: formData.message, // Map 'message' back to 'address' for the API
             category: category,
             service: service,
         };
-        
+
         try {
-            await dispatch(createEnquiry(payload)); 
-            
-            // Success: Use 'success' type for the Alert
+            await dispatch(createEnquiry(payload));
+
             setSubmitMessage({ text: 'Enquiry submitted successfully! We will contact you soon.', type: 'success' });
-            
+
             // Reset form fields
-            setFormData({ name: '', businessName: '', contactNumber: '', email: '', address: '' });
+            setFormData({ name: '', businessName: '', contactNumber: '', email: '', message: '' });
             setCategory('');
             setService('');
 
         } catch (error) {
-            // Failure: Use 'error' type for the Alert
             const errorMessage = error.response?.data?.message || error.message || 'An unexpected error occurred during submission.';
             setSubmitMessage({ text: errorMessage, type: 'error' });
         } finally {
@@ -113,8 +108,9 @@ const EnquiryNow = () => {
 
     return (
         <>
-            <CardsSearch />
+            <CardsSearch /><br/><br/><br/>
 
+            {/* HERO BANNER SECTION (Unchanged) */}
             <section
                 className="enquiry-hero-banner"
                 style={{ backgroundImage: `linear-gradient(rgba(255,102,0,0.7), rgba(255,102,0,0.7)), url(${EnquiryImage})` }}
@@ -124,6 +120,7 @@ const EnquiryNow = () => {
                     <p className="banner-breadcrumb">Home / Enquiry</p>
                 </div>
             </section>
+            {/* END HERO BANNER SECTION */}
 
             <section className="enquiry-form-section">
                 <div className="enquiry-form-container-clean">
@@ -137,132 +134,123 @@ const EnquiryNow = () => {
 
                     <form className="enquiry-form-grid" onSubmit={handleSubmit}>
 
-                        {/* 💡 ALERT INTEGRATION */}
+                        {/* ALERT MESSAGE */}
                         {submitMessage.text && (
                             <div className="full-width" style={{ gridColumn: '1 / -1', marginBottom: '20px' }}>
-                                <Alert 
-                                    severity={submitMessage.type} // Set severity dynamically (success or error)
-                                    variant="filled" // Optional: gives a strong visual cue
-                                    onClose={() => setSubmitMessage({ text: '', type: '' })} // Allows user to close the alert
+                                <Alert
+                                    severity={submitMessage.type}
+                                    variant="filled"
+                                    onClose={() => setSubmitMessage({ text: '', type: '' })}
                                 >
                                     {submitMessage.text}
                                 </Alert>
                             </div>
                         )}
-                        {/* 💡 END ALERT INTEGRATION */}
-                        
-                        <TextField
-                            label="Full Name"
-                            name="name"
-                            variant="outlined"
-                            fullWidth
-                            required
-                            value={formData.name}
-                            onChange={handleChange}
-                            placeholder="Your Name"
-                        />
-                        {/* ... (rest of the form fields remain the same) ... */}
-                        
-                        <TextField
-                            label="Business Name"
-                            name="businessName"
-                            variant="outlined"
-                            fullWidth
-                            required
-                            value={formData.businessName}
-                            onChange={handleChange}
-                            placeholder="Your Company Name"
-                        />
+                        {/* END ALERT MESSAGE */}
 
-                        <FormControl fullWidth required variant="outlined">
-                            <InputLabel id="category-label">Business Category *</InputLabel>
-                            <Select
-                                labelId="category-label"
+
+                        {/* 1. Full Name */}
+                        <div className="form-group">
+                            <input
+                                type="text"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                placeholder="Full Name *"
+                                required
+                            />
+                        </div>
+
+                        {/* 2. Business Name */}
+                        <div className="form-group">
+                            <input
+                                type="text"
+                                name="businessName"
+                                value={formData.businessName}
+                                onChange={handleChange}
+                                placeholder="Business Name *"
+                                required
+                            />
+                        </div>
+
+                        {/* 3. Business Category (Select) */}
+                        <div className="form-group">
+                            <select
+                                name="category"
                                 value={category}
-                                label="Business Category *"
                                 onChange={handleCategoryChange}
+                                required
                             >
-                                <MenuItem value="">
-                                    <em>Select Category...</em>
-                                </MenuItem>
+                                <option value="" disabled hidden>Business Category *</option>
                                 {uniqueCategories.map((cat) => (
-                                    <MenuItem key={cat} value={cat}>{cat}</MenuItem>
+                                    <option key={cat} value={cat}>{cat}</option>
                                 ))}
-                            </Select>
-                        </FormControl>
+                            </select>
+                        </div>
 
-                        <TextField
-                            label="Contact Number"
-                            name="contactNumber"
-                            variant="outlined"
-                            fullWidth
-                            required
-                            type="tel"
-                            value={formData.contactNumber}
-                            onChange={handleChange}
-                            placeholder="+XX XXX XXXX XXX"
-                        />
+                        {/* 4. Contact Number */}
+                        <div className="form-group">
+                            <input
+                                type="tel"
+                                name="contactNumber"
+                                value={formData.contactNumber}
+                                onChange={handleChange}
+                                placeholder="Contact Number *"
+                                required
+                            />
+                        </div>
 
-                        <TextField
-                            label="Email ID"
-                            name="email"
-                            variant="outlined"
-                            fullWidth
-                            required
-                            type="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            placeholder="email@example.com"
-                        />
+                        {/* 5. Email ID */}
+                        <div className="form-group">
+                            <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                placeholder="Email ID *"
+                                required
+                            />
+                        </div>
 
-                        <FormControl fullWidth variant="outlined">
-                            <InputLabel id="service-label">Service Interest</InputLabel>
-                            <Select
-                                labelId="service-label"
+                        {/* 6. Service Interest (Select) */}
+                        <div className="form-group">
+                            <select
+                                name="service"
                                 value={service}
-                                label="Service Interest"
                                 onChange={handleServiceChange}
                             >
-                                <MenuItem value="">
-                                    <em>Select Service...</em>
-                                </MenuItem>
+                                <option value="" disabled hidden>Service Interest (Optional)</option>
                                 {serviceInterests.map((s) => (
-                                    <MenuItem key={s} value={s}>{s}</MenuItem>
+                                    <option key={s} value={s}>{s}</option>
                                 ))}
-                            </Select>
-                        </FormControl>
+                            </select>
+                        </div>
 
-                        <TextField
-                            label="Project Details / Message"
-                            name="address"
-                            variant="outlined"
-                            fullWidth
-                            multiline
-                            rows={4}
-                            value={formData.address}
-                            onChange={handleChange}
-                            placeholder="Briefly describe your project or address..."
-                            className="full-width" 
-                        />
-                        
-                        <Button
+                        {/* 7. Project Details / Message (Textarea) */}
+                        <div className="form-group full-width">
+                            <textarea
+                                name="message"
+                                value={formData.message}
+                                onChange={handleChange}
+                                placeholder="Briefly describe your project or address..."
+                                rows="4"
+                            />
+                             <span className="helper-text">Project Details / Message (Required: Minimum 20 characters)</span>
+                        </div>
+
+                        {/* SUBMIT BUTTON */}
+                        <button
                             type="submit"
-                            variant="contained"
-                            size="large"
-                            endIcon={isSubmitting ? <CircularProgress size={24} color="inherit" /> : <SendIcon />}
-                            disabled={isSubmitting} 
-                            sx={{
-                                backgroundColor: '#ff6600', 
-                                '&:hover': { backgroundColor: '#e65100' },
-                                padding: '15px 30px',
-                                fontSize: '1.1rem',
-                                fontWeight: '700',
-                                marginTop: '10px'
-                            }}
-                            className="full-width"
+                            className="submit-button full-width"
+                            disabled={isSubmitting}
                         >
+                            {isSubmitting ? (
+                                <div className="spinner" />
+                            ) : (
+                                <SendIcon style={{ fontSize: '1.2rem' }} />
+                            )}
                             {isSubmitting ? 'Submitting...' : 'Submit Enquiry'}
-                        </Button>
+                        </button>
 
                         <p className="privacy-note full-width">* We respect your privacy. All fields marked with an asterisk are required.</p>
                     </form>

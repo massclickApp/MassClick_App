@@ -30,7 +30,7 @@ const ContractorsCards = () => {
 
     return (
         <>
-            <CardsSearch />
+            <CardsSearch /><br/><br/><br/>
 
             <div className="restaurants-list-wrapper">
                 {contractors.map((business) => {

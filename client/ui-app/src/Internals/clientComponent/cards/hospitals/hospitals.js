@@ -29,7 +29,7 @@ const HospitalsCards = () => {
 
     return (
         <>
-            <CardsSearch />
+            <CardsSearch /><br/><br/><br/>
 
             <div className="restaurants-list-wrapper">
                 {hospitals.map((business) => {

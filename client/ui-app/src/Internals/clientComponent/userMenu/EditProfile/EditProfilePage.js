@@ -452,7 +452,7 @@ export default function MultiStepProfileForm() {
 
   return (
     <>
-      <CardsSearch />
+      <CardsSearch /><br/><br/><br/>
       <div className="profile-form-wrapper">
         <div className="profile-form-container">
           <div className="sidebar-progress-container">

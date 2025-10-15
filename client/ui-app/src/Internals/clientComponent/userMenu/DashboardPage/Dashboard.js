@@ -28,7 +28,7 @@ const ShareIcon = ({ className }) => <span className={className}>🔗</span>;
 export default function DashboardPage() {
   return (
   <>
-  <CardsSearch />
+  <CardsSearch /><br/><br/><br/>
     <div className="dashboard-page-container">
       <h1 className="dashboard-main-title">Analytics Overview</h1>
       <hr className="title-separator" />

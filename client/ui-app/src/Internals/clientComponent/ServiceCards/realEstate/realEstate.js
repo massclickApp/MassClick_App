@@ -28,7 +28,7 @@ const RealEstateCards = () => {
 
     return (
         <>
-            <CardsSearch />
+            <CardsSearch /><br/><br/><br/>
 
             <div className="restaurants-list-wrapper">
                 {realEstate.map((business) => {

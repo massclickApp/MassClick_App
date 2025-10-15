@@ -116,7 +116,7 @@ const Portfolio = () => {
 
     return (
          <>
-            <CardsSearch />
+            <CardsSearch /><br/><br/><br/>
         <section className="section-portfolio">
             <div className="portfolio-header-wrapper">
                 <h2 className="section-title-portfolio">Our <span className="highlight-text-portfolio">Successful</span> Projects</h2>

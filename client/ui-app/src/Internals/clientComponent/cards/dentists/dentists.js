@@ -27,7 +27,7 @@ const DentistsCards = () => {
 
     return (
         <>
-            <CardsSearch />
+            <CardsSearch /><br/><br/><br/>
 
             <div className="restaurants-list-wrapper">
                 {dentists.map((business) => {

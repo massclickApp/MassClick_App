@@ -43,7 +43,7 @@ const RentAndHiringCards = () => {
 
     return (
         <>
-            <CardsSearch />
+            <CardsSearch /><br/><br/><br/>
 
             <div className="restaurants-list-wrapper">
                 {rentAndHiring.map((business) => {

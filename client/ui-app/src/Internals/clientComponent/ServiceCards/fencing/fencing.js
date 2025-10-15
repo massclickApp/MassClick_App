@@ -28,7 +28,7 @@ const FencingCards = () => {
 
     return (
         <>
-            <CardsSearch />
+            <CardsSearch /><br/><br/><br/>
 
             <div className="restaurants-list-wrapper">
                 {fencing.map((business) => {

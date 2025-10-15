@@ -141,7 +141,7 @@ const TermsAndConditions = () => {
 
     return (
         <>
-            <CardsSearch />
+            <CardsSearch /><br/><br/><br/>
             <section className="section-terms">
                 <div className="terms-header-wrapper">
                     <h2 className="section-title-terms">Our Standard <span className="highlight-text-terms">Terms & Conditions</span></h2>

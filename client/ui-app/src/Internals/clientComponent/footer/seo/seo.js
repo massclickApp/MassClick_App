@@ -9,7 +9,7 @@ import CardsSearch from '../../CardsSearch/CardsSearch';
 const Seo = () => {
     return (
         <>
-            <CardsSearch />
+            <CardsSearch /><br/><br/><br/>
             <div className="seo-container">
                 
                 {/* 1. Hero Section */}

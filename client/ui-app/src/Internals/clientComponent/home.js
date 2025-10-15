@@ -1,11 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Box, Drawer, List, ListItem, ListItemText } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-
-import SearchBar from './SearchBar';
+import HeroSection from '../clientComponent/heroSection/heroSection.js';
 import CategoryBar from '../clientComponent/categoryBar';
-import HeroSection from '../clientComponent/heroSection';
 import FeaturedServices from '../clientComponent/featureService';
 import ServiceCardsGrid from '../clientComponent/serviceCard';
 import TrendingSearchesCarousel from './trendingSearch/trendingSearch';
@@ -21,32 +18,15 @@ import CardsSearch from './CardsSearch/CardsSearch';
 const STICKY_SEARCH_BAR_HEIGHT = 85;
 
 const LandingPage = () => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [locationName, setLocationName] = useState('');
-    const [categoryName, setCategoryName] = useState('');
     const [searchResults, setSearchResults] = useState(null);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
-
+    const [locationName, setLocationName] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");     // <-- lift state
+    const [categoryName, setCategoryName] = useState("");
     const heroSectionRef = useRef(null);
-    const navigate = useNavigate();
 
-    const locationState = useSelector((state) => state.locationReducer || { location: [] });
-    const categoryState = useSelector((state) => state.categoryReducer || { category: [] });
-    const businessListState = useSelector((state) => state.businessListReducer || { businessList: [] });
-    const { location = [] } = locationState;
-    const { category = [] } = categoryState;
-    const { businessList = [] } = businessListState;
 
-    const locationOptions = location.map((loc) => ({
-        label: typeof loc.city === "object" ? loc.city.en : loc.city,
-        id: loc._id,
-    }));
-
-    const categoryOptions = category.map((cat) => ({
-        label: typeof cat.category === "object" ? cat.category.en : cat.category,
-        id: cat._id,
-    }));
 
     useEffect(() => {
         const handleScroll = () => {
@@ -61,24 +41,6 @@ const LandingPage = () => {
 
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
-
-    const handleSearch = () => {
-        const filteredBusinesses = businessList.filter((business) => {
-          const matchesSearchTerm =
-            !searchTerm || (business.category && business.category.toLowerCase().includes(searchTerm.toLowerCase()));
-          const matchesCategory =
-            !categoryName || (business.category && business.category.toLowerCase().includes(categoryName.toLowerCase()));
-          const matchesLocation =
-            !locationName || (business.location && business.location.toLowerCase().includes(locationName.toLowerCase()));
-          return matchesSearchTerm && matchesCategory && matchesLocation;
-        });
-
-        setSearchResults(filteredBusinesses);
-        const loc = (locationName || 'All').replace(/\s+/g, '');
-        const cat = (categoryName || 'All').replace(/\s+/g, '');
-        const term = (searchTerm || 'All').replace(/\s+/g, '');
-        navigate(`/${loc}/${cat}/${term}`, { state: { results: filteredBusinesses } });
-    };
 
     const handleMobileMenuClose = () => setMobileMenuOpen(false);
 
@@ -104,31 +66,44 @@ const LandingPage = () => {
 
             {!isScrolled && !isSearching && <CategoryBar />}
 
-            <SearchBar
-                isScrolled={isScrolled}
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                locationName={locationName}
-                setLocationName={setLocationName}
-                categoryName={categoryName}
-                setCategoryName={setCategoryName}
-                handleSearch={handleSearch}
-                locationOptions={locationOptions}
-                categoryOptions={categoryOptions}
-            />
+            {isScrolled && (
+                <Box
+                    sx={{
+                        position: "fixed",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        zIndex: 1000,
+                        bgcolor: "background.paper",
+                        boxShadow: 3,
+                    }}
+                >
+                    <CardsSearch
+                        locationName={locationName}
+                        setLocationName={setLocationName}
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                        categoryName={categoryName}
+                        setCategoryName={setCategoryName}
+                    />
+                </Box>
+            )}
+
 
             <Box sx={{ height: isScrolled ? STICKY_SEARCH_BAR_HEIGHT : 0 }} />
 
             <Box ref={heroSectionRef}>
                 <HeroSection
+                    locationName={locationName}
+                    setLocationName={setLocationName}
                     searchTerm={searchTerm}
                     setSearchTerm={setSearchTerm}
+                    categoryName={categoryName}
+                    setCategoryName={setCategoryName}
                     setSearchResults={setSearchResults}
-                />
-            </Box>
+                />            </Box>
 
             {isSearching ? (
-              
                 <Box sx={{ mt: 4, mb: 4, px: { xs: 2, sm: 4, md: 6 } }}>
                     <SearchResults results={searchResults} />
                 </Box>

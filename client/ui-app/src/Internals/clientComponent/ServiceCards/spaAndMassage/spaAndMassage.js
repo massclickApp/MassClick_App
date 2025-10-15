@@ -31,7 +31,7 @@ const SpaAndMassageCards = () => {
 
     return (
         <>
-            <CardsSearch />
+            <CardsSearch /><br/><br/><br/>
 
             <div className="restaurants-list-wrapper">
                 {spaAndMassage.map((business) => {

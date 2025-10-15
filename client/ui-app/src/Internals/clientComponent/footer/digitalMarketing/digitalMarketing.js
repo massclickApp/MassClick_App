@@ -83,7 +83,7 @@ handleClose()
 
     return (
         <>
-            <CardsSearch /><br/>
+            <CardsSearch /><br/><br/><br/>
             <div className="digital-marketing-page">
                <section className="dm-intro-section">
                     <div className="dm-intro-content">

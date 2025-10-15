@@ -54,7 +54,7 @@ const CareCard = ({ pillar }) => {
 const CustomerCareComponent = () => {
     return (
           <>
-            <CardsSearch />
+            <CardsSearch /><br/><br/><br/>
         <section className="section-customer-care">
             <div className="care-header-wrapper">
                 <h2 className="section-title-care">Dedicated Customer Care</h2>

@@ -29,7 +29,7 @@ const GymCards = () => {
 
     return (
         <>
-            <CardsSearch />
+            <CardsSearch /><br/><br/><br/>
 
             <div className="restaurants-list-wrapper">
                 {Gym.map((business) => {

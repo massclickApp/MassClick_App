@@ -269,7 +269,7 @@ const BusinessDetail = () => {
 
     return (
         <>
-            <CardsSearch />
+            <CardsSearch /><br/><br/>
             <div className="page-wrapper">
                 {/* Image Gallery */}
                 <div className="image-gallery">

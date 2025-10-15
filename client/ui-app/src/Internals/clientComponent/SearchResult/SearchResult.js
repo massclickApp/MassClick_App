@@ -13,7 +13,7 @@ const SearchResults = () => {
     return (
         <>
             {/* 🔍 Top Search Bar */}
-            <CardsSearch />
+            <CardsSearch /><br/><br/><br/>
 
             <Box sx={{ minHeight: '100vh', bgcolor: '#f8f9fb', pt: 4, pb: 6 }}>
                 <Box sx={{ maxWidth: '1200px', margin: 'auto', p: 2 }}>

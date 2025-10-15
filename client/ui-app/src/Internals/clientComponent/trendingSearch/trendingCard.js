@@ -42,7 +42,7 @@ console.log("filteredBusinesses:", filteredBusinesses);
 
     return (
         <>
-            <CardsSearch />
+            <CardsSearch /><br/><br/><br/>
             <div className="restaurants-list-wrapper">
                 {filteredBusinesses.length === 0 ? (
                     <p>No matching businesses found for "{categorySlug}".</p>

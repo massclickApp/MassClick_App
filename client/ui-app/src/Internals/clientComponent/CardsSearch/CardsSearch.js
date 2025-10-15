@@ -1,478 +1,196 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import './CardsSearch.css';
-// Import Redux actions (assuming these paths are correct in your project)
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import "./CardsSearch.css";
+
 import { getAllLocation } from "../../../redux/actions/locationAction";
 import { getAllBusinessList } from "../../../redux/actions/businessListAction";
 import { getAllCategory } from "../../../redux/actions/categoryAction";
+
 import {
-    Box,
-    Typography,
-    Button,
-    InputAdornment,
-    IconButton,
-    Autocomplete,
-    ListItemButton,
-    TextField
+  Box,
+  Typography,
+  Button,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
 import MicIcon from "@mui/icons-material/Mic";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import { styled } from "@mui/system";
-import LocationSearchingIcon from "@mui/icons-material/LocationSearching";
+import AddIcon from "@mui/icons-material/Add";
+
 import MI from "../../../assets/Mi.png";
-import AddIcon from '@mui/icons-material/Add';
+import AddBusinessModel from "../AddBusinessModel"; 
 
-const CustomTextField = styled(TextField)(({ theme }) => ({
-    "& .MuiOutlinedInput-root": {
-        borderRadius: "40px",
-        height: "50px", 
-        backgroundColor: "rgba(255, 255, 255, 0.95)",
-        boxShadow: "0px 2px 10px rgba(0,0,0,0.05)", 
-        backdropFilter: "blur(5px)",
-        border: "1px solid rgba(255,255,255,0.4)",
-        transition: "all 0.4s ease-in-out",
-        "&:hover": {
-            boxShadow: "0px 5px 15px rgba(0,0,0,0.1)",
-            transform: "none",
-        },
-        "&.Mui-focused": {
-            boxShadow: `0 0 0 4px ${theme.palette.primary.light}, 0px 5px 15px rgba(0,0,0,0.1)`,
-            border: `1px solid ${theme.palette.primary.main}`,
-        },
-    },
-    "& .MuiInputBase-input": {
-        padding: "10px 20px", 
-        fontSize: "1rem", 
-        color: "#333",
-    },
-}));
+const CardsSearch = ({ locationName, setLocationName }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
+  const locationState = useSelector(
+    (state) => state.locationReducer || { location: [] }
+  );
+  const businessListState = useSelector(
+    (state) => state.businessListReducer || { businessList: [] }
+  );
+  const categoryState = useSelector(
+    (state) => state.categoryReducer || { category: [] }
+  );
 
-const LocationListbox = React.forwardRef(function ListboxComponent(props, ref) {
-    const { children, ...other } = props;
-    const orangeIconStyle = { color: '#ea6d11', fontSize: 20 };
+  const { location = [] } = locationState;
+  const { businessList = [] } = businessListState;
+  const { category = [] } = categoryState;
 
-    return (
-        <Box ref={ref} {...other} sx={{ padding: 0, borderRadius: '8px', overflow: 'hidden' }}>
-            <ListItemButton
-                onClick={() => console.log('Detect Location clicked')}
+  // Local state
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryName, setCategoryName] = useState("");
+  const [isVisible, setIsVisible] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    dispatch(getAllLocation());
+    dispatch(getAllBusinessList());
+    dispatch(getAllCategory());
+  }, [dispatch]);
+
+  const locationOptions = location.map((loc) => ({
+    label: typeof loc.city === "object" ? loc.city.en : loc.city,
+    id: loc._id,
+  }));
+ 
+
+  const handleSearch = () => {
+    const filteredBusinesses = businessList.filter((business) => {
+      const matchesSearchTerm =
+        !searchTerm ||
+        (business.category &&
+          business.category.toLowerCase().includes(searchTerm.toLowerCase()));
+
+      const matchesCategory =
+        !categoryName ||
+        (business.category &&
+          business.category.toLowerCase().includes(categoryName.toLowerCase()));
+
+      const matchesLocation =
+        !locationName ||
+        (business.location &&
+          business.location.toLowerCase().includes(locationName.toLowerCase()));
+
+      return matchesSearchTerm && matchesCategory && matchesLocation;
+    });
+
+    const loc = (locationName || "All").replace(/\s+/g, "");
+    const cat = (categoryName || "All").replace(/\s+/g, "");
+    const term = (searchTerm || "All").replace(/\s+/g, "");
+
+    navigate(`/${loc}/${cat}/${term}`, { state: { results: filteredBusinesses } });
+  };
+
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
+
+  return (
+    <>
+      <header
+        className={`search-header ${isVisible ? "visible" : ""}`}
+        style={{ backdropFilter: isVisible ? "blur(8px)" : "none" }}
+      >
+        <div className="search-header-content">
+          <div className="logo-section">
+            <div className="logo-circle">
+              <img src={MI} alt="Logo" className="logo-image" />
+            </div>
+            <Box sx={{ display: "flex", flexDirection: "column" }}>
+              <Typography
+                variant="h5"
                 sx={{
-                    padding: '12px 16px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    borderBottom: '1px solid #eee',
-                    '&:hover': {
-                        backgroundColor: 'rgba(234, 109, 17, 0.05)',
-                    }
+                  fontWeight: 800,
+                  fontSize: { xs: "1.2rem", sm: "1.5rem", md: "1.8rem" },
+                  letterSpacing: "0.5px",
+                  lineHeight: 1.1,
+                  background: "linear-gradient(45deg, #FF8C00, #FFA500)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
                 }}
-            >
-                <LocationSearchingIcon sx={{ ...orangeIconStyle, marginRight: 1 }} />
-                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                    Detect Location
-                </Typography>
-            </ListItemButton>
-
-            <Typography
-                variant="caption"
+              >
+                Mass<span>click</span>
+              </Typography>
+              <Typography
                 sx={{
-                    fontWeight: 'bold',
-                    textTransform: 'uppercase',
-                    color: 'gray',
-                    padding: '8px 16px 4px 16px',
-                    display: 'block',
+                  fontSize: { xs: "0.75rem", sm: "0.9rem" },
+                  color: "text.secondary",
+                  fontWeight: 400,
+                  mt: 0.5,
                 }}
-            >
-                Trending Areas
-            </Typography>
-
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                {children}
-            </ul>
-        </Box>
-    );
-});
-
-const TrendingListbox = React.forwardRef(function ListboxComponent(props, ref) {
-    const { children, ...other } = props;
-    return (
-        <Box ref={ref} {...other} sx={{
-            padding: '16px 0',
-            border: '1px solid #ccc',
-            borderRadius: '8px',
-        }}>
-            <Typography
-                variant="subtitle2"
-                sx={{
-                    fontWeight: 'bold',
-                    textTransform: 'uppercase',
-                    marginLeft: '16px',
-                    marginBottom: '8px',
-                    color: '#333',
-                    letterSpacing: '0.5px',
-                }}
-            >
-                Trending Searches
-            </Typography>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                {children}
-            </ul>
-        </Box>
-    );
-});
-
-const CardsSearch = () => {
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-
-    // 1. Redux State Setup (kept same)
-    const locationState = useSelector((state) => state.locationReducer || { location: [] });
-    const businessListState = useSelector((state) => state.businessListReducer || { businessList: [] });
-    const categoryState = useSelector((state) => state.categoryReducer || { category: [] });
-
-    const { location = [] } = locationState;
-    const { businessList = [] } = businessListState;
-    const { category = [] } = categoryState;
-
-    // 2. Local State for Input Fields (kept same)
-    const [searchTerm, setSearchTerm] = useState("");
-    const [categoryName, setCategoryName] = useState("");
-    const [locationName, setLocationName] = useState("");
-
-
-    const locationOptions = location.map((loc) => ({
-        label: typeof loc.city === "object" ? loc.city.en : loc.city,
-        id: loc._id,
-    }));
-
-    const categoryOptions = category.map((cat) => ({
-        label: typeof cat.category === "object" ? cat.category.en : cat.category,
-        id: cat._id,
-    }));
-
-    // 3. Data Fetching (Redux) (kept same)
-    useEffect(() => {
-        dispatch(getAllLocation());
-        dispatch(getAllBusinessList());
-        dispatch(getAllCategory());
-    }, [dispatch]);
-
-    // handleSearch (kept same)
-    const handleSearch = () => {
-        const filteredBusinesses = businessList.filter((business) => {
-            const matchesSearchTerm =
-                !searchTerm ||
-                (business.category &&
-                    business.category.toLowerCase().includes(searchTerm.toLowerCase()));
-
-            const matchesCategory =
-                !categoryName ||
-                (business.category &&
-                    business.category.toLowerCase().includes(categoryName.toLowerCase()));
-
-            const matchesLocation =
-                !locationName ||
-                (business.location &&
-                    business.location.toLowerCase().includes(locationName.toLowerCase()));
-
-            return matchesSearchTerm && matchesCategory && matchesLocation;
-        });
-
-        const loc = (locationName || 'All').replace(/\s+/g, '');
-        const cat = (categoryName || 'All').replace(/\s+/g, '');
-        const term = (searchTerm || 'All').replace(/\s+/g, '');
-
-        navigate(`/${loc}/${cat}/${term}`, { state: { results: filteredBusinesses } });
-    };
-
-    const handleMobileSearch = () => {
-        handleSearch();
-    };
-
-    return (
-        <>
-            <div className="topbar-wrapper">
-                {/* --- 1. Logo and Title Section (No changes here) --- */}
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 1.5, sm: 2 } }}>
-                        <Box
-                            sx={{
-                                width: { xs: 40, sm: 48 },
-                                height: { xs: 40, sm: 48 },
-                                borderRadius: "50%",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                bgcolor: "#fff",
-                                boxShadow: "0 6px 15px rgba(234, 109, 17, 0.4)",
-                                transition: "transform 0.3s ease",
-                                "&:hover": {
-                                    transform: "scale(1.05)",
-                                },
-                            }}
-                        >
-                            <img
-                                src={MI}
-                                alt="Logo"
-                                style={{
-                                    width: "100%",
-                                    height: "100%",
-                                    borderRadius: "50%",
-                                    objectFit: "cover",
-                                }}
-                            />
-                        </Box>
-                        <Box sx={{ display: "flex", flexDirection: "column" }}>
-                            <Typography
-                                variant="h5"
-                                sx={{
-                                    fontWeight: 800,
-                                    fontSize: { xs: "1.2rem", sm: "1.5rem", md: "1.8rem" },
-                                    letterSpacing: "0.5px",
-                                    lineHeight: 1.1,
-                                    background: "linear-gradient(45deg, #FF8C00, #FFA500)",
-                                    WebkitBackgroundClip: "text",
-                                    WebkitTextFillColor: "transparent",
-                                }}
-                            >
-                                Mass<Box component="span">click</Box>
-                            </Typography>
-                            <Typography
-                                sx={{
-                                    fontSize: { xs: "0.75rem", sm: "0.9rem" },
-                                    color: "text.secondary",
-                                    fontWeight: 400,
-                                    mt: 0.5,
-                                }}
-                            >
-                                India's Leading Local Search Engine
-                            </Typography>
-                        </Box>
-                    </Box>
-                </Box>
-
-          
-                <Box
-                    className="search-bar-container-desktop"
-                    sx={{
-                        display: { xs: 'none', md: 'flex' },
-                        alignItems: "center",
-                        gap: 1.5,
-                        flexGrow: 1,
-                        justifyContent: "center", 
-                        mr: 2, 
-                    }}
-                >
-                    {/* Location Autocomplete - Desktop (Field 1) */}
-                    <Autocomplete
-                        options={locationOptions}
-                        getOptionLabel={(option) => option.label || ""}
-                        value={locationOptions.find(opt => opt.label === locationName) || null}
-                        onChange={(event, newValue) => {
-                            setLocationName(newValue ? newValue.label : "");
-                        }}
-                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                        sx={{ width: 250 }} 
-                        ListboxComponent={LocationListbox}
-                        renderInput={(params) => (
-                            <CustomTextField
-                                {...params}
-                                placeholder="Location"
-                                InputProps={{
-                                    ...params.InputProps,
-                                    // Remove the default Autocomplete dropdown indicator
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            {params.InputProps.endAdornment}
-                                        </InputAdornment>
-                                    ),
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <LocationOnIcon sx={{ color: "#ea6d11", fontSize: 20 }} />
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        )}
-                    />
-
-                    {/* Main Search Input - Desktop (Field 2) */}
-                    {/* Note: The image implies searching for Spa, Salons (the business/category) here. */}
-                    <CustomTextField
-                        // ✅ Adjusted width for the two-field layout
-                        sx={{ width: 500 }} 
-                        placeholder="Search for Spa, Salons..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        InputProps={{
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <IconButton>
-                                        <MicIcon sx={{ color: "#ea6d11", fontSize: 20 }} />
-                                    </IconButton>
-                                </InputAdornment>
-                            ),
-                        }}
-                    />
-
-                    {/* Search Button - Desktop */}
-                    <Button
-                        variant="contained"
-                        onClick={handleSearch}
-                        sx={{
-                            flexShrink: 0,
-                            width: 80,
-                            height: "50px", 
-                            background: "linear-gradient(45deg, #FF7B00, #FFD166)",
-                            color: "white", textTransform: "none", fontSize: "1rem", fontWeight: 600,
-                            borderRadius: "40px", px: 3,
-                            boxShadow: "0 4px 15px rgba(255, 123, 0, 0.3)",
-                            "&:hover": { background: "linear-gradient(45deg, #FF5B00, #FFC044)" },
-                        }}
-                    >
-                        <SearchIcon sx={{ fontSize: 20, mr: 0.5 }} />
-                    </Button>
-
-                    {/* Add Business Button - Desktop */}
-                    <Button
-                        variant="contained"
-                        sx={{
-                            flexShrink: 0,
-                            width: 250, 
-                            height: "50px",
-                            background: "linear-gradient(45deg, #ff9900, #ff4d00)",
-                            color: "white", textTransform: "none", fontSize: "1rem", fontWeight: 600,
-                            borderRadius: "40px", px: 3,
-                            boxShadow: "0 4px 15px rgba(255, 123, 0, 0.3)",
-                            "&:hover": { background: "linear-gradient(45deg, #FF5B00, #FFC044)" },
-                        }}
-                    >
-                        <AddIcon sx={{ fontSize: 20, mr: 0.5, transform: 'rotate(90deg)' }} />
-                        Add Your Business
-                    </Button>
-                </Box>
-            </div >
-
-            <Box
-                className="search-bar-container-mobile"
-                sx={{
-                    display: { xs: 'flex', md: 'none' },
-                    flexDirection: 'column',
-                    gap: 1,
-                    p: 1.5,
-                    width: '100%',
-                    bgcolor: 'white',
-                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-                    boxSizing: 'border-box',
-                }}
-            >
-                {/* 3a. Location Autocomplete - Mobile (Full Width) */}
-                <Autocomplete
-                    options={locationOptions}
-                    getOptionLabel={(option) => option.label || ""}
-                    value={locationOptions.find(opt => opt.label === locationName) || null}
-                    onChange={(event, newValue) => {
-                        setLocationName(newValue ? newValue.label : "");
-                    }}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                    sx={{ width: '100%' }}
-                    ListboxComponent={LocationListbox}
-                    renderInput={(params) => (
-                        <CustomTextField
-                            {...params}
-                            placeholder="Location"
-                            InputProps={{
-                                ...params.InputProps,
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <LocationOnIcon sx={{ color: "#ea6d11", fontSize: 20 }} />
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                    )}
-                />
-
-                <Autocomplete
-                    options={categoryOptions}
-                    getOptionLabel={(option) => option.label || ""}
-                    value={categoryOptions.find(opt => opt.label === categoryName) || null}
-                    onChange={(event, newValue) => {
-                        setCategoryName(newValue ? newValue.label : "");
-                    }}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                    sx={{ width: '100%' }}
-                    ListboxComponent={TrendingListbox}
-                    renderInput={(params) => (
-                        <CustomTextField
-                            {...params}
-                            placeholder="Category"
-                            InputProps={{ ...params.InputProps }}
-                        />
-                    )}
-                />
-
-                <Box sx={{ display: 'flex', gap: 1, width: '100%' }}>
-                    <CustomTextField
-                        sx={{ flexGrow: 1 }}
-                        fullWidth
-                        placeholder="Search for Spa, Salons..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        InputProps={{
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <IconButton>
-                                        <MicIcon sx={{ color: "#ea6d11", fontSize: 20 }} />
-                                    </IconButton>
-                                </InputAdornment>
-                            ),
-                        }}
-                    />
-
-                    <Button
-                        variant="contained"
-                        onClick={handleMobileSearch}
-                        sx={{
-                            flexShrink: 0,
-                            width: 50,
-                            minWidth: 50,
-                            height: "50px",
-                            background: "linear-gradient(45deg, #FF7B00, #FFD166)",
-                            color: "white",
-                            borderRadius: "40px",
-                            px: 0,
-                            boxShadow: "0 4px 15px rgba(255, 123, 0, 0.3)",
-                            "&:hover": { background: "linear-gradient(45deg, #FF5B00, #FFC044)" },
-                        }}
-                    >
-                        <SearchIcon sx={{ fontSize: 20 }} />
-                    </Button>
-                </Box>
-
-                <Button
-                    variant="contained"
-                    sx={{
-                        flexShrink: 0,
-                        width: '100%',
-                        height: "50px",
-                        background: "linear-gradient(45deg, #ff9900, #ff4d00)",
-                        color: "white", textTransform: "none", fontSize: "1rem", fontWeight: 600,
-                        borderRadius: "40px",
-                        boxShadow: "0 4px 15px rgba(255, 123, 0, 0.3)",
-                        "&:hover": { background: "linear-gradient(45deg, #FF5B00, #FFC044)" },
-                        mt: 1,
-                    }}
-                >
-                    <AddIcon sx={{ fontSize: 20, mr: 0.5, transform: 'rotate(90deg)' }} />
-                    Add Your Business
-                </Button>
-
+              >
+                India's Leading Local Search Engine
+              </Typography>
             </Box>
-        </>
-    );
-}
+          </div>
+
+          {/* Search Inputs */}
+          <div className="search-area">
+            {/* Location Input */}
+            <div className="search-input location">
+              <i className="fa-solid fa-location-dot icon start-icon"></i>
+              <input
+                type="text"
+                placeholder="Location"
+                value={locationName}
+                onChange={(e) => setLocationName(e.target.value)}
+                list="locationOptions"
+              />
+              <datalist id="locationOptions">
+                {locationOptions.map((opt, i) => (
+                  <option key={i} value={opt.label} />
+                ))}
+              </datalist>
+            </div>
+
+            {/* Main Search Input */}
+            <div className="search-input main">
+              <input
+                type="text"
+                placeholder="Search for Spa, Salons..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              />
+              <MicIcon className="input-adornment end" />
+            </div>
+
+            {/* Search Button */}
+            <button className="search-btn" onClick={handleSearch}>
+              <span>Search</span> <i className="fa-solid fa-magnifying-glass"></i>
+            </button>
+          </div>
+
+          {/* Add Business Button */}
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleOpenModal}
+            sx={{
+              display: { xs: "none", md: "flex" },
+              background: "linear-gradient(45deg, #FF6F00, #F7941D)",
+              color: "white",
+              textTransform: "none",
+              fontSize: { xs: "0.9rem", sm: "1rem" },
+              borderRadius: "30px",
+              px: { xs: 2.5, sm: 3.5 },
+              py: { xs: 1, sm: 1.2 },
+              whiteSpace: "nowrap",
+              boxShadow: "0 10px 30px rgba(255, 123, 0, 0.4)",
+              "&:hover": {
+                background: "linear-gradient(45deg, #cc5a0f, #ff8a2d)",
+                boxShadow: "0 15px 40px rgba(255, 123, 0, 0.5)",
+              },
+            }}
+          >
+            Add Your Business
+          </Button>
+        </div>
+
+        {/* Modal */}
+        <AddBusinessModel open={isModalOpen} handleClose={handleCloseModal} />
+      </header>
+    </>
+  );
+};
 
 export default CardsSearch;

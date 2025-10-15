@@ -14,7 +14,7 @@ export default function BusinessListPage() {
   };
   return (
   <>
-  <CardsSearch />
+  <CardsSearch /><br/><br/><br/>
       <div className="cta-page-container">
         <div className="listing-cta-card">
           <h3 className="cta-title">List Your Business on</h3>

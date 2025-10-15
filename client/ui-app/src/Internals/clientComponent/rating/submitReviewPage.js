@@ -104,7 +104,7 @@ const WriteReviewPage = () => {
 
     return (
         <>
-            <CardsSearch />
+            <CardsSearch /><br/><br/><br/>
             <div className="write-review-container">
 
                 <h1 className="review-page-title">Write Review</h1>

@@ -106,7 +106,7 @@ const { loading, error } = useSelector(state => state.startProjectReducer);
 
     return (
         <>
-            <CardsSearch />
+            <CardsSearch /><br/><br/><br/>
             
             <Container maxWidth="xl" sx={{ padding: { xs: 0, sm: '20px' } }}>
                 {/* 1. HERO SECTION */}

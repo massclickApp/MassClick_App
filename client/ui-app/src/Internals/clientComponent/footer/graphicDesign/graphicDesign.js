@@ -9,7 +9,7 @@ import height from '../../../../assets/height.jpg'
 const GraphicDesign = () => {
     return (
         <>
-            <CardsSearch /><br />
+            <CardsSearch /><br/><br/><br/>
             <div className="graphic-design-container">
                 {/* 1. Graphic Design Hero/Intro Section */}
                 <div className="graphic-design-intro-section">

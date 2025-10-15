@@ -26,7 +26,7 @@ const HotelCards = () => {
 
     return (
         <>
-            <CardsSearch />
+            <CardsSearch /><br/><br/><br/>
 
             <div className="restaurants-list-wrapper">
                 {hotels.map((business) => {

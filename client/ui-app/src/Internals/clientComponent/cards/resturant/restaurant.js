@@ -29,7 +29,7 @@ const RestaurantsCards = () => {
 
     return (
         <>
-            <CardsSearch />
+            <CardsSearch /><br/><br/><br/>
             <div className="restaurants-list-wrapper">
                 {restaurants.map((business) => {
                     const averageRating = business.averageRating?.toFixed(1) || 0;

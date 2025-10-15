@@ -72,7 +72,7 @@ const AboutUsPage = () => {
 
     return (
         <>
-            <CardsSearch />
+            <CardsSearch /><br/><br/><br/>
 
             <div className="about-us-page-container">
 
