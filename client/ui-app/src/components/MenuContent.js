@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -15,19 +15,23 @@ import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import InterpreterModeIcon from '@mui/icons-material/InterpreterMode';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
-const mainListItems = [
-  { text: 'Home', icon: <HomeRoundedIcon sx={{ fontSize: 38 }} />, path: '/dashboard' },
-  { text: 'Category', icon: <CategoryIcon sx={{ fontSize: 38 }} />, path: '/dashboard/category' },
-  { text: 'Location', icon: <LocationOnIcon sx={{ fontSize: 38 }} />, path: '/dashboard/location' },
-  { text: 'Business', icon: <BusinessIcon sx={{ fontSize: 38 }} />, path: '/dashboard/business' },
-  { text: 'Clients', icon: <SupportAgentIcon sx={{ fontSize: 38 }} />, path: '/dashboard/clients' },
-  { text: 'Users', icon: <InterpreterModeIcon sx={{ fontSize: 38 }} />, path: '/dashboard/user' },
-  { text: 'Role', icon: <AdminPanelSettingsIcon sx={{ fontSize: 38 }} />, path: '/dashboard/roles' },
-];
-
 export default function SideMenu() {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const mainListItems = [
+    { text: 'Home', icon: <HomeRoundedIcon sx={{ fontSize: 38 }} />, path: '/dashboard' },
+    { text: 'Category', icon: <CategoryIcon sx={{ fontSize: 38 }} />, path: '/dashboard/category' },
+    { text: 'Location', icon: <LocationOnIcon sx={{ fontSize: 38 }} />, path: '/dashboard/location' },
+    { text: 'Business', icon: <BusinessIcon sx={{ fontSize: 38 }} />, path: '/dashboard/business' },
+    { text: 'Clients', icon: <SupportAgentIcon sx={{ fontSize: 38 }} />, path: '/dashboard/clients', roles: ['SuperAdmin'] },
+    { text: 'Users', icon: <InterpreterModeIcon sx={{ fontSize: 38 }} />, path: '/dashboard/user', roles: ['SuperAdmin'] },
+    { text: 'Role', icon: <AdminPanelSettingsIcon sx={{ fontSize: 38 }} />, path: '/dashboard/roles', roles: ['SuperAdmin'] },
+  ];
+ useEffect(() => {
+    const userRole = 'SuperAdmin'; 
+    localStorage.setItem('userRole', userRole);
+  }, []);
 
   return (
     <Stack sx={{ flexGrow: 1, p: 1, justifyContent: 'space-between' }}>

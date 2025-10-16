@@ -27,10 +27,11 @@ export default function OptionsMenu() {
   const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
 
-  const handleLogout = () => {
+ const handleLogout = async () => { 
     const id = user?.userId?.$oid;
-    dispatch(logout(id));
-    navigate("/");
+    await dispatch(logout(id)); 
+    handleClose();             
+    navigate("/");             
   };
 
 

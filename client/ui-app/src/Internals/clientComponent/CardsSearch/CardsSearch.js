@@ -6,6 +6,7 @@ import "./CardsSearch.css";
 import { getAllLocation } from "../../../redux/actions/locationAction";
 import { getAllBusinessList } from "../../../redux/actions/businessListAction";
 import { getAllCategory } from "../../../redux/actions/categoryAction";
+import Tooltip from "@mui/material/Tooltip";
 
 import {
   Box,
@@ -16,7 +17,7 @@ import MicIcon from "@mui/icons-material/Mic";
 import AddIcon from "@mui/icons-material/Add";
 
 import MI from "../../../assets/Mi.png";
-import AddBusinessModel from "../AddBusinessModel"; 
+import AddBusinessModel from "../AddBusinessModel";
 
 const CardsSearch = ({ locationName, setLocationName }) => {
   const dispatch = useDispatch();
@@ -52,7 +53,7 @@ const CardsSearch = ({ locationName, setLocationName }) => {
     label: typeof loc.city === "object" ? loc.city.en : loc.city,
     id: loc._id,
   }));
- 
+
 
   const handleSearch = () => {
     const filteredBusinesses = businessList.filter((business) => {
@@ -93,7 +94,24 @@ const CardsSearch = ({ locationName, setLocationName }) => {
         <div className="search-header-content">
           <div className="logo-section">
             <div className="logo-circle">
-              <img src={MI} alt="Logo" className="logo-image" />
+              <Tooltip title="Go to Home Page" arrow placement="bottom">
+
+                <img src={MI} alt="Logo"
+                  className="logo-image"
+                  onClick={() => (window.location.href = "/home")}
+                  style={{
+                    width: "48px",
+                    height: "48px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    cursor: "pointer",
+                    transition: "transform 0.3s ease",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1.0)")}
+                />
+              </Tooltip>
+
             </div>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
               <Typography

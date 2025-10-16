@@ -31,7 +31,7 @@ const saveToken = async (token, client, user) => {
             userName: user.userName,
             emailId: user.emailId || null,
             userId: userId,
-            userRole: user.userRole || 'user',
+            userRole: user.role || 'user',
             firstTimeUser: user.firstTimeUser || false,
             forgotPassword: user.forgotPassword || false,
         },
