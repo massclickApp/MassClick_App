@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllUsers, createUser, editUser, deleteUser } from "../../redux/actions/userAction.js";
 import CustomizedDataGrid from "../../components/CustomizedDataGrid";
@@ -6,7 +6,8 @@ import { getAllRoles } from "../../redux/actions/rolesAction.js";
 import {
   Box,
   Button,
- 
+  CircularProgress,
+
   Paper,
   Typography,
   IconButton,
@@ -14,14 +15,18 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-
+  Avatar
 } from "@mui/material";
 import './user.css'
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 export default function User() {
   const dispatch = useDispatch();
+  const fileInputRef = useRef();
+  const [preview, setPreview] = useState(null);
+
   const { users = [], loading, error } = useSelector((state) => state.userReducer || {});
   const { roles = [] } = useSelector(
     (state) => state.rolesReducer || {}
@@ -33,6 +38,7 @@ export default function User() {
 
   const [formData, setFormData] = useState({
     userName: "",
+    userProfile: "",
     password: "",
     contact: "",
     businessLocation: "",
@@ -55,7 +61,17 @@ export default function User() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
- 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({ ...prev, userProfile: reader.result }));
+        setPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -96,6 +112,7 @@ export default function User() {
   const handleEdit = (row) => {
     setFormData({
       userName: row.userName,
+      userProfile: row.userProfile,
       password: "",
       contact: row.contact,
       role: row.role,
@@ -110,6 +127,7 @@ export default function User() {
   const resetForm = () => {
     setFormData({
       userName: "",
+      userProfile: "",
       password: "",
       contact: "",
       businessLocation: "",
@@ -150,6 +168,7 @@ export default function User() {
     .map((user, index) => ({
       id: user._id || index,
       userName: user.userName,
+      userProfile: user.userProfile,
       password: user.password,
       contact: user.contact,
       emailId: user.emailId,
@@ -160,7 +179,14 @@ export default function User() {
     }));
 
   const userList = [
-    { field: "userName", headerName: "User Name", flex: 1 },
+     {
+          field: "userProfile",
+          headerName: "User Profile",
+          flex: 1,
+          renderCell: (params) =>
+            params.value ? <Avatar src={params.value} alt="img" /> : "-",
+        },
+    { field: "userName", headerName: "User Name", flex: 1 },  
     { field: "emailId", headerName: "Email", flex: 1 },
     { field: "role", headerName: "Role", flex: 1 },
     { field: "businessLocation", headerName: "Business Location", flex: 1 },
@@ -265,24 +291,47 @@ export default function User() {
             );
           })}
 
-          <div className="user-button-group col-span-all">
-            <button type="submit" className="user-submit-button" disabled={loading}>
-              {loading
-                ? "Loading..."
-                : isEditMode
-                  ? "Update User"
-                  : "Create User"}
-            </button>
-
-            {isEditMode && (
-              <button
-                type="button"
-                className="user-cancel-button"
-                onClick={resetForm}
+          <div className="form-input-group col-span-all upload-section">
+            <div className="upload-content">
+              <Button
+                variant="contained"
+                startIcon={<CloudUploadIcon />}
+                component="label"
+                className="upload-button"
               >
-                Cancel
-              </button>
-            )}
+                Upload Image
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  ref={fileInputRef}
+                  onChange={handleImageChange}
+                />
+              </Button>
+              {preview && (
+                <Avatar
+                  src={preview}
+                  sx={{ width: 56, height: 56 }}
+                  className="preview-avatar"
+                />
+              )}
+              <div style={{ marginBottom: "10px" }}>
+                <button
+                  type="submit"
+                  className="submit-button"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <CircularProgress size={24} color="inherit" />
+                  ) : isEditMode ? (
+                    "Update User"
+                  ) : (
+                    "Create User"
+                  )}
+                </button>
+              </div>
+            </div>
+            <div></div>
           </div>
         </form>
 

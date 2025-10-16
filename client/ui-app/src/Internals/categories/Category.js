@@ -11,10 +11,7 @@ import './categories.css'
 import {
   Box,
   Button,
-  Container,
-  Grid,
   Paper,
-  TextField,
   Typography,
   CircularProgress,
   IconButton,
@@ -24,13 +21,9 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
+
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
-import Input from "@mui/material/Input";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 
@@ -226,158 +219,158 @@ export default function Category() {
   ];
 
   return (
-  <div className="category-page">
-        {/* Category Form - Replacing MUI Paper/Container/Grid with pure CSS */}
-        <div className="category-card form-section">
-          <h2 className="card-title">
-            {editMode ? "Edit Category" : "Add New Category"}
-          </h2>
-          <form onSubmit={handleSubmit} className="form-grid">
+    <div className="category-page">
+      {/* Category Form - Replacing MUI Paper/Container/Grid with pure CSS */}
+      <div className="category-card form-section">
+        <h2 className="card-title">
+          {editMode ? "Edit Category" : "Add New Category"}
+        </h2>
+        <form onSubmit={handleSubmit} className="form-grid">
 
-            {/* Category Field */}
-            <div className="form-input-group">
-              <label htmlFor="category" className="input-label">Category</label>
-              <input
-                type="text"
-                id="category"
-                name="category"
-                className={`text-input ${errors.category ? 'error' : ''}`}
-                value={formData.category}
-                onChange={handleChange}
-              />
-              {errors.category && <p className="error-text">{errors.category}</p>}
-            </div>
+          {/* Category Field */}
+          <div className="form-input-group">
+            <label htmlFor="category" className="input-label">Category</label>
+            <input
+              type="text"
+              id="category"
+              name="category"
+              className={`text-input ${errors.category ? 'error' : ''}`}
+              value={formData.category}
+              onChange={handleChange}
+            />
+            {errors.category && <p className="error-text">{errors.category}</p>}
+          </div>
 
-            {/* Category Type Select */}
+          {/* Category Type Select */}
+          <div className="form-input-group">
+            <label htmlFor="categoryType" className="input-label">Category Type</label>
+            <select
+              id="categoryType"
+              name="categoryType"
+              className={`select-input ${errors.categoryType ? 'error' : ''}`}
+              value={formData.categoryType}
+              onChange={handleChange}
+            >
+              <option value="">-- Select Type --</option>
+              <option value="Primary Category">Primary Category</option>
+              <option value="Sub Category">Sub Category</option>
+            </select>
+            {errors.categoryType && <p className="error-text">{errors.categoryType}</p>}
+          </div>
+
+          {/* Sub Category Type Select (Conditional) */}
+          {formData.categoryType === "Sub Category" && (
             <div className="form-input-group">
-              <label htmlFor="categoryType" className="input-label">Category Type</label>
+              <label htmlFor="subCategoryType" className="input-label">Sub Category Type</label>
               <select
-                id="categoryType"
-                name="categoryType"
-                className={`select-input ${errors.categoryType ? 'error' : ''}`}
-                value={formData.categoryType}
+                id="subCategoryType"
+                name="subCategoryType"
+                className={`select-input ${errors.subCategoryType ? 'error' : ''}`}
+                value={formData.subCategoryType}
                 onChange={handleChange}
               >
-                <option value="">-- Select Type --</option>
-                <option value="Primary Category">Primary Category</option>
-                <option value="Sub Category">Sub Category</option>
+                <option value="">-- Select Sub Category --</option>
+                {subCategories.map((sub) => (
+                  <option key={sub} value={sub}>{sub}</option>
+                ))}
               </select>
-              {errors.categoryType && <p className="error-text">{errors.categoryType}</p>}
+              {errors.subCategoryType && <p className="error-text">{errors.subCategoryType}</p>}
             </div>
+          )}
 
-            {/* Sub Category Type Select (Conditional) */}
-            {formData.categoryType === "Sub Category" && (
-              <div className="form-input-group">
-                <label htmlFor="subCategoryType" className="input-label">Sub Category Type</label>
-                <select
-                  id="subCategoryType"
-                  name="subCategoryType"
-                  className={`select-input ${errors.subCategoryType ? 'error' : ''}`}
-                  value={formData.subCategoryType}
-                  onChange={handleChange}
-                >
-                  <option value="">-- Select Sub Category --</option>
-                  {subCategories.map((sub) => (
-                    <option key={sub} value={sub}>{sub}</option>
-                  ))}
-                </select>
-                {errors.subCategoryType && <p className="error-text">{errors.subCategoryType}</p>}
-              </div>
-            )}
+          <div className="form-input-group">
+            <label htmlFor="title" className="input-label">Title</label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              className={`text-input ${errors.title ? 'error' : ''}`}
+              value={formData.title}
+              onChange={handleChange}
+            />
+            {errors.title && <p className="error-text">{errors.title}</p>}
+          </div>
 
-            <div className="form-input-group">
-              <label htmlFor="title" className="input-label">Title</label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                className={`text-input ${errors.title ? 'error' : ''}`}
-                value={formData.title}
-                onChange={handleChange}
-              />
-              {errors.title && <p className="error-text">{errors.title}</p>}
-            </div>
+          <div className="form-input-group">
+            <label htmlFor="keywords" className="input-label">Keywords</label>
+            <input
+              type="text"
+              id="keywords"
+              name="keywords"
+              className={`text-input ${errors.keywords ? 'error' : ''}`}
+              value={formData.keywords}
+              onChange={handleChange}
+            />
+            {errors.keywords && <p className="error-text">{errors.keywords}</p>}
+          </div>
 
-            <div className="form-input-group">
-              <label htmlFor="keywords" className="input-label">Keywords</label>
-              <input
-                type="text"
-                id="keywords"
-                name="keywords"
-                className={`text-input ${errors.keywords ? 'error' : ''}`}
-                value={formData.keywords}
-                onChange={handleChange}
-              />
-              {errors.keywords && <p className="error-text">{errors.keywords}</p>}
-            </div>
+          <div className={`form-input-group description-field ${formData.categoryType !== "Sub Category" ? 'col-span-2' : ''}`}>
+            <label htmlFor="description" className="input-label">Description</label>
+            <textarea
+              id="description"
+              name="description"
+              className={`text-input text-area ${errors.description ? 'error' : ''}`}
+              value={formData.description}
+              onChange={handleChange}
+              rows="3"
+            ></textarea>
+            {errors.description && <p className="error-text">{errors.description}</p>}
+          </div>
 
-            <div className={`form-input-group description-field ${formData.categoryType !== "Sub Category" ? 'col-span-2' : ''}`}>
-              <label htmlFor="description" className="input-label">Description</label>
-              <textarea
-                id="description"
-                name="description"
-                className={`text-input text-area ${errors.description ? 'error' : ''}`}
-                value={formData.description}
-                onChange={handleChange}
-                rows="3"
-              ></textarea>
-              {errors.description && <p className="error-text">{errors.description}</p>}
-            </div>
-
-            <div className="form-input-group col-span-all upload-section">
-              <div className="upload-content">
-                <Button
-                  variant="contained"
-                  startIcon={<CloudUploadIcon />}
-                  component="label"
-                  className="upload-button"
-                >
-                  Upload Image
-                  <input
-                    type="file"
-                    accept="image/*"
-                    hidden
-                    ref={fileInputRef}
-                    onChange={handleImageChange}
-                  />
-                </Button>
-                {preview && (
-                  <Avatar
-                    src={preview}
-                    sx={{ width: 56, height: 56 }}
-                    className="preview-avatar"
-                  />
-                )}
-<div style={{ marginBottom: "10px" }}>  {/* was 20px before */}
-                 <button
-                type="submit"
-                className="submit-button"
-                disabled={loading}
+          <div className="form-input-group col-span-all upload-section">
+            <div className="upload-content">
+              <Button
+                variant="contained"
+                startIcon={<CloudUploadIcon />}
+                component="label"
+                className="upload-button"
               >
-                {loading ? (
-                  <CircularProgress size={24} color="inherit" />
-                ) : editMode ? (
-                  "Update Category"
-                ) : (
-                  "Create Category"
-                )}
-              </button>
+                Upload Image
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  ref={fileInputRef}
+                  onChange={handleImageChange}
+                />
+              </Button>
+              {preview && (
+                <Avatar
+                  src={preview}
+                  sx={{ width: 56, height: 56 }}
+                  className="preview-avatar"
+                />
+              )}
+              <div style={{ marginBottom: "10px" }}>  {/* was 20px before */}
+                <button
+                  type="submit"
+                  className="submit-button"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <CircularProgress size={24} color="inherit" />
+                  ) : editMode ? (
+                    "Update Category"
+                  ) : (
+                    "Create Category"
+                  )}
+                </button>
               </div>
-              </div>
-              <div></div>
             </div>
+            <div></div>
+          </div>
 
-          
-          </form>
-          {error && (
-              <p className="error-text" style={{ marginTop: '16px' }}>
-                {typeof error === "string" ? error : error.message || JSON.stringify(error)}
-              </p>
-            )}
-        </div>
 
-        {/* Category Table Section */}
-         <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
+        </form>
+        {error && (
+          <p className="error-text" style={{ marginTop: '16px' }}>
+            {typeof error === "string" ? error : error.message || JSON.stringify(error)}
+          </p>
+        )}
+      </div>
+
+      {/* Category Table Section */}
+      <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
         <Typography variant="h6" gutterBottom>
           Category Table
         </Typography>
@@ -386,29 +379,29 @@ export default function Category() {
         </Box>
       </Paper>
 
-        {/* Delete Confirm Dialog (MUI Dialog retained for simple function) */}
-        <Dialog
-          open={deleteConfirm.open}
-          onClose={() => setDeleteConfirm({ open: false, id: null, itemName: "" })}
-        >
-          <DialogTitle>Confirm Delete</DialogTitle>
-          <DialogContent>
-            Are you sure you want to delete{" "}
-            <strong>{deleteConfirm.itemName || "this category"}</strong>?
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setDeleteConfirm({ open: false, id: null, itemName: "" })} color="secondary">
-              Cancel
-            </Button>
-            <Button
-              color="error"
-              variant="contained"
-              onClick={confirmDelete}
-            >
-              Delete
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </div>
+      {/* Delete Confirm Dialog (MUI Dialog retained for simple function) */}
+      <Dialog
+        open={deleteConfirm.open}
+        onClose={() => setDeleteConfirm({ open: false, id: null, itemName: "" })}
+      >
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete{" "}
+          <strong>{deleteConfirm.itemName || "this category"}</strong>?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteConfirm({ open: false, id: null, itemName: "" })} color="secondary">
+            Cancel
+          </Button>
+          <Button
+            color="error"
+            variant="contained"
+            onClick={confirmDelete}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
   );
 }

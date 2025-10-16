@@ -269,7 +269,7 @@ const BusinessDetail = () => {
 
     return (
         <>
-            <CardsSearch /><br/><br/><br/>
+            <CardsSearch /><br /><br /><br />
             <div className="page-wrapper">
                 {/* Image Gallery */}
                 <div className="image-gallery">
@@ -497,7 +497,7 @@ const BusinessDetail = () => {
                                                     </div>
 
                                                     <p className="review-text">
-                                                        **Comment:** {review.ratingExperience || 'No comment provided.'}
+                                                        {review.ratingExperience || 'No comment provided.'}
                                                     </p>
 
                                                     <div className="review-advanced-info">
@@ -538,21 +538,7 @@ const BusinessDetail = () => {
                         </div>
 
 
-                        {/* <div className="info-block">
-                            <h2>Quick Information</h2>
-                            <div className="info-grid">
-                                <div className="info-item">
-                                    <span className="info-label">Cuisines</span>
-                                    <span className="info-value">Punjabi, South Indian, Multicuisine</span>
-                                </div>
-                                <div className="info-item">
-                                    <span className="info-label">Year of Establishment</span>
-                                    <span className="info-value">{business.yearOfEstablishment || 'N/A'}</span>
-                                </div>
-                            </div>
-                        </div> */}
 
-                        {/* Google Map iframe */}
                         {business.googleMap && (
                             <div className="map-container" style={{ marginTop: '20px' }}>
                                 <iframe

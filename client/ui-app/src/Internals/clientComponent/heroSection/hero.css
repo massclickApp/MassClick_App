@@ -1,266 +1,213 @@
-/* ========================================================= */
-/* --- 1. Root Variables & Base Styles (Aesthetic/Premium) --- */
-/* ========================================================= */
+
 :root {
-    --color-primary: #FF7B00; /* Primary Orange */
-    --color-primary-hover: #FF5A00; /* Darker Orange for Hover */
-    --color-text-light: #f0f0f0; /* Light text color for contrast */
-    --color-text-dark: #333333; /* Dark text for white elements */
-    --color-glass-base: rgba(255, 255, 255, 0.9); /* Opaque white for search bar */
-    --search-height: 60px; /* Standardized height */
-    --border-radius-base: 8px; /* Modern subtle rounding */
-    --transition-speed: 0.3s;
-    /* Deeper, more diffused shadow for a premium floating effect */
-    --box-shadow-deep: 0 10px 40px rgba(0, 0, 0, 0.5);
-    /* Soft shadow for general elements */
-    --box-shadow-default: 0 4px 15px rgba(0, 0, 0, 0.1); 
-    --spacing-gap: 15px; /* Increased spacing for airiness */
+  --color-primary: #ff7b00;
+  --color-primary-hover: #ff5a00;
+  --color-text-light: #f0f0f0;
+  --color-text-dark: #333333;
+  --color-glass-base: rgba(255, 255, 255, 0.9);
+  --search-height: 60px;
+  --border-radius-base: 8px;
+  --transition-speed: 0.3s;
+  --box-shadow-deep: 0 10px 40px rgba(0, 0, 0, 0.5);
+  --box-shadow-default: 0 4px 15px rgba(0, 0, 0, 0.1);
+  --spacing-gap: 15px;
 }
 
-/* --- Hero Container (Ensures Full View and Background Look) --- */
+
 .hero-section {
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    width: 100%;
-    min-height: 95vh;
-    display: flex;
-    /* MODIFIED: Align items to the top to move content up */
-    align-items: flex-start;
-    justify-content: center;
-    text-align: center;
-    overflow: hidden;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%;
+  min-height: 95vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
 }
 
-/* --- Content Block (The Overlay) --- */
+/* Put content ABOVE gradient overlay */
 .hero-content {
-    width: 100%;
-    max-width: 1200px;
-    padding: 60px 15px;
-    margin: 0 auto;
-    /* NEW: Push the content down from the very top for desktop view */
-    margin-top: 80px;
-    /* REMOVED: margin-bottom: 100px; as this was counter-productive for vertical positioning */
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 25px;
-
-    backdrop-filter: blur(2px);
-    border-radius: 16px;
-
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1200px;
+  padding: 60px 15px;
+  margin: 80px auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+  backdrop-filter: blur(2px);
+  border-radius: 16px;
 }
 
-/* ========================================================= */
-/* --- 2. Typography Styles (Impactful and Refined) --- */
-/* ========================================================= */
 
 .hero-title {
-    font-size: clamp(2.5rem, 6vw, 4rem);
-    font-weight: 900; /* Increased to Ultra Bold */
-    line-height: 1.1;
-    color: var(--color-primary); /* Keeps the text color #FF7B00 (Orange) */
-
-    /* MODIFIED: Tight, multi-layer glow for maximum vibrancy and readability */
-    text-shadow:
-        0 0 10px rgba(255, 123, 0, 0.9), /* Core Orange Glow */
-        0 0 25px rgba(255, 123, 0, 0.4), /* Soft outer glow */
-        0 2px 4px rgba(0, 0, 0, 0.9);     /* Bottom-right drop shadow for definition and contrast */
-
-    letter-spacing: 1.5px; /* Subtle increase for a grander look */
-    margin: 0;
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 900;
+  line-height: 1.1;
+  color: var(--color-primary) !important; 
+  letter-spacing: 1.5px;
+  margin: 0;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
 }
+
 
 .hero-subtitle {
-    color: var(--color-text-light); /* Off-white for comfort */
-    font-weight: 400; /* Slightly heavier weight for modern look */
-    line-height: 1.6;
-    /* MODIFIED: Deeper, clearer shadow for strong contrast */
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 1.0); 
-    font-size: clamp(1rem, 1.8vw, 1.25rem); /* Larger and clearer */
-    max-width: 850px; /* Wider text block */
-    margin: 0 auto 40px; /* More space below subtitle */
+  color: var(--color-text-light);
+  font-weight: 400;
+  line-height: 1.6;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 1);
+  font-size: clamp(1rem, 1.8vw, 1.25rem);
+  max-width: 850px;
+  margin: 0 auto 40px;
 }
 
 /* ========================================================= */
-/* --- 3. Search Bar Container (Aesthetic Glass/Floating) --- */
+/* --- 4. Search Bar --- */
 /* ========================================================= */
-
 .search-bar-container {
-    display: flex;
-    width: 100%;
-    max-width: 850px;
-    margin-top: 20px;
-    gap: var(--spacing-gap);
+  display: flex;
+  width: 100%;
+  max-width: 850px;
+  margin-top: 20px;
+  gap: var(--spacing-gap);
 }
 
-/* --- Field Grouping (Input Aesthetics) --- */
 .input-group {
-    position: relative;
-    display: flex;
-    align-items: center;
-
-    /* Glass Effect: Opaque background with a subtle border */
-    background-color: var(--color-glass-base);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: var(--border-radius-base);
-    /* MODIFIED: Use the premium deep shadow for a floating effect */
-    box-shadow: var(--box-shadow-deep); 
-    flex-shrink: 0;
-    transition: all var(--transition-speed);
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: var(--color-glass-base);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: var(--border-radius-base);
+  box-shadow: var(--box-shadow-deep);
+  flex-shrink: 0;
+  transition: all var(--transition-speed);
 }
 
 .input-group.location-group {
-    flex: 1;
-    min-width: 250px;
+  flex: 1;
+  min-width: 250px;
 }
 
 .input-group.search-group {
-    flex: 2;
+  flex: 2;
 }
 
-/* --- Input/Select Style --- */
 .custom-input {
-    width: 100%;
-    height: var(--search-height);
-    border: none;
-    background-color: transparent;
-    font-size: 1rem;
-    color: var(--color-text-dark); /* Dark text for typing in the white box */
-    font-weight: 500;
-    outline: none;
-    box-sizing: border-box;
-    margin: 0;
-    border-radius: var(--border-radius-base);
+  width: 100%;
+  height: var(--search-height);
+  border: none;
+  background-color: transparent;
+  font-size: 1rem;
+  color: var(--color-text-dark);
+  font-weight: 500;
+  outline: none;
+  box-sizing: border-box;
+  border-radius: var(--border-radius-base);
 }
 
-/* NEW: Placeholder styling for better UX */
 .custom-input::placeholder {
-    color: rgba(51, 51, 51, 0.6); 
-    font-weight: 400;
+  color: rgba(51, 51, 51, 0.6);
 }
 
-/* Input padding adjustments */
 .location-group .custom-input {
-    padding: 0 15px 0 50px;
+  padding: 0 15px 0 50px;
 }
+
 .search-group .custom-input {
-    padding: 0 50px 0 15px;
+  padding: 0 50px 0 15px;
 }
 
-/* --- Focus State (Vibrant Ring) --- */
 .input-group:focus-within {
-    border-color: var(--color-primary-hover);
-    /* MODIFIED: Clearer, simpler focus ring combined with deep shadow */
-    box-shadow: 0 0 0 4px rgba(255, 123, 0, 0.3), var(--box-shadow-deep);
-    transform: none; /* Removed subtle lift on focus for stability */
+  border-color: var(--color-primary-hover);
+  box-shadow: 0 0 0 4px rgba(255, 123, 0, 0.3), var(--box-shadow-deep);
 }
 
-/* --- Input Adornments (Icons) --- */
+/* --- Input Icons --- */
 .input-adornment {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 22px; /* Slightly larger icons */
-    z-index: 1;
-    pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 22px;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .location-group .input-adornment.start {
-    left: 15px;
-    color: var(--color-primary); /* Use primary color for main icon */
+  left: 15px;
+  color: var(--color-primary);
 }
 
 .search-group .input-adornment.end {
-    right: 15px;
-    color: var(--color-gray-medium); /* Assuming this variable is defined or using a default */
-    pointer-events: auto;
-    cursor: pointer;
+  right: 15px;
+  color: var(--color-primary);
+  pointer-events: auto;
+  cursor: pointer;
 }
 
-
-/* ========================================================= */
-/* --- 4. Search Button Style (Solid and Highly Visible) --- */
-/* ========================================================= */
-
+/* --- Search Button --- */
 .search-button {
-    height: var(--search-height);
-    width: var(--search-height);
-    background-color: var(--color-primary);
-    color: white;
-    font-weight: 700;
-    cursor: pointer;
-    border: none;
-    border-radius: var(--border-radius-base);
-    box-shadow: 0 8px 25px rgba(255, 123, 0, 0.6); /* Stronger shadow for pop */
-    transition: all 0.2s ease-out;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+  height: var(--search-height);
+  width: var(--search-height);
+  background-color: var(--color-primary);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  border-radius: var(--border-radius-base);
+  box-shadow: 0 8px 25px rgba(255, 123, 0, 0.6);
+  transition: all 0.2s ease-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .search-button:hover {
-    background-color: var(--color-primary-hover);
-    box-shadow: 0 10px 30px rgba(255, 123, 0, 0.8);
-    transform: translateY(-2px); /* Pronounced lift on hover */
+  background-color: var(--color-primary-hover);
+  box-shadow: 0 10px 30px rgba(255, 123, 0, 0.8);
+  transform: translateY(-2px);
 }
 
 .search-button .search-icon {
-    font-size: 30px; /* Prominent icon */
+  font-size: 30px;
 }
 
 /* ========================================================= */
-/* --- 5. Responsiveness (Mobile & Tablet) --- */
+/* --- 5. Responsiveness --- */
 /* ========================================================= */
-
 @media (max-width: 900px) {
-    /* Tablet/smaller screens adjustments */
-    .hero-content {
-        /* Adjust top margin for slightly smaller screens */
-        margin-top: 60px; 
-    }
+  .hero-content {
+    margin-top: 60px;
+  }
 }
 
 @media (max-width: 768px) {
-    .hero-content {
-        /* Ensure mobile content is not too high up */
-        margin-top: 30px; 
-        padding: 40px 15px; /* Reduce vertical padding on mobile */
-    }
+  .hero-content {
+    margin-top: 30px;
+    padding: 40px 15px;
+  }
 
-    .search-bar-container {
-        flex-direction: column;
-        gap: var(--spacing-gap); /* Use standardized gap variable */
-        max-width: 100%;
-        padding: 0 15px;
-    }
+  .search-bar-container {
+    flex-direction: column;
+    gap: var(--spacing-gap);
+    max-width: 100%;
+    padding: 0 15px;
+  }
 
-    .input-group,
-    .input-group.location-group,
-    .input-group.search-group {
-        min-width: 100%;
-        flex: 1;
-        /* Use default shadow for better performance on mobile */
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
-    }
+  .input-group {
+    min-width: 100%;
+    flex: 1;
+    box-shadow: var(--box-shadow-default);
+  }
 
-    /* Remove the custom mobile search icon logic if using React/MUI components
-       or simplify the custom mobile search icon if needed */
-    .search-group::before {
-        /* Keep this if you are using the custom content: url(...) approach for icons */
-        left: 15px; 
-    }
-
-    .search-group .custom-input {
-        padding-left: 50px; /* Ensure space for the search icon */
-    }
-
-    .search-button {
-        width: 100%;
-        height: 55px; /* Slightly smaller height on mobile */
-        box-shadow: 0 6px 20px rgba(255, 123, 0, 0.6);
-        transform: none;
-    }
+  .search-button {
+    width: 100%;
+    height: 55px;
+  }
 }

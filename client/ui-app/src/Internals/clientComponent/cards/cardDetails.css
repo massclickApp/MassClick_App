@@ -47,17 +47,20 @@ body {
 /* 2. MAIN GRID LAYOUT & CARD STYLING */
 /* ========================================================= */
 .main-content-grid {
-    display: grid;
-    grid-template-columns: 1fr; /* Mobile: Single column */
-    gap: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 @media (min-width: 768px) {
-    .main-content-grid {
-        /* Tablet/Desktop: Two columns with refined ratio */
-        grid-template-columns: 2.2fr 0.8fr;
-        gap: 30px;
-    }
+     .main-content-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+  }
     .right-sidebar {
         /* Makes sidebar stick on scroll for better visibility of contact/address */
         position: sticky;

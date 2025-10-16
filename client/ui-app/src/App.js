@@ -40,6 +40,7 @@ import Seo from './Internals/clientComponent/footer/seo/seo.js';
 import WriteReviewPage from './Internals/clientComponent/rating/submitReviewPage.js';
 import { userMenuItems } from './Internals/clientComponent/categoryBar.js';
 import PopularCategoryPage from './Internals/clientComponent/popularCategories/popularCategoriesPage.js';
+import Profile from './Internals/Login/profile/profile.js';
 
 const ComingSoon = ({ title }) => (
   <div style={{ textAlign: 'center', marginTop: '20%' }}>
@@ -152,9 +153,9 @@ function App() {
               element={<WriteReviewPage />}
             />
 
-            {categoriesServices.flatMap((category) =>
-              category.items.map((item) => {
-                const path = item.path || item.route;
+            {categoriesServices.flatMap((category, categoryIndex) =>
+              category.items.map((item, itemIndex) => {
+                const path = item.path || item.route || `auto-path-${categoryIndex}-${itemIndex}`;
                 const Component = item.component || (() => <ComingSoon title={item.name} />);
                 return <Route key={path} path={path} element={<Component />} />;
               })
@@ -165,6 +166,7 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />}>
                 <Route index element={<MainGrid />} />
                 <Route path="user" element={<User />} />
+                <Route path="profile" element={<Profile />} />
                 <Route path="clients" element={<Clients />} />
                 <Route path="business" element={<Business />} />
                 <Route path="category" element={<Category />} />
