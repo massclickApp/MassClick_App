@@ -19,7 +19,9 @@ export default function SideMenu() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const mainListItems = [
+const userRole = localStorage.getItem('userRole') || 'Guest';
+
+ const mainListItems = [
     { text: 'Home', icon: <HomeRoundedIcon sx={{ fontSize: 38 }} />, path: '/dashboard' },
     { text: 'Category', icon: <CategoryIcon sx={{ fontSize: 38 }} />, path: '/dashboard/category' },
     { text: 'Location', icon: <LocationOnIcon sx={{ fontSize: 38 }} />, path: '/dashboard/location' },
@@ -28,15 +30,17 @@ export default function SideMenu() {
     { text: 'Users', icon: <InterpreterModeIcon sx={{ fontSize: 38 }} />, path: '/dashboard/user', roles: ['SuperAdmin'] },
     { text: 'Role', icon: <AdminPanelSettingsIcon sx={{ fontSize: 38 }} />, path: '/dashboard/roles', roles: ['SuperAdmin'] },
   ];
- useEffect(() => {
-    const userRole = 'SuperAdmin'; 
-    localStorage.setItem('userRole', userRole);
-  }, []);
+ const filteredListItems = mainListItems.filter(item => {
+    if (!item.roles) {
+      return true;
+    }
+    return item.roles.includes(userRole);
+  });
 
   return (
     <Stack sx={{ flexGrow: 1, p: 1, justifyContent: 'space-between' }}>
       <List dense>
-        {mainListItems.map((item, index) => {
+        {filteredListItems.map((item, index) => {
           const selected = location.pathname === item.path;
 
           return (
