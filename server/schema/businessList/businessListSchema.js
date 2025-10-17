@@ -27,7 +27,6 @@ const reviewSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
             default: null, // Set default to null if it's missing
- // Reference to your User model if you have one
   },
   username: { // Store the username directly
     type: String,
@@ -42,7 +41,6 @@ const reviewSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  // You can add more fields like 'helpfulCount', 'flagged', etc.
 });
 
 
@@ -82,7 +80,7 @@ const businessListSchema = new mongoose.Schema({
   businessDetails: { type: String, default: '', },
   globalAddress: { type: String, default: '', },
   reviews: {
-    type: [reviewSchema], // An array of Review subdocuments
+    type: [reviewSchema], 
     default: []
   },
 

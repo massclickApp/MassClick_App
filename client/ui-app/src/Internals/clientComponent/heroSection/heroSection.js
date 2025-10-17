@@ -24,14 +24,10 @@ const HeroSection = ({
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const locationState = useSelector((state) => state.locationReducer || { location: [] });
     const businessListState = useSelector((state) => state.businessListReducer || { businessList: [] });
-    const categoryState = useSelector((state) => state.categoryReducer || { category: [] });
 
 
-    const { location = [] } = locationState;
     const { businessList = [] } = businessListState;
-    const { category = [] } = categoryState;
 
 
     useEffect(() => {
@@ -40,15 +36,14 @@ const HeroSection = ({
         dispatch(getAllCategory());
     }, [dispatch]);
 
-    const locationOptions = location.map((loc) =>
-        typeof loc.city === "object" ? loc.city.en : loc.city
+    const allLocations = businessList.map((loc) =>
+        typeof loc.location === "object" ? loc.location.en : loc.location
     );
 
-
-
+    const locationOptions = Array.from(new Set(allLocations)).filter(Boolean);
 
     const handleSearch = (e) => {
-        e.preventDefault(); 
+        e.preventDefault();
 
         const finalSearchTerm = searchTerm;
 

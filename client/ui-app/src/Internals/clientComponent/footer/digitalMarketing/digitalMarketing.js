@@ -250,10 +250,9 @@ const modalStyle = {
                             type="tel"
                         />
                         
-                        {/* 4. Project Message Textarea */}
                         <textarea
                             required
-                            className="custom-form-textarea" // Custom class for styling
+                            className="custom-form-textarea" 
                             placeholder="Tell Us About Your Project *"
                             name="message" 
                             value={formData.message}

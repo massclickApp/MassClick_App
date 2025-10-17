@@ -27,14 +27,11 @@ export default function Dashboard(props) {
     <AppTheme {...props} themeComponents={xThemeComponents}>
       <CssBaseline enableColorScheme />
         <Box sx={{ display: 'flex' }}>
-        {/* Sidebar */}
-                {/* <ReloginDialog /> */}
+       
         <SideMenu />
 
-          {/* Navbar */}
           <AppNavbar />
 
-          {/* Main content area */}
           <Box
             component="main"
             sx={(theme) => ({

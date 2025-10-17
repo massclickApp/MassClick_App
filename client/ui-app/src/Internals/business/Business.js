@@ -121,31 +121,32 @@ export default function BusinessList() {
         setGalleryDialog({ open: false, data: null });
     };
 
-    const [formData, setFormData] = useState({
-        clientId: "",
-        businessName: "",
-        plotNumber: "",
-        street: "",
-        pincode: "",
-        email: "",
-        contact: "",
-        contactList: "",
-        gstin: "",
-        whatsappNumber: "",
-        experience: "",
-        location: "",
-        category: "",
-        bannerImage: "",
-        googleMap: "",
-        website: "",
-        facebook: "",
-        instagram: "",
-        youtube: "",
-        pinterest: "",
-        twitter: "",
-        linkedin: "",
-        businessDetails: "",
-        openingHours: defaultOpeningHours,
+  const [formData, setFormData] = useState({
+    clientId: "",
+    businessName: "",
+    plotNumber: "",
+    street: "",
+    pincode: "",
+    globalAddress: "",
+    email: "",
+    contact: "",
+    contactList: "",
+    gstin: "",
+    whatsappNumber: "",
+    experience: "",
+    location: "",
+    category: "",
+    bannerImage: "",
+    googleMap: "",
+    website: "",
+    facebook: "",
+    instagram: "",
+    youtube: "",
+    pinterest: "",
+    twitter: "",
+    linkedin: "",
+    businessDetails: "",
+    openingHours: defaultOpeningHours,
 
     });
 
@@ -263,43 +264,44 @@ export default function BusinessList() {
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
-    const handleDelete = (row) => {
-        setDeleteDialog({ open: true, id: row.id });
-    };
-    const confirmDelete = () => {
-        if (deleteDialog.id) {
-            dispatch(deleteBusinessList(deleteDialog.id)).then(() => {
-                dispatch(getAllBusinessList());
-            });
-        }
-        setDeleteDialog({ open: false, id: null });
-    };
-    const resetForm = () => {
-        setFormData({
-            clientId: "",
-            businessName: "",
-            plotNumber: "",
-            street: "",
-            pincode: "",
-            email: "",
-            contact: "",
-            contactList: "",
-            gstin: "",
-            whatsappNumber: "",
-            experience: "",
-            location: "",
-            category: "",
-            bannerImage: "",
-            googleMap: "",
-            website: "",
-            facebook: "",
-            instagram: "",
-            youtube: "",
-            pinterest: "",
-            twitter: "",
-            linkedin: "",
-            businessDetails: "",
-            openingHours: defaultOpeningHours,
+  const handleDelete = (row) => {
+    setDeleteDialog({ open: true, id: row.id });
+  };
+  const confirmDelete = () => {
+    if (deleteDialog.id) {
+      dispatch(deleteBusinessList(deleteDialog.id)).then(() => {
+        dispatch(getAllBusinessList());
+      });
+    }
+    setDeleteDialog({ open: false, id: null });
+  };
+  const resetForm = () => {
+    setFormData({
+      clientId: "",
+      businessName: "",
+      plotNumber: "",
+      street: "",
+      pincode: "",
+      globalAddress: "",
+      email: "",
+      contact: "",
+      contactList: "",
+      gstin: "",
+      whatsappNumber: "",
+      experience: "",
+      location: "",
+      category: "",
+      bannerImage: "",
+      googleMap: "",
+      website: "",
+      facebook: "",
+      instagram: "",
+      youtube: "",
+      pinterest: "",
+      twitter: "",
+      linkedin: "",
+      businessDetails: "",
+      openingHours: defaultOpeningHours,
 
         });
         setBusinessValue("");
@@ -344,34 +346,35 @@ export default function BusinessList() {
     };
 
 
-    const rows = businessList.map((bl, index) => ({
-        id: bl._id || index,
-        _id: bl._id,
-        clientId: bl.clientId || "-",
-        businessName: bl.businessName || "-",
-        plotNumber: bl.plotNumber || "-",
-        street: bl.street || "-",
-        pincode: bl.pincode || "-",
-        email: bl.email || "-",
-        contact: bl.contact || "-",
-        contactList: bl.contactList || "-",
-        gstin: bl.gstin || "-",
-        whatsappNumber: bl.whatsappNumber || "-",
-        experience: bl.experience || "-",
-        location: bl.location || "-",
-        category: bl.category || "-",
-        bannerImage: bl.bannerImage || null,
-        businessImages: bl.businessImages || [],
-        googleMap: bl.googleMap || "-",
-        website: bl.website || "-",
-        facebook: bl.facebook || "-",
-        instagram: bl.instagram || "-",
-        youtube: bl.youtube || "-",
-        pinterest: bl.pinterest || "-",
-        twitter: bl.twitter || "-",
-        linkedin: bl.linkedin || "-",
-        businessDetails: bl.businessDetails || "-",
-        openingHours: bl.openingHours || defaultOpeningHours,
+  const rows = businessList.map((bl, index) => ({
+    id: bl._id || index,
+    _id: bl._id,
+    clientId: bl.clientId || "-",
+    businessName: bl.businessName || "-",
+    plotNumber: bl.plotNumber || "-",
+    street: bl.street || "-",
+    pincode: bl.pincode || "-",
+    globalAddress: bl.globalAddress || "-",
+    email: bl.email || "-",
+    contact: bl.contact || "-",
+    contactList: bl.contactList || "-",
+    gstin: bl.gstin || "-",
+    whatsappNumber: bl.whatsappNumber || "-",
+    experience: bl.experience || "-",
+    location: bl.location || "-",
+    category: bl.category || "-",
+    bannerImage: bl.bannerImage || null,
+    businessImages: bl.businessImages || [],
+    googleMap: bl.googleMap || "-",
+    website: bl.website || "-",
+    facebook: bl.facebook || "-",
+    instagram: bl.instagram || "-",
+    youtube: bl.youtube || "-",
+    pinterest: bl.pinterest || "-",
+    twitter: bl.twitter || "-",
+    linkedin: bl.linkedin || "-",
+    businessDetails: bl.businessDetails || "-",
+    openingHours: bl.openingHours || defaultOpeningHours,
 
     }));
 
@@ -509,33 +512,45 @@ export default function BusinessList() {
         />
       </div>
 
-      {/* Pincode */}
-      <div className="form-input-group">
-        <label htmlFor="pincode" className="input-label">Pincode</label>
-        <input
-          type="text"
-          id="pincode"
-          name="pincode"
-          className={`text-input ${errors.pincode ? "error" : ""}`}
-          value={formData.pincode}
-          onChange={handleChange}
-        />
-        {errors.pincode && <p className="error-text">{errors.pincode}</p>}
-      </div>
+          {/* Pincode */}
 
-      {/* Email */}
-      <div className="form-input-group">
-        <label htmlFor="email" className="input-label">Email</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          className={`text-input ${errors.email ? "error" : ""}`}
-          value={formData.email}
-          onChange={handleChange}
-        />
-        {errors.email && <p className="error-text">{errors.email}</p>}
-      </div>
+          <div className="form-input-group">
+            <label htmlFor="pincode" className="input-label">Pincode</label>
+            <input
+              type="text"
+              id="pincode"
+              name="pincode"
+              className={`text-input ${errors.pincode ? "error" : ""}`}
+              value={formData.pincode}
+              onChange={handleChange}
+            />
+            {errors.pincode && <p className="error-text">{errors.pincode}</p>}
+          </div>
+          <div className="form-input-group">
+            <label htmlFor="address2" className="input-label">GlobalAddress</label>
+            <input
+              type="text"
+              id="globalAddress"
+              name="globalAddress"
+              className={`text-input ${errors.globalAddress ? "error" : ""}`}
+              value={formData.globalAddress}
+              onChange={handleChange}
+            />
+            {errors.globalAddress && <p className="error-text">{errors.globalAddress}</p>}
+          </div>
+          {/* Email */}
+          <div className="form-input-group">
+            <label htmlFor="email" className="input-label">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              className={`text-input ${errors.email ? "error" : ""}`}
+              value={formData.email}
+              onChange={handleChange}
+            />
+            {errors.email && <p className="error-text">{errors.email}</p>}
+          </div>
 
       {/* Contact */}
       <div className="form-input-group">
