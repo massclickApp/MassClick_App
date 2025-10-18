@@ -105,7 +105,63 @@ body {
     overflow: hidden;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Stronger shadow for the main hero element */
 }
+/* ======================================= */
+/* 1. Overall Section Card Improvement */
+/* ======================================= */
 
+.overview-content-card {
+    /* Base styling for the container to lift it off the page */
+    background-color: var(--color-white, #fff); /* Use a white/light background */
+    border-radius: 12px; /* Rounded corners for a modern look */
+    padding: 30px; /* Generous internal spacing */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* Subtle shadow for depth */
+    margin-bottom: 25px; /* Space below the card */
+    border: 1px solid var(--color-border-light, #eee); /* Light border */
+}
+
+.overview-content-card h2 {
+    color: var(--color-heading, #1a202c); /* Darker color for headings */
+    font-size: 24px;
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--color-primary, #007bff); /* A primary color underline */
+    padding-bottom: 8px;
+    display: inline-block; /* Make the underline fit the text */
+}
+
+/* ======================================= */
+/* 2. Content Styling (via dangerouslySetInnerHTML) */
+/* ======================================= */
+
+/* Target the wrapper that contains the paragraph content */
+.overview-text {
+    line-height: 1.8; /* Increased line height improves readability */
+    color: var(--color-text-dark, #4a5568); /* Slightly darker text for contrast */
+    font-size: 16px; /* Ensure font size is comfortable */
+    margin-top: 15px;
+}
+
+.overview-text p {
+    margin-bottom: 1.5em; /* Add space between generated paragraphs */
+    padding-left: 0; /* Remove any default padding */
+}
+/* Example: Making the text orange */
+.list-link {
+  color: #ff9900; 
+  text-decoration: none;
+}
+
+.list-link:visited {
+  color: #ff9900; /* Crucial to override the default purple visited link color */
+}
+
+.list-link:hover {
+  color: #cc7a00;
+}
+
+.overview-text p strong {
+    color: var(--color-accent, #e53e3e); /* A distinctive color for highlights */
+    font-weight: 700; /* Extra bold */
+}
 .main-image-container {
     width: 100%;
     height: 200px; /* Mobile height */

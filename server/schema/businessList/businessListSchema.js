@@ -46,14 +46,14 @@ const reviewSchema = new mongoose.Schema({
 
 const businessListSchema = new mongoose.Schema({
   clientId: { type: String, default: '', },
-  businessName: { type: String, default: '', required: true },
+  businessName: { type: String, default: '',  },
   plotNumber: { type: String, default: '', },
   street: { type: String, default: '', },
-  pincode: { type: String, default: '', required: true },
-  email: { type: String, default: '', required: true },
-  contact: { type: String, default: '', required: true },
+  pincode: { type: String, default: '',  },
+  email: { type: String, default: '', },
+  contact: { type: String, default: '',  },
   contactList: { type: String, default: '', },
-  gstin: { type: String, default: '', required: true },
+  gstin: { type: String, default: '',  },
   whatsappNumber: { type: String, default: '', required: true },
   experience: { type: String, default: '', required: true },
   openingHours: [

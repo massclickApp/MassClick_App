@@ -30,6 +30,7 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import LinkIcon from '@mui/icons-material/Link';
 
 import Footer from "../footer/footer.js";
+import { getAllLocation } from "../../../redux/actions/locationAction.js";
 
 const SimpleModal = ({ children, onClose, title }) => (
     <div className="modal-overlay" onClick={onClose}>
@@ -91,6 +92,9 @@ const BusinessDetail = () => {
     const { id } = useParams();
     const dispatch = useDispatch();
     const { businessList = [] } = useSelector((state) => state.businessListReducer || {});
+    const { location = [], loading, error } = useSelector(
+        (state) => state.locationReducer || {}
+    );
     const [mainImage, setMainImage] = useState(null);
     const [showFullGallery, setShowFullGallery] = useState(false);
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
@@ -107,6 +111,7 @@ const BusinessDetail = () => {
     const reviewsRef = useRef(null);
     useEffect(() => {
         dispatch(getAllBusinessList());
+        dispatch(getAllLocation())
     }, [dispatch]);
 
     const business = businessList.find((b) => b._id === id);
@@ -119,10 +124,18 @@ const BusinessDetail = () => {
     const firstImage = business.bannerImage || galleryImageSrcs[0] || null;
     const bannerImageSrc = mainImage || firstImage;
     const restaurantOptions = business.restaurantOptions;
+    const website = business.website
+    console.log("website", website);
 
     const displayedAverageRating = business.averageRating?.toFixed(1) || 0;
     const totalRatings = business?.reviews?.length || 0;
-    const fullAddress = `${business.plotNumber || ''} ${business.street || ''}, ${business.location || ''}`;
+    const matchedLocation = location.find(
+        (loc) => loc._id === business.location
+    );
+
+    const fullAddress = matchedLocation
+        ? `${matchedLocation.addressLine1}, ${matchedLocation.city}, ${matchedLocation.district}, ${matchedLocation.state}, ${matchedLocation.country} (${matchedLocation.pincode})`
+        : '';
 
     const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -265,7 +278,7 @@ const BusinessDetail = () => {
     const allReviews = business.reviews || [];
     const reviewsToDisplay = allReviews.slice(0, reviewLimit);
     const hasMoreReviews = allReviews.length > reviewLimit;
-
+    const OverView = business.businessDetails
 
     return (
         <>
@@ -406,9 +419,12 @@ const BusinessDetail = () => {
                         </div>
                         <div className="tab-content">
                             {activeTab === 'Overview' && (
-                                <div>
+                                <div ref={overviewRef} className="overview-content-card">
                                     <h2>Overview Content</h2>
-                                    <p>This is some example content for the Overview tab.</p>
+                                    <div
+                                        dangerouslySetInnerHTML={{ __html: OverView }}
+                                        className="overview-text"
+                                    />
                                 </div>
                             )}
                             {activeTab === 'Quick Info' && (
@@ -630,7 +646,12 @@ const BusinessDetail = () => {
                                     Tap to rate
                                 </li>                                <li className="list-item"><span className="icon-placeholder"><EditIcon /></span>Edit this Listing</li>
                                 <li className="list-item"><span className="icon-placeholder"><CheckCircleIcon /></span>Claim this business</li>
-                                <li className="list-item"><span className="icon-placeholder"><LanguageIcon /></span>Visit our Website</li>
+                               <li className="list-item">
+    <span className="icon-placeholder"><LanguageIcon /></span>
+    <a href={website} target="_blank" rel="noopener noreferrer" className="list-link"> 
+        Website
+    </a>
+</li>
                             </ul>
                         </div>
 

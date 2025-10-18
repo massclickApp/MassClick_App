@@ -25,7 +25,9 @@ const HeroSection = ({
     const navigate = useNavigate();
 
     const businessListState = useSelector((state) => state.businessListReducer || { businessList: [] });
-
+    const { location = [], loading, error } = useSelector(
+        (state) => state.locationReducer || {}
+    );
 
     const { businessList = [] } = businessListState;
 
@@ -36,51 +38,59 @@ const HeroSection = ({
         dispatch(getAllCategory());
     }, [dispatch]);
 
-    const allLocations = businessList.map((loc) =>
-        typeof loc.location === "object" ? loc.location.en : loc.location
-    );
+    const allLocationIds = businessList
+        .map(loc => (typeof loc.location === "object" ? loc.location.en : loc.location))
+        .filter(Boolean);
 
-    const locationOptions = Array.from(new Set(allLocations)).filter(Boolean);
+    const locationOptions = location
+        .filter(loc => allLocationIds.includes(loc._id.$oid || loc._id)) // match by _id
+        .map(loc => ({
+            value: loc._id.$oid || loc._id,
+            label: `${loc.city}, ${loc.state}, ${loc.country}`
+        }));
+
+
 
     const handleSearch = (e) => {
-        e.preventDefault();
+    e.preventDefault();
 
-        const finalSearchTerm = searchTerm;
+    const finalSearchTerm = searchTerm;
 
-        const logCategory = categoryName || finalSearchTerm || 'All Categories';
-        const logLocation = locationName || 'Global';
+    const logCategory = categoryName || finalSearchTerm || 'All Categories';
+    const logLocation = locationName || 'Global';
 
-        dispatch(logSearchActivity(logCategory, logLocation));
+    dispatch(logSearchActivity(logCategory, logLocation));
 
+    const selectedLocation = locationOptions.find(
+        (loc) => loc.label === locationName
+    );
+    const selectedLocationId = selectedLocation ? selectedLocation.value : null;
 
-        const filteredBusinesses = businessList.filter((business) => {
-            const matchesSearchTerm =
-                !finalSearchTerm ||
-                (business.category && business.category.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
-                (business.businessName && business.businessName.toLowerCase().includes(finalSearchTerm.toLowerCase()));
+    const filteredBusinesses = businessList.filter((business) => {
+        const matchesSearchTerm =
+            !finalSearchTerm ||
+            (business.category && business.category.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
+            (business.businessName && business.businessName.toLowerCase().includes(finalSearchTerm.toLowerCase()));
 
-            const matchesCategory =
-                !categoryName ||
-                (business.category &&
-                    business.category.toLowerCase() === categoryName.toLowerCase());
+        const matchesCategory =
+            !categoryName ||
+            (business.category && business.category.toLowerCase() === categoryName.toLowerCase());
 
-            const matchesLocation =
-                !locationName ||
-                (business.location &&
-                    business.location.toLowerCase() === locationName.toLowerCase());
+        const matchesLocation =
+            !selectedLocationId ||
+            (business.location === selectedLocationId); 
 
-            return matchesSearchTerm && matchesCategory && matchesLocation;
-        });
+        return matchesSearchTerm && matchesCategory && matchesLocation;
+    }); 
 
-        if (setSearchResults) setSearchResults(filteredBusinesses);
+    if (setSearchResults) setSearchResults(filteredBusinesses);
 
+    const loc = (locationName || 'All').replace(/\s+/g, '');
+    const cat = (categoryName || 'All').replace(/\s+/g, '');
+    const term = (finalSearchTerm || 'All').replace(/\s+/g, '');
 
-        const loc = (locationName || 'All').replace(/\s+/g, '');
-        const cat = (categoryName || 'All').replace(/\s+/g, '');
-        const term = (finalSearchTerm || 'All').replace(/\s+/g, '');
-
-        navigate(`/${loc}/${cat}/${term}`, { state: { results: filteredBusinesses } });
-    };
+    navigate(`/${loc}/${cat}/${term}`, { state: { results: filteredBusinesses } });
+};
 
 
     return (
@@ -115,7 +125,7 @@ const HeroSection = ({
                         />
                         <datalist id="location-suggestions">
                             {locationOptions.map((option, index) => (
-                                <option key={index} value={option} />
+                                <option key={index} value={option.label} />
                             ))}
                         </datalist>
                     </div>

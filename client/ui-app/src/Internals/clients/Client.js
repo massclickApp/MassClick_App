@@ -54,7 +54,6 @@ export default function UserClients() {
   const validateForm = () => {
     let newErrors = {};
 
-    if (!formData.clientId.trim()) newErrors.clientId = "Client ID is required";
     if (!formData.name.trim()) newErrors.name = "Name is required";
     if (!formData.contact.trim()) newErrors.contact = "Contact is required";
 
@@ -192,7 +191,6 @@ export default function UserClients() {
   ];
 
   const fields = [
-    { label: "Client ID", name: "clientId", required: true, type: "text" },
     { label: "Name", name: "name", required: true, type: "text" },
     { label: "Contact", name: "contact", required: true, type: "text" },
     { label: "Email", name: "emailId", required: true, type: "email" },
