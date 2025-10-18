@@ -294,7 +294,7 @@ const BusinessDetail = () => {
                             setCurrentSlideIndex(initialIndex !== -1 ? initialIndex : 0);
                             setShowFullGallery(true);
                         }}
-                        style={{ cursor: 'pointer' }} // Add cursor style to indicate clickability
+                        style={{ cursor: 'pointer' }} 
                     >
                         <img
                             src={bannerImageSrc || "https://via.placeholder.com/120x100?text=Logo"}
@@ -646,12 +646,12 @@ const BusinessDetail = () => {
                                     Tap to rate
                                 </li>                                <li className="list-item"><span className="icon-placeholder"><EditIcon /></span>Edit this Listing</li>
                                 <li className="list-item"><span className="icon-placeholder"><CheckCircleIcon /></span>Claim this business</li>
-                               <li className="list-item">
-    <span className="icon-placeholder"><LanguageIcon /></span>
-    <a href={website} target="_blank" rel="noopener noreferrer" className="list-link"> 
-        Website
-    </a>
-</li>
+                                <li className="list-item">
+                                    <span className="icon-placeholder"><LanguageIcon /></span>
+                                    <a href={website} target="_blank" rel="noopener noreferrer" className="list-link">
+                                        Website
+                                    </a>
+                                </li>
                             </ul>
                         </div>
 
@@ -666,7 +666,6 @@ const BusinessDetail = () => {
                 </div>
             </div>
 
-            {/* Contact Number Modal/Popover */}
             {showContactModal && (
                 <SimpleModal title={`Contact for ${business.businessName}`} onClose={() => setShowContactModal(false)}>
                     <div className="modal-actions" style={{ flexDirection: 'column', alignItems: 'center' }}>

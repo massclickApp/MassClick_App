@@ -1,6 +1,6 @@
 import React from 'react';
 import './footer.css';
-import { Link } from 'react-router-dom'; 
+import { Link } from 'react-router-dom';
 
 // Import Material-UI Icons
 import FacebookIcon from '@mui/icons-material/Facebook';
@@ -10,17 +10,17 @@ import YouTubeIcon from '@mui/icons-material/YouTube';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 const Footer = () => {
-   const FooterLink = ({ children, to = "#" }) => (
-    <li className="footer-link-item">
-        <ChevronRightIcon className="link-bullet-icon" /> 
-        <Link to={to} className="footer-link-anchor">{children}</Link>
-    </li>
-);
+    const FooterLink = ({ children, to = "#" }) => (
+        <li className="footer-link-item">
+            <ChevronRightIcon className="link-bullet-icon" />
+            <Link to={to} className="footer-link-anchor">{children}</Link>
+        </li>
+    );
 
     return (
         <footer className="footer-container">
             <div className="footer-content-area">
-                
+
                 <div className="footer-section quick-links">
                     <h3 className="footer-heading">Quick Links</h3>
                     <ul className="footer-link-list">
@@ -64,7 +64,12 @@ const Footer = () => {
                         <a href="https://www.instagram.com/massclick_/" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
                             <InstagramIcon className="social-icon" />
                         </a>
-                        <a href="https://www.facebook.com/massClicks" aria-label="YouTube" target="_blank" rel="noopener noreferrer">
+                        <a
+                            href="https://youtube.com/@mass_click?si=a3P-SsGzBzPYlGQk"
+                            aria-label="YouTube"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
                             <YouTubeIcon className="social-icon" />
                         </a>
                     </div>
