@@ -13,3 +13,12 @@ export const createSearchLog = async function (data = {}) {
         return null; 
     }
 };
+export const getAllSearchLogs = async () => {
+    try {
+        const logs = await searchLogModel.find().sort({ createdAt: -1 }); 
+        return logs;
+    } catch (error) {
+        console.error("Error fetching Search Logs:", error);
+        return [];
+    }
+};

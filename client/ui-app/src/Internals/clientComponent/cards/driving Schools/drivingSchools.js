@@ -54,7 +54,7 @@ const DrivingSchoolsCards = () => {
                             title={business.businessName}
                             phone={business.contact}
                             whatsapp={business.whatsappNumber}
-                            address={`${business.plotNumber ? business.plotNumber + ", " : ""}${business.street}, ${business.location}, Pincode: ${business.pincode}`}
+                            address={`${business.locationDetails}`}
                             details={`Experience: ${business.experience} | Category: ${business.category}`}
                             imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
                             rating={averageRating}

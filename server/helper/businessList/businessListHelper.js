@@ -3,7 +3,7 @@ import businessListModel from "../../model/businessList/businessListModel.js";
 import SearchLogModel from "../../model/businessList/searchLogModel.js";
 import mongoose from "mongoose";
 import { uploadImageToS3, getSignedUrlByKey } from "../../s3Uploder.js";
-
+import locationModel from "../../model/locationModel/locationModel.js";
 
 export const createBusinessList = async (reqBody = {}) => {
     try {
@@ -54,17 +54,67 @@ export const viewBusinessList = async (id) => {
 };
 
 
-export const viewAllBusinessList = async () => {
-    const businessList = await businessListModel.find().lean();
-    if (!businessList || businessList.length === 0) throw new Error("No business found");
+// export const viewAllBusinessList = async () => {
+//     const businessList = await businessListModel.find().lean();
+//     if (!businessList || businessList.length === 0) throw new Error("No business found");
 
-    return businessList.map(business => {
-        if (business.bannerImageKey) business.bannerImage = getSignedUrlByKey(business.bannerImageKey);
-        if (business.businessImagesKey?.length > 0) {
-            business.businessImages = business.businessImagesKey.map(key => getSignedUrlByKey(key));
+//     return businessList.map(business => {
+//         if (business.bannerImageKey) business.bannerImage = getSignedUrlByKey(business.bannerImageKey);
+//         if (business.businessImagesKey?.length > 0) {
+//             business.businessImages = business.businessImagesKey.map(key => getSignedUrlByKey(key));
+//         }
+//         return business;
+//     });
+// };
+export const viewAllBusinessList = async () => {
+  const businessList = await businessListModel.find().lean();
+  if (!businessList || businessList.length === 0)
+    throw new Error("No business found");
+
+  const businessListWithDetails = await Promise.all(
+    businessList.map(async (business) => {
+      if (business.bannerImageKey) {
+        business.bannerImage = getSignedUrlByKey(business.bannerImageKey);
+      }
+
+      if (business.businessImagesKey?.length > 0) {
+        business.businessImages = business.businessImagesKey.map((key) =>
+          getSignedUrlByKey(key)
+        );
+      }
+
+      let locationDetailsArray = [];
+
+      if (business.location && mongoose.Types.ObjectId.isValid(business.location)) {
+        const location = await locationModel.findById(business.location).lean();
+        if (location) {
+          locationDetailsArray = [
+            location.addressLine1 || "",
+            location.addressLine2 || "",
+            location.pincode || "",
+            location.city || "",
+            location.state || "",
+            location.country || ""
+          ];
         }
-        return business;
-    });
+      } else if (business.location) {
+        locationDetailsArray = [
+          business.location || "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ];
+      }
+
+      business.locationDetails = locationDetailsArray.filter(Boolean).join(", ");
+
+      return business;
+    })
+  );
+
+  return businessListWithDetails;
 };
 
 

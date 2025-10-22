@@ -125,17 +125,11 @@ const BusinessDetail = () => {
     const bannerImageSrc = mainImage || firstImage;
     const restaurantOptions = business.restaurantOptions;
     const website = business.website
-    console.log("website", website);
+    const fullAddress = business.locationDetails
 
     const displayedAverageRating = business.averageRating?.toFixed(1) || 0;
     const totalRatings = business?.reviews?.length || 0;
-    const matchedLocation = location.find(
-        (loc) => loc._id === business.location
-    );
 
-    const fullAddress = matchedLocation
-        ? `${matchedLocation.addressLine1}, ${matchedLocation.city}, ${matchedLocation.district}, ${matchedLocation.state}, ${matchedLocation.country} (${matchedLocation.pincode})`
-        : '';
 
     const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 

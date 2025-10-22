@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import "./CardsSearch.css";
 
 import { getAllLocation } from "../../../redux/actions/locationAction";
-import { getAllBusinessList } from "../../../redux/actions/businessListAction";
+import { getAllBusinessList, getAllSearchLogs, logSearchActivity } from "../../../redux/actions/businessListAction";
 import { getAllCategory } from "../../../redux/actions/categoryAction";
 import Tooltip from "@mui/material/Tooltip";
 
@@ -15,13 +15,87 @@ import {
 } from "@mui/material";
 import MicIcon from "@mui/icons-material/Mic";
 import AddIcon from "@mui/icons-material/Add";
-
+import SearchIcon from "@mui/icons-material/Search";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
+import HistoryToggleOffIcon from '@mui/icons-material/HistoryToggleOff';
 import MI from "../../../assets/Mi.png";
 import AddBusinessModel from "../AddBusinessModel";
 
-const CardsSearch = ({ locationName, setLocationName }) => {
+const LocationDropdown = ({ options, setLocationName, closeDropdown }) => {
+  const MAX_HEIGHT_PX = 200;
+  const handleOptionClick = (label) => {
+    setLocationName(label);
+    closeDropdown();
+  };
+  return (
+    <div className="location-custom-dropdown">
+      <div className="dropdown-header" onClick={closeDropdown}>
+        <LocationOnIcon style={{ verticalAlign: 'middle', marginRight: '4px' }} />
+        Detect Location
+      </div>
+      <div className="trending-label">TRENDING AREAS</div>
+      <div className="options-list-container" style={{ maxHeight: `${MAX_HEIGHT_PX}px` }}>
+        {options.map((option, index) => (
+          <div
+            key={index}
+            className="option-item"
+            onClick={() => handleOptionClick(option.label)}
+            style={{ display: 'flex', alignItems: 'center', padding: '4px 8px', cursor: 'pointer' }}
+
+          >
+            <LocationSearchingIcon style={{ marginRight: '6px', color: '#ff7b00' }} />
+
+            <span>{option.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+
+const CategoryDropdown = ({ options, setSearchTerm, closeDropdown }) => {
+  const MAX_HEIGHT_PX = 200;
+
+  const handleOptionClick = (value) => {
+    setSearchTerm(value);
+    closeDropdown();
+  };
+
+  if (options.length === 0) return null;
+
+  return (
+    <div className="category-custom-dropdown">
+      <div className="trending-label">RECENT SEARCHES</div>
+      <div className="options-list-container" style={{ maxHeight: `${MAX_HEIGHT_PX}px` }}>
+        {options.map((option, index) => (
+          <div
+            key={index}
+            className="option-item"
+            onClick={() => handleOptionClick(option)}
+            style={{ display: 'flex', alignItems: 'center', padding: '4px 8px', cursor: 'pointer' }}
+          >
+            <HistoryToggleOffIcon style={{ marginRight: '6px', color: '#ff7b00' }} />
+            <span>{option}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+
+const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetLocationName, setSearchResults }) => {
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+
+  const locationRef = useRef(null);
+  const categoryRef = useRef(null);
 
   const locationState = useSelector(
     (state) => state.locationReducer || { location: [] }
@@ -34,50 +108,99 @@ const CardsSearch = ({ locationName, setLocationName }) => {
   );
 
   const { location = [] } = locationState;
-  const { businessList = [] } = businessListState;
+  const { searchLogs, businessList = [] } = businessListState;
   const { category = [] } = categoryState;
 
   // Local state
+  const [internalLocationName, setInternalLocationName] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryName, setCategoryName] = useState("");
   const [isVisible, setIsVisible] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const locationName = propLocationName !== undefined ? propLocationName : internalLocationName;
+  const setLocationName = propSetLocationName !== undefined ? propSetLocationName : setInternalLocationName;
+
+
   useEffect(() => {
     dispatch(getAllLocation());
     dispatch(getAllBusinessList());
     dispatch(getAllCategory());
+    dispatch(getAllSearchLogs());
+
   }, [dispatch]);
 
-  const locationOptions = location.map((loc) => ({
-    label: typeof loc.city === "object" ? loc.city.en : loc.city,
-    id: loc._id,
-  }));
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (locationRef.current && !locationRef.current.contains(event.target)) {
+        setIsLocationDropdownOpen(false);
+      }
+      if (categoryRef.current && !categoryRef.current.contains(event.target)) {
+        setIsCategoryDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [locationRef, categoryRef]);
 
+  const allLocationIds = businessList
+    .map(loc => (typeof loc.location === "object" ? loc.location.en : loc.location))
+    .filter(Boolean);
 
-  const handleSearch = () => {
+  const locationOptions = location
+    .filter(loc => allLocationIds.includes(loc._id.$oid || loc._id))
+    .map(loc => ({
+      value: loc._id.$oid || loc._id,
+      label: `${loc.addressLine1},${loc.city}, ${loc.state}`
+    }));
+
+  const capitalizeWords = (str) => {
+    if (!str) return '';
+    return str.toLowerCase().split(' ').map(word => {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    }).join(' ');
+  };
+  const categoryOptions = [...new Set(
+    businessListState.searchLogs.map(log => capitalizeWords(log.categoryName))
+  )].filter(Boolean);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+
+    const finalSearchTerm = searchTerm;
+
+    const logCategory = categoryName || finalSearchTerm || 'All Categories';
+    const logLocation = locationName || 'Global';
+
+    dispatch(logSearchActivity(logCategory, logLocation));
+
+    const selectedLocation = locationOptions.find(
+      (loc) => loc.label === locationName
+    );
+    const selectedLocationId = selectedLocation ? selectedLocation.value : null;
+
     const filteredBusinesses = businessList.filter((business) => {
       const matchesSearchTerm =
-        !searchTerm ||
-        (business.category &&
-          business.category.toLowerCase().includes(searchTerm.toLowerCase()));
+        !finalSearchTerm ||
+        (business.category && business.category.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
+        (business.businessName && business.businessName.toLowerCase().includes(finalSearchTerm.toLowerCase()));
 
       const matchesCategory =
         !categoryName ||
-        (business.category &&
-          business.category.toLowerCase().includes(categoryName.toLowerCase()));
+        (business.category && business.category.toLowerCase() === categoryName.toLowerCase());
 
       const matchesLocation =
-        !locationName ||
-        (business.location &&
-          business.location.toLowerCase().includes(locationName.toLowerCase()));
+        !selectedLocationId ||
+        (business.location === selectedLocationId);
 
       return matchesSearchTerm && matchesCategory && matchesLocation;
     });
 
-    const loc = (locationName || "All").replace(/\s+/g, "");
-    const cat = (categoryName || "All").replace(/\s+/g, "");
-    const term = (searchTerm || "All").replace(/\s+/g, "");
+    if (setSearchResults) setSearchResults(filteredBusinesses);
+
+    const loc = (locationName || 'All').replace(/\s+/g, '');
+    const cat = (categoryName || 'All').replace(/\s+/g, '');
+    const term = (finalSearchTerm || 'All').replace(/\s+/g, '');
 
     navigate(`/${loc}/${cat}/${term}`, { state: { results: filteredBusinesses } });
   };
@@ -144,31 +267,40 @@ const CardsSearch = ({ locationName, setLocationName }) => {
           {/* Search Inputs */}
           <div className="search-area">
             {/* Location Input */}
-            <div className="search-input location">
-              <i className="fa-solid fa-location-dot icon start-icon"></i>
+            <div className="input-group location-group" ref={locationRef}>
+              <LocationOnIcon className="input-adornment start" />
               <input
-                type="text"
+                className="custom-input"
                 placeholder="Location"
                 value={locationName}
                 onChange={(e) => setLocationName(e.target.value)}
-                list="locationOptions"
+                onFocus={() => setIsLocationDropdownOpen(true)}
               />
-              <datalist id="locationOptions">
-                {locationOptions.map((opt, i) => (
-                  <option key={i} value={opt.label} />
-                ))}
-              </datalist>
+              {isLocationDropdownOpen && (
+                <LocationDropdown
+                  options={locationOptions}
+                  setLocationName={setLocationName}
+                  closeDropdown={() => setIsLocationDropdownOpen(false)}
+                />
+              )}
             </div>
 
-            {/* Main Search Input */}
-            <div className="search-input main">
+            <div className="input-group search-group" ref={categoryRef}>
               <input
-                type="text"
+                className="custom-input"
                 placeholder="Search for Spa, Salons..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                onFocus={() => setIsCategoryDropdownOpen(true)}
+
               />
+              {isCategoryDropdownOpen && searchTerm.length < 1 && (
+                <CategoryDropdown
+                  options={categoryOptions}
+                  setSearchTerm={setSearchTerm}
+                  closeDropdown={() => setIsCategoryDropdownOpen(false)}
+                />
+              )}
               <MicIcon className="input-adornment end" />
             </div>
 

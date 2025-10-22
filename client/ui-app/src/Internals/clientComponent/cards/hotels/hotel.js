@@ -52,7 +52,7 @@ const HotelCards = () => {
                             title={business.businessName}
                             phone={business.contact}
                             whatsapp={business.whatsappNumber}
-                            address={`$ ${business.location}`}
+                            address={`${business.locationDetails}`}
                             details={`Experience: ${business.experience} | Category: ${business.category}`}
                             imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
                             rating={averageRating}

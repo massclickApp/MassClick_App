@@ -5,7 +5,8 @@ import {
   EDIT_BUSINESS_REQUEST, EDIT_BUSINESS_SUCCESS, EDIT_BUSINESS_FAILURE,
   DELETE_BUSINESS_REQUEST, DELETE_BUSINESS_SUCCESS, DELETE_BUSINESS_FAILURE,
   ACTIVE_BUSINESS_REQUEST, ACTIVE_BUSINESS_SUCCESS, ACTIVE_BUSINESS_FAILURE,
-  FETCH_TRENDING_REQUEST, FETCH_TRENDING_SUCCESS, FETCH_TRENDING_FAILURE, // ✅ New Imports
+  FETCH_TRENDING_REQUEST, FETCH_TRENDING_SUCCESS, FETCH_TRENDING_FAILURE,
+  FETCH_SEARCH_LOGS_REQUEST, FETCH_SEARCH_LOGS_SUCCESS, FETCH_SEARCH_LOGS_FAILURE 
 } from "../actions/userActionTypes.js";
 
 const API_URL = process.env.REACT_APP_API_URL;
@@ -153,4 +154,23 @@ export const logSearchActivity = (categoryName, location) => async () => {
     } catch (error) {
         console.warn("Failed to log search activity:", error.message);
     }
+};
+export const getAllSearchLogs = () => async (dispatch) => {
+  dispatch({ type: FETCH_SEARCH_LOGS_REQUEST });
+
+  try {
+    const token = localStorage.getItem("accessToken");
+
+    const response = await axios.get(`${API_URL}/businesslist/trending-searches/viewall`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const logs = Array.isArray(response.data) ? response.data : [];
+    dispatch({ type: FETCH_SEARCH_LOGS_SUCCESS, payload: logs });
+  } catch (error) {
+    dispatch({
+      type: FETCH_SEARCH_LOGS_FAILURE,
+      payload: error.response?.data || error.message,
+    });
+  }
 };

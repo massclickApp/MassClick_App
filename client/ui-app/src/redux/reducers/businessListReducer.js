@@ -5,7 +5,7 @@ import {
   DELETE_BUSINESS_REQUEST, DELETE_BUSINESS_SUCCESS, DELETE_BUSINESS_FAILURE,
   ACTIVE_BUSINESS_REQUEST, ACTIVE_BUSINESS_SUCCESS, ACTIVE_BUSINESS_FAILURE,
   FETCH_TRENDING_REQUEST, FETCH_TRENDING_SUCCESS, FETCH_TRENDING_FAILURE,
-
+  FETCH_SEARCH_LOGS_REQUEST, FETCH_SEARCH_LOGS_SUCCESS, FETCH_SEARCH_LOGS_FAILURE
 } from '../actions/userActionTypes';
 
 const initialState = {
@@ -16,18 +16,24 @@ const initialState = {
   trendingList: [],
   trendingLoading: false,
   trendingError: null,
+
+  searchLogs: [],        
+  searchLogsLoading: false,
+  searchLogsError: null,
 };
 
 export default function businessListReducer(state = initialState, action) {
   switch (action.type) {
-   
+
+    // Loading states
     case FETCH_BUSINESS_REQUEST:
     case CREATE_BUSINESS_REQUEST:
     case EDIT_BUSINESS_REQUEST:
     case DELETE_BUSINESS_REQUEST:
-    case ACTIVE_BUSINESS_REQUEST: 
+    case ACTIVE_BUSINESS_REQUEST:
       return { ...state, loading: true, error: null };
 
+    // Success cases
     case FETCH_BUSINESS_SUCCESS:
       return { ...state, loading: false, businessList: action.payload, error: null };
 
@@ -58,15 +64,15 @@ export default function businessListReducer(state = initialState, action) {
         error: null,
       };
 
+    // Failure cases
     case FETCH_BUSINESS_FAILURE:
     case CREATE_BUSINESS_FAILURE:
     case EDIT_BUSINESS_FAILURE:
     case DELETE_BUSINESS_FAILURE:
     case ACTIVE_BUSINESS_FAILURE:
       return { ...state, loading: false, error: action.payload };
-      
-      
- 
+
+    // Trending searches
     case FETCH_TRENDING_REQUEST:
       return { ...state, trendingLoading: true, trendingError: null };
 
@@ -85,6 +91,16 @@ export default function businessListReducer(state = initialState, action) {
         trendingList: [], 
         trendingError: action.payload 
       };
+
+    // Search logs
+    case FETCH_SEARCH_LOGS_REQUEST:
+      return { ...state, searchLogsLoading: true, searchLogsError: null };
+
+    case FETCH_SEARCH_LOGS_SUCCESS:
+      return { ...state, searchLogsLoading: false, searchLogs: action.payload, searchLogsError: null };
+
+    case FETCH_SEARCH_LOGS_FAILURE:
+      return { ...state, searchLogsLoading: false, searchLogs: [], searchLogsError: action.payload };
 
     default:
       return state;

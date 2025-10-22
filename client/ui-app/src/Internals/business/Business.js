@@ -11,21 +11,21 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import './business.css'
 
 import {
-    Box,
-    Button,
-    Container,
-    Grid,
-    Paper,
-    TextField,
-    Typography,
-    CircularProgress,
-    IconButton,
-    Avatar,
-    MenuItem,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
+  Box,
+  Button,
+  Container,
+  Grid,
+  Paper,
+  TextField,
+  Typography,
+  CircularProgress,
+  IconButton,
+  Avatar,
+  MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
@@ -161,15 +161,7 @@ export default function BusinessList() {
     open: false,
     id: null,
   });
-  const textFieldStyle = {
-    "& .MuiInputBase-root": {
-      height: 50,
-      fontSize: "1.1rem",
-    },
-    "& .MuiInputLabel-root": {
-      fontSize: "1rem",
-    },
-  };
+
 
   const modules = {
     toolbar: [
@@ -224,7 +216,7 @@ export default function BusinessList() {
       newErrors.pincode = "Pincode should be 6 digits";
     }
 
-  
+
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -652,7 +644,6 @@ export default function BusinessList() {
           </div>
 
 
-          {/* Category Select */}
           <div className="form-input-group">
             <label htmlFor="category" className="input-label">Category</label>
             <select
@@ -669,6 +660,25 @@ export default function BusinessList() {
             </select>
             {errors.category && <p className="error-text">{errors.category}</p>}
           </div>
+          {["restaurants", "hotels"].includes(formData.category?.toLowerCase()) && (
+            <div className="form-input-group">
+              <label htmlFor="restaurantOptions" className="input-label">Restaurant Options</label>
+              <select
+                id="restaurantOptions"
+                name="restaurantOptions"
+                className={`select-input ${errors.restaurantOptions ? "error" : ""}`}
+                value={formData.restaurantOptions || ""}
+                onChange={handleChange}
+              >
+                <option value="">-- Select Restaurant --</option>
+                <option value="Veg">Veg</option>
+                <option value="Non-Veg">Non-Veg</option>
+                <option value="Both">Both</option>
+              </select>
+              {errors.restaurantOptions && <p className="error-text">{errors.restaurantOptions}</p>}
+            </div>
+          )}
+
 
           {/* Google Map */}
           <div className="form-input-group">

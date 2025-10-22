@@ -12,12 +12,10 @@ const SearchResults = () => {
 
     return (
         <>
-            {/* 🔍 Top Search Bar */}
-            <CardsSearch /><br/><br/><br/>
+            <CardsSearch /><br /><br /><br />
 
             <Box sx={{ minHeight: '100vh', bgcolor: '#f8f9fb', pt: 4, pb: 6 }}>
                 <Box sx={{ maxWidth: '1200px', margin: 'auto', p: 2 }}>
-                    {/* 🧩 Business Cards List */}
                     {results.length === 0 ? (
                         <Card
                             sx={{
@@ -44,9 +42,9 @@ const SearchResults = () => {
                                         title={business.businessName}
                                         phone={business.contact}
                                         whatsapp={business.whatsappNumber}
-                                        address={`${business.plotNumber ? business.plotNumber + ', ' : ''}${business.street}, ${business.location}, Pincode: ${business.pincode}`}
+                                        address={`${business.locationDetails}`}
                                         details={`Experience: ${business.experience || 'N/A'} | Category: ${business.category || 'N/A'}`}
-                            imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
+                                        imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
                                         rating={business.rating || '4.5'}
                                         reviews={business.reviews || '250'}
                                         to={`/business/${business._id}`}

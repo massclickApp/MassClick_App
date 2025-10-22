@@ -2,7 +2,7 @@ import express from 'express'
 
 import { addBusinessListAction, getTrendingSearchesAction, viewBusinessListAction, viewAllBusinessListAction, updateBusinessListAction, deleteBusinessListAction, activeBusinessListAction } from "../controller/businessList/businessListController.js"
 import { oauthAuthentication } from '../helper/oauthHelper.js';
-import {logSearchAction} from "../controller/businessList/logSearchController.js"
+import {logSearchAction, viewLogSearchAction} from "../controller/businessList/logSearchController.js"
 
 const router = express.Router();
 
@@ -14,6 +14,7 @@ router.delete('/api/businesslist/delete/:id', oauthAuthentication, deleteBusines
 router.put('/api/businesslist/activate/:id', oauthAuthentication, activeBusinessListAction);
 router.post('/api/businesslist/log-search', oauthAuthentication, logSearchAction);
 router.get('/api/businesslist/trending-searches', oauthAuthentication, getTrendingSearchesAction);
+router.get('/api/businesslist/trending-searches/viewall', oauthAuthentication, viewLogSearchAction);
 
 
 export default router; 
