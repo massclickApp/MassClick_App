@@ -16,9 +16,10 @@ import {
   Paper,
   Avatar,
 
-} from "@mui/material";
+} from "@mui/material"; 
 
 import BusinessCard from './businessCard';
+import ChartUserByBusiness from './ChartUserByCountry';
 
 export default function MainGrid() {
   const { enqueueSnackbar } = useSnackbar();
@@ -164,7 +165,12 @@ export default function MainGrid() {
         </Grid>
       </Grid>
 
-
+      <Grid container spacing={2}  columns={12} sx={{ mb: 2 }}>
+        <Grid item xs={12} md={12}>
+          <ChartUserByBusiness />
+        </Grid>
+      </Grid><br/>
+      
       <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
         <Typography variant="h6" gutterBottom>
           BusinessList Table

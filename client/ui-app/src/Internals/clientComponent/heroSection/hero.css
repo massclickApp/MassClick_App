@@ -55,13 +55,17 @@
 }
 
 .hero-subtitle {
+  /* Retained/Refined Properties */
   color: var(--color-text-light);
-  font-weight: 400;
+  font-weight: 300; /* Adjusted from 400 for a lighter, modern look */
   line-height: 1.6;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 1);
-  font-size: clamp(1rem, 1.8vw, 1.25rem);
-  max-width: 850px;
-  margin: 0 auto 40px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7); /* Softened the shadow */
+  font-size: clamp(1rem, 1.6vw, 1.25rem); /* Kept fluid sizing, but tightened the preferred value */
+  
+  
+  max-width: 1500px; 
+  
+  margin: 0 auto 30px; /* Reduced bottom margin slightly */
 }
 
 /* ========================================================= */

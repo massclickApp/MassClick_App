@@ -49,7 +49,7 @@ const LocationDropdown = ({ options, setLocationName, closeDropdown }) => {
 // New CategoryDropdown Component
 
 const CategoryDropdown = ({ options, setSearchTerm, closeDropdown }) => {
-    const MAX_HEIGHT_PX = 200; 
+    const MAX_HEIGHT_PX = 200;
 
     const handleOptionClick = (value) => {
         setSearchTerm(value);
@@ -129,21 +129,21 @@ const HeroSection = ({
         .filter(Boolean);
 
     const locationOptions = location
-        .filter(loc => allLocationIds.includes(loc._id.$oid || loc._id)) // match by _id
+        .filter(loc => allLocationIds.includes(loc._id.$oid || loc._id)) 
         .map(loc => ({
             value: loc._id.$oid || loc._id,
             label: `${loc.city}, ${loc.state}, ${loc.country}`
         }));
 
-const capitalizeWords = (str) => {
+    const capitalizeWords = (str) => {
         if (!str) return '';
         return str.toLowerCase().split(' ').map(word => {
             return word.charAt(0).toUpperCase() + word.slice(1);
         }).join(' ');
     };
-const categoryOptions = [...new Set(
+    const categoryOptions = [...new Set(
         businessListState.searchLogs.map(log => capitalizeWords(log.categoryName))
-    )].filter(Boolean);   
+    )].filter(Boolean);
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -200,10 +200,11 @@ const categoryOptions = [...new Set(
                     MassClick Find Your Local Business
                 </h1>
                 <p className="hero-subtitle">
-                    One of the most widely used local search engines in India, it offers user reviews, ratings, contact details, and directions.
+                    MassClick is one of India's most trusted local search platforms, offering comprehensive business information including user reviews, ratings, contact details, and directions.
                     <br />
-                    MassClick provides information on a vast range of businesses, including restaurants, shops, service providers, and more.
+                    Discover a wide variety of businesses, from restaurants and retail stores to service providers and more, all at your fingertips with MassClick.
                 </p>
+
 
                 <form className="search-bar-container" onSubmit={handleSearch}>
 
@@ -225,24 +226,24 @@ const categoryOptions = [...new Set(
                         )}
                     </div>
 
-                        <div className="input-group search-group" ref={categoryRef}> 
-                            <input
-                                className="custom-input"
-                                placeholder="Search for Spa, Salons..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                onFocus={() => setIsCategoryDropdownOpen(true)}
+                    <div className="input-group search-group" ref={categoryRef}>
+                        <input
+                            className="custom-input"
+                            placeholder="Search for Spa, Salons..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onFocus={() => setIsCategoryDropdownOpen(true)}
 
+                        />
+                        {isCategoryDropdownOpen && searchTerm.length < 1 && (
+                            <CategoryDropdown
+                                options={categoryOptions}
+                                setSearchTerm={setSearchTerm}
+                                closeDropdown={() => setIsCategoryDropdownOpen(false)}
                             />
-                            {isCategoryDropdownOpen && searchTerm.length < 1 && (
-                                <CategoryDropdown
-                                    options={categoryOptions}
-                                    setSearchTerm={setSearchTerm}
-                                    closeDropdown={() => setIsCategoryDropdownOpen(false)}
-                                />
-                            )}
-                            <MicIcon className="input-adornment end" />
-                        </div>
+                        )}
+                        <MicIcon className="input-adornment end" />
+                    </div>
 
                     <button
                         type="submit"
