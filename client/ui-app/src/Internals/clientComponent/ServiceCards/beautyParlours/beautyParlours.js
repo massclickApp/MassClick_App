@@ -26,7 +26,13 @@ const BeautyParloursCards = () => {
             b.category &&
             /\bbeauty\s*parlou?r\b/i.test(b.category)
     );
-
+    const createSlug = (text) => {
+        if (!text) return '';
+        return text
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)+/g, '');
+    };
 
     if (beautyParlours.length === 0) {
         return (
@@ -51,6 +57,10 @@ const BeautyParloursCards = () => {
                 {beautyParlours.map((business) => {
                     const averageRating = business.averageRating?.toFixed(1) || 0;
                     const totalRatings = business.reviews?.length || 0;
+
+                    const nameSlug = createSlug(business.businessName);
+                    const locationSlug = createSlug(business.locationDetails?.split(',')[0] || 'unknown');
+
                     return (
                         <CardDesign
                             key={business._id}
@@ -62,7 +72,7 @@ const BeautyParloursCards = () => {
                             imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
                             rating={averageRating}
                             reviews={totalRatings}
-                            to={`/business/${business._id}`}
+                            to={`/business/${nameSlug}/${locationSlug}/${business._id}`}
 
                         />
                     );

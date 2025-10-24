@@ -91,7 +91,7 @@ const SearchBar = ({
                     <div className="search-input main">
                         <input
                             type="text"
-                            placeholder="Search for Spa, Salons..."
+                            placeholder="Search for ..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             onKeyDown={(e) => e.key === "Enter" && handleSearch()}

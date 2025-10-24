@@ -28,6 +28,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import LinkIcon from '@mui/icons-material/Link';
+import Tooltip from '@mui/material/Tooltip';
 
 import Footer from "../footer/footer.js";
 import { getAllLocation } from "../../../redux/actions/locationAction.js";
@@ -278,25 +279,9 @@ const BusinessDetail = () => {
         <>
             <CardsSearch /><br /><br /><br />
             <div className="page-wrapper">
-                {/* Image Gallery */}
                 <div className="image-gallery">
-                    <div
-                        className="main-image-container"
-                        onClick={() => {
-                            // Find the index of the current main image
-                            const initialIndex = galleryImageSrcs.findIndex(src => src === bannerImageSrc);
-                            setCurrentSlideIndex(initialIndex !== -1 ? initialIndex : 0);
-                            setShowFullGallery(true);
-                        }}
-                        style={{ cursor: 'pointer' }} 
-                    >
-                        <img
-                            src={bannerImageSrc || "https://via.placeholder.com/120x100?text=Logo"}
-                            alt={business.businessName}
-                            className="business-banner-image"
-                        />
-                    </div>
-                    <div className="gallery-thumbnails">
+
+                    <div className="image-gallery">
                         {galleryImageSrcs.map((src, index) => (
                             <img
                                 key={index}
@@ -390,11 +375,19 @@ const BusinessDetail = () => {
                                     </span>
                                 </div>
                                 <div className="rating-input-group">
-                                    <UserRatingWidget
-                                        businessId={business._id}
-                                        initialValue={business.averageRating || 0}
-                                        currentRatings={business.ratings || []}
-                                    />
+                                    <Tooltip
+                                        title="Click to rate this business"
+                                        arrow
+                                        placement="top"
+                                    >
+                                        <div>
+                                            <UserRatingWidget
+                                                businessId={business._id}
+                                                initialValue={business.averageRating || 0}
+                                                currentRatings={business.ratings || []}
+                                            />
+                                        </div>
+                                    </Tooltip>
                                 </div>
                             </div>
                         </div>

@@ -25,6 +25,14 @@ const CourierServiceCards = () => {
             b.category.toLowerCase().includes("courier service".toLowerCase())
     );
 
+    const createSlug = (text) => {
+        if (!text) return '';
+        return text
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)+/g, '');
+    };
+
     if (courierService.length === 0) {
         return (
             <div className="no-results-container">
@@ -48,6 +56,10 @@ const CourierServiceCards = () => {
                 {courierService.map((business) => {
                     const averageRating = business.averageRating?.toFixed(1) || 0;
                     const totalRatings = business.reviews?.length || 0;
+
+                    const nameSlug = createSlug(business.businessName);
+                    const locationSlug = createSlug(business.locationDetails?.split(',')[0] || 'unknown');
+
                     return (
                         <CardDesign
                             key={business._id}
@@ -59,7 +71,7 @@ const CourierServiceCards = () => {
                             imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
                             rating={averageRating}
                             reviews={totalRatings}
-                            to={`/business/${business._id}`}
+                            to={`/business/${nameSlug}/${locationSlug}/${business._id}`}
 
                         />
                     );

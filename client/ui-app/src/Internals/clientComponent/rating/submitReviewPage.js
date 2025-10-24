@@ -41,10 +41,7 @@ const WriteReviewPage = () => {
         const files = Array.from(event.target.files);
         setRatingPhotos(files);
     };
-    const handleModalClose = () => {
-        setShowSuccessModal(false);
-        navigate(`/business/${businessId}`);
-    };
+   
     const business = useSelector(state =>
         state.businessListReducer.businessList.find(b => b._id === businessId)
     );
@@ -52,6 +49,14 @@ const WriteReviewPage = () => {
     if (!business) {
         return <p>Loading business details for review...</p>;
     }
+
+    const businessNameSlug = business.businessName.toLowerCase().replace(/\s+/g, '-');
+const locationSlug = business.location.toLowerCase().replace(/\s+/g, '-');
+
+const handleModalClose = () => {
+    setShowSuccessModal(false);
+    navigate(`/business/${businessNameSlug}/${locationSlug}/${businessId}`);
+};
 
     const handleTagClick = (tag) => {
         setSelectedTags(prev =>

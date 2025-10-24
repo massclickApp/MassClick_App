@@ -53,6 +53,7 @@ body {
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
+  
 }
 
 @media (min-width: 768px) {
@@ -100,10 +101,34 @@ body {
 /* 3. IMAGE GALLERY / BANNER */
 /* ========================================================= */
 .image-gallery {
+    /* Change to Grid for more robust, modern layout */
+    display: grid; 
+    /* Create a responsive grid: 
+       Auto-fit as many columns as possible, each at least 150px wide, up to 1fr. */
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px; /* Small space between images (The gutter) */
+    /* Remove justify-content: center; as grid handles distribution */
     margin-bottom: 20px;
-    border-radius: var(--border-radius-base);
-    overflow: hidden;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Stronger shadow for the main hero element */
+    padding: 0 10px; /* Add slight horizontal padding if inside a contained wrapper */
+}
+.image-gallery img {
+    /* Width is now handled by the grid's grid-template-columns */
+    width: 100%; 
+    height: 250px; /* Keep height fixed for uniformity */
+    object-fit: cover;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.image-gallery img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+@media (max-width: 768px) {
+    .image-gallery img {
+        height: 200px;
+    }
 }
 /* ======================================= */
 /* 1. Overall Section Card Improvement */
@@ -199,8 +224,8 @@ body {
 }
 
 .business-banner-image {
-    width: 100%;
-    height: 100%;
+    width: 400px;
+    height: 400px;
     object-fit: cover;
     display: block;
 }
@@ -211,11 +236,13 @@ body {
     overflow-x: auto;
     white-space: nowrap;
     background-color: var(--color-card-bg);
+      gap: 8px; /* Space between thumbnails */
+    margin-top: 10px;
 }
 
 .thumbnail-image {
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
     object-fit: cover;
     margin: 0 5px;
     cursor: pointer;
@@ -225,8 +252,9 @@ body {
     flex-shrink: 0;
 }
 
-.thumbnail-image:hover,
-.thumbnail-image.active {
+.thumbnail-image:hover {
+    transform: scale(1.05); /* Optional hover effect */
+}.thumbnail-image.active {
     border-color: var(--color-secondary);
     transform: scale(1.05);
 }

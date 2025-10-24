@@ -47,7 +47,7 @@ const SearchResults = () => {
                                         imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
                                         rating={business.rating || '4.5'}
                                         reviews={business.reviews || '250'}
-                                        to={`/business/${business._id}`}
+                                        to={`/business/${business.businessName.toLowerCase().replace(/\s+/g, '-')}/${business.locationDetails.toLowerCase().replace(/\s+/g, '-')}/${business._id}`}
                                     />
                                 );
                             })}

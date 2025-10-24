@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { relogin } from './redux/actions/authAction.js';
+import { relogin, clientLogin } from './redux/actions/authAction.js';
 
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -73,14 +73,19 @@ function App() {
     const initAuth = async () => {
       const accessToken = localStorage.getItem("accessToken");
       const refreshToken = localStorage.getItem("refreshToken");
-
-      if (!accessToken || !refreshToken) {
-        setIsAuthenticated(false);
-        setAuthChecked(true);
-        return;
-      }
+      const clientAccessToken = localStorage.getItem("clientAccessToken");
 
       try {
+        if (clientAccessToken) {
+          await dispatch(clientLogin());
+        }
+
+        if (!accessToken || !refreshToken) {
+          setIsAuthenticated(false);
+          setAuthChecked(true);
+          return;
+        }
+
         const result = await dispatch(relogin());
         if (result && result.accessToken) {
           setIsAuthenticated(true);
@@ -88,7 +93,7 @@ function App() {
           throw new Error("Token refresh failed");
         }
       } catch (err) {
-        console.warn("Invalid refresh token, clearing storage");
+        console.warn("Invalid token, clearing storage");
         localStorage.clear();
         setIsAuthenticated(false);
       } finally {
@@ -140,13 +145,13 @@ function App() {
                 element={route.element || <ComingSoon title={route.title} />}
               />
             ))}
-            <Route path="/:location/:category/:searchTerm" element={<SearchResults />} />
+            <Route path="/:location/:searchTerm" element={<SearchResults />} />
             <Route path="/trending/:categorySlug" element={<TrendingCards />} />
             {featuredServices.map((service) => {
               const Component = service.component || (() => <ComingSoon title={service.name} />);
               return <Route key={service.path} path={service.path} element={<Component />} />;
             })}
-            <Route path="/business/:id" element={<BusinessDetails />} />
+            <Route path="/business/:businessName/:location/:id" element={<BusinessDetails />} />
 
             <Route
               path="/write-review/:businessId/:ratingValue"

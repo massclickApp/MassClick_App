@@ -199,10 +199,10 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
     if (setSearchResults) setSearchResults(filteredBusinesses);
 
     const loc = (locationName || 'All').replace(/\s+/g, '');
-    const cat = (categoryName || 'All').replace(/\s+/g, '');
+    // const cat = (categoryName || 'All').replace(/\s+/g, '');
     const term = (finalSearchTerm || 'All').replace(/\s+/g, '');
 
-    navigate(`/${loc}/${cat}/${term}`, { state: { results: filteredBusinesses } });
+    navigate(`/${loc}/${term}`, { state: { results: filteredBusinesses } });
   };
 
   const handleOpenModal = () => setIsModalOpen(true);
@@ -288,7 +288,7 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
             <div className="input-group search-group" ref={categoryRef}>
               <input
                 className="custom-input"
-                placeholder="Search for Spa, Salons..."
+                placeholder="Search for ..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onFocus={() => setIsCategoryDropdownOpen(true)}

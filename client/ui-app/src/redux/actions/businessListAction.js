@@ -8,13 +8,14 @@ import {
   FETCH_TRENDING_REQUEST, FETCH_TRENDING_SUCCESS, FETCH_TRENDING_FAILURE,
   FETCH_SEARCH_LOGS_REQUEST, FETCH_SEARCH_LOGS_SUCCESS, FETCH_SEARCH_LOGS_FAILURE 
 } from "../actions/userActionTypes.js";
+import { getClientToken } from "./authAction.js";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
 export const getAllBusinessList = () => async (dispatch) => {
   dispatch({ type: FETCH_BUSINESS_REQUEST });
   try {
-    const token = localStorage.getItem("accessToken");
+     const token = await dispatch(getClientToken());
     const response = await axios.get(`${API_URL}/businesslist/viewall`, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -125,7 +126,6 @@ export const getTrendingSearches = (location) => async (dispatch) => {
         const response = await axios.get(url, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        // Dispatch success with the fetched data
         dispatch({ type: FETCH_TRENDING_SUCCESS, payload: response.data });
     } catch (error) {
         console.error("Error fetching trending searches:", error);
@@ -159,7 +159,7 @@ export const getAllSearchLogs = () => async (dispatch) => {
   dispatch({ type: FETCH_SEARCH_LOGS_REQUEST });
 
   try {
-    const token = localStorage.getItem("accessToken");
+     const token = await dispatch(getClientToken());
 
     const response = await axios.get(`${API_URL}/businesslist/trending-searches/viewall`, {
       headers: { Authorization: `Bearer ${token}` },

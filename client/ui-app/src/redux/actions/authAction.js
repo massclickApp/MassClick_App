@@ -31,10 +31,11 @@ export const clientLogin = () => async (dispatch) => {
       clientSecret: CLIENT_SECRET,
     });
 
-    const { accessToken, refreshToken, user } = response.data;
+    const { accessToken, refreshToken, user, accessTokenExpiresAt } = response.data;
 
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
+    localStorage.setItem('clientAccessToken', accessToken);
+    localStorage.setItem('clientRefreshToken', refreshToken);
+    localStorage.setItem('ClientAccessTokenExpiresAt', accessTokenExpiresAt);
 
     dispatch({
       type: CLIENT_LOGIN_SUCCESS,
@@ -145,7 +146,32 @@ export const logout = () => async (dispatch) => {
     dispatch({ type: LOGOUT });
   }
 };
+export const getClientToken = () => async (dispatch) => {
+  let clientAccessToken = localStorage.getItem("clientAccessToken");
+  const expiresAtRaw = sessionStorage.getItem("clientAccessTokenExpiresAt");
+  const expiresAt = expiresAtRaw ? new Date(expiresAtRaw).getTime() : 0;
 
+  const now = Date.now();
+
+  if (!clientAccessToken || now >= expiresAt) {
+    try {
+      const result = await dispatch(clientLogin());
+      clientAccessToken = result.accessToken;
+
+      if (result.expiresIn) {
+        const newExpiresAt = Date.now() + result.expiresIn * 1000;
+        sessionStorage.setItem("clientAccessTokenExpiresAt", newExpiresAt);
+      }
+    } catch (error) {
+      console.error("Client token refresh failed:", error);
+      localStorage.removeItem("clientAccessToken");
+      sessionStorage.removeItem("clientAccessTokenExpiresAt");
+      throw error;
+    }
+  }
+
+  return clientAccessToken; 
+};
 
 
 
