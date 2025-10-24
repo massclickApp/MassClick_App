@@ -21,7 +21,7 @@ const rootReducer = combineReducers({
   rolesReducer: rolesReducer,
   enquiryReducer: enquiryReducer,
   startProjectReducer: startProjectReducer,
-  otpReducer: otpReducer   
+  otp: otpReducer  
 });
 
 export const store = createStore(rootReducer, applyMiddleware(thunk));

@@ -81,7 +81,6 @@ body {
     transition: box-shadow 0.3s ease;
 }
 
-/* Exclude the nav-tabs from the box-shadow/padding rule if they are meant to be full width */
 .left-column > .tabs-container-wrapper {
     padding: 0;
     border: none;

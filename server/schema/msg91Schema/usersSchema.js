@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const message91UsersSchema = new mongoose.Schema({
   title: { type: String, enum: ["Mr", "Ms"], default: "Ms" },
   userName: { type: String, },
+  firstTimeUser: { type: Boolean, default: false },
   profileImageKey: { type: String, default: "" },
   email: { type: String, },
   emailVerified: { type: Boolean, default: false },
@@ -13,7 +14,6 @@ const message91UsersSchema = new mongoose.Schema({
   mobileNumber1Verified: { type: Boolean, default: true },
   mobileNumber2: { type: String, default: "" },
   mobileNumber2Verified: { type: Boolean, default: false },
-
   permanentAddress: {
     plotNo: { type: String, },
     street: { type: String, },

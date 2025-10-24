@@ -2,17 +2,18 @@ import axios from "axios";
 import dotenv from "dotenv";
 dotenv.config();
 
+// Send OTP
 export const sendOtp = async (number) => {
   try {
     const authKey = process.env.MSG91_AUTH_KEY;
     const templateId = process.env.MSG91_TEMPLATE_ID;
     const baseUrl = process.env.MSG91_BASE_URL;
 
-    if (!authKey || !templateId) {
+    if (!authKey || !templateId || !baseUrl) {
       throw new Error("MSG91 environment variables missing.");
     }
 
-    const cleanNumber = number.replace(/\D/g, '');
+    const cleanNumber = number.replace(/\D/g, "");
     if (cleanNumber.length !== 10) {
       throw new Error("Invalid phone number. Must be 10 digits.");
     }
@@ -31,7 +32,6 @@ export const sendOtp = async (number) => {
       }
     );
 
-    console.log("MSG91 OTP Response:", response.data);
 
     if (response.data.type !== "success") {
       throw new Error(response.data.message || "Failed to send OTP.");
@@ -43,12 +43,18 @@ export const sendOtp = async (number) => {
     throw error;
   }
 };
+
+// Verify OTP
 export const verifyOtp = async (number, otp) => {
   try {
     const authKey = process.env.MSG91_AUTH_KEY;
     const verifyUrl = process.env.MSG91_VERIFY_URL;
 
-    const cleanNumber = number.replace(/\D/g, '');
+    if (!authKey || !verifyUrl) {
+      throw new Error("MSG91 environment variables missing.");
+    }
+
+    const cleanNumber = number.replace(/\D/g, "");
     if (cleanNumber.length !== 10) {
       throw new Error("Invalid phone number. Must be 10 digits.");
     }
@@ -71,7 +77,6 @@ export const verifyOtp = async (number, otp) => {
       }
     );
 
-    console.log("MSG91 Verify OTP Response:", response.data);
 
     const { type, message } = response.data;
 

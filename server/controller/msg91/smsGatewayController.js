@@ -1,9 +1,9 @@
 import { sendOtp, verifyOtp } from "../../helper/msg91/smsGatewayHelper.js";
 import jwt from "jsonwebtoken";
 import User from "../../model/msg91Model/usersModels.js";
-import { uploadImageToS3, getSignedUrlByKey } from "../../s3Uploder.js";
+import { getSignedUrlByKey } from "../../s3Uploder.js";
 
-
+// Send OTP controller
 export const sendOtpAction = async (req, res) => {
   const { phoneNumber } = req.body;
 
@@ -28,6 +28,8 @@ export const sendOtpAction = async (req, res) => {
     });
   }
 };
+
+// Verify OTP controller
 export const verifyOtpAction = async (req, res) => {
   const { phoneNumber, otp, userName } = req.body;
 
@@ -42,7 +44,7 @@ export const verifyOtpAction = async (req, res) => {
 
     if (!user) {
       user = new User({
-        userName: userName || `User_${phoneNumber}`, 
+        userName: userName || `User_${phoneNumber}`,
         mobileNumber1: phoneNumber,
       });
       await user.save();
