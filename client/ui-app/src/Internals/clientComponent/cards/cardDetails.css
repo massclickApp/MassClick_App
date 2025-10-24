@@ -65,7 +65,6 @@ body {
     .right-sidebar {
         /* Makes sidebar stick on scroll for better visibility of contact/address */
         position: sticky;
-        top: 30px; 
         align-self: start; 
     }
 }
