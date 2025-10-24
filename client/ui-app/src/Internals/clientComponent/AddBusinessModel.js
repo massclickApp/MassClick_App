@@ -48,37 +48,34 @@ const OTPLoginModal = ({ open, handleClose }) => {
 
     const handleSendOtp = async () => {
         if (!agreed || mobileNumber.length !== 10) return;
-
         try {
-            const response = await dispatch(sendOtp(mobileNumber));
-
-            console.log("OTP Sent:", response.otp);
+            const res = await dispatch(sendOtp(mobileNumber));
+            console.log("OTP Sent Response:", res);
             setOtpSent(true);
             localStorage.setItem("mobileNumber", mobileNumber);
-        } catch (err) {
-            console.error("Error sending OTP:", err);
+        } catch (error) {
+            console.error("Error sending OTP:", error);
         }
     };
-React.useEffect(() => {
-    const storedMobile = localStorage.getItem("mobileNumber");
-    if (storedMobile) setMobileNumber(storedMobile);
-}, []);
+    React.useEffect(() => {
+        const storedMobile = localStorage.getItem("mobileNumber");
+        if (storedMobile) setMobileNumber(storedMobile);
+    }, []);
 
     const handleVerifyOtp = async () => {
         if (!otp) return;
         try {
-            const response = await dispatch(verifyOtp(mobileNumber, otp, userName));
-            console.log("Login Successful! Token:", response.token);
+            const res = await dispatch(verifyOtp(mobileNumber, otp, userName));
+            console.log("Login Successful:", res);
 
-            if (response.token) {
-                localStorage.setItem("authToken", response.token);
-
+            if (res.token) {
+                localStorage.setItem("authToken", res.token);
                 window.dispatchEvent(new Event("authChange"));
             }
 
             handleClose();
-        } catch (err) {
-            console.error(err);
+        } catch (error) {
+            console.error("Error verifying OTP:", error);
         }
     };
 
@@ -232,7 +229,7 @@ React.useEffect(() => {
                             required
                             variant="outlined"
                             type="tel"
-                            inputProps={{ maxLength: 6 }}
+                            inputProps={{ maxLength: 4 }}
                             value={otp}
                             onChange={(e) => setOtp(e.target.value)}
                             InputProps={{
@@ -277,7 +274,7 @@ React.useEffect(() => {
                         <Button
                             fullWidth
                             onClick={handleVerifyOtp}
-                            disabled={otp.length < 6}
+                            disabled={otp.length < 4}
                             sx={{
                                 background: "linear-gradient(90deg, #FF9900 0%, #FF6F00 100%)",
                                 color: "white",

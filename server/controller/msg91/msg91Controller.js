@@ -70,7 +70,6 @@ export const updateOtpUser = async (req, res) => {
         delete updateData.profileImage;
 
         const forbiddenFields = ["currentOtp", "otpGeneratedAt", "otpExpiresAt"];
-        // Ensure profileImageKey is not directly updated via the loop
         forbiddenFields.push("profileImageKey"); 
         
         forbiddenFields.forEach(field => delete updateData[field]);
@@ -81,7 +80,6 @@ export const updateOtpUser = async (req, res) => {
 
         await user.save();
         
-        // Prepare response: get signed URL for the saved key
         const userObject = user.toObject();
         if (userObject.profileImageKey) {
             userObject.profileImage = getSignedUrlByKey(userObject.profileImageKey);
@@ -94,7 +92,6 @@ export const updateOtpUser = async (req, res) => {
     }
 };
 
-// 3. MODIFIED viewOtpUser to include signed URL
 export const viewOtpUser = async (req, res) => {
     try {
         const { mobile } = req.params;

@@ -10,15 +10,16 @@ import {
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-export const sendOtp = (mobile) => async (dispatch) => {
+export const sendOtp = (phoneNumber) => async (dispatch) => {
   dispatch({ type: SEND_OTP_REQUEST });
   try {
-    const response = await axios.post(`${API_URL}/otp/send`, { mobile });
+    const response = await axios.post(`${API_URL}/otp_user/send-otp`, { phoneNumber });
+
     dispatch({ type: SEND_OTP_SUCCESS, payload: response.data });
 
     return response.data; 
   } catch (error) {
-    const errPayload = error.response?.data || error.message;
+    const errPayload = error.response?.data || { message: error.message };
     dispatch({ type: SEND_OTP_FAILURE, payload: errPayload });
     throw error;
   }
@@ -27,11 +28,12 @@ export const sendOtp = (mobile) => async (dispatch) => {
 
 export const verifyOtp = (mobile, otp, userName = "") => async (dispatch) => {
   dispatch({ type: VERIFY_OTP_REQUEST });
+
   try {
     const response = await axios.post(
-      `${API_URL}/otp/verify`,
-      { mobile, otp, userName },            
-      { headers: { "Content-Type": "application/json" } }  
+      `${API_URL}/otp_user/verify-otp`,
+      { phoneNumber: mobile, otp, userName },
+      { headers: { "Content-Type": "application/json" } }
     );
 
     const token = response.data.token;
@@ -42,12 +44,14 @@ export const verifyOtp = (mobile, otp, userName = "") => async (dispatch) => {
 
     dispatch({ type: VERIFY_OTP_SUCCESS, payload: response.data });
     return response.data;
+
   } catch (error) {
-    const errPayload = error.response?.data || error.message;
+    const errPayload = error.response?.data || { message: error.message };
     dispatch({ type: VERIFY_OTP_FAILURE, payload: errPayload });
     throw error;
   }
 };
+
 export const updateOtpUser = (mobile, data) => async (dispatch) => {
   dispatch({ type: UPDATE_OTP_USER_REQUEST });
   try {

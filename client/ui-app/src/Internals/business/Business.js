@@ -830,9 +830,9 @@ export default function BusinessList() {
               {loading ? (
                 <CircularProgress size={24} color="inherit" />
               ) : editMode ? (
-                "Update Category"
+                "Update Business"
               ) : (
-                "Create Category"
+                "Create Business"
               )}
             </button>
           </div>
