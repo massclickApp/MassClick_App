@@ -13,7 +13,7 @@ export const createUsers = async function (reqBody = {}) {
       delete reqBody.userProfile;
       reqBody.userProfile = uploadResult.key;
     }
-    const usersDocument = new userModel(data);
+    const usersDocument = new userModel(reqBody);
     const result = await usersDocument.save();
     return result;
   } catch (error) {
