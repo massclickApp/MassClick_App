@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { relogin, clientLogin } from './redux/actions/authAction.js';
+import { relogin } from './redux/actions/authAction.js';
 
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -41,6 +41,7 @@ import WriteReviewPage from './Internals/clientComponent/rating/submitReviewPage
 import { userMenuItems } from './Internals/clientComponent/categoryBar.js';
 import PopularCategoryPage from './Internals/clientComponent/popularCategories/popularCategoriesPage.js';
 import Profile from './Internals/Login/profile/profile.js';
+import { clientLogin } from './redux/actions/clientAuthAction.js';
 
 const ComingSoon = ({ title }) => (
   <div style={{ textAlign: 'center', marginTop: '20%' }}>

@@ -8,8 +8,8 @@ import {
   FETCH_TRENDING_REQUEST, FETCH_TRENDING_SUCCESS, FETCH_TRENDING_FAILURE,
   FETCH_SEARCH_LOGS_REQUEST, FETCH_SEARCH_LOGS_SUCCESS, FETCH_SEARCH_LOGS_FAILURE 
 } from "../actions/userActionTypes.js";
-import { getClientToken } from "./authAction.js";
-
+// import { getClientToken } from "./authAction.js";
+import { getClientToken } from "./clientAuthAction.js";
 const API_URL = process.env.REACT_APP_API_URL;
 
 export const getAllBusinessList = () => async (dispatch) => {
