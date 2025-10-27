@@ -14,8 +14,10 @@ import {
     useMediaQuery,
     useTheme,
 } from "@mui/material";
-import { sendOtp, verifyOtp } from "../../redux/actions/otpAction";
-import { useDispatch } from "react-redux";
+import { sendOtp, verifyOtp, viewOtpUser } from "../../redux/actions/otpAction";
+import { useDispatch, useSelector } from "react-redux";
+import { Link as RouterLink } from 'react-router-dom';
+import { Link as MuiLink } from '@mui/material';
 
 // --- Logo Component for Clean Branding ---
 const LogoComponent = () => (
@@ -37,6 +39,10 @@ const LogoComponent = () => (
 const OTPLoginModal = ({ open, handleClose }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const { loading, error, otpResponse, verifyResponse } = useSelector(
+        (state) => state.otp
+    );
+
 
     const [mobileNumber, setMobileNumber] = React.useState('');
     const [agreed, setAgreed] = React.useState(false);
@@ -178,7 +184,15 @@ const OTPLoginModal = ({ open, handleClose }) => {
                                     }
                                     label={
                                         <Typography variant="body2" color="text.secondary">
-                                            I Agree to <Link href="#" underline="hover" sx={{ color: '#FF6F00', fontWeight: 600 }}>Terms and Conditions</Link>
+                                            I Agree to
+                                            <MuiLink
+                                                component={RouterLink} 
+                                                to="/terms"           
+                                                underline="hover"
+                                                sx={{ color: '#FF6F00', fontWeight: 600 }}
+                                            >
+                                                Terms and Conditions
+                                            </MuiLink>
                                         </Typography>
                                     }
                                     sx={{ mr: 0 }}
