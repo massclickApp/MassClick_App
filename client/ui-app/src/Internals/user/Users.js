@@ -7,7 +7,6 @@ import {
   Box,
   Button,
   CircularProgress,
-
   Paper,
   Typography,
   IconButton,
@@ -28,13 +27,13 @@ export default function User() {
   const [preview, setPreview] = useState(null);
 
   const { users = [], loading, error } = useSelector((state) => state.userReducer || {});
-  const { roles = [] } = useSelector(
-    (state) => state.rolesReducer || {}
-  );
+  const { roles = [] } = useSelector((state) => state.rolesReducer || {});
   const [isEditMode, setIsEditMode] = useState(false);
   const [editUserId, setEditUserId] = useState(null);
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const [formData, setFormData] = useState({
     userName: "",
@@ -45,11 +44,10 @@ export default function User() {
     businessCategory: "",
     emailId: "",
     role: "",
+    managedBy: "",
   });
 
-  // 🔹 Delete dialog state
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const salesManagers = users.filter(user => user.role === "SalesManager");
 
   useEffect(() => {
     dispatch(getAllUsers());
@@ -77,15 +75,28 @@ export default function User() {
     e.preventDefault();
     if (!validateForm()) return;
 
+    let dataToSubmit = { ...formData };
+
+    if (dataToSubmit.role !== "SalesOfficer") {
+      delete dataToSubmit.managedBy;
+    } else if (dataToSubmit.role === "SalesOfficer" && dataToSubmit.managedBy === "") {
+      dataToSubmit.managedBy = null;
+    }
+
+    if (isEditMode && !dataToSubmit.password) {
+      delete dataToSubmit.password;
+    }
+
+
     if (isEditMode && editUserId) {
-      dispatch(editUser(editUserId, formData))
+      dispatch(editUser(editUserId, dataToSubmit))
         .then(() => {
           resetForm();
           dispatch(getAllUsers());
         })
         .catch((err) => console.error("Update user failed:", err));
     } else {
-      dispatch(createUser(formData))
+      dispatch(createUser(dataToSubmit))
         .then(() => {
           resetForm();
           dispatch(getAllUsers());
@@ -98,12 +109,14 @@ export default function User() {
     let newErrors = {};
     if (!formData.userName) newErrors.userName = "User Name is required";
     if (!formData.contact) newErrors.contact = "Contact is required";
-    if (!formData.password) newErrors.password = "Password is required";
+    if (!isEditMode && !formData.password) newErrors.password = "Password is required";
     if (!formData.emailId) newErrors.emailId = "Email is required";
     else if (!/\S+@\S+\.\S+/.test(formData.emailId)) newErrors.emailId = "Invalid email format";
     if (!formData.role) newErrors.role = "Role is required";
     if (!formData.businessLocation) newErrors.businessLocation = "Business Location is required";
     if (!formData.businessCategory) newErrors.businessCategory = "Business Category is required";
+    if (formData.role === "SalesOfficer" && !formData.managedBy)
+      newErrors.managedBy = "Assigned Manager is required for Sales Officer";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -119,6 +132,7 @@ export default function User() {
       emailId: row.emailId,
       businessLocation: row.businessLocation,
       businessCategory: row.businessCategory,
+      managedBy: row.managerIdForEdit || "",
     });
     setEditUserId(row.id);
     setIsEditMode(true);
@@ -134,11 +148,13 @@ export default function User() {
       businessCategory: "",
       emailId: "",
       role: "",
+      managedBy: "",
     });
     setErrors({});
     setEditUserId(null);
     setIsEditMode(false);
     setShowPassword(false);
+    setPreview(null);
   };
 
   const handleDeleteClick = (row) => {
@@ -163,40 +179,66 @@ export default function User() {
     setSelectedUser(null);
   };
 
+
   const rows = users
     .filter((user) => user.isActive)
-    .map((user, index) => ({
-      id: user._id || index,
-      userName: user.userName,
-      userProfile: user.userProfile,
-      password: user.password,
-      contact: user.contact,
-      emailId: user.emailId,
-      role: user.role,
-      businessLocation: user.businessLocation || "-",
-      businessCategory: user.businessCategory || "-",
-      isActive: user.isActive,
-    }));
+    .map((user, index) => {
+      const managedOfficers = user.role === 'SalesManager'
+        ? (user.salesBy || []) 
+          .map(officerId => users.find(u => u._id === officerId)?.userName)
+          .filter(name => name) 
+          .join(', ') || 'None'
+        : '-';
+      
+      return {
+        id: user._id || index,
+        userName: user.userName,
+        userProfile: user.userProfile,
+        contact: user.contact,
+        emailId: user.emailId,
+        role: user.role,
+        businessLocation: user.businessLocation || "-",
+        businessCategory: user.businessCategory || "-",
+        managedBy: salesManagers.find(m => m._id === user.managedBy)?.userName || "-",
+        managerIdForEdit: user.managedBy || "",
+        salesOfficers: managedOfficers, // Add the new field for the managed officers list
+      };
+    });
 
   const userList = [
-     {
-          field: "userProfile",
-          headerName: "User Profile",
-          flex: 1,
-          renderCell: (params) =>
-            params.value ? <Avatar src={params.value} alt="img" /> : "-",
-        },
-    { field: "userName", headerName: "User Name", flex: 1 },  
-    { field: "emailId", headerName: "Email", flex: 1 },
+    {
+      field: "userProfile",
+      headerName: "User Profile",
+      flex: 0.8,
+      renderCell: (params) =>
+        params.value ? <Avatar src={params.value} alt="img" /> : "-",
+    },
+    { field: "userName", headerName: "User Name", flex: 1.2 },
+    { field: "emailId", headerName: "Email", flex: 1.5 },
     { field: "role", headerName: "Role", flex: 1 },
-    { field: "businessLocation", headerName: "Business Location", flex: 1 },
-    { field: "businessCategory", headerName: "Business Category", flex: 1 },
+    { 
+      field: "managedInfo", 
+      headerName: "Assigned Manager / Managed Officers", 
+      flex: 2,
+      renderCell: (params) => {
+        if (params.row.role === 'SalesManager') {
+          return (
+            <Box component="span" sx={{ whiteSpace: 'normal', lineHeight: '1.2' }}>
+              {params.row.salesOfficers}
+            </Box>
+          );
+        } else if (params.row.role === 'SalesOfficer') {
+          return params.row.managedBy || '-';
+        }
+        return '-';
+      },
+    },
+    { field: "businessLocation", headerName: "Business Location", flex: 1.2 },
+    { field: "businessCategory", headerName: "Business Category", flex: 1.2 },
     {
       field: "action",
       headerName: "Action",
-      flex: 1,
-      sortable: false,
-      filterable: false,
+      flex: 0.8,
       renderCell: (params) => (
         <div style={{ display: "flex", gap: "8px" }}>
           <IconButton color="primary" size="small" onClick={() => handleEdit(params.row)}>
@@ -223,9 +265,7 @@ export default function User() {
   return (
     <div className="user-page">
       <div className="user-card form-section">
-        <h2 className="user-card-title">
-          {isEditMode ? "Edit User" : "Add New User"}
-        </h2>
+        <h2 className="user-card-title">{isEditMode ? "Edit User" : "Add New User"}</h2>
 
         <form onSubmit={handleSubmit} className="user-form-grid">
           {fields.map((field, i) => {
@@ -259,7 +299,7 @@ export default function User() {
                       type={showPassword ? "text" : "password"}
                       id={field.name}
                       name={field.name}
-                      placeholder={isEditMode ? "Enter new password" : ""}
+                      placeholder={isEditMode ? "Enter new password (optional)" : ""}
                       value={formData.password || ""}
                       onChange={handleChange}
                       className={`user-text-input ${errors.password ? "error" : ""}`}
@@ -283,13 +323,33 @@ export default function User() {
                     className={`user-text-input ${errors[field.name] ? "error" : ""}`}
                   />
                 )}
-
-                {errors[field.name] && (
-                  <p className="user-error-text">{errors[field.name]}</p>
-                )}
+                {errors[field.name] && <p className="user-error-text">{errors[field.name]}</p>}
               </div>
             );
           })}
+
+          {formData.role === "SalesOfficer" && (
+            <div className="user-form-input-group">
+              <label htmlFor="managedBy" className="user-input-label">
+                Assigned Manager
+              </label>
+              <select
+                id="managedBy"
+                name="managedBy"
+                value={formData.managedBy}
+                onChange={handleChange}
+                className={`user-select-input ${errors.managedBy ? "error" : ""}`}
+              >
+                <option value="">Select Sales Manager</option>
+                {salesManagers.map((manager) => (
+                  <option key={manager._id} value={manager._id}>
+                    {manager.userName}
+                  </option>
+                ))}
+              </select>
+              {errors.managedBy && <p className="user-error-text">{errors.managedBy}</p>}
+            </div>
+          )}
 
           <div className="form-input-group col-span-all upload-section">
             <div className="upload-content">
@@ -308,19 +368,9 @@ export default function User() {
                   onChange={handleImageChange}
                 />
               </Button>
-              {preview && (
-                <Avatar
-                  src={preview}
-                  sx={{ width: 56, height: 56 }}
-                  className="preview-avatar"
-                />
-              )}
+              {preview && <Avatar src={preview} sx={{ width: 56, height: 56 }} />}
               <div style={{ marginBottom: "10px" }}>
-                <button
-                  type="submit"
-                  className="submit-button"
-                  disabled={loading}
-                >
+                <button type="submit" className="submit-button" disabled={loading}>
                   {loading ? (
                     <CircularProgress size={24} color="inherit" />
                   ) : isEditMode ? (
@@ -331,7 +381,6 @@ export default function User() {
                 </button>
               </div>
             </div>
-            <div></div>
           </div>
         </form>
 

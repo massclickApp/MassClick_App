@@ -39,7 +39,6 @@ export default function BusinessList() {
   const { users = [], } = useSelector(
     (state) => state.userClientReducer || {}
   );
-  console.log("users", users);
 
   const { location = [] } = useSelector((state) => state.locationReducer || {});
   const { category = [] } = useSelector((state) => state.categoryReducer || {});

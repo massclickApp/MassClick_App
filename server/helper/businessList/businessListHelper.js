@@ -4,6 +4,7 @@ import SearchLogModel from "../../model/businessList/searchLogModel.js";
 import mongoose from "mongoose";
 import { uploadImageToS3, getSignedUrlByKey } from "../../s3Uploder.js";
 import locationModel from "../../model/locationModel/locationModel.js";
+import userModel from "../../model/userModel.js";
 
 export const createBusinessList = async (reqBody = {}) => {
     try {
@@ -66,25 +67,91 @@ export const viewBusinessList = async (id) => {
 //         return business;
 //     });
 // };
-export const viewAllBusinessList = async () => {
-  const businessList = await businessListModel.find().lean();
-  if (!businessList || businessList.length === 0)
-    throw new Error("No business found");
+// export const viewAllBusinessList = async (role, userId) => {
+//   let query = {};
+
+//   if (role === "SuperAdmin") {
+//     query = {}; 
+//   } 
+//   else if (role === "SalesManager") {
+//     const manager = await userModel.findById(userId).lean();
+//     const salesOfficerIds = manager?.salesBy || [];
+//     if (salesOfficerIds.length === 0) throw new Error("No sales officers assigned to this manager");
+//     query = { createdBy: { $in: salesOfficerIds } };
+//   } 
+//   else if (role === "SalesOfficer") {
+//     query = { createdBy: new mongoose.Types.ObjectId(userId) };
+//   } 
+// //   else if (role === "user" || role === "client") {
+// //     query = { isActive: true };
+// //   } 
+//   else {
+//     throw new Error("Unauthorized role");
+//   }
+
+//   const businessList = await businessListModel.find(query).lean();
+//   if (!businessList || businessList.length === 0) throw new Error("No business found");
+
+//   const businessListWithDetails = await Promise.all(
+//     businessList.map(async (business) => {
+//       if (business.bannerImageKey) business.bannerImage = getSignedUrlByKey(business.bannerImageKey);
+//       if (business.businessImagesKey?.length > 0)
+//         business.businessImages = business.businessImagesKey.map((key) => getSignedUrlByKey(key));
+
+//       let locationDetailsArray = [];
+//       if (business.location && mongoose.Types.ObjectId.isValid(business.location)) {
+//         const location = await locationModel.findById(business.location).lean();
+//         if (location) {
+//           locationDetailsArray = [
+//             location.addressLine1 || "",
+//             location.addressLine2 || "",
+//             location.pincode || "",
+//             location.city || "",
+//             location.state || "",
+//             location.country || "",
+//           ];
+//         }
+//       } else if (business.location) {
+//         locationDetailsArray = [business.location];
+//       }
+
+//       business.locationDetails = locationDetailsArray.filter(Boolean).join(", ");
+//       return business;
+//     })
+//   );
+
+//   return businessListWithDetails;
+// };
+export const viewAllBusinessList = async (role, userId) => {
+  let query = {};
+
+  if (role === "SuperAdmin") {
+    query = {};
+  } else if (role === "SalesManager") {
+    const manager = await userModel.findById(userId).lean();
+    const salesOfficerIds = manager?.salesBy || [];
+    if (salesOfficerIds.length === 0) throw new Error("No sales officers assigned to this manager");
+    query = { createdBy: { $in: salesOfficerIds } };
+  } else if (role === "SalesOfficer") {
+    query = { createdBy: new mongoose.Types.ObjectId(userId) };
+  } else if (role === "client" || role === "PublicUser" || role === "user") {
+    query = { isActive: true }; 
+  } else {
+    throw new Error("Unauthorized role");
+  }
+
+  const businessList = await businessListModel.find(query).lean();
+  if (!businessList || businessList.length === 0) throw new Error("No business found");
 
   const businessListWithDetails = await Promise.all(
     businessList.map(async (business) => {
-      if (business.bannerImageKey) {
+      if (business.bannerImageKey)
         business.bannerImage = getSignedUrlByKey(business.bannerImageKey);
-      }
 
-      if (business.businessImagesKey?.length > 0) {
-        business.businessImages = business.businessImagesKey.map((key) =>
-          getSignedUrlByKey(key)
-        );
-      }
+      if (business.businessImagesKey?.length > 0)
+        business.businessImages = business.businessImagesKey.map((key) => getSignedUrlByKey(key));
 
       let locationDetailsArray = [];
-
       if (business.location && mongoose.Types.ObjectId.isValid(business.location)) {
         const location = await locationModel.findById(business.location).lean();
         if (location) {
@@ -94,22 +161,14 @@ export const viewAllBusinessList = async () => {
             location.pincode || "",
             location.city || "",
             location.state || "",
-            location.country || ""
+            location.country || "",
           ];
         }
       } else if (business.location) {
-        locationDetailsArray = [
-          business.location || "",
-          "",
-          "",
-          "",
-          "",
-          ""
-        ];
+        locationDetailsArray = [business.location];
       }
 
       business.locationDetails = locationDetailsArray.filter(Boolean).join(", ");
-
       return business;
     })
   );
@@ -118,15 +177,14 @@ export const viewAllBusinessList = async () => {
 };
 
 
+
 export const updateBusinessList = async (id, data) => {
     if (!ObjectId.isValid(id)) throw new Error("Invalid business ID");
 
     const business = await businessListModel.findById(id);
     if (!business) throw new Error("Business not found");
 
-    // =========================================================
-    // ✅ NEW: Review Submission Logic (Now stores S3 KEY consistently)
-    // =========================================================
+
     if (data.reviewData) {
         const { reviewData } = data;
 
@@ -138,27 +196,22 @@ export const updateBusinessList = async (id, data) => {
                         img,
                         `businessList/reviews/${business._id}/photo-${Date.now()}-${i}`
                     );
-                    // 💡 CONSISTENT: Store the S3 Key
                     return uploadResult.key;
                 }
                 return null;
             });
 
-            // Push only the valid S3 keys
             uploadedPhotoKeys.push(...(await Promise.all(photoUploadPromises)).filter(key => key));
         }
 
-        // 2. Prepare the new review object
         const newReview = {
             ...reviewData, // Contains rating, experience, love, userId, username
             ratingPhotos: uploadedPhotoKeys, // Use the uploaded S3 Keys
             createdAt: new Date() // Set the creation time
         };
 
-        // 3. Push the new review to the business document
         business.reviews.push(newReview);
 
-        // 4. Recalculate Average Rating (Crucial Step)
         const totalRating = business.reviews.reduce((sum, review) => sum + review.rating, 0);
         business.averageRating = business.reviews.length > 0
             ? parseFloat((totalRating / business.reviews.length).toFixed(1))

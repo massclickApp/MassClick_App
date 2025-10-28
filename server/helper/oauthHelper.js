@@ -6,7 +6,7 @@ import { BAD_REQUEST, UNAUTHORIZED } from "../errorCodes.js";
 import { userValidation } from '../helper/loginHelper.js';
 import mongoose from 'mongoose';
 import crypto from 'crypto';
-
+import userModel from '../model/userModel.js';
 // ---------- OAuth2 Server Model Functions ----------
 const getAccessToken = (token) => oauthModel.findOne({ accessToken: token }).lean();
 
@@ -116,16 +116,26 @@ export const oauthValidation = async (req) => {
 
 // ---------- OAuth Authentication Middleware ----------
 export const oauthAuthentication = async (req, res, next) => {
-    const request = new OAuth2Server.Request(req);
-    const response = new OAuth2Server.Response(res);
+  const request = new OAuth2Server.Request(req);
+  const response = new OAuth2Server.Response(res);
 
-    try {
-        const token = await oauthtoken.authenticate(request, response);
-        req.authUser = token.user;
-        next();
-    } catch (err) {
-        return res.status(UNAUTHORIZED.code).send({ error: err.message });
+  try {
+    const token = await oauthtoken.authenticate(request, response);
+
+    const userId = token.user?.userId;
+    if (mongoose.Types.ObjectId.isValid(userId)) {
+      const latestUser = await userModel.findById(userId).lean();
+      if (latestUser) {
+        token.user.userRole = latestUser.role;
+      }
     }
+
+    req.authUser = token.user;
+    next();
+  } catch (err) {
+    console.error("OAuth Authentication Error:", err);
+    return res.status(UNAUTHORIZED.code).send({ error: err.message });
+  }
 };
 
 // ---------- Refresh Token Handler ----------

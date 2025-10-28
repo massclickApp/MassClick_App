@@ -6,32 +6,36 @@ import {
   DELETE_BUSINESS_REQUEST, DELETE_BUSINESS_SUCCESS, DELETE_BUSINESS_FAILURE,
   ACTIVE_BUSINESS_REQUEST, ACTIVE_BUSINESS_SUCCESS, ACTIVE_BUSINESS_FAILURE,
   FETCH_TRENDING_REQUEST, FETCH_TRENDING_SUCCESS, FETCH_TRENDING_FAILURE,
-  FETCH_SEARCH_LOGS_REQUEST, FETCH_SEARCH_LOGS_SUCCESS, FETCH_SEARCH_LOGS_FAILURE 
+  FETCH_SEARCH_LOGS_REQUEST, FETCH_SEARCH_LOGS_SUCCESS, FETCH_SEARCH_LOGS_FAILURE
 } from "../actions/userActionTypes.js";
 // import { getClientToken } from "./authAction.js";
-import { getClientToken } from "./clientAuthAction.js";
+// import { getClientToken } from "./clientAuthAction.js";
 const API_URL = process.env.REACT_APP_API_URL;
 
 export const getAllBusinessList = () => async (dispatch) => {
   dispatch({ type: FETCH_BUSINESS_REQUEST });
+
   try {
-     const token = await dispatch(getClientToken());
+    let token =
+      localStorage.getItem("accessToken") || localStorage.getItem("clientAccessToken");
+    console.log("token", token);
+
+    if (!token) {
+      throw new Error("No valid access token found");
+    }
+
     const response = await axios.get(`${API_URL}/businesslist/viewall`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-
-    let businessList = [];
-    if (Array.isArray(response.data)) {
-      businessList = response.data;
-    } else if (response.data?.data) {
-      businessList = response.data.data;
-    } else if (response.data?.clients) {
-      businessList = response.data.clients;
-    }
+    const businessList =
+      Array.isArray(response.data)
+        ? response.data
+        : response.data?.data || response.data?.clients || [];
 
     dispatch({ type: FETCH_BUSINESS_SUCCESS, payload: businessList });
   } catch (error) {
+    console.error("getAllBusinessList error:", error);
     dispatch({
       type: FETCH_BUSINESS_FAILURE,
       payload: error.response?.data || error.message,
@@ -115,52 +119,57 @@ export const deleteBusinessList = (id) => async (dispatch) => {
 };
 
 export const getTrendingSearches = (location) => async (dispatch) => {
-    dispatch({ type: FETCH_TRENDING_REQUEST });
-    try {
-        const token = localStorage.getItem("accessToken");
-        
-        const url = location 
-          ? `${API_URL}/businesslist/trending-searches?location=${location}` 
-          : `${API_URL}/businesslist/trending-searches`;
+  dispatch({ type: FETCH_TRENDING_REQUEST });
+  try {
+    const token = localStorage.getItem("accessToken");
 
-        const response = await axios.get(url, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        dispatch({ type: FETCH_TRENDING_SUCCESS, payload: response.data });
-    } catch (error) {
-        console.error("Error fetching trending searches:", error);
-        dispatch({
-          type: FETCH_TRENDING_FAILURE,
-          payload: error.response?.data || error.message,
-        });
-    }
+    const url = location
+      ? `${API_URL}/businesslist/trending-searches?location=${location}`
+      : `${API_URL}/businesslist/trending-searches`;
+
+    const response = await axios.get(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    dispatch({ type: FETCH_TRENDING_SUCCESS, payload: response.data });
+  } catch (error) {
+    console.error("Error fetching trending searches:", error);
+    dispatch({
+      type: FETCH_TRENDING_FAILURE,
+      payload: error.response?.data || error.message,
+    });
+  }
 };
 
 
 export const logSearchActivity = (categoryName, location) => async () => {
-    try {
-        const token = localStorage.getItem("accessToken");
-        
-        await axios.post(
-          `${API_URL}/businesslist/log-search`, 
-          { categoryName, location }, 
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        
-        console.log(`Search logged for: ${categoryName} in ${location}`);
-        
-    } catch (error) {
-        console.warn("Failed to log search activity:", error.message);
-    }
+  try {
+    const token = localStorage.getItem("accessToken");
+
+    await axios.post(
+      `${API_URL}/businesslist/log-search`,
+      { categoryName, location },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    console.log(`Search logged for: ${categoryName} in ${location}`);
+
+  } catch (error) {
+    console.warn("Failed to log search activity:", error.message);
+  }
 };
 export const getAllSearchLogs = () => async (dispatch) => {
   dispatch({ type: FETCH_SEARCH_LOGS_REQUEST });
 
   try {
-     const token = await dispatch(getClientToken());
+    let token =
+      localStorage.getItem("accessToken") || localStorage.getItem("clientAccessToken");
+    console.log("token", token);
 
+    if (!token) {
+      throw new Error("No valid access token found");
+    }
     const response = await axios.get(`${API_URL}/businesslist/trending-searches/viewall`, {
       headers: { Authorization: `Bearer ${token}` },
     });

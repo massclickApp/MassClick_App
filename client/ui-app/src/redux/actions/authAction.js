@@ -130,11 +130,11 @@ export const relogin = () => async (dispatch) => {
 // authActions.js
 // authActions.js
 export const logout = () => async (dispatch) => {
-  const token = localStorage.getItem("accessToken");
+  const token = localStorage.getItem("accessToken") || localStorage.getItem("accestoken");
 
   try {
     if (token) {
-      const url = `${API_URL}/oauth/logout`; 
+      const url = `${API_URL}/oauth/logout`;
       await axios.delete(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -142,7 +142,8 @@ export const logout = () => async (dispatch) => {
   } catch (err) {
     console.error("Logout error:", err);
   } finally {
-    localStorage.clear();
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("accestoken");
     dispatch({ type: LOGOUT });
   }
 };

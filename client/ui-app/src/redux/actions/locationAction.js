@@ -11,8 +11,13 @@ const API_URL = process.env.REACT_APP_API_URL;
 export const getAllLocation = () => async (dispatch) => {
   dispatch({ type: FETCH_LOCATION_REQUEST });
   try {
-    const token = localStorage.getItem("accessToken");
-    const response = await axios.get(`${API_URL}/location/viewall`, {
+    let token =
+      localStorage.getItem("accessToken") || localStorage.getItem("clientAccessToken");
+    console.log("token", token);
+
+    if (!token) {
+      throw new Error("No valid access token found");
+    } const response = await axios.get(`${API_URL}/location/viewall`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 

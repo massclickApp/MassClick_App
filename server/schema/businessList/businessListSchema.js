@@ -1,4 +1,5 @@
 import mongoose from "mongoose"
+const { Schema } = mongoose;
 
 
 
@@ -17,7 +18,6 @@ const reviewSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
-  // Store the user's selected tags/likes
   ratingLove: {
     type: [String], // Array of strings for multiple tags
     default: []
@@ -26,13 +26,12 @@ const reviewSchema = new mongoose.Schema({
   userId: { // Recommended: Store the user's ID
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-            default: null, // Set default to null if it's missing
+    default: null,
   },
-  username: { // Store the username directly
+  username: { 
     type: String,
     trim: true
   },
-  // Store the photo URLs
   ratingPhotos: [{
     type: String,
     default: ''
@@ -46,14 +45,14 @@ const reviewSchema = new mongoose.Schema({
 
 const businessListSchema = new mongoose.Schema({
   clientId: { type: String, default: '', },
-  businessName: { type: String, default: '',  },
+  businessName: { type: String, default: '', },
   plotNumber: { type: String, default: '', },
   street: { type: String, default: '', },
-  pincode: { type: String, default: '',  },
+  pincode: { type: String, default: '', },
   email: { type: String, default: '', },
-  contact: { type: String, default: '',  },
+  contact: { type: String, default: '', },
   contactList: { type: String, default: '', },
-  gstin: { type: String, default: '',  },
+  gstin: { type: String, default: '', },
   whatsappNumber: { type: String, default: '', required: true },
   experience: { type: String, default: '', required: true },
   openingHours: [
@@ -80,16 +79,21 @@ const businessListSchema = new mongoose.Schema({
   businessDetails: { type: String, default: '', },
   globalAddress: { type: String, default: '', },
   reviews: {
-    type: [reviewSchema], 
+    type: [reviewSchema],
     default: []
   },
 
   averageRating: {
     type: Number,
     default: 0,
-  }, createdAt: { type: Date, default: Date.now },
+  }, 
+  createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
   activeBusinesses: { type: Boolean, default: true },
+  createdBy: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  },
   isActive: { type: Boolean, default: true },
 });
 
