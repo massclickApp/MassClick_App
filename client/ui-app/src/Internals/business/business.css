@@ -162,7 +162,9 @@ body {
   font-size: 0.9rem;
   color: #1e293b;
 }
-
+.tall-select {
+  height: 50px !important;
+}
 .dropdown li:hover {
   background-color: #e0e7ff;
   color: #1e3a8a;

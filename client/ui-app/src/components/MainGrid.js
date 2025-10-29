@@ -11,19 +11,21 @@ import CustomizedDataGrid from './CustomizedDataGrid';
 import { useSelector, useDispatch } from "react-redux";
 import { getAllBusinessList, toggleBusinessStatus } from "../redux/actions/businessListAction"; // your thunk/action
 import { useSnackbar } from 'notistack';
+import { getAllLocation } from "../redux/actions/locationAction";
+import { getAllUsers } from "../redux/actions/userAction.js";
 
 import {
   Paper,
   Avatar,
 
-} from "@mui/material"; 
+} from "@mui/material";
 
 import BusinessCard from './businessCard';
 import ChartUserByBusiness from './ChartUserByCountry';
 
 export default function MainGrid() {
   const { enqueueSnackbar } = useSnackbar();
-
+    const { users = []} = useSelector((state) => state.userReducer || {}); 
   const { businessList = [] } = useSelector(
     (state) => state.businessListReducer || {}
   );
@@ -33,11 +35,14 @@ export default function MainGrid() {
       return acc;
     }, {})
   );
+  const { location = [] } = useSelector((state) => state.locationReducer || {});
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getAllBusinessList());
+    dispatch(getAllLocation());
+    dispatch(getAllUsers());
   }, [dispatch]);
 
   const rows = businessList.map((bl) => ({
@@ -67,6 +72,7 @@ export default function MainGrid() {
     linkedin: bl.linkedin || "-",
     businessDetails: bl.businessDetails || "-",
     activeBusinesses: bl.activeBusinesses,
+    createdBy: bl.createdBy,
   }));
 
 
@@ -81,8 +87,43 @@ export default function MainGrid() {
         params.value ? <Avatar src={params.value} alt="img" /> : "-",
     },
     { field: "businessName", headerName: "Business Name", flex: 1 },
-    { field: "location", headerName: "Location", flex: 1 },
+    {
+      field: "location",
+      headerName: "Location",
+      flex: 1,
+      renderCell: (params) => {
+        const loc = location.find((l) => {
+          const id = typeof l._id === "object" ? l._id.$oid : l._id;
+          return id === params.value;
+        });
+
+        if (!loc) return "—";
+
+        return `${loc.city}, ${loc.state}`;
+      },
+    },
     { field: "category", headerName: "Category", flex: 1 },
+    {
+      field: "createdBy",
+      headerName: "Created By",
+      flex: 1,
+      renderCell: (params) => {
+        if (!params.value) return "—";
+
+        const createdById =
+          typeof params.value === "object" && params.value.$oid
+            ? params.value.$oid
+            : params.value;
+
+        const user = users.find((u) => {
+          const userId = typeof u._id === "object" && u._id.$oid ? u._id.$oid : u._id;
+          return userId === createdById;
+        });
+
+        return user ? user.userName : "—";
+      },
+    },
+
     {
       field: "isActive",
       headerName: "Status",
@@ -165,12 +206,11 @@ export default function MainGrid() {
         </Grid>
       </Grid>
 
-      <Grid container spacing={2}  columns={12} sx={{ mb: 2 }}>
+      <Grid container spacing={2} columns={12} sx={{ mb: 2 }}>
         <Grid item xs={12} md={12}>
           <ChartUserByBusiness />
         </Grid>
-      </Grid><br/>
-      
+      </Grid><br />
       <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
         <Typography variant="h6" gutterBottom>
           BusinessList Table

@@ -28,7 +28,7 @@ import './clients.css'
 
 export default function UserClients() {
   const dispatch = useDispatch();
-  const { users = [], loading, error } = useSelector(
+  const { userClient = [], loading, error } = useSelector(
     (state) => state.userClientReducer || {}
   );
 
@@ -149,7 +149,7 @@ export default function UserClients() {
     setSelectedUser(null);
   };
 
-  const rows = users
+  const rows = userClient
 
     .filter((user) => user.isActive)
     .map((user, index) => ({

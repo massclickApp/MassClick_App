@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllBusinessList, createBusinessList, editBusinessList, deleteBusinessList } from "../../redux/actions/businessListAction";
 import { getAllLocation } from "../../redux/actions/locationAction";
 import { getAllCategory } from "../../redux/actions/categoryAction";
-import { getAllUsersClient } from "../../redux/actions/userClientAction";
+import { getAllUsersClient } from "../../redux/actions/userClientAction.js";
+import { getAllUsers } from "../../redux/actions/userAction.js";
 import CustomizedDataGrid from "../../components/CustomizedDataGrid";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -13,7 +14,9 @@ import SkipNextIcon from '@mui/icons-material/SkipNext';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
 import DetailsIcon from '@mui/icons-material/Details';
+import PrivacyTipIcon from '@mui/icons-material/PrivacyTip';
 import CategoryIcon from '@mui/icons-material/Category';
+import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import {
   Box,
   Button,
@@ -36,8 +39,16 @@ import {
   Step,
   StepLabel,
 } from "@mui/material";
+import {
+  FormControl,
+  InputLabel,
+  Select,
 
-// Stepper-specific imports and custom components (Qonto/Colorlib)
+  Checkbox,
+  ListItemText,
+  OutlinedInput
+} from "@mui/material";
+
 import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
 import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector';
@@ -98,11 +109,11 @@ function ColorlibStepIcon(props) {
   const { active, completed, className } = props;
 
   const icons = {
-    1: <BusinessCenterIcon />, 
-    2: <CategoryIcon />, 
-    3: <DetailsIcon />, 
+    1: <BusinessCenterIcon />,
+    2: <CategoryIcon />,
+    3: <PrivacyTipIcon />,
+    4: <VerifiedUserIcon />,
   };
-
   return (
     <ColorlibStepIconRoot ownerState={{ completed, active }} className={className}>
       {icons[String(props.icon)]}
@@ -117,8 +128,12 @@ ColorlibStepIcon.propTypes = {
   icon: PropTypes.node,
 };
 
-const steps = ['Business Info', 'Category & Keywords', 'Details & UploadImages'];
-
+const steps = [
+  "Business Details",
+  "Category",
+  "Privacy Settings",
+  "Payment & KYC Verification"
+];
 
 
 export default function BusinessList() {
@@ -126,9 +141,11 @@ export default function BusinessList() {
   const { businessList = [], loading, error } = useSelector(
     (state) => state.businessListReducer || {}
   );
-  const { users = [], } = useSelector(
+  const { userClient = [], } = useSelector(
     (state) => state.userClientReducer || {}
   );
+  
+  const { users = [] } = useSelector((state) => state.userReducer || {});
 
   const { location = [] } = useSelector((state) => state.locationReducer || {});
   const { category = [] } = useSelector((state) => state.categoryReducer || {});
@@ -241,6 +258,7 @@ export default function BusinessList() {
     experience: "",
     location: "",
     category: "",
+    keywords: "",
     bannerImage: "",
     googleMap: "",
     website: "",
@@ -294,22 +312,18 @@ export default function BusinessList() {
     if (!formData.category) newErrors.category = "Category is required";
     if (!businessvalue || businessvalue === "<p><br></p>") newErrors.businessDetails = "Business Details is required";
 
-    // Email validation
     if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Invalid email format";
     }
 
-    // Contact number validation
     if (formData.contact && !/^\d{10}$/.test(formData.contact)) {
       newErrors.contact = "Contact should be 10 digits";
     }
 
-    // Whatsapp number validation
     if (formData.whatsappNumber && !/^\d{10}$/.test(formData.whatsappNumber)) {
       newErrors.whatsappNumber = "Whatsapp number should be 10 digits";
     }
 
-    // Pincode validation
     if (formData.pincode && !/^\d{6}$/.test(formData.pincode)) {
       newErrors.pincode = "Pincode should be 6 digits";
     }
@@ -340,6 +354,7 @@ export default function BusinessList() {
     dispatch(getAllLocation());
     dispatch(getAllCategory())
     dispatch(getAllUsersClient())
+    dispatch(getAllUsers())
   }, [dispatch]);
 
   const handleChange = (e) => {
@@ -359,7 +374,7 @@ export default function BusinessList() {
   };
 
   const handleDelete = (row) => {
-    setDeleteDialog({ open: true, id: row.id, name: row.businessName }); // Added name for delete dialog
+    setDeleteDialog({ open: true, id: row.id, name: row.businessName }); 
   };
   const confirmDelete = () => {
     if (deleteDialog.id) {
@@ -385,6 +400,7 @@ export default function BusinessList() {
       experience: "",
       location: "",
       category: "",
+      keywords: "",
       bannerImage: "",
       googleMap: "",
       website: "",
@@ -402,7 +418,7 @@ export default function BusinessList() {
     setPreview(null);
     setEditMode(false);
     setEditId(null);
-    setActiveStep(0); // Reset step when form is cleared
+    setActiveStep(0); 
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
   const handleImageChange = (e) => {
@@ -470,6 +486,7 @@ export default function BusinessList() {
     linkedin: bl.linkedin || "-",
     businessDetails: bl.businessDetails || "-",
     openingHours: bl.openingHours || defaultOpeningHours,
+    createdBy: bl.createdBy,
 
   }));
 
@@ -484,8 +501,43 @@ export default function BusinessList() {
         params.value ? <Avatar src={params.value} alt="img" /> : "-",
     },
     { field: "businessName", headerName: "Business Name", flex: 1 },
-    { field: "location", headerName: "Location", flex: 1 },
+    {
+      field: "location",
+      headerName: "Location",
+      flex: 1,
+      renderCell: (params) => {
+        const loc = location.find((l) => {
+          const id = typeof l._id === "object" ? l._id.$oid : l._id;
+          return id === params.value;
+        });
+
+        if (!loc) return "—";
+
+        return `${loc.city}, ${loc.state}`;
+      },
+    },
+
     { field: "category", headerName: "Category", flex: 1 },
+    {
+      field: "createdBy",
+      headerName: "Created By",
+      flex: 1,
+      renderCell: (params) => {
+        if (!params.value) return "—";
+
+        const createdById =
+          typeof params.value === "object" && params.value.$oid
+            ? params.value.$oid
+            : params.value;
+
+        const user = users.find((u) => {
+          const userId = typeof u._id === "object" && u._id.$oid ? u._id.$oid : u._id;
+          return userId === createdById;
+        });
+
+        return user ? user.userName : "—";
+      },
+    },
     { field: "isActive", headerName: "Status", flex: 1 },
 
     {
@@ -541,7 +593,7 @@ export default function BusinessList() {
                 onChange={handleChange}
               >
                 <option value="">-- Select Client --</option>
-                {users.map((user) => (
+                {userClient.map((user) => (
                   <option key={user._id} value={user.clientId}>
                     {user.clientId} - {user.name}
                   </option>
@@ -549,9 +601,6 @@ export default function BusinessList() {
               </select>
               {errors.clientId && <p className="error-text">{errors.clientId}</p>}
             </div>
-
-
-            {/* Business Name */}
             <div className="form-input-group">
               <label htmlFor="businessName" className="input-label">Business Name</label>
               <input
@@ -565,7 +614,6 @@ export default function BusinessList() {
               {errors.businessName && <p className="error-text">{errors.businessName}</p>}
             </div>
 
-            {/* Plot Number */}
             <div className="form-input-group">
               <label htmlFor="plotNumber" className="input-label">Plot Number</label>
               <input
@@ -578,7 +626,6 @@ export default function BusinessList() {
               />
             </div>
 
-            {/* Street */}
             <div className="form-input-group">
               <label htmlFor="street" className="input-label">Street</label>
               <input
@@ -591,7 +638,6 @@ export default function BusinessList() {
               />
             </div>
 
-            {/* Pincode */}
             <div className="form-input-group">
               <label htmlFor="pincode" className="input-label">Pincode</label>
               <input
@@ -605,7 +651,6 @@ export default function BusinessList() {
               {errors.pincode && <p className="error-text">{errors.pincode}</p>}
             </div>
 
-            {/* Global Address */}
             <div className="form-input-group">
               <label htmlFor="address2" className="input-label">Global Address</label>
               <input
@@ -619,7 +664,6 @@ export default function BusinessList() {
               {errors.globalAddress && <p className="error-text">{errors.globalAddress}</p>}
             </div>
 
-            {/* Email */}
             <div className="form-input-group">
               <label htmlFor="email" className="input-label">Email</label>
               <input
@@ -633,7 +677,6 @@ export default function BusinessList() {
               {errors.email && <p className="error-text">{errors.email}</p>}
             </div>
 
-            {/* Contact */}
             <div className="form-input-group">
               <label htmlFor="contact" className="input-label">Contact</label>
               <input
@@ -647,7 +690,6 @@ export default function BusinessList() {
               {errors.contact && <p className="error-text">{errors.contact}</p>}
             </div>
 
-            {/* Contact List */}
             <div className="form-input-group">
               <label htmlFor="contactList" className="input-label">Enquiry Number</label>
               <input
@@ -660,7 +702,6 @@ export default function BusinessList() {
               />
             </div>
 
-            {/* GSTIN */}
             <div className="form-input-group">
               <label htmlFor="gstin" className="input-label">GSTIN</label>
               <input
@@ -673,7 +714,6 @@ export default function BusinessList() {
               />
             </div>
 
-            {/* Whatsapp Number */}
             <div className="form-input-group">
               <label htmlFor="whatsappNumber" className="input-label">Whatsapp Number</label>
               <input
@@ -761,8 +801,39 @@ export default function BusinessList() {
             </div>
 
 
-            {/* Category Select */}
+            <div className="form-input-group col-span-all upload-section">
+              <div className="upload-content">
+                <Button
+                  variant="contained"
+                  startIcon={<CloudUploadIcon />}
+                  component="label"
+                  className="upload-button"
+                >
+                  Upload Image
+                  <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    ref={fileInputRef}
+                    onChange={handleImageChange}
+                  />
+                </Button>
+                {preview && <Avatar src={preview} sx={{ width: 56, height: 56 }} className="preview-avatar" />}
+              </div>
+            </div>
 
+            <div className="form-input-group col-span-all">
+              <label className="input-label">Business Details</label>
+              <ReactQuill
+                theme="snow"
+                value={businessvalue}
+                onChange={handleBusinessChange}
+                modules={modules}
+                formats={formats}
+                placeholder="Type business details here..."
+                style={{ height: "200px" }}
+              />
+            </div><br />
 
             <div className="form-input-group col-span-all">
               <h3 style={{ marginBottom: "15px" }}>Opening Hours</h3>
@@ -836,70 +907,93 @@ export default function BusinessList() {
           </>
         );
 
-    case 1:
-  return (
-    <>
-      <div className="form-input-group">
-        <label htmlFor="category" className="input-label">Category</label>
-        <select
-          id="category"
-          name="category"
-          className={`select-input ${errors.category ? "error" : ""}`}
-          value={formData.category}
-          onChange={handleChange}
-        >
-          <option value="">-- Select Category --</option>
-          {category.map((cat) => (
-            <option key={cat._id} value={cat.category}>{cat.category}</option>
-          ))}
-        </select>
-        {errors.category && <p className="error-text">{errors.category}</p>}
-      </div>
+      case 1:
+        return (
+          <>
+            <div className="form-input-group">
+              <label htmlFor="category" className="input-label">Category</label>
+              <select
+                id="category"
+                name="category"
+                className={`select-input ${errors.category ? "error" : ""}`}
+                value={formData.category}
+                onChange={handleChange}
+              >
+                <option value="">-- Select Category --</option>
+                {category.map((cat) => (
+                  <option key={cat._id} value={cat.category}>{cat.category}</option>
+                ))}
+              </select>
+              {errors.category && <p className="error-text">{errors.category}</p>}
+            </div>
+            {["restaurants", "hotels"].includes(formData.category?.toLowerCase()) && (
+              <div className="form-input-group">
+                <label htmlFor="restaurantOptions" className="input-label">Restaurant Options</label>
+                <select
+                  id="restaurantOptions"
+                  name="restaurantOptions"
+                  className={`select-input ${errors.restaurantOptions ? "error" : ""}`}
+                  value={formData.restaurantOptions || ""}
+                  onChange={handleChange}
+                >
+                  <option value="">-- Select Option --</option>
+                  <option value="Veg">Veg</option>
+                  <option value="Non-Veg">Non-Veg</option>
+                  <option value="Both">Both</option>
+                </select>
+                {errors.restaurantOptions && <p className="error-text">{errors.restaurantOptions}</p>}
+              </div>
+            )}
+            {formData.category && (
+              <div className="form-input-group">
+                <FormControl fullWidth sx={{ mt: 4 }}>
+                  <InputLabel id="keywords-label">Select Keywords</InputLabel>
+                  <Select
+                    labelId="keywords-label"
+                    id="keywords"
+                    multiple
+                    name="keywords"
+                    value={formData.keywords || []}
+                    onChange={(event) =>
+                      setFormData({
+                        ...formData,
+                        keywords:
+                          typeof event.target.value === "string"
+                            ? event.target.value.split(",")
+                            : event.target.value,
+                      })
+                    }
+                    input={<OutlinedInput label="Select Keywords" className="tall-select" />}
+                    renderValue={(selected) => selected.join(", ")}
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          maxHeight: 48 * 4.5 + 8,
+                          width: 250,
+                        },
+                      },
+                    }}
+                  >
+                    {category
+                      .find((cat) => cat.category === formData.category)
+                      ?.keywords?.map((kw, index) => (
+                        <MenuItem key={index} value={kw}>
+                          <Checkbox checked={formData.keywords?.includes(kw)} />
+                          <ListItemText primary={kw} />
+                        </MenuItem>
+                      ))}
+                  </Select>
+                  {errors.keywords && (
+                    <p className="error-text" style={{ color: "red", marginTop: 4 }}>
+                      {errors.keywords}
+                    </p>
+                  )}
+                </FormControl>
+              </div>
+            )}
 
-      {formData.category && (
-        <div className="form-input-group">
-          <label htmlFor="keywords" className="input-label">Select Keyword</label>
-          <select
-            id="keywords"
-            name="keywords"
-            className={`select-input ${errors.keywords ? "error" : ""}`}
-            value={formData.keywords || ""}
-            onChange={handleChange}
-          >
-            <option value="">-- Select Keyword --</option>
-            {/* Find the selected category and render its keywords */}
-            {category
-              .find((cat) => cat.category === formData.category)
-              ?.keywords?.map((kw, index) => (
-                <option key={index} value={kw}>{kw}</option>
-              ))}
-          </select>
-          {errors.keywords && <p className="error-text">{errors.keywords}</p>}
-        </div>
-      )}
-
-      {/* OPTIONAL — RESTAURANT OPTIONS */}
-      {["restaurants", "hotels"].includes(formData.category?.toLowerCase()) && (
-        <div className="form-input-group">
-          <label htmlFor="restaurantOptions" className="input-label">Restaurant Options</label>
-          <select
-            id="restaurantOptions"
-            name="restaurantOptions"
-            className={`select-input ${errors.restaurantOptions ? "error" : ""}`}
-            value={formData.restaurantOptions || ""}
-            onChange={handleChange}
-          >
-            <option value="">-- Select Option --</option>
-            <option value="Veg">Veg</option>
-            <option value="Non-Veg">Non-Veg</option>
-            <option value="Both">Both</option>
-          </select>
-          {errors.restaurantOptions && <p className="error-text">{errors.restaurantOptions}</p>}
-        </div>
-      )}
-    </>
-  );
-
+          </>
+        );
 
       case 2:
         return (
@@ -912,7 +1006,7 @@ export default function BusinessList() {
                   component="label"
                   className="upload-button"
                 >
-                  Upload Image
+                  Upload Kyc
                   <input
                     type="file"
                     accept="image/*"
@@ -924,19 +1018,12 @@ export default function BusinessList() {
                 {preview && <Avatar src={preview} sx={{ width: 56, height: 56 }} className="preview-avatar" />}
               </div>
             </div>
+          </>
+        );
+      case 3:
+        return (
+          <>
 
-            <div className="form-input-group col-span-all">
-              <label className="input-label">Business Details</label>
-              <ReactQuill
-                theme="snow"
-                value={businessvalue}
-                onChange={handleBusinessChange}
-                modules={modules}
-                formats={formats}
-                placeholder="Type business details here..."
-                style={{ height: "200px" }}
-              />
-            </div>
           </>
         );
 

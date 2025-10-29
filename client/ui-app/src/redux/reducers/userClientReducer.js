@@ -6,7 +6,7 @@ import {
 } from "../actions/userActionTypes.js";
 
 const initialState = {
-  users: [],
+  userClient: [],
   loading: false,
   error: null,
 };
@@ -20,7 +20,7 @@ export default function userClientReducer(state = initialState, action) {
       return { ...state, loading: true, error: null };
 
     case FETCH_USERSCLIENT_SUCCESS:
-      return { ...state, loading: false, users: action.payload, error: null };
+      return { ...state, loading: false, userClient: action.payload, error: null };
 
     case FETCH_USERSCLIENT_FAILURE:
     case CREATE_USERCLIENT_FAILURE:
@@ -29,13 +29,13 @@ export default function userClientReducer(state = initialState, action) {
       return { ...state, loading: false, error: action.payload };
 
     case CREATE_USERCLIENT_SUCCESS:
-      return { ...state, loading: false, users: [...state.users, action.payload], error: null };
+      return { ...state, loading: false, userClient: [...state.userClient, action.payload], error: null };
 
     case EDIT_USERCLIENT_SUCCESS:
       return {
         ...state,
         loading: false,
-        users: state.users.map((user) =>
+        userClient: state.userClient.map((user) =>
           user._id === action.payload._id ? action.payload : user
         ),
         error: null,
@@ -45,7 +45,7 @@ export default function userClientReducer(state = initialState, action) {
       return {
         ...state,
         loading: false,
-        users: state.users.map(user =>
+        userClient: state.userClient.map(user =>
           user._id === action.payload._id ? action.payload : user
         ),
         error: null,

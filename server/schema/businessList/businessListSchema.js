@@ -68,15 +68,7 @@ const businessListSchema = new mongoose.Schema({
   restaurantOptions: { type: String, default: '', },
   location: { type: String, default: '', required: true },
   category: { type: String, default: '', required: true },
-  keywords: { type: String, default: '', required: true },
-
-  // category: {
-  //   name: { type: String, required: true, trim: true },
-  //   keywords: [{ type: String, trim: true }],
-  //   subCategory: { type: String, default: '' },
-  //   seoTitle: { type: String, default: '' },
-  //   seoDescription: { type: String, default: '' },
-  // },
+  keywords: [{ type: String, default: '' }],
   bannerImageKey: { type: String, default: '' },
   businessImagesKey: [{ type: String, default: '' }],
   googleMap: { type: String, default: '', },
