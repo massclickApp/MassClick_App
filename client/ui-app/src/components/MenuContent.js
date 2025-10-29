@@ -26,7 +26,7 @@ const userRole = localStorage.getItem('userRole') || 'Guest';
     { text: 'Category', icon: <CategoryIcon sx={{ fontSize: 38 }} />, path: '/dashboard/category' },
     { text: 'Location', icon: <LocationOnIcon sx={{ fontSize: 38 }} />, path: '/dashboard/location' },
     { text: 'Business', icon: <BusinessIcon sx={{ fontSize: 38 }} />, path: '/dashboard/business' },
-    { text: 'Clients', icon: <SupportAgentIcon sx={{ fontSize: 38 }} />, path: '/dashboard/clients', roles: ['SuperAdmin'] },
+    { text: 'Clients', icon: <SupportAgentIcon sx={{ fontSize: 38 }} />, path: '/dashboard/clients' },
     { text: 'Users', icon: <InterpreterModeIcon sx={{ fontSize: 38 }} />, path: '/dashboard/user', roles: ['SuperAdmin'] },
     { text: 'Role', icon: <AdminPanelSettingsIcon sx={{ fontSize: 38 }} />, path: '/dashboard/roles', roles: ['SuperAdmin'] },
   ];

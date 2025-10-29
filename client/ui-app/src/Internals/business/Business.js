@@ -9,7 +9,11 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import './business.css'
-
+import SkipNextIcon from '@mui/icons-material/SkipNext';
+import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
+import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
+import DetailsIcon from '@mui/icons-material/Details';
+import CategoryIcon from '@mui/icons-material/Category';
 import {
   Box,
   Button,
@@ -26,10 +30,96 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  // Stepper Imports:
+  Stack,
+  Stepper,
+  Step,
+  StepLabel,
 } from "@mui/material";
+
+// Stepper-specific imports and custom components (Qonto/Colorlib)
+import PropTypes from 'prop-types';
+import { styled } from '@mui/material/styles';
+import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector';
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import CollectionsBookmarkOutlinedIcon from '@mui/icons-material/CollectionsBookmarkOutlined';
+
+
+const ORANGE_PRIMARY = '#FF8C00';
+const ORANGE_HOVER = '#D97800';
+
+const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
+  [`&.${stepConnectorClasses.alternativeLabel}`]: {
+    top: 22,
+  },
+  [`&.${stepConnectorClasses.active}`]: {
+    [`& .${stepConnectorClasses.line}`]: {
+      backgroundImage:
+        `linear-gradient( 95deg, ${ORANGE_PRIMARY} 0%, ${ORANGE_HOVER} 50%, #FFB643 100%)`,
+    },
+  },
+  [`&.${stepConnectorClasses.completed}`]: {
+    [`& .${stepConnectorClasses.line}`]: {
+      backgroundImage:
+        `linear-gradient( 95deg, ${ORANGE_PRIMARY} 0%, ${ORANGE_HOVER} 50%, #FFB643 100%)`,
+    },
+  },
+  [`& .${stepConnectorClasses.line}`]: {
+    height: 3,
+    border: 0,
+    backgroundColor: '#eaeaf0',
+    borderRadius: 1,
+  },
+}));
+
+const ColorlibStepIconRoot = styled('div')(({ theme, ownerState }) => ({
+  backgroundColor: '#ccc',
+  zIndex: 1,
+  color: '#fff',
+  width: 50,
+  height: 50,
+  display: 'flex',
+  borderRadius: '50%',
+  justifyContent: 'center',
+  alignItems: 'center',
+  ...(ownerState.active && {
+    backgroundImage:
+      `linear-gradient( 136deg, ${ORANGE_PRIMARY} 0%, ${ORANGE_HOVER} 50%, #FFB643 100%)`,
+    boxShadow: '0 4px 10px 0 rgba(255, 140, 0, 0.4)',
+  }),
+  ...(ownerState.completed && {
+    backgroundImage:
+      `linear-gradient( 136deg, ${ORANGE_PRIMARY} 0%, ${ORANGE_HOVER} 50%, #FFB643 100%)`,
+  }),
+}));
+
+function ColorlibStepIcon(props) {
+  const { active, completed, className } = props;
+
+  const icons = {
+    1: <BusinessCenterIcon />, 
+    2: <CategoryIcon />, 
+    3: <DetailsIcon />, 
+  };
+
+  return (
+    <ColorlibStepIconRoot ownerState={{ completed, active }} className={className}>
+      {icons[String(props.icon)]}
+    </ColorlibStepIconRoot>
+  );
+}
+
+ColorlibStepIcon.propTypes = {
+  active: PropTypes.bool,
+  className: PropTypes.string,
+  completed: PropTypes.bool,
+  icon: PropTypes.node,
+};
+
+const steps = ['Business Info', 'Category & Keywords', 'Details & UploadImages'];
+
+
 
 export default function BusinessList() {
   const dispatch = useDispatch();
@@ -54,6 +144,18 @@ export default function BusinessList() {
     open: false,
     data: null,
   });
+
+  const [activeStep, setActiveStep] = useState(0);
+
+  const handleNext = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const handleGalleryImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -96,16 +198,14 @@ export default function BusinessList() {
   };
 
 
-
-
   const defaultOpeningHours = [
-    { day: "Monday", open: "", close: "", isClosed: false },
-    { day: "Tuesday", open: "", close: "", isClosed: false },
-    { day: "Wednesday", open: "", close: "", isClosed: false },
-    { day: "Thursday", open: "", close: "", isClosed: false },
-    { day: "Friday", open: "", close: "", isClosed: false },
-    { day: "Saturday", open: "", close: "", isClosed: false },
-    { day: "Sunday", open: "", close: "", isClosed: false },
+    { day: "Monday", open: "", close: "", isClosed: false, is24Hours: false },
+    { day: "Tuesday", open: "", close: "", isClosed: false, is24Hours: false },
+    { day: "Wednesday", open: "", close: "", isClosed: false, is24Hours: false },
+    { day: "Thursday", open: "", close: "", isClosed: false, is24Hours: false },
+    { day: "Friday", open: "", close: "", isClosed: false, is24Hours: false },
+    { day: "Saturday", open: "", close: "", isClosed: false, is24Hours: false },
+    { day: "Sunday", open: "", close: "", isClosed: false, is24Hours: false },
   ];
 
 
@@ -187,7 +287,6 @@ export default function BusinessList() {
   const validateForm = () => {
     let newErrors = {};
 
-    // Required fields
     if (!formData.clientId) newErrors.clientId = "Client ID is required";
     if (!formData.businessName) newErrors.businessName = "Business Name is required";
     if (!formData.experience) newErrors.experience = "Experience is required";
@@ -260,7 +359,7 @@ export default function BusinessList() {
   };
 
   const handleDelete = (row) => {
-    setDeleteDialog({ open: true, id: row.id });
+    setDeleteDialog({ open: true, id: row.id, name: row.businessName }); // Added name for delete dialog
   };
   const confirmDelete = () => {
     if (deleteDialog.id) {
@@ -268,7 +367,7 @@ export default function BusinessList() {
         dispatch(getAllBusinessList());
       });
     }
-    setDeleteDialog({ open: false, id: null });
+    setDeleteDialog({ open: false, id: null, name: "" });
   };
   const resetForm = () => {
     setFormData({
@@ -303,6 +402,7 @@ export default function BusinessList() {
     setPreview(null);
     setEditMode(false);
     setEditId(null);
+    setActiveStep(0); // Reset step when form is cleared
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
   const handleImageChange = (e) => {
@@ -384,28 +484,10 @@ export default function BusinessList() {
         params.value ? <Avatar src={params.value} alt="img" /> : "-",
     },
     { field: "businessName", headerName: "Business Name", flex: 1 },
-    // { field: "plotNumber", headerName: "Plot Number", flex: 1 },
-    // { field: "street", headerName: "Street", flex: 1 },
-    // { field: "pincode", headerName: "Pincode", flex: 1 },
-    // { field: "email", headerName: "Email", flex: 1 },
-    // { field: "contact", headerName: "Contact", flex: 1 },
-    // { field: "contactList", headerName: "Contact List", flex: 1 },
-    // { field: "gstin", headerName: "GSTIN", flex: 1 },
-    // { field: "whatsappNumber", headerName: "Whatsapp Number", flex: 1 },
-    // { field: "experience", headerName: "Experience", flex: 1 },
     { field: "location", headerName: "Location", flex: 1 },
     { field: "category", headerName: "Category", flex: 1 },
     { field: "isActive", headerName: "Status", flex: 1 },
 
-    // { field: "googleMap", headerName: "Google Map", flex: 1 },
-    // { field: "website", headerName: "Website", flex: 1 },
-    // { field: "facebook", headerName: "Facebook", flex: 1 },
-    // { field: "instagram", headerName: "Instagram", flex: 1 },
-    // { field: "youtube", headerName: "Youtube", flex: 1 },
-    // { field: "pinterest", headerName: "Pinterest", flex: 1 },
-    // { field: "twitter", headerName: "Twitter", flex: 1 },
-    // { field: "linkedin", headerName: "LinkedIn", flex: 1 },
-    // { field: "businessDetails", headerName: "Business Details", flex: 1 },
     {
       field: "action",
       headerName: "Action",
@@ -444,396 +526,489 @@ export default function BusinessList() {
     },
   ];
 
-  return (
-    <div className="business-page">
-      {/* Business Form Card */}
-      <div className="business-card form-section">
-        <h2 className="card-title">
-          {editMode ? "Edit Business" : "Add New Business"}
-        </h2>
-
-        <form onSubmit={handleSubmit} className="form-grid">
-          {/* Client ID */}
-          <div className="form-input-group">
-            <label htmlFor="clientId" className="input-label">Client ID</label>
-            <select
-              id="clientId"
-              name="clientId"
-              className={`select-input ${errors.clientId ? "error" : ""}`}
-              value={formData.clientId}
-              onChange={handleChange}
-            >
-              <option value="">-- Select Client --</option>
-              {users.map((user) => (
-                <option key={user._id} value={user.clientId}>
-                  {user.clientId} - {user.name}
-                </option>
-              ))}
-            </select>
-            {errors.clientId && <p className="error-text">{errors.clientId}</p>}
-          </div>
-
-
-          {/* Business Name */}
-          <div className="form-input-group">
-            <label htmlFor="businessName" className="input-label">Business Name</label>
-            <input
-              type="text"
-              id="businessName"
-              name="businessName"
-              className={`text-input ${errors.businessName ? "error" : ""}`}
-              value={formData.businessName}
-              onChange={handleChange}
-            />
-            {errors.businessName && <p className="error-text">{errors.businessName}</p>}
-          </div>
-
-          {/* Plot Number */}
-          <div className="form-input-group">
-            <label htmlFor="plotNumber" className="input-label">Plot Number</label>
-            <input
-              type="text"
-              id="plotNumber"
-              name="plotNumber"
-              className="text-input"
-              value={formData.plotNumber}
-              onChange={handleChange}
-            />
-          </div>
-
-          {/* Street */}
-          <div className="form-input-group">
-            <label htmlFor="street" className="input-label">Street</label>
-            <input
-              type="text"
-              id="street"
-              name="street"
-              className="text-input"
-              value={formData.street}
-              onChange={handleChange}
-            />
-          </div>
-
-          {/* Pincode */}
-
-          <div className="form-input-group">
-            <label htmlFor="pincode" className="input-label">Pincode</label>
-            <input
-              type="text"
-              id="pincode"
-              name="pincode"
-              className={`text-input ${errors.pincode ? "error" : ""}`}
-              value={formData.pincode}
-              onChange={handleChange}
-            />
-            {errors.pincode && <p className="error-text">{errors.pincode}</p>}
-          </div>
-          <div className="form-input-group">
-            <label htmlFor="address2" className="input-label">GlobalAddress</label>
-            <input
-              type="text"
-              id="globalAddress"
-              name="globalAddress"
-              className={`text-input ${errors.globalAddress ? "error" : ""}`}
-              value={formData.globalAddress}
-              onChange={handleChange}
-            />
-            {errors.globalAddress && <p className="error-text">{errors.globalAddress}</p>}
-          </div>
-          {/* Email */}
-          <div className="form-input-group">
-            <label htmlFor="email" className="input-label">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              className={`text-input ${errors.email ? "error" : ""}`}
-              value={formData.email}
-              onChange={handleChange}
-            />
-            {errors.email && <p className="error-text">{errors.email}</p>}
-          </div>
-
-          {/* Contact */}
-          <div className="form-input-group">
-            <label htmlFor="contact" className="input-label">Contact</label>
-            <input
-              type="text"
-              id="contact"
-              name="contact"
-              className={`text-input ${errors.contact ? "error" : ""}`}
-              value={formData.contact}
-              onChange={handleChange}
-            />
-            {errors.contact && <p className="error-text">{errors.contact}</p>}
-          </div>
-
-          {/* Contact List */}
-          <div className="form-input-group">
-            <label htmlFor="contactList" className="input-label">Contact List</label>
-            <input
-              type="text"
-              id="contactList"
-              name="contactList"
-              className="text-input"
-              value={formData.contactList}
-              onChange={handleChange}
-            />
-          </div>
-
-          {/* GSTIN */}
-          <div className="form-input-group">
-            <label htmlFor="gstin" className="input-label">GSTIN</label>
-            <input
-              type="text"
-              id="gstin"
-              name="gstin"
-              className={`text-input ${errors.gstin ? "error" : ""}`}
-              value={formData.gstin}
-              onChange={handleChange}
-            />
-          </div>
-
-          {/* Whatsapp Number */}
-          <div className="form-input-group">
-            <label htmlFor="whatsappNumber" className="input-label">Whatsapp Number</label>
-            <input
-              type="text"
-              id="whatsappNumber"
-              name="whatsappNumber"
-              className={`text-input ${errors.whatsappNumber ? "error" : ""}`}
-              value={formData.whatsappNumber}
-              onChange={handleChange}
-            />
-            {errors.whatsappNumber && <p className="error-text">{errors.whatsappNumber}</p>}
-          </div>
-
-          {/* Experience */}
-          <div className="form-input-group">
-            <label htmlFor="experience" className="input-label">Experience</label>
-            <input
-              type="text"
-              id="experience"
-              name="experience"
-              className={`text-input ${errors.experience ? "error" : ""}`}
-              value={formData.experience}
-              onChange={handleChange}
-            />
-            {errors.experience && <p className="error-text">{errors.experience}</p>}
-          </div>
-
-          {/* Location Select */}
-          <div className="form-input-group">
-            <label htmlFor="location" className="input-label">Location</label>
-            <select
-              id="location"
-              name="location"
-              className={`select-input ${errors.location ? "error" : ""}`}
-              value={formData.location}
-              onChange={handleChange}
-            >
-              <option value="">-- Select Location --</option>
-              {location.map((loc) => (
-                <option key={loc._id} value={loc._id}>
-                  {`${loc.addressLine1}, ${loc.city}, ${loc.district}, ${loc.state}, ${loc.country} (${loc.pincode})`}
-                </option>
-              ))}
-            </select>
-            {errors.location && <p className="error-text">{errors.location}</p>}
-          </div>
-
-
-          <div className="form-input-group">
-            <label htmlFor="category" className="input-label">Category</label>
-            <select
-              id="category"
-              name="category"
-              className={`select-input ${errors.category ? "error" : ""}`}
-              value={formData.category}
-              onChange={handleChange}
-            >
-              <option value="">-- Select Category --</option>
-              {category.map((cat) => (
-                <option key={cat._id} value={cat.category}>{cat.category}</option>
-              ))}
-            </select>
-            {errors.category && <p className="error-text">{errors.category}</p>}
-          </div>
-          {["restaurants", "hotels"].includes(formData.category?.toLowerCase()) && (
+  const renderStepContent = (step) => {
+    switch (step) {
+      case 0:
+        return (
+          <>
             <div className="form-input-group">
-              <label htmlFor="restaurantOptions" className="input-label">Restaurant Options</label>
+              <label htmlFor="clientId" className="input-label">Client ID</label>
               <select
-                id="restaurantOptions"
-                name="restaurantOptions"
-                className={`select-input ${errors.restaurantOptions ? "error" : ""}`}
-                value={formData.restaurantOptions || ""}
+                id="clientId"
+                name="clientId"
+                className={`select-input ${errors.clientId ? "error" : ""}`}
+                value={formData.clientId}
                 onChange={handleChange}
               >
-                <option value="">-- Select Restaurant --</option>
-                <option value="Veg">Veg</option>
-                <option value="Non-Veg">Non-Veg</option>
-                <option value="Both">Both</option>
+                <option value="">-- Select Client --</option>
+                {users.map((user) => (
+                  <option key={user._id} value={user.clientId}>
+                    {user.clientId} - {user.name}
+                  </option>
+                ))}
               </select>
-              {errors.restaurantOptions && <p className="error-text">{errors.restaurantOptions}</p>}
+              {errors.clientId && <p className="error-text">{errors.clientId}</p>}
             </div>
-          )}
 
 
-          {/* Google Map */}
-          <div className="form-input-group">
-            <label htmlFor="googleMap" className="input-label">Google Map</label>
-            <input
-              type="text"
-              id="googleMap"
-              name="googleMap"
-              className="text-input"
-              value={formData.googleMap}
-              onChange={handleChange}
-            />
-          </div>
-
-          {/* Website */}
-          <div className="form-input-group">
-            <label htmlFor="website" className="input-label">Website</label>
-            <input
-              type="text"
-              id="website"
-              name="website"
-              className="text-input"
-              value={formData.website}
-              onChange={handleChange}
-            />
-          </div>
-
-          {/* Social Links */}
-          {["facebook", "instagram", "youtube", "pinterest", "twitter", "linkedin"].map((field) => (
-            <div className="form-input-group" key={field}>
-              <label htmlFor={field} className="input-label">{field.charAt(0).toUpperCase() + field.slice(1)}</label>
+            {/* Business Name */}
+            <div className="form-input-group">
+              <label htmlFor="businessName" className="input-label">Business Name</label>
               <input
                 type="text"
-                id={field}
-                name={field}
+                id="businessName"
+                name="businessName"
+                className={`text-input ${errors.businessName ? "error" : ""}`}
+                value={formData.businessName}
+                onChange={handleChange}
+              />
+              {errors.businessName && <p className="error-text">{errors.businessName}</p>}
+            </div>
+
+            {/* Plot Number */}
+            <div className="form-input-group">
+              <label htmlFor="plotNumber" className="input-label">Plot Number</label>
+              <input
+                type="text"
+                id="plotNumber"
+                name="plotNumber"
                 className="text-input"
-                value={formData[field]}
+                value={formData.plotNumber}
                 onChange={handleChange}
               />
             </div>
-          ))}
 
-          {/* Upload Image */}
-          <div className="form-input-group col-span-all upload-section">
-            <div className="upload-content">
-              <Button
-                variant="contained"
-                startIcon={<CloudUploadIcon />}
-                component="label"
-                className="upload-button"
-              >
-                Upload Image
+            {/* Street */}
+            <div className="form-input-group">
+              <label htmlFor="street" className="input-label">Street</label>
+              <input
+                type="text"
+                id="street"
+                name="street"
+                className="text-input"
+                value={formData.street}
+                onChange={handleChange}
+              />
+            </div>
+
+            {/* Pincode */}
+            <div className="form-input-group">
+              <label htmlFor="pincode" className="input-label">Pincode</label>
+              <input
+                type="text"
+                id="pincode"
+                name="pincode"
+                className={`text-input ${errors.pincode ? "error" : ""}`}
+                value={formData.pincode}
+                onChange={handleChange}
+              />
+              {errors.pincode && <p className="error-text">{errors.pincode}</p>}
+            </div>
+
+            {/* Global Address */}
+            <div className="form-input-group">
+              <label htmlFor="address2" className="input-label">Global Address</label>
+              <input
+                type="text"
+                id="globalAddress"
+                name="globalAddress"
+                className={`text-input ${errors.globalAddress ? "error" : ""}`}
+                value={formData.globalAddress}
+                onChange={handleChange}
+              />
+              {errors.globalAddress && <p className="error-text">{errors.globalAddress}</p>}
+            </div>
+
+            {/* Email */}
+            <div className="form-input-group">
+              <label htmlFor="email" className="input-label">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                className={`text-input ${errors.email ? "error" : ""}`}
+                value={formData.email}
+                onChange={handleChange}
+              />
+              {errors.email && <p className="error-text">{errors.email}</p>}
+            </div>
+
+            {/* Contact */}
+            <div className="form-input-group">
+              <label htmlFor="contact" className="input-label">Contact</label>
+              <input
+                type="text"
+                id="contact"
+                name="contact"
+                className={`text-input ${errors.contact ? "error" : ""}`}
+                value={formData.contact}
+                onChange={handleChange}
+              />
+              {errors.contact && <p className="error-text">{errors.contact}</p>}
+            </div>
+
+            {/* Contact List */}
+            <div className="form-input-group">
+              <label htmlFor="contactList" className="input-label">Enquiry Number</label>
+              <input
+                type="text"
+                id="contactList"
+                name="contactList"
+                className="text-input"
+                value={formData.contactList}
+                onChange={handleChange}
+              />
+            </div>
+
+            {/* GSTIN */}
+            <div className="form-input-group">
+              <label htmlFor="gstin" className="input-label">GSTIN</label>
+              <input
+                type="text"
+                id="gstin"
+                name="gstin"
+                className={`text-input ${errors.gstin ? "error" : ""}`}
+                value={formData.gstin}
+                onChange={handleChange}
+              />
+            </div>
+
+            {/* Whatsapp Number */}
+            <div className="form-input-group">
+              <label htmlFor="whatsappNumber" className="input-label">Whatsapp Number</label>
+              <input
+                type="text"
+                id="whatsappNumber"
+                name="whatsappNumber"
+                className={`text-input ${errors.whatsappNumber ? "error" : ""}`}
+                value={formData.whatsappNumber}
+                onChange={handleChange}
+              />
+              {errors.whatsappNumber && <p className="error-text">{errors.whatsappNumber}</p>}
+            </div>
+
+            {/* Experience */}
+            <div className="form-input-group">
+              <label htmlFor="experience" className="input-label">Experience</label>
+              <input
+                type="text"
+                id="experience"
+                name="experience"
+                className={`text-input ${errors.experience ? "error" : ""}`}
+                value={formData.experience}
+                onChange={handleChange}
+              />
+              {errors.experience && <p className="error-text">{errors.experience}</p>}
+            </div>
+
+            {/* Google Map */}
+            <div className="form-input-group">
+              <label htmlFor="googleMap" className="input-label">Google Map</label>
+              <input
+                type="text"
+                id="googleMap"
+                name="googleMap"
+                className="text-input"
+                value={formData.googleMap}
+                onChange={handleChange}
+              />
+            </div>
+
+            {/* Website */}
+            <div className="form-input-group">
+              <label htmlFor="website" className="input-label">Website</label>
+              <input
+                type="text"
+                id="website"
+                name="website"
+                className="text-input"
+                value={formData.website}
+                onChange={handleChange}
+              />
+            </div>
+
+            {/* Social Links */}
+            {["facebook", "instagram", "youtube", "pinterest", "twitter", "linkedin"].map((field) => (
+              <div className="form-input-group" key={field}>
+                <label htmlFor={field} className="input-label">{field.charAt(0).toUpperCase() + field.slice(1)}</label>
                 <input
-                  type="file"
-                  accept="image/*"
-                  hidden
-                  ref={fileInputRef}
-                  onChange={handleImageChange}
+                  type="text"
+                  id={field}
+                  name={field}
+                  className="text-input"
+                  value={formData[field]}
+                  onChange={handleChange}
                 />
-              </Button>
-              {preview && <Avatar src={preview} sx={{ width: 56, height: 56 }} className="preview-avatar" />}
-              <div style={{ marginBottom: "10px" }}>  {/* was 20px before */}
-                <button
-                  type="submit"
-                  className="submit-button"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <CircularProgress size={24} color="inherit" />
-                  ) : editMode ? (
-                    "Update Business"
-                  ) : (
-                    "Create Business"
-                  )}
-                </button>
+              </div>
+            ))}
+            <div className="form-input-group">
+              <label htmlFor="location" className="input-label">Location</label>
+              <select
+                id="location"
+                name="location"
+                className={`select-input ${errors.location ? "error" : ""}`}
+                value={formData.location}
+                onChange={handleChange}
+              >
+                <option value="">-- Select Location --</option>
+                {location.map((loc) => (
+                  <option key={loc._id} value={loc._id}>
+                    {`${loc.addressLine1}, ${loc.city}, ${loc.district}, ${loc.state}, ${loc.country} (${loc.pincode})`}
+                  </option>
+                ))}
+              </select>
+              {errors.location && <p className="error-text">{errors.location}</p>}
+            </div>
+
+
+            {/* Category Select */}
+
+
+            <div className="form-input-group col-span-all">
+              <h3 style={{ marginBottom: "15px" }}>Opening Hours</h3>
+              <div className="opening-hours-container">
+                {formData.openingHours.map((hour, index) => (
+                  <div
+                    key={hour.day}
+                    className="opening-hours-row"
+                    data-closed={hour.isClosed}
+                    data-247={hour.is24Hours}
+                  >
+                    {/* 1. Day Label */}
+                    <div className="day-label">{hour.day}</div>
+
+                    {/* 2. Time Group (Open/Close) */}
+                    <div className="time-group">
+                      <input
+                        type="time"
+                        value={hour.is24Hours ? "00:00" : hour.open}
+                        onChange={(e) =>
+                          handleOpeningHourChange(index, "open", e.target.value)
+                        }
+                        disabled={hour.isClosed || hour.is24Hours}
+                        className="text-input"
+                        placeholder="Open Time"
+                      />
+                      <input
+                        type="time"
+                        value={hour.is24Hours ? "23:59" : hour.close}
+                        onChange={(e) =>
+                          handleOpeningHourChange(index, "close", e.target.value)
+                        }
+                        disabled={hour.isClosed || hour.is24Hours}
+                        className="text-input"
+                        placeholder="Close Time"
+                      />
+                    </div>
+
+                    {/* 3. Status Select */}
+                    <div style={{ justifySelf: "end" }}>
+                      <select
+                        value={
+                          hour.isClosed ? "closed" : hour.is24Hours ? "24/7" : "open"
+                        }
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value === "closed") {
+                            handleOpeningHourChange(index, "isClosed", true);
+                            handleOpeningHourChange(index, "is24Hours", false);
+                          } else if (value === "24/7") {
+                            handleOpeningHourChange(index, "isClosed", false);
+                            handleOpeningHourChange(index, "is24Hours", true);
+                            handleOpeningHourChange(index, "open", "00:00");
+                            handleOpeningHourChange(index, "close", "23:59");
+                          } else {
+                            handleOpeningHourChange(index, "isClosed", false);
+                            handleOpeningHourChange(index, "is24Hours", false);
+                          }
+                        }}
+                        className="select-input"
+                      >
+                        <option value="open">Open</option>
+                        <option value="closed">Closed</option>
+                        <option value="24/7">24/7</option>
+                      </select>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
+          </>
+        );
 
-          {/* Business Details Quill */}
-          <div className="form-input-group col-span-all">
-            <ReactQuill
-              theme="snow"
-              value={businessvalue}
-              onChange={handleBusinessChange}
-              modules={modules}
-              formats={formats}
-              placeholder="Type business details here..."
-              style={{ height: "200px" }}
-            />
-          </div>
+    case 1:
+  return (
+    <>
+      <div className="form-input-group">
+        <label htmlFor="category" className="input-label">Category</label>
+        <select
+          id="category"
+          name="category"
+          className={`select-input ${errors.category ? "error" : ""}`}
+          value={formData.category}
+          onChange={handleChange}
+        >
+          <option value="">-- Select Category --</option>
+          {category.map((cat) => (
+            <option key={cat._id} value={cat.category}>{cat.category}</option>
+          ))}
+        </select>
+        {errors.category && <p className="error-text">{errors.category}</p>}
+      </div>
 
-          {/* Opening Hours */}
-          <div className="form-input-group col-span-all">
-            <h3 style={{ marginBottom: "15px" }}>Opening Hours</h3>
-            <div className="opening-hours-container">
-              {formData.openingHours.map((hour, index) => (
-                <div
-                  key={hour.day}
-                  className="opening-hours-row"
-                  data-closed={hour.isClosed} // Use this attribute for styling the disabled state
-                >
-                  {/* 1. Day Label */}
-                  <div className="day-label">
-                    {hour.day}
-                  </div>
-
-                  {/* 2. Time Group (Open/Close) */}
-                  <div className="time-group">
-                    <input
-                      type="time"
-                      value={hour.open}
-                      onChange={(e) => handleOpeningHourChange(index, "open", e.target.value)}
-                      disabled={hour.isClosed}
-                      className="text-input"
-                      placeholder="Open Time"
-                    />
-                    <input
-                      type="time"
-                      value={hour.close}
-                      onChange={(e) => handleOpeningHourChange(index, "close", e.target.value)}
-                      disabled={hour.isClosed}
-                      className="text-input"
-                      placeholder="Close Time"
-                    />
-                  </div>
-
-                  {/* 3. Status Select */}
-                  <div style={{ justifySelf: 'end' }}>
-                    <select
-                      value={hour.isClosed}
-                      onChange={(e) => handleOpeningHourChange(index, "isClosed", e.target.value === "true")}
-                      className="select-input"
-                    >
-                      <option value={false}>Open</option>
-                      <option value={true}>Closed</option>
-                    </select>
-                  </div>
-                </div>
+      {formData.category && (
+        <div className="form-input-group">
+          <label htmlFor="keywords" className="input-label">Select Keyword</label>
+          <select
+            id="keywords"
+            name="keywords"
+            className={`select-input ${errors.keywords ? "error" : ""}`}
+            value={formData.keywords || ""}
+            onChange={handleChange}
+          >
+            <option value="">-- Select Keyword --</option>
+            {/* Find the selected category and render its keywords */}
+            {category
+              .find((cat) => cat.category === formData.category)
+              ?.keywords?.map((kw, index) => (
+                <option key={index} value={kw}>{kw}</option>
               ))}
+          </select>
+          {errors.keywords && <p className="error-text">{errors.keywords}</p>}
+        </div>
+      )}
+
+      {/* OPTIONAL — RESTAURANT OPTIONS */}
+      {["restaurants", "hotels"].includes(formData.category?.toLowerCase()) && (
+        <div className="form-input-group">
+          <label htmlFor="restaurantOptions" className="input-label">Restaurant Options</label>
+          <select
+            id="restaurantOptions"
+            name="restaurantOptions"
+            className={`select-input ${errors.restaurantOptions ? "error" : ""}`}
+            value={formData.restaurantOptions || ""}
+            onChange={handleChange}
+          >
+            <option value="">-- Select Option --</option>
+            <option value="Veg">Veg</option>
+            <option value="Non-Veg">Non-Veg</option>
+            <option value="Both">Both</option>
+          </select>
+          {errors.restaurantOptions && <p className="error-text">{errors.restaurantOptions}</p>}
+        </div>
+      )}
+    </>
+  );
+
+
+      case 2:
+        return (
+          <>
+            <div className="form-input-group col-span-all upload-section">
+              <div className="upload-content">
+                <Button
+                  variant="contained"
+                  startIcon={<CloudUploadIcon />}
+                  component="label"
+                  className="upload-button"
+                >
+                  Upload Image
+                  <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    ref={fileInputRef}
+                    onChange={handleImageChange}
+                  />
+                </Button>
+                {preview && <Avatar src={preview} sx={{ width: 56, height: 56 }} className="preview-avatar" />}
+              </div>
             </div>
+
+            <div className="form-input-group col-span-all">
+              <label className="input-label">Business Details</label>
+              <ReactQuill
+                theme="snow"
+                value={businessvalue}
+                onChange={handleBusinessChange}
+                modules={modules}
+                formats={formats}
+                placeholder="Type business details here..."
+                style={{ height: "200px" }}
+              />
+            </div>
+          </>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+
+  return (
+    <div className="business-page">
+      {/* ----------------------------------
+        STEPPER INTEGRATION
+        ---------------------------------- 
+      */}
+      <div className="business-card" style={{ marginBottom: '20px', padding: '15px 30px', boxShadow: 'none' }}>
+        <Stack sx={{ width: '100%' }} spacing={4}>
+          <Stepper alternativeLabel activeStep={activeStep} connector={<ColorlibConnector />}>
+            {steps.map((label) => (
+              <Step key={label}>
+                <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>
+              </Step>
+            ))}
+          </Stepper>
+        </Stack>
+      </div>
+
+      {/* Business Form Card */}
+      <div className="business-card form-section">
+        <h2 className="card-title">
+          {editMode ? `Edit Business (${steps[activeStep]})` : `Add New Business (${steps[activeStep]})`}
+        </h2>
+
+        <form onSubmit={handleSubmit}>
+          <div className="form-grid">
+            {renderStepContent(activeStep)}
           </div>
-          <div style={{ marginBottom: "10px" }}>  {/* was 20px before */}
-            <button
-              type="submit"
-              className="submit-button"
-              disabled={loading}
-            >
-              {loading ? (
-                <CircularProgress size={24} color="inherit" />
-              ) : editMode ? (
-                "Update Business"
-              ) : (
-                "Create Business"
-              )}
-            </button>
+
+          <div className="col-span-all upload-section" style={{ display: 'flex', justifyContent: 'space-between', marginTop: activeStep !== 2 ? '28px' : '150px' }}>
+
+            {activeStep > 0 && (
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <button type="button" className="submit-button" onClick={handleBack}>
+                  <SkipPreviousIcon />
+                </button>
+              </div>
+            )}
+
+            {activeStep < steps.length - 1 ? (
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <button type="button" className="submit-button" onClick={handleNext}>
+                  <SkipNextIcon />
+                </button>
+              </div>
+
+            ) : (
+              <button
+                type="submit"
+                className="submit-button"
+                disabled={loading}
+                style={{ marginLeft: 'auto' }}
+              >
+                {loading ? (
+                  <CircularProgress size={24} color="inherit" />
+                ) : editMode ? (
+                  "Update Business"
+                ) : (
+                  "Create Business"
+                )}
+              </button>
+            )}
+
           </div>
         </form>
       </div>

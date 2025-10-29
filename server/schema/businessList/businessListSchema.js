@@ -28,7 +28,7 @@ const reviewSchema = new mongoose.Schema({
     ref: 'User',
     default: null,
   },
-  username: { 
+  username: {
     type: String,
     trim: true
   },
@@ -57,15 +57,26 @@ const businessListSchema = new mongoose.Schema({
   experience: { type: String, default: '', required: true },
   openingHours: [
     {
-      day: { type: String },
-      open: { type: String },
-      close: { type: String },
-      isClosed: { type: Boolean, default: false }
+      day: { type: String, required: true },
+      open: { type: String, default: "09:00" },
+      close: { type: String, default: "18:00" },
+      isClosed: { type: Boolean, default: false },
+      is24Hours: { type: Boolean, default: false }
     }
   ],
+
   restaurantOptions: { type: String, default: '', },
   location: { type: String, default: '', required: true },
   category: { type: String, default: '', required: true },
+  keywords: { type: String, default: '', required: true },
+
+  // category: {
+  //   name: { type: String, required: true, trim: true },
+  //   keywords: [{ type: String, trim: true }],
+  //   subCategory: { type: String, default: '' },
+  //   seoTitle: { type: String, default: '' },
+  //   seoDescription: { type: String, default: '' },
+  // },
   bannerImageKey: { type: String, default: '' },
   businessImagesKey: [{ type: String, default: '' }],
   googleMap: { type: String, default: '', },
@@ -86,7 +97,7 @@ const businessListSchema = new mongoose.Schema({
   averageRating: {
     type: Number,
     default: 0,
-  }, 
+  },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
   activeBusinesses: { type: Boolean, default: true },

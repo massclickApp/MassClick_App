@@ -7,7 +7,7 @@ import {
   deleteCategory,
 } from "../../redux/actions/categoryAction";
 import CustomizedDataGrid from "../../components/CustomizedDataGrid";
-import './categories.css'
+import "./categories.css";
 import {
   Box,
   Button,
@@ -20,12 +20,13 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  TextField,
+  Autocomplete,
 } from "@mui/material";
 
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-
 
 export default function Category() {
   const dispatch = useDispatch();
@@ -41,41 +42,82 @@ export default function Category() {
     category: "",
     categoryType: "",
     subCategoryType: "",
+    parentCategoryId: "",
     title: "",
-    keywords: "",
+    keywords: [],
     description: "",
+    seoTitle: "",
+    seoDescription: "",
+    slug: "",
   });
 
   const [preview, setPreview] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState({ open: false, id: null });
 
-  const textFieldStyle = {
-    "& .MuiInputBase-root": { height: 50, fontSize: "1.1rem" },
-    "& .MuiInputLabel-root": { fontSize: "1rem" },
-  };
-
   const subCategories = [
-    "Services", "Construction Company", "Travels", "Restaurants", "Medical",
-    "Events", "Education", "Garments", "Hotels", "Spa", "Real Estate",
-    "Interior Designer", "Dealers", "Building Materials", "Shop", "CCTV",
-    "Manufacturer", "Hostels"
+    "Services",
+    "Construction Company",
+    "Travels",
+    "Restaurants",
+    "Medical",
+    "Events",
+    "Education",
+    "Garments",
+    "Hotels",
+    "Spa",
+    "Real Estate",
+    "Interior Designer",
+    "Dealers",
+    "Building Materials",
+    "Shop",
+    "CCTV",
+    "Manufacturer",
+    "Hostels",
   ];
-
-  const menuItemStyle = { fontSize: "1rem", height: "40px" };
 
   useEffect(() => {
     dispatch(getAllCategory());
   }, [dispatch]);
+
+  // 🔹 Auto-generate slug from category
+  useEffect(() => {
+    if (formData.category) {
+      const slug = formData.category
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)+/g, "");
+      setFormData((prev) => ({ ...prev, slug }));
+    }
+  }, [formData.category]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleKeywordChange = (event, newValue) => {
+    setFormData((prev) => ({ ...prev, keywords: newValue }));
+  };
+
   const handleEdit = (row) => {
     setEditMode(true);
-    setFormData(row);
+    setFormData({
+      _id: row._id,
+      categoryImage: row.categoryImage || "",
+      category: row.category,
+      categoryType: row.categoryType,
+      subCategoryType: row.subCategoryType,
+      parentCategoryId: row.parentCategoryId || "",
+      title: row.title,
+      keywords: Array.isArray(row.keywords)
+        ? row.keywords
+        : row.keywords?.split(",") || [],
+      description: row.description,
+      seoTitle: row.seoTitle || "",
+      seoDescription: row.seoDescription || "",
+      slug: row.slug || "",
+    });
     setPreview(row.categoryImage || null);
   };
 
@@ -91,16 +133,20 @@ export default function Category() {
         .finally(() => setDeleteConfirm({ open: false, id: null }));
     }
   };
+
   const validateForm = () => {
     let newErrors = {};
 
     if (!formData.category.trim()) newErrors.category = "Category is required";
-    if (!formData.categoryType) newErrors.categoryType = "Category Type is required";
+    if (!formData.categoryType)
+      newErrors.categoryType = "Category Type is required";
     if (formData.categoryType === "Sub Category" && !formData.subCategoryType)
       newErrors.subCategoryType = "Sub Category Type is required";
     if (!formData.title.trim()) newErrors.title = "Title is required";
-    if (!formData.keywords.trim()) newErrors.keywords = "Keywords are required";
-    if (!formData.description.trim()) newErrors.description = "Description is required";
+    if (!formData.keywords.length)
+      newErrors.keywords = "At least one keyword is required";
+    if (!formData.description.trim())
+      newErrors.description = "Description is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -122,14 +168,6 @@ export default function Category() {
     e.preventDefault();
     if (!validateForm()) return;
 
-    if (
-      formData.categoryType === "Sub Category" &&
-      !formData.subCategoryType.trim()
-    ) {
-      alert("Sub Category Type is required!");
-      return;
-    }
-
     const action = editMode
       ? editCategory(formData._id, formData)
       : createCategory(formData);
@@ -142,9 +180,13 @@ export default function Category() {
           category: "",
           categoryType: "",
           subCategoryType: "",
+          parentCategoryId: "",
           title: "",
-          keywords: "",
+          keywords: [],
           description: "",
+          seoTitle: "",
+          seoDescription: "",
+          slug: "",
         });
         setPreview(null);
         setEditMode(false);
@@ -156,13 +198,15 @@ export default function Category() {
         dispatch(getAllCategory());
       })
       .catch((err) =>
-        console.error(editMode ? "Update category failed:" : "Create category failed:", err)
+        console.error(
+          editMode ? "Update category failed:" : "Create category failed:",
+          err
+        )
       );
   };
 
   const rows = category
-    .filter((category) => category.isActive)
-
+    .filter((c) => c.isActive)
     .map((cat, index) => ({
       id: cat._id || index,
       _id: cat._id,
@@ -170,27 +214,35 @@ export default function Category() {
       category: cat.category,
       categoryType: cat.categoryType,
       subCategoryType: cat.subCategoryType,
-      title: cat.title || "-",
-      keywords: cat.keywords || "-",
-      description: cat.description || "-",
+      title: cat.title,
+      keywords:
+        Array.isArray(cat.keywords) && cat.keywords.length
+          ? cat.keywords.join(", ")
+          : "-",
+      description: cat.description,
+      seoTitle: cat.seoTitle || "-",
+      seoDescription: cat.seoDescription || "-",
+      slug: cat.slug || "-",
       isActive: cat.isActive,
-
     }));
 
   const categoryList = [
     {
       field: "categoryImage",
-      headerName: "Category Image",
+      headerName: "Image",
       flex: 1,
       renderCell: (params) =>
         params.value ? <Avatar src={params.value} alt="img" /> : "-",
     },
     { field: "category", headerName: "Category", flex: 1 },
-    { field: "categoryType", headerName: "Category Type", flex: 1 },
-    { field: "subCategoryType", headerName: "Sub Category Type", flex: 1 },
+    { field: "categoryType", headerName: "Type", flex: 1 },
+    { field: "subCategoryType", headerName: "Sub Type", flex: 1 },
     { field: "title", headerName: "Title", flex: 1 },
     { field: "keywords", headerName: "Keywords", flex: 1 },
     { field: "description", headerName: "Description", flex: 1 },
+    { field: "seoTitle", headerName: "SEO Title", flex: 1 },
+    { field: "seoDescription", headerName: "SEO Description", flex: 1 },
+    { field: "slug", headerName: "Slug", flex: 1 },
     {
       field: "action",
       headerName: "Action",
@@ -220,34 +272,42 @@ export default function Category() {
 
   return (
     <div className="category-page">
-      {/* Category Form - Replacing MUI Paper/Container/Grid with pure CSS */}
+      {/* Category Form */}
       <div className="category-card form-section">
         <h2 className="card-title">
           {editMode ? "Edit Category" : "Add New Category"}
         </h2>
         <form onSubmit={handleSubmit} className="form-grid">
-
-          {/* Category Field */}
           <div className="form-input-group">
-            <label htmlFor="category" className="input-label">Category</label>
+            <label className="input-label">Category</label>
             <input
               type="text"
-              id="category"
               name="category"
-              className={`text-input ${errors.category ? 'error' : ''}`}
+              className={`text-input ${errors.category ? "error" : ""}`}
               value={formData.category}
               onChange={handleChange}
             />
-            {errors.category && <p className="error-text">{errors.category}</p>}
+            {errors.category && (
+              <p className="error-text">{errors.category}</p>
+            )}
           </div>
 
-          {/* Category Type Select */}
           <div className="form-input-group">
-            <label htmlFor="categoryType" className="input-label">Category Type</label>
+            <label className="input-label">Slug (Auto)</label>
+            <input
+              type="text"
+              name="slug"
+              className="text-input"
+              value={formData.slug}
+              readOnly
+            />
+          </div>
+
+          <div className="form-input-group">
+            <label className="input-label">Category Type</label>
             <select
-              id="categoryType"
               name="categoryType"
-              className={`select-input ${errors.categoryType ? 'error' : ''}`}
+              className={`select-input ${errors.categoryType ? "error" : ""}`}
               value={formData.categoryType}
               onChange={handleChange}
             >
@@ -255,36 +315,41 @@ export default function Category() {
               <option value="Primary Category">Primary Category</option>
               <option value="Sub Category">Sub Category</option>
             </select>
-            {errors.categoryType && <p className="error-text">{errors.categoryType}</p>}
+            {errors.categoryType && (
+              <p className="error-text">{errors.categoryType}</p>
+            )}
           </div>
 
-          {/* Sub Category Type Select (Conditional) */}
           {formData.categoryType === "Sub Category" && (
             <div className="form-input-group">
-              <label htmlFor="subCategoryType" className="input-label">Sub Category Type</label>
+              <label className="input-label">Sub Category Type</label>
               <select
-                id="subCategoryType"
                 name="subCategoryType"
-                className={`select-input ${errors.subCategoryType ? 'error' : ''}`}
+                className={`select-input ${
+                  errors.subCategoryType ? "error" : ""
+                }`}
                 value={formData.subCategoryType}
                 onChange={handleChange}
               >
                 <option value="">-- Select Sub Category --</option>
                 {subCategories.map((sub) => (
-                  <option key={sub} value={sub}>{sub}</option>
+                  <option key={sub} value={sub}>
+                    {sub}
+                  </option>
                 ))}
               </select>
-              {errors.subCategoryType && <p className="error-text">{errors.subCategoryType}</p>}
+              {errors.subCategoryType && (
+                <p className="error-text">{errors.subCategoryType}</p>
+              )}
             </div>
           )}
 
           <div className="form-input-group">
-            <label htmlFor="title" className="input-label">Title</label>
+            <label className="input-label">Title</label>
             <input
               type="text"
-              id="title"
               name="title"
-              className={`text-input ${errors.title ? 'error' : ''}`}
+              className={`text-input ${errors.title ? "error" : ""}`}
               value={formData.title}
               onChange={handleChange}
             />
@@ -292,29 +357,61 @@ export default function Category() {
           </div>
 
           <div className="form-input-group">
-            <label htmlFor="keywords" className="input-label">Keywords</label>
-            <input
-              type="text"
-              id="keywords"
-              name="keywords"
-              className={`text-input ${errors.keywords ? 'error' : ''}`}
+            <label className="input-label">Keywords</label>
+            <Autocomplete
+              multiple
+              freeSolo
+              options={[]}
               value={formData.keywords}
-              onChange={handleChange}
+              onChange={handleKeywordChange}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  placeholder="Add keywords"
+                  error={!!errors.keywords}
+                  helperText={errors.keywords}
+                />
+              )}
             />
-            {errors.keywords && <p className="error-text">{errors.keywords}</p>}
           </div>
 
-          <div className={`form-input-group description-field ${formData.categoryType !== "Sub Category" ? 'col-span-2' : ''}`}>
-            <label htmlFor="description" className="input-label">Description</label>
+          <div className="form-input-group col-span-2">
+            <label className="input-label">Description</label>
             <textarea
-              id="description"
               name="description"
-              className={`text-input text-area ${errors.description ? 'error' : ''}`}
+              className={`text-input text-area ${
+                errors.description ? "error" : ""
+              }`}
               value={formData.description}
               onChange={handleChange}
               rows="3"
-            ></textarea>
-            {errors.description && <p className="error-text">{errors.description}</p>}
+            />
+            {errors.description && (
+              <p className="error-text">{errors.description}</p>
+            )}
+          </div>
+
+          <div className="form-input-group">
+            <label className="input-label">SEO Title</label>
+            <input
+              type="text"
+              name="seoTitle"
+              className="text-input"
+              value={formData.seoTitle}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="form-input-group">
+            <label className="input-label">SEO Description</label>
+            <input
+              type="text"
+              name="seoDescription"
+              className="text-input"
+              value={formData.seoDescription}
+              onChange={handleChange}
+            />
           </div>
 
           <div className="form-input-group col-span-all upload-section">
@@ -341,7 +438,7 @@ export default function Category() {
                   className="preview-avatar"
                 />
               )}
-              <div style={{ marginBottom: "10px" }}>  {/* was 20px before */}
+              <div style={{ marginBottom: "10px" }}>
                 <button
                   type="submit"
                   className="submit-button"
@@ -357,19 +454,18 @@ export default function Category() {
                 </button>
               </div>
             </div>
-            <div></div>
           </div>
-
-
         </form>
         {error && (
-          <p className="error-text" style={{ marginTop: '16px' }}>
-            {typeof error === "string" ? error : error.message || JSON.stringify(error)}
+          <p className="error-text" style={{ marginTop: "16px" }}>
+            {typeof error === "string"
+              ? error
+              : error.message || JSON.stringify(error)}
           </p>
         )}
       </div>
 
-      {/* Category Table Section */}
+      {/* Category Table */}
       <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
         <Typography variant="h6" gutterBottom>
           Category Table
@@ -379,25 +475,23 @@ export default function Category() {
         </Box>
       </Paper>
 
-      {/* Delete Confirm Dialog (MUI Dialog retained for simple function) */}
+      {/* Delete Dialog */}
       <Dialog
         open={deleteConfirm.open}
-        onClose={() => setDeleteConfirm({ open: false, id: null, itemName: "" })}
+        onClose={() => setDeleteConfirm({ open: false, id: null })}
       >
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
-          Are you sure you want to delete{" "}
-          <strong>{deleteConfirm.itemName || "this category"}</strong>?
+          Are you sure you want to delete this category?
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteConfirm({ open: false, id: null, itemName: "" })} color="secondary">
+          <Button
+            onClick={() => setDeleteConfirm({ open: false, id: null })}
+            color="secondary"
+          >
             Cancel
           </Button>
-          <Button
-            color="error"
-            variant="contained"
-            onClick={confirmDelete}
-          >
+          <Button color="error" variant="contained" onClick={confirmDelete}>
             Delete
           </Button>
         </DialogActions>
