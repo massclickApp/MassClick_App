@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import "./pgAndHostels.css";
 import CardDesign from "../cards.js";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllBusinessList } from "../../../../redux/actions/businessListAction.js";
+import { getAllBusinessList, getAllClientBusinessList } from "../../../../redux/actions/businessListAction.js";
 import CardsSearch from "../../CardsSearch/CardsSearch.js";
 import { useNavigate } from 'react-router-dom';
 
@@ -11,15 +11,15 @@ const PgAndHostelsCards = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { businessList = [] } = useSelector(
+    const { clientBusinessList = [] } = useSelector(
         (state) => state.businessListReducer || {}
     )
 
     useEffect(() => {
-        dispatch(getAllBusinessList());
+        dispatch(getAllClientBusinessList());
     }, [dispatch]);
 
-    const pgAndHostels = businessList.filter((b) =>
+    const pgAndHostels = clientBusinessList.filter((b) =>
         /pg|hostel/i.test(b.category)
     );
 

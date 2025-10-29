@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react"; // <-- Import useRef
 import { useParams, useNavigate } from "react-router-dom"; // <-- Import useNavigate
 import { useDispatch, useSelector } from "react-redux";
-import { getAllBusinessList } from "../../../redux/actions/businessListAction";
+import { getAllBusinessList, getAllClientBusinessList } from "../../../redux/actions/businessListAction";
 import './cardDetails.css';
 import UserRatingWidget from "../rating/rating";
 import CardsSearch from "../../clientComponent/CardsSearch/CardsSearch.js";
@@ -92,7 +92,7 @@ const FullScreenGallery = ({ images, initialIndex, onClose }) => {
 const BusinessDetail = () => {
     const { id } = useParams();
     const dispatch = useDispatch();
-    const { businessList = [] } = useSelector((state) => state.businessListReducer || {});
+    const { clientBusinessList = [] } = useSelector((state) => state.businessListReducer || {});
     const { location = [], loading, error } = useSelector(
         (state) => state.locationReducer || {}
     );
@@ -111,11 +111,11 @@ const BusinessDetail = () => {
     const photosRef = useRef(null);
     const reviewsRef = useRef(null);
     useEffect(() => {
-        dispatch(getAllBusinessList());
+        dispatch(getAllClientBusinessList());
         dispatch(getAllLocation())
     }, [dispatch]);
 
-    const business = businessList.find((b) => b._id === id);
+    const business = clientBusinessList.find((b) => b._id === id);
 
     if (!business) {
         return <div className="page-wrapper"><p>No business found for this ID.</p></div>;

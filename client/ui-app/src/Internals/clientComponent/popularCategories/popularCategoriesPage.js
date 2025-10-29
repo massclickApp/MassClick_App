@@ -9,7 +9,7 @@ const PopularCategoryPage = () => {
     const { categorySlug } = useParams();
     const navigate = useNavigate();
 
-    const { businessList = [] } = useSelector(state => state.businessListReducer || {});
+    const { clientBusinessList = [] } = useSelector(state => state.businessListReducer || {});
     const [filteredBusinesses, setFilteredBusinesses] = useState([]);
 
   const createSlug = (text) => {
@@ -25,7 +25,7 @@ const PopularCategoryPage = () => {
 
         const categoryWords = categorySlug.toLowerCase().split('-');
 
-        const filtered = businessList.filter(b => {
+        const filtered = clientBusinessList.filter(b => {
             if (!b.businessName && !b.category) return false;
 
             const categoryLower = (b.category || '').toLowerCase();
@@ -38,7 +38,7 @@ const PopularCategoryPage = () => {
 
 
         setFilteredBusinesses(filtered);
-    }, [categorySlug, businessList]);
+    }, [categorySlug, clientBusinessList]);
 
     return (
         <>

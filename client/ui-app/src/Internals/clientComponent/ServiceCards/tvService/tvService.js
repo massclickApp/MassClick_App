@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import "./tvService.css";
 import CardDesign from "../../cards/cards.js";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllBusinessList } from "../../../../redux/actions/businessListAction.js";
+import { getAllBusinessList, getAllClientBusinessList } from "../../../../redux/actions/businessListAction.js";
 import CardsSearch from "../../../clientComponent/CardsSearch/CardsSearch.js";
 import { useNavigate } from 'react-router-dom';
 
@@ -12,17 +12,17 @@ const TvServiceCards = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { businessList = [] } = useSelector(
+    const { clientBusinessList = [] } = useSelector(
         (state) => state.businessListReducer || {}
     )
 
     useEffect(() => {
-        dispatch(getAllBusinessList());
+        dispatch(getAllClientBusinessList());
     }, [dispatch]);
 
 
 
-    const tvServices = businessList.filter(
+    const tvServices = clientBusinessList.filter(
         (b) =>
             b.category &&
             b.category.toLowerCase().includes("tv service".toLowerCase())

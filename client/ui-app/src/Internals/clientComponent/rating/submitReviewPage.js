@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import Rating from '@mui/material/Rating';
 import StarIcon from '@mui/icons-material/Star';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
-import { editBusinessList } from '../../../redux/actions/businessListAction';
+import { editBusinessList, getAllClientBusinessList } from '../../../redux/actions/businessListAction';
 import './submitReview.css';
 import CardsSearch from '../CardsSearch/CardsSearch';
 import Footer from '../footer/footer';
@@ -43,7 +43,7 @@ const WriteReviewPage = () => {
     };
    
     const business = useSelector(state =>
-        state.businessListReducer.businessList.find(b => b._id === businessId)
+        state.businessListReducer.clientBusinessList.find(b => b._id === businessId)
     );
 
     if (!business) {
@@ -96,6 +96,7 @@ const handleModalClose = () => {
 
         try {
             await dispatch(editBusinessList(businessId, businessUpdatePayload));
+            await dispatch(getAllClientBusinessList());
             setShowSuccessModal(true);
 
         } catch (error) {

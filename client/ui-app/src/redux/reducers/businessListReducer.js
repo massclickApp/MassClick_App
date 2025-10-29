@@ -5,11 +5,13 @@ import {
   DELETE_BUSINESS_REQUEST, DELETE_BUSINESS_SUCCESS, DELETE_BUSINESS_FAILURE,
   ACTIVE_BUSINESS_REQUEST, ACTIVE_BUSINESS_SUCCESS, ACTIVE_BUSINESS_FAILURE,
   FETCH_TRENDING_REQUEST, FETCH_TRENDING_SUCCESS, FETCH_TRENDING_FAILURE,
-  FETCH_SEARCH_LOGS_REQUEST, FETCH_SEARCH_LOGS_SUCCESS, FETCH_SEARCH_LOGS_FAILURE
+  FETCH_SEARCH_LOGS_REQUEST, FETCH_SEARCH_LOGS_SUCCESS, FETCH_SEARCH_LOGS_FAILURE,
+  FETCH_VIEWBUSINESS_REQUEST, FETCH_VIEWBUSINESS_SUCCESS, FETCH_VIEWBUSINESS_FAILURE
 } from '../actions/userActionTypes';
 
 const initialState = {
   businessList: [],
+  clientBusinessList: [],  
   loading: false,
   error: null,
 
@@ -17,15 +19,14 @@ const initialState = {
   trendingLoading: false,
   trendingError: null,
 
-  searchLogs: [],        
+  searchLogs: [],
   searchLogsLoading: false,
   searchLogsError: null,
 };
 
 export default function businessListReducer(state = initialState, action) {
   switch (action.type) {
-
-    // Loading states
+    /** ------------------- BUSINESS ------------------- **/
     case FETCH_BUSINESS_REQUEST:
     case CREATE_BUSINESS_REQUEST:
     case EDIT_BUSINESS_REQUEST:
@@ -33,7 +34,6 @@ export default function businessListReducer(state = initialState, action) {
     case ACTIVE_BUSINESS_REQUEST:
       return { ...state, loading: true, error: null };
 
-    // Success cases
     case FETCH_BUSINESS_SUCCESS:
       return { ...state, loading: false, businessList: action.payload, error: null };
 
@@ -64,7 +64,6 @@ export default function businessListReducer(state = initialState, action) {
         error: null,
       };
 
-    // Failure cases
     case FETCH_BUSINESS_FAILURE:
     case CREATE_BUSINESS_FAILURE:
     case EDIT_BUSINESS_FAILURE:
@@ -72,36 +71,57 @@ export default function businessListReducer(state = initialState, action) {
     case ACTIVE_BUSINESS_FAILURE:
       return { ...state, loading: false, error: action.payload };
 
-    // Trending searches
+    /** ------------------- CLIENT BUSINESS ------------------- **/
+    case FETCH_VIEWBUSINESS_REQUEST:
+      return { ...state, loading: true, error: null };
+
+    case FETCH_VIEWBUSINESS_SUCCESS:
+      return { ...state, loading: false, clientBusinessList: action.payload, error: null };
+
+    case FETCH_VIEWBUSINESS_FAILURE:
+      return { ...state, loading: false, clientBusinessList: [], error: action.payload };
+
+    /** ------------------- TRENDING ------------------- **/
     case FETCH_TRENDING_REQUEST:
       return { ...state, trendingLoading: true, trendingError: null };
 
     case FETCH_TRENDING_SUCCESS:
-      return { 
-        ...state, 
-        trendingLoading: false, 
-        trendingList: action.payload, 
-        trendingError: null 
+      return {
+        ...state,
+        trendingLoading: false,
+        trendingList: action.payload,
+        trendingError: null,
       };
 
     case FETCH_TRENDING_FAILURE:
-      return { 
-        ...state, 
-        trendingLoading: false, 
-        trendingList: [], 
-        trendingError: action.payload 
+      return {
+        ...state,
+        trendingLoading: false,
+        trendingList: [],
+        trendingError: action.payload,
       };
 
-    // Search logs
+    /** ------------------- SEARCH LOGS ------------------- **/
     case FETCH_SEARCH_LOGS_REQUEST:
       return { ...state, searchLogsLoading: true, searchLogsError: null };
 
     case FETCH_SEARCH_LOGS_SUCCESS:
-      return { ...state, searchLogsLoading: false, searchLogs: action.payload, searchLogsError: null };
+      return {
+        ...state,
+        searchLogsLoading: false,
+        searchLogs: action.payload,
+        searchLogsError: null,
+      };
 
     case FETCH_SEARCH_LOGS_FAILURE:
-      return { ...state, searchLogsLoading: false, searchLogs: [], searchLogsError: action.payload };
+      return {
+        ...state,
+        searchLogsLoading: false,
+        searchLogs: [],
+        searchLogsError: action.payload,
+      };
 
+    /** ------------------- DEFAULT ------------------- **/
     default:
       return state;
   }

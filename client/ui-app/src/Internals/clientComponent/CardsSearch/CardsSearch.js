@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "./CardsSearch.css";
 
 import { getAllLocation } from "../../../redux/actions/locationAction";
-import { getAllBusinessList, getAllSearchLogs, logSearchActivity } from "../../../redux/actions/businessListAction";
+import { getAllBusinessList,getAllClientBusinessList, getAllSearchLogs, logSearchActivity } from "../../../redux/actions/businessListAction";
 import { getAllCategory } from "../../../redux/actions/categoryAction";
 import Tooltip from "@mui/material/Tooltip";
 
@@ -101,14 +101,14 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
     (state) => state.locationReducer || { location: [] }
   );
   const businessListState = useSelector(
-    (state) => state.businessListReducer || { businessList: [] }
+    (state) => state.businessListReducer || { clientBusinessList: [] }
   );
   const categoryState = useSelector(
     (state) => state.categoryReducer || { category: [] }
   );
 
   const { location = [] } = locationState;
-  const { searchLogs, businessList = [] } = businessListState;
+  const { searchLogs, clientBusinessList = [] } = businessListState;
   const { category = [] } = categoryState;
 
   // Local state
@@ -124,7 +124,7 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
 
   useEffect(() => {
     dispatch(getAllLocation());
-    dispatch(getAllBusinessList());
+    dispatch(getAllClientBusinessList());
     dispatch(getAllCategory());
     dispatch(getAllSearchLogs());
 
@@ -143,7 +143,7 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [locationRef, categoryRef]);
 
-  const allLocationIds = businessList
+  const allLocationIds = clientBusinessList
     .map(loc => (typeof loc.location === "object" ? loc.location.en : loc.location))
     .filter(Boolean);
 
@@ -179,7 +179,7 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
     );
     const selectedLocationId = selectedLocation ? selectedLocation.value : null;
 
-    const filteredBusinesses = businessList.filter((business) => {
+    const filteredBusinesses = clientBusinessList.filter((business) => {
       const matchesSearchTerm =
         !finalSearchTerm ||
         (business.category && business.category.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||

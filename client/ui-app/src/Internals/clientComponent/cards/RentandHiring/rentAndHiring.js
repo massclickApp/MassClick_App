@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import "./rentAndHiring.css";
 import CardDesign from "../cards.js";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllBusinessList } from "../../../../redux/actions/businessListAction.js";
+import { getAllBusinessList, getAllClientBusinessList } from "../../../../redux/actions/businessListAction.js";
 import CardsSearch from "../../CardsSearch/CardsSearch.js";
 import { useNavigate } from 'react-router-dom';
 
@@ -12,16 +12,16 @@ const RentAndHiringCards = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { businessList = [] } = useSelector(
+    const { clientBusinessList = [] } = useSelector(
         (state) => state.businessListReducer || {}
     )
 
     useEffect(() => {
-        dispatch(getAllBusinessList());
+        dispatch(getAllClientBusinessList());
     }, [dispatch]);
 
 
-    const rentAndHiring = businessList.filter(b =>
+    const rentAndHiring = clientBusinessList.filter(b =>
         b.category &&
         ["rent", "hiring"].includes(b.category.toLowerCase())
     );
@@ -43,11 +43,11 @@ const RentAndHiringCards = () => {
 
     return (
         <>
-            <CardsSearch /><br/><br/><br/>
+            <CardsSearch /><br /><br /><br />
 
             <div className="restaurants-list-wrapper">
                 {rentAndHiring.map((business) => {
-  const averageRating = business.averageRating?.toFixed(1) || 0;
+                    const averageRating = business.averageRating?.toFixed(1) || 0;
                     const totalRatings = business.reviews?.length || 0;
                     return (
                         <CardDesign

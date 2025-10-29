@@ -252,11 +252,11 @@ export default function User() {
     },
   ];
 
+  // Modified fields array: Role is removed to be manually placed in the form
   const fields = [
     { label: "UserName", name: "userName", required: true, type: "text" },
     { label: "Password", name: "password", required: true, type: "password" },
     { label: "Contact", name: "contact", required: true, type: "text" },
-    { label: "Role", name: "role", required: true, type: "select" },
     { label: "EmailId", name: "emailId", required: true, type: "email" },
     { label: "BusinessLocation", name: "businessLocation", required: true, type: "text" },
     { label: "BusinessCategory", name: "businessCategory", required: true, type: "text" },
@@ -270,7 +270,6 @@ export default function User() {
         <form onSubmit={handleSubmit} className="user-form-grid">
           {fields.map((field, i) => {
             const isPassword = field.type === "password";
-            const isRole = field.type === "select" && field.name === "role";
 
             return (
               <div key={i} className="user-form-input-group">
@@ -278,22 +277,7 @@ export default function User() {
                   {field.label}
                 </label>
 
-                {isRole ? (
-                  <select
-                    id={field.name}
-                    name="role"
-                    value={formData.role}
-                    onChange={handleChange}
-                    className={`user-select-input ${errors.role ? "error" : ""}`}
-                  >
-                    <option value="">Select Role</option>
-                    {roles.map((role) => (
-                      <option key={role._id} value={role.roleName}>
-                        {role.roleName}
-                      </option>
-                    ))}
-                  </select>
-                ) : isPassword ? (
+                {isPassword ? (
                   <div className="password-wrapper">
                     <input
                       type={showPassword ? "text" : "password"}
@@ -327,6 +311,28 @@ export default function User() {
               </div>
             );
           })}
+
+          {/* 1. Manually rendered Role field */}
+          <div className="user-form-input-group">
+            <label htmlFor="role" className="user-input-label">
+              Role
+            </label>
+            <select
+              id="role"
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className={`user-select-input ${errors.role ? "error" : ""}`}
+            >
+              <option value="">Select Role</option>
+              {roles.map((role) => (
+                <option key={role._id} value={role.roleName}>
+                  {role.roleName}
+                </option>
+              ))}
+            </select>
+            {errors.role && <p className="user-error-text">{errors.role}</p>}
+          </div>
 
           {formData.role === "SalesOfficer" && (
             <div className="user-form-input-group">

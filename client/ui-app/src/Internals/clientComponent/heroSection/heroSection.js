@@ -6,7 +6,7 @@ import MicIcon from "@mui/icons-material/Mic";
 
 import { useDispatch, useSelector } from "react-redux";
 import { getAllLocation } from "../../../redux/actions/locationAction";
-import { getAllBusinessList, logSearchActivity, getAllSearchLogs } from "../../../redux/actions/businessListAction";
+import { getAllBusinessList,getAllClientBusinessList, logSearchActivity, getAllSearchLogs } from "../../../redux/actions/businessListAction";
 import { getAllCategory } from "../../../redux/actions/categoryAction";
 import backgroundImage from "../../../assets/background.png";
 import { useNavigate } from 'react-router-dom';
@@ -96,16 +96,16 @@ const HeroSection = ({
     const locationRef = useRef(null);
     const categoryRef = useRef(null);
 
-    const businessListState = useSelector((state) => state.businessListReducer || { businessList: [] });
+    const businessListState = useSelector((state) => state.businessListReducer || { clientBusinessList: [] });
     const { location = [], loading, error } = useSelector(
         (state) => state.locationReducer || {}
     );
 
-    const { searchLogs, businessList = [] } = businessListState;
+    const { searchLogs, clientBusinessList = [] } = businessListState;
 
     useEffect(() => {
         dispatch(getAllLocation());
-        dispatch(getAllBusinessList());
+        dispatch(getAllClientBusinessList());
         dispatch(getAllCategory());
         dispatch(getAllSearchLogs());
     }, [dispatch]);
@@ -124,7 +124,7 @@ const HeroSection = ({
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [locationRef, categoryRef]);
 
-    const allLocationIds = businessList
+    const allLocationIds = clientBusinessList
         .map(loc => (typeof loc.location === "object" ? loc.location.en : loc.location))
         .filter(Boolean);
 
@@ -160,7 +160,7 @@ const HeroSection = ({
         );
         const selectedLocationId = selectedLocation ? selectedLocation.value : null;
 
-        const filteredBusinesses = businessList.filter((business) => {
+        const filteredBusinesses = clientBusinessList.filter((business) => {
             const matchesSearchTerm =
                 !finalSearchTerm ||
                 (business.category && business.category.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||

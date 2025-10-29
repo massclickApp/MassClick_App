@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import "./realEstate.css";
 import CardDesign from "../../cards/cards.js";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllBusinessList } from "../../../../redux/actions/businessListAction.js";
+import { getAllBusinessList, getAllClientBusinessList } from "../../../../redux/actions/businessListAction.js";
 import CardsSearch from "../../../clientComponent/CardsSearch/CardsSearch.js";
 import { useNavigate } from 'react-router-dom';
 
@@ -12,15 +12,15 @@ const RealEstateCards = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { businessList = [] } = useSelector(
+    const { clientBusinessList = [] } = useSelector(
         (state) => state.businessListReducer || {}
     )
 
     useEffect(() => {
-        dispatch(getAllBusinessList());
+        dispatch(getAllClientBusinessList());
     }, [dispatch]);
 
-    const realEstate = businessList.filter(
+    const realEstate = clientBusinessList.filter(
         (b) => b.category && /\breal\s*estates?\b/i.test(b.category)
     );
 

@@ -55,18 +55,18 @@ export const viewBusinessList = async (id) => {
 };
 
 
-// export const viewAllBusinessList = async () => {
-//     const businessList = await businessListModel.find().lean();
-//     if (!businessList || businessList.length === 0) throw new Error("No business found");
+export const viewAllClientBusinessList = async () => {
+    const businessList = await businessListModel.find().lean();
+    if (!businessList || businessList.length === 0) throw new Error("No business found");
 
-//     return businessList.map(business => {
-//         if (business.bannerImageKey) business.bannerImage = getSignedUrlByKey(business.bannerImageKey);
-//         if (business.businessImagesKey?.length > 0) {
-//             business.businessImages = business.businessImagesKey.map(key => getSignedUrlByKey(key));
-//         }
-//         return business;
-//     });
-// };
+    return businessList.map(business => {
+        if (business.bannerImageKey) business.bannerImage = getSignedUrlByKey(business.bannerImageKey);
+        if (business.businessImagesKey?.length > 0) {
+            business.businessImages = business.businessImagesKey.map(key => getSignedUrlByKey(key));
+        }
+        return business;
+    });
+};
 // export const viewAllBusinessList = async (role, userId) => {
 //   let query = {};
 
@@ -130,18 +130,25 @@ export const viewAllBusinessList = async (role, userId) => {
   } else if (role === "SalesManager") {
     const manager = await userModel.findById(userId).lean();
     const salesOfficerIds = manager?.salesBy || [];
-    if (salesOfficerIds.length === 0) throw new Error("No sales officers assigned to this manager");
-    query = { createdBy: { $in: salesOfficerIds } };
+
+    // include manager themselves + their sales officers
+    const allowedCreators = [
+      new mongoose.Types.ObjectId(userId),
+      ...salesOfficerIds.map((id) => new mongoose.Types.ObjectId(id)),
+    ];
+
+    query = { createdBy: { $in: allowedCreators } };
   } else if (role === "SalesOfficer") {
     query = { createdBy: new mongoose.Types.ObjectId(userId) };
-  } else if (role === "client" || role === "PublicUser" || role === "user") {
-    query = { isActive: true }; 
+  } else if (["client", "PublicUser", "user"].includes(role)) {
+    query = { isActive: true };
   } else {
     throw new Error("Unauthorized role");
   }
 
   const businessList = await businessListModel.find(query).lean();
-  if (!businessList || businessList.length === 0) throw new Error("No business found");
+  if (!businessList || businessList.length === 0)
+    throw new Error("No business found");
 
   const businessListWithDetails = await Promise.all(
     businessList.map(async (business) => {
@@ -149,10 +156,15 @@ export const viewAllBusinessList = async (role, userId) => {
         business.bannerImage = getSignedUrlByKey(business.bannerImageKey);
 
       if (business.businessImagesKey?.length > 0)
-        business.businessImages = business.businessImagesKey.map((key) => getSignedUrlByKey(key));
+        business.businessImages = business.businessImagesKey.map((key) =>
+          getSignedUrlByKey(key)
+        );
 
       let locationDetailsArray = [];
-      if (business.location && mongoose.Types.ObjectId.isValid(business.location)) {
+      if (
+        business.location &&
+        mongoose.Types.ObjectId.isValid(business.location)
+      ) {
         const location = await locationModel.findById(business.location).lean();
         if (location) {
           locationDetailsArray = [
@@ -175,6 +187,7 @@ export const viewAllBusinessList = async (role, userId) => {
 
   return businessListWithDetails;
 };
+
 
 
 

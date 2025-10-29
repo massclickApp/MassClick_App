@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import "./trendingCard.css";
 import CardDesign from "../../clientComponent/cards/cards.js";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllBusinessList } from "../../../redux/actions/businessListAction.js";
+import { getAllBusinessList, getAllClientBusinessList } from "../../../redux/actions/businessListAction.js";
 import CardsSearch from "../../clientComponent/CardsSearch/CardsSearch.js";
 import { useParams } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
@@ -14,17 +14,17 @@ const TrendingCards = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { businessList = [] } = useSelector(
+    const { clientBusinessList = [] } = useSelector(
         (state) => state.businessListReducer || {}
     )
 
     useEffect(() => {
-        dispatch(getAllBusinessList());
+        dispatch(getAllClientBusinessList());
     }, [dispatch]);
 
     const normalizedSlug = categorySlug?.replace(/-/g, " ").trim().toLowerCase();
 
-    const filteredBusinesses = businessList.filter((b) => {
+    const filteredBusinesses = clientBusinessList.filter((b) => {
         if (!b.category) return false;
 
         const category = b.category.toLowerCase();

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import "./salons.css";
 import CardDesign from "../../cards/cards.js";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllBusinessList } from "../../../../redux/actions/businessListAction.js";
+import { getAllBusinessList, getAllClientBusinessList} from "../../../../redux/actions/businessListAction.js";
 import CardsSearch from "../../../clientComponent/CardsSearch/CardsSearch.js";
 
 import { useNavigate } from 'react-router-dom';
@@ -11,15 +11,15 @@ const SalonsCards = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { businessList = [] } = useSelector(
+    const { clientBusinessList = [] } = useSelector(
         (state) => state.businessListReducer || {}
     )
 
     useEffect(() => {
-        dispatch(getAllBusinessList());
+        dispatch(getAllClientBusinessList());
     }, [dispatch]);
 
-    const salons = businessList.filter(
+    const salons = clientBusinessList.filter(
         (b) => b.category && /\bsalons?\b/i.test(b.category)
     );
      const createSlug = (text) => {

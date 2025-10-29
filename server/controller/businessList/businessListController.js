@@ -1,4 +1,4 @@
-import { createBusinessList, viewBusinessList, viewAllBusinessList, updateBusinessList,getTrendingSearches, deleteBusinessList,activeBusinessList } from "../../helper/businessList/businessListHelper.js";
+import { createBusinessList, viewBusinessList, viewAllBusinessList,viewAllClientBusinessList, updateBusinessList,getTrendingSearches, deleteBusinessList,activeBusinessList } from "../../helper/businessList/businessListHelper.js";
 import { BAD_REQUEST } from "../../errorCodes.js";
 
 export const addBusinessListAction = async (req, res) => {
@@ -41,6 +41,15 @@ export const viewAllBusinessListAction = async (req, res) => {
     console.error("Error in viewAllBusinessListAction:", error);
     return res.status(BAD_REQUEST.code).send({ message: error.message });
   }
+};
+export const viewAllClientBusinessListAction = async (req, res) => {
+    try {
+        const allBusiness = await viewAllClientBusinessList();
+        res.send(allBusiness);
+    } catch (error) {
+        console.error(error);
+        return res.status(BAD_REQUEST.code).send({ message: error.message });
+    }
 };
 export const updateBusinessListAction = async (req, res) => {
   try {

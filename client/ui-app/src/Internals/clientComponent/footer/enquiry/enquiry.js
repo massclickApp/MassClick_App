@@ -8,7 +8,7 @@ import EnquiryImage from '../../../../assets/enquiry.png';
 import CardsSearch from '../../CardsSearch/CardsSearch';
 import Footer from '../footer';
 import { useDispatch, useSelector } from "react-redux";
-import { getAllBusinessList } from "../../../../redux/actions/businessListAction";
+import { getAllBusinessList, getAllClientBusinessList } from "../../../../redux/actions/businessListAction";
 import { createEnquiry } from "../../../../redux/actions/enquiryAction";
 
 
@@ -37,22 +37,22 @@ const EnquiryNow = () => {
     const [submitMessage, setSubmitMessage] = useState({ text: '', type: '' });
 
 
-    const { businessList = [] } = useSelector(
+    const { clientBusinessList = [] } = useSelector(
         (state) => state.businessListReducer || {}
     );
 
     const uniqueCategories = useMemo(() => {
-        if (!businessList || businessList.length === 0) {
+        if (!clientBusinessList || clientBusinessList.length === 0) {
             return [];
         }
-        const categories = businessList
+        const categories = clientBusinessList
             .map(business => business.category)
             .filter(category => category);
         return [...new Set(categories)];
-    }, [businessList]);
+    }, [clientBusinessList]);
 
     useEffect(() => {
-        dispatch(getAllBusinessList());
+        dispatch(getAllClientBusinessList());
     }, [dispatch]);
 
     // Handler for all standard inputs (Name, Business Name, Contact, Email, Message)
