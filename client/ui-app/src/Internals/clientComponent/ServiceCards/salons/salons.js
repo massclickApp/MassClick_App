@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import "./salons.css";
 import CardDesign from "../../cards/cards.js";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllBusinessList, getAllClientBusinessList} from "../../../../redux/actions/businessListAction.js";
+import { getAllBusinessList, getAllClientBusinessList } from "../../../../redux/actions/businessListAction.js";
 import CardsSearch from "../../../clientComponent/CardsSearch/CardsSearch.js";
 
 import { useNavigate } from 'react-router-dom';
@@ -22,12 +22,12 @@ const SalonsCards = () => {
     const salons = clientBusinessList.filter(
         (b) => b.category && /\bsalons?\b/i.test(b.category)
     );
-     const createSlug = (text) => {
+    const createSlug = (text) => {
         if (!text) return '';
         return text
             .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-') 
-            .replace(/(^-|-$)+/g, '');   
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)+/g, '');
     };
 
     if (salons.length === 0) {
@@ -54,8 +54,8 @@ const SalonsCards = () => {
                     const averageRating = business.averageRating?.toFixed(1) || 0;
                     const totalRatings = business.reviews?.length || 0;
                     const nameSlug = createSlug(business.businessName);
-                    const locationSlug = createSlug(business.locationDetails?.split(',')[0] || 'unknown');
-
+                    const locationSlug = createSlug(business.locationDetails || 'unknown');
+                    const address = createSlug(business.street || 'unknown');
                     return (
                         <CardDesign
                             key={business._id}
@@ -67,7 +67,7 @@ const SalonsCards = () => {
                             imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
                             rating={averageRating}
                             reviews={totalRatings}
-                            to={`/business/${nameSlug}/${locationSlug}/${business._id}`}
+                            to={`/${locationSlug}/${nameSlug}/${address}/${business._id}`}
 
                         />
                     );

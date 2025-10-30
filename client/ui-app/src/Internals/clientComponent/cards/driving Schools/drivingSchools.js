@@ -25,12 +25,12 @@ const DrivingSchoolsCards = () => {
             b.category &&
             b.category.toLowerCase().includes("Driving Schools".toLowerCase())
     );
-   const createSlug = (text) => {
+    const createSlug = (text) => {
         if (!text) return '';
         return text
             .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-') 
-            .replace(/(^-|-$)+/g, '');   
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)+/g, '');
     };
 
     if (drivingSchools.length === 0) {
@@ -58,8 +58,8 @@ const DrivingSchoolsCards = () => {
                     const totalRatings = business.reviews?.length || 0;
 
                     const nameSlug = createSlug(business.businessName);
-                    const locationSlug = createSlug(business.locationDetails?.split(',')[0] || 'unknown');
-
+                    const locationSlug = createSlug(business.locationDetails || 'unknown');
+                    const address = createSlug(business.street || 'unknown');
 
                     return (
                         <CardDesign
@@ -72,7 +72,7 @@ const DrivingSchoolsCards = () => {
                             imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
                             rating={averageRating}
                             reviews={totalRatings}
-                            to={`/business/${nameSlug}/${locationSlug}/${business._id}`}
+                            to={`/${locationSlug}/${nameSlug}/${address}/${business._id}`}
 
                         />
                     );

@@ -188,12 +188,8 @@ export const viewAllBusinessList = async (role, userId) => {
                 const location = await locationModel.findById(business.location).lean();
                 if (location) {
                     locationDetailsArray = [
-                        location.addressLine1 || "",
-                        location.addressLine2 || "",
-                        location.pincode || "",
                         location.city || "",
                         location.state || "",
-                        location.country || "",
                     ];
                 }
             } else if (business.location) {

@@ -20,6 +20,13 @@ const RentAndHiringCards = () => {
         dispatch(getAllClientBusinessList());
     }, [dispatch]);
 
+ const createSlug = (text) => {
+        if (!text) return '';
+        return text
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)+/g, '');
+    };
 
     const rentAndHiring = clientBusinessList.filter(b =>
         b.category &&
@@ -49,6 +56,9 @@ const RentAndHiringCards = () => {
                 {rentAndHiring.map((business) => {
                     const averageRating = business.averageRating?.toFixed(1) || 0;
                     const totalRatings = business.reviews?.length || 0;
+                     const nameSlug = createSlug(business.businessName);
+                    const locationSlug = createSlug(business.locationDetails || 'unknown');
+                    const address = createSlug(business.street || 'unknown');
                     return (
                         <CardDesign
                             key={business._id}
@@ -60,7 +70,7 @@ const RentAndHiringCards = () => {
                             imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
                             rating={averageRating}
                             reviews={totalRatings}
-                            to={`/business/${business._id}`}
+                            to={`/${locationSlug}/${nameSlug}/${address}/${business._id}`}
 
                         />
                     );

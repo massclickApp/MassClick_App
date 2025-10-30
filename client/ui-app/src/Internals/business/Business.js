@@ -165,19 +165,17 @@ export default function BusinessList() {
   const [activeStep, setActiveStep] = useState(0);
   const [kycFiles, setKycFiles] = useState([]);
 
-  const handleKycUpload = (event) => {
-    const files = Array.from(event.target.files);
+const handleKycUpload = (event) => {
+  const files = Array.from(event.target.files || []);
+  const validFiles = files.filter((f) => f instanceof File);
+  
+  const newFiles = validFiles.map((file) => {
+    file.preview = URL.createObjectURL(file);
+    return file;
+  });
 
-    const newFiles = files.map((file) => ({
-      ...file,
-      type: file.type || "application/octet-stream",
-      preview: URL.createObjectURL(file),
-    }));
-
-
-
-    setKycFiles((prev) => [...prev, ...newFiles]);
-  };
+  setKycFiles((prev) => [...prev, ...newFiles]);
+};
 
   const handleRemoveFile = (index) => {
     setKycFiles((prevFiles) => {
@@ -462,17 +460,17 @@ export default function BusinessList() {
     e.preventDefault();
     if (!validateForm()) return;
 
-    const kycBase64 = await Promise.all(
-      kycFiles.map(
-        (file) =>
-          new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-          })
-      )
-    );
+ const kycBase64 = await Promise.all(
+    kycFiles.map(
+      (file) =>
+        new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        })
+    )
+  );
 
     const payload = {
       ...formData,
@@ -691,7 +689,24 @@ export default function BusinessList() {
               />
               {errors.pincode && <p className="error-text">{errors.pincode}</p>}
             </div>
-
+            <div className="form-input-group">
+              <label htmlFor="location" className="input-label">Location</label>
+              <select
+                id="location"
+                name="location"
+                className={`select-input ${errors.location ? "error" : ""}`}
+                value={formData.location}
+                onChange={handleChange}
+              >
+                <option value="">-- Select Location --</option>
+                {location.map((loc) => (
+                  <option key={loc._id} value={loc._id}>
+                    {` ${loc.city}`}
+                  </option>
+                ))}
+              </select>
+              {errors.location && <p className="error-text">{errors.location}</p>}
+            </div>
             <div className="form-input-group">
               <label htmlFor="address2" className="input-label">Global Address</label>
               <input
@@ -822,24 +837,6 @@ export default function BusinessList() {
                 />
               </div>
             ))}
-            <div className="form-input-group">
-              <label htmlFor="location" className="input-label">Location</label>
-              <select
-                id="location"
-                name="location"
-                className={`select-input ${errors.location ? "error" : ""}`}
-                value={formData.location}
-                onChange={handleChange}
-              >
-                <option value="">-- Select Location --</option>
-                {location.map((loc) => (
-                  <option key={loc._id} value={loc._id}>
-                    {`${loc.addressLine1}, ${loc.city}, ${loc.district}, ${loc.state}, ${loc.country} (${loc.pincode})`}
-                  </option>
-                ))}
-              </select>
-              {errors.location && <p className="error-text">{errors.location}</p>}
-            </div>
 
 
             <div className="form-input-group col-span-all upload-section">
@@ -1128,10 +1125,9 @@ export default function BusinessList() {
 
   return (
     <div className="business-page">
-     
       <div className="business-card" style={{ marginBottom: '20px', padding: '15px 30px', boxShadow: 'none' }}>
         <Stack sx={{ width: '100%' }} spacing={4}>
-          <Stepper alternativeLabel activeStep={activeStep} connector={<ColorlibConnector /> }>
+          <Stepper alternativeLabel activeStep={activeStep} connector={<ColorlibConnector />}>
             {steps.map((label) => (
               <Step key={label}>
                 <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>
@@ -1154,7 +1150,7 @@ export default function BusinessList() {
           <div className="col-span-all upload-section" style={{ display: 'flex', justifyContent: 'space-between', marginTop: activeStep !== 2 ? '28px' : '150px' }}>
 
             {activeStep > 0 && (
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: "20px"  }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: "20px" }}>
                 <button type="button" className="submit-button" onClick={handleBack}>
                   <SkipPreviousIcon />
                 </button>

@@ -7,7 +7,7 @@ import {
   ACTIVE_BUSINESS_REQUEST, ACTIVE_BUSINESS_SUCCESS, ACTIVE_BUSINESS_FAILURE,
   FETCH_TRENDING_REQUEST, FETCH_TRENDING_SUCCESS, FETCH_TRENDING_FAILURE,
   FETCH_SEARCH_LOGS_REQUEST, FETCH_SEARCH_LOGS_SUCCESS, FETCH_SEARCH_LOGS_FAILURE,
-    FETCH_VIEWBUSINESS_REQUEST, FETCH_VIEWBUSINESS_SUCCESS, FETCH_VIEWBUSINESS_FAILURE
+  FETCH_VIEWBUSINESS_REQUEST, FETCH_VIEWBUSINESS_SUCCESS, FETCH_VIEWBUSINESS_FAILURE
 
 } from "../actions/userActionTypes.js";
 // import { getClientToken } from "./authAction.js";
@@ -18,8 +18,7 @@ export const getAllBusinessList = () => async (dispatch) => {
   dispatch({ type: FETCH_BUSINESS_REQUEST });
 
   try {
-    let token =
-      localStorage.getItem("accessToken") || localStorage.getItem("clientAccessToken");
+    const token = localStorage.getItem("accessToken");
 
     if (!token) {
       throw new Error("No valid access token found");
@@ -48,8 +47,8 @@ export const getAllClientBusinessList = () => async (dispatch) => {
   dispatch({ type: FETCH_VIEWBUSINESS_REQUEST });
 
   try {
-  const token = await dispatch(getClientToken());
-   
+    const token = await dispatch(getClientToken());
+
     const response = await axios.get(`${API_URL}/businesslist/viewall`, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -92,9 +91,8 @@ export const toggleBusinessStatus = ({ id, newStatus }) => async (dispatch) => {
   dispatch({ type: ACTIVE_BUSINESS_REQUEST });
 
   try {
- let token =
+    let token =
       localStorage.getItem("accessToken") || localStorage.getItem("clientAccessToken");
-    console.log("token", token);
 
     if (!token) {
       throw new Error("No valid access token found");
@@ -120,10 +118,8 @@ export const toggleBusinessStatus = ({ id, newStatus }) => async (dispatch) => {
 export const editBusinessList = (id, businessData) => async (dispatch) => {
   dispatch({ type: EDIT_BUSINESS_REQUEST });
   try {
-      const token = await dispatch(getClientToken());
+    const token = await dispatch(getClientToken());
 
- console.log("token",token);
- 
     const response = await axios.put(`${API_URL}/businesslist/update/${id}`, businessData, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -159,7 +155,7 @@ export const deleteBusinessList = (id) => async (dispatch) => {
 export const getTrendingSearches = (location) => async (dispatch) => {
   dispatch({ type: FETCH_TRENDING_REQUEST });
   try {
- let token =
+    let token =
       localStorage.getItem("accessToken") || localStorage.getItem("clientAccessToken");
     console.log("token", token);
 

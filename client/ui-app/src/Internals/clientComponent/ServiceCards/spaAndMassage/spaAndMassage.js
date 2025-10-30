@@ -59,8 +59,8 @@ const SpaAndMassageCards = () => {
                     const averageRating = business.averageRating?.toFixed(1) || 0;
                     const totalRatings = business.reviews?.length || 0;
                     const nameSlug = createSlug(business.businessName);
-                    const locationSlug = createSlug(business.locationDetails?.split(',')[0] || 'unknown');
-
+                    const locationSlug = createSlug(business.locationDetails || 'unknown');
+                    const address = createSlug(business.street || 'unknown');
                     return (
                         <CardDesign
                             key={business._id}
@@ -72,7 +72,7 @@ const SpaAndMassageCards = () => {
                             imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
                             rating={averageRating}
                             reviews={totalRatings}
-                            to={`/business/${nameSlug}/${locationSlug}/${business._id}`}
+                            to={`/${locationSlug}/${nameSlug}/${address}/${business._id}`}
 
                         />
                     );

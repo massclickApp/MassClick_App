@@ -47,7 +47,13 @@ const SearchResults = () => {
                                         imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
                                         rating={business.rating || '4.5'}
                                         reviews={business.reviews || '250'}
-                                        to={`/business/${business.businessName.toLowerCase().replace(/\s+/g, '-')}/${business.locationDetails.toLowerCase().replace(/\s+/g, '-')}/${business._id}`}
+                                        to={`/${(business.locationDetails || 'unknown')
+                                            .toLowerCase()
+                                            .replace(/\s+/g, '-')}/${(business.businessName || 'business')
+                                                .toLowerCase()
+                                                .replace(/\s+/g, '-')}/${(business.street || business.street || 'address')
+                                                    .toLowerCase()
+                                                    .replace(/\s+/g, '-')}/${business._id}`}
                                     />
                                 );
                             })}

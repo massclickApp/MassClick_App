@@ -34,6 +34,14 @@ const PopularCategoriesCards = () => {
         dispatch(getAllClientBusinessList());
     }, [dispatch]);
 
+    const createSlug = (text) => {
+        if (!text) return '';
+        return text
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)+/g, '');
+    };
+
     const popularCategories = clientBusinessList.filter((b) =>
         b.businessName?.toLowerCase().includes("Popular Categories".toLowerCase())
     );
@@ -62,6 +70,9 @@ const PopularCategoriesCards = () => {
                     const imageSource = buildImageSrc(business.bannerImage);
                     const averageRating = business.averageRating?.toFixed(1) || 0;
                     const totalRatings = business.reviews?.length || 0;
+                    const nameSlug = createSlug(business.businessName);
+                    const locationSlug = createSlug(business.locationDetails || 'unknown');
+                    const address = createSlug(business.street || 'unknown');
                     return (
                         <CardDesign
                             key={business._id}
@@ -73,7 +84,7 @@ const PopularCategoriesCards = () => {
                             imageSrc={imageSource}
                             rating={averageRating}
                             reviews={totalRatings}
-                            to={`/business/${business._id}`}
+                            to={`/${locationSlug}/${nameSlug}/${address}/${business._id}`}
 
                         />
                     );
