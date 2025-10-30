@@ -134,6 +134,50 @@ body {
   padding: 4px;
   color: #1e293b;
 }
+.kyc-file-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 10px;
+  justify-content: center;
+}
+
+.kyc-file-item {
+  width: 170px;
+  min-height: 260px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+
+.kyc-file-item:hover {
+  transform: translateY(-3px);
+}
+.kyc-file-list {
+  margin-top: 10px;
+}
+
+.kyc-file-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.upload-button {
+  background-color: #ff8c00 !important;
+  color: #fff !important;
+}
+.upload-button:hover {
+  background-color: #d97800 !important;
+}
+
 
 .dropdown {
   position: absolute;
@@ -530,6 +574,127 @@ body {
         background-color: #fff8ec;
         border-color: var(--color-primary-orange);
     }
+}
+
+.MuiStepper-root {
+  display: flex;
+  justify-content: space-between;
+  gap: 32px;
+  background: transparent;
+  padding: 10px 0;
+  flex-wrap: wrap;
+}
+
+.MuiStep-root {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Step icon container */
+.MuiStepIcon-root {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e5e7eb;
+  color: #fff;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Active step styling */
+.Mui-active .MuiStepIcon-root {
+  background: linear-gradient(145deg, #ff8c00, #d97800);
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(255, 140, 0, 0.25);
+}
+
+/* Completed step */
+.Mui-completed .MuiStepIcon-root {
+  background-color: #ffb84d;
+}
+
+/* Label text */
+.MuiStepLabel-label {
+  font-size: 0.9rem;
+  color: #374151;
+  font-weight: 600;
+  margin-top: 8px;
+  transition: color 0.3s;
+}
+
+.Mui-active .MuiStepLabel-label {
+  color: #ff8c00;
+}
+
+/* Connector line */
+.MuiStepConnector-line {
+  border-color: #ddd !important;
+  border-top-width: 2px;
+}
+
+/* ---------------------------------------------------------------------- */
+/* --- MOBILE VIEW IMPROVEMENT --- */
+/* ---------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .MuiStepper-root {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .MuiStep-root {
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    gap: 14px;
+  }
+
+  .MuiStepIcon-root {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    font-size: 16px;
+  }
+
+  .MuiStepLabel-label {
+    font-size: 0.85rem;
+    margin-top: 0;
+    color: #444;
+  }
+
+  .MuiStepConnector-root {
+    display: none !important;
+  }
+}
+
+/* Tiny devices (under 480px) */
+@media (max-width: 480px) {
+  .MuiStepIcon-root {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+  .MuiStepLabel-label {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .kyc-file-item {
+    width: 45%;
+    min-height: 240px;
+  }
+
+  .kyc-actions {
+    flex-direction: column;
+    gap: 6px;
+  }
 }
 
 @media (max-width: 480px) {

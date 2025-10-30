@@ -85,6 +85,7 @@ const businessListSchema = new mongoose.Schema({
     type: [reviewSchema],
     default: []
   },
+  kycDocumentsKey: [{ type: String, default: '' }],
 
   averageRating: {
     type: Number,

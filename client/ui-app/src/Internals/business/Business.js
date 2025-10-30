@@ -144,7 +144,7 @@ export default function BusinessList() {
   const { userClient = [], } = useSelector(
     (state) => state.userClientReducer || {}
   );
-  
+
   const { users = [] } = useSelector((state) => state.userReducer || {});
 
   const { location = [] } = useSelector((state) => state.locationReducer || {});
@@ -163,7 +163,30 @@ export default function BusinessList() {
   });
 
   const [activeStep, setActiveStep] = useState(0);
+  const [kycFiles, setKycFiles] = useState([]);
 
+  const handleKycUpload = (event) => {
+    const files = Array.from(event.target.files);
+
+    const newFiles = files.map((file) => ({
+      ...file,
+      type: file.type || "application/octet-stream",
+      preview: URL.createObjectURL(file),
+    }));
+
+
+
+    setKycFiles((prev) => [...prev, ...newFiles]);
+  };
+
+  const handleRemoveFile = (index) => {
+    setKycFiles((prevFiles) => {
+      const updatedFiles = [...prevFiles];
+      URL.revokeObjectURL(updatedFiles[index].preview);
+      updatedFiles.splice(index, 1);
+      return updatedFiles;
+    });
+  };
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -269,6 +292,7 @@ export default function BusinessList() {
     twitter: "",
     linkedin: "",
     businessDetails: "",
+    kycDocuments: "",
     openingHours: defaultOpeningHours,
 
   });
@@ -374,7 +398,7 @@ export default function BusinessList() {
   };
 
   const handleDelete = (row) => {
-    setDeleteDialog({ open: true, id: row.id, name: row.businessName }); 
+    setDeleteDialog({ open: true, id: row.id, name: row.businessName });
   };
   const confirmDelete = () => {
     if (deleteDialog.id) {
@@ -412,13 +436,14 @@ export default function BusinessList() {
       linkedin: "",
       businessDetails: "",
       openingHours: defaultOpeningHours,
+      kycDocuments: "",
 
     });
     setBusinessValue("");
     setPreview(null);
     setEditMode(false);
     setEditId(null);
-    setActiveStep(0); 
+    setActiveStep(0);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
   const handleImageChange = (e) => {
@@ -433,11 +458,27 @@ export default function BusinessList() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    const payload = { ...formData, businessDetails: businessvalue };
+    const kycBase64 = await Promise.all(
+      kycFiles.map(
+        (file) =>
+          new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          })
+      )
+    );
+
+    const payload = {
+      ...formData,
+      businessDetails: businessvalue,
+      kycDocuments: kycBase64
+    };
 
     if (editMode && editId) {
       dispatch(editBusinessList(editId, payload))
@@ -997,29 +1038,81 @@ export default function BusinessList() {
 
       case 2:
         return (
-          <>
-            <div className="form-input-group col-span-all upload-section">
-              <div className="upload-content">
-                <Button
-                  variant="contained"
-                  startIcon={<CloudUploadIcon />}
-                  component="label"
-                  className="upload-button"
-                >
-                  Upload Kyc
-                  <input
-                    type="file"
-                    accept="image/*"
-                    hidden
-                    ref={fileInputRef}
-                    onChange={handleImageChange}
-                  />
-                </Button>
-                {preview && <Avatar src={preview} sx={{ width: 56, height: 56 }} className="preview-avatar" />}
-              </div>
+          <div className="form-input-group">
+            <label className="input-label">Upload KYC Documents</label>
+
+            <Button
+              variant="contained"
+              component="label"
+              startIcon={<CloudUploadIcon />}
+              className="upload-button"
+            >
+              Upload Files
+              <input
+                type="file"
+                multiple
+                hidden
+                onChange={handleKycUpload}
+                accept=".pdf,.png,.jpg,.jpeg"
+              />
+            </Button>
+
+            <div className="kyc-file-list">
+              {kycFiles.map((file, index) => (
+                <div key={index} className="kyc-file-item">
+                  <Typography variant="body2">
+                    {file.name || `Document ${index + 1}`}
+                  </Typography>
+                  <IconButton color="error" onClick={() => handleRemoveFile(index)}>
+                    <DeleteOutlineRoundedIcon fontSize="small" />
+                  </IconButton>
+
+                  <div style={{ marginTop: "5px" }}>
+                    {file.type?.includes("image") ? (
+                      <img
+                        src={file.preview}
+                        alt={file.name}
+                        style={{
+                          width: "100px",
+                          height: "100px",
+                          borderRadius: "8px",
+                          objectFit: "cover",
+                        }}
+                      />
+                    ) : file.type?.includes("pdf") ? (
+                      <iframe
+                        src={file.preview}
+                        title={file.name}
+                        width="100%"
+                        height="150px"
+                        style={{
+                          border: "1px solid #ccc",
+                          borderRadius: "8px",
+                        }}
+                      />
+                    ) : null}
+
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        onClick={() => window.open(file.preview, "_blank")}
+                      >
+                        View Full
+                      </Button>
+                      <IconButton color="error" onClick={() => handleRemoveFile(index)}>
+                        <DeleteOutlineRoundedIcon fontSize="small" />
+                      </IconButton>
+                    </div>
+                  </div>
+
+
+                </div>
+              ))}
             </div>
-          </>
+          </div>
         );
+
       case 3:
         return (
           <>
@@ -1035,13 +1128,10 @@ export default function BusinessList() {
 
   return (
     <div className="business-page">
-      {/* ----------------------------------
-        STEPPER INTEGRATION
-        ---------------------------------- 
-      */}
+     
       <div className="business-card" style={{ marginBottom: '20px', padding: '15px 30px', boxShadow: 'none' }}>
         <Stack sx={{ width: '100%' }} spacing={4}>
-          <Stepper alternativeLabel activeStep={activeStep} connector={<ColorlibConnector />}>
+          <Stepper alternativeLabel activeStep={activeStep} connector={<ColorlibConnector /> }>
             {steps.map((label) => (
               <Step key={label}>
                 <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>
@@ -1051,7 +1141,6 @@ export default function BusinessList() {
         </Stack>
       </div>
 
-      {/* Business Form Card */}
       <div className="business-card form-section">
         <h2 className="card-title">
           {editMode ? `Edit Business (${steps[activeStep]})` : `Add New Business (${steps[activeStep]})`}
@@ -1065,7 +1154,7 @@ export default function BusinessList() {
           <div className="col-span-all upload-section" style={{ display: 'flex', justifyContent: 'space-between', marginTop: activeStep !== 2 ? '28px' : '150px' }}>
 
             {activeStep > 0 && (
-              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: "20px"  }}>
                 <button type="button" className="submit-button" onClick={handleBack}>
                   <SkipPreviousIcon />
                 </button>
@@ -1073,25 +1162,24 @@ export default function BusinessList() {
             )}
 
             {activeStep < steps.length - 1 ? (
-              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <div style={{ width: "100%", display: "flex", justifyContent: "flex-end", marginTop: "20px" }}>
                 <button type="button" className="submit-button" onClick={handleNext}>
                   <SkipNextIcon />
                 </button>
               </div>
-
             ) : (
               <button
                 type="submit"
                 className="submit-button"
                 disabled={loading}
-                style={{ marginLeft: 'auto' }}
+                style={{ marginLeft: 'auto', display: "flex", justifyContent: "flex-end", marginTop: "30px" }}
               >
                 {loading ? (
                   <CircularProgress size={24} color="inherit" />
                 ) : editMode ? (
-                  "Update Business"
+                  "Update"
                 ) : (
-                  "Create Business"
+                  "Create"
                 )}
               </button>
             )}
