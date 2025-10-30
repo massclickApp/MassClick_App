@@ -29,8 +29,8 @@ const RestaurantsCards = () => {
         if (!text) return '';
         return text
             .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-') 
-            .replace(/(^-|-$)+/g, '');   
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)+/g, '');
     };
 
     if (restaurants.length === 0) {
@@ -54,7 +54,7 @@ const RestaurantsCards = () => {
             <div className="restaurants-list-wrapper">
                 {restaurants.map((business) => {
                     const averageRating = business.averageRating?.toFixed(1) || 0;
-                    const totalRatings = business.ratings?.length || 0;
+                    const totalRatings = business.reviews?.length || 0;
                     const nameSlug = createSlug(business.businessName);
                     const locationSlug = createSlug(business.locationDetails || 'unknown');
                     const address = createSlug(business.street || 'unknown');
