@@ -390,11 +390,17 @@ export default function User() {
           </div>
         </form>
 
-        {error && (
-          <p className="user-error-text" style={{ marginTop: "16px" }}>
-            {typeof error === "string" ? error : error.message || JSON.stringify(error)}
-          </p>
-        )}
+       {error && (
+  <p className="user-error-text" style={{ marginTop: "16px" }}>
+    {(() => {
+      if (typeof error === "string") return error;
+      if (error instanceof Error) return error.message;
+      if (typeof error === "object") return JSON.stringify(error, null, 2);
+      return String(error);
+    })()}
+  </p>
+)}
+
       </div>
 
       <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>

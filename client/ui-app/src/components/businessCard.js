@@ -138,8 +138,15 @@ function SelectActionCard() {
                   variant="h4"
                   sx={{ fontWeight: "bold", color: "#222" }}
                 >
-                  {typeof card.value === "number" ? card.value : 0}
+                  {(() => {
+                    if (typeof card.value === "number") return card.value;
+                    if (typeof card.value === "string") return card.value;
+                    if (card.value === null || card.value === undefined) return 0;
+                    if (typeof card.value === "object") return JSON.stringify(card.value);
+                    return String(card.value);
+                  })()}
                 </Typography>
+
                 <Typography
                   variant="body1"
                   sx={{ fontWeight: 600, color: "#43a047" }}

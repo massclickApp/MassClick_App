@@ -13,7 +13,6 @@ export const getAllCategory = () => async (dispatch) => {
   try {
     let token =
       localStorage.getItem("accessToken") || localStorage.getItem("clientAccessToken");
-    console.log("token", token);
 
     if (!token) {
       throw new Error("No valid access token found");

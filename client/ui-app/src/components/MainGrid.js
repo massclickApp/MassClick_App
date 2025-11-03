@@ -25,7 +25,7 @@ import ChartUserByBusiness from './ChartUserByCountry';
 
 export default function MainGrid() {
   const { enqueueSnackbar } = useSnackbar();
-    const { users = []} = useSelector((state) => state.userReducer || {}); 
+  const { users = [] } = useSelector((state) => state.userReducer || {});
   const { businessList = [] } = useSelector(
     (state) => state.businessListReducer || {}
   );
@@ -87,21 +87,8 @@ export default function MainGrid() {
         params.value ? <Avatar src={params.value} alt="img" /> : "-",
     },
     { field: "businessName", headerName: "Business Name", flex: 1 },
-    {
-      field: "location",
-      headerName: "Location",
-      flex: 1,
-      renderCell: (params) => {
-        const loc = location.find((l) => {
-          const id = typeof l._id === "object" ? l._id.$oid : l._id;
-          return id === params.value;
-        });
+    { field: "location", headerName: "Location Name", flex: 1 },
 
-        if (!loc) return "—";
-
-        return `${loc.city}, ${loc.state}`;
-      },
-    },
     { field: "category", headerName: "Category", flex: 1 },
     {
       field: "createdBy",

@@ -55,6 +55,7 @@ import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import CollectionsBookmarkOutlinedIcon from '@mui/icons-material/CollectionsBookmarkOutlined';
+import { createPhonePePayment } from "../../redux/actions/phonePayAction.js";
 
 
 const ORANGE_PRIMARY = '#FF8C00';
@@ -161,21 +162,28 @@ export default function BusinessList() {
     open: false,
     data: null,
   });
+  const { qrString, paymentUrl, transactionId } = useSelector((state) => state.phonepe);
+  const userId = "68fefc5fe093cbcab9e84d43";
+
+  const handlePayNow = () => {
+    const amount = 1;
+    dispatch(createPhonePePayment(amount, userId));
+  };
 
   const [activeStep, setActiveStep] = useState(0);
   const [kycFiles, setKycFiles] = useState([]);
 
-const handleKycUpload = (event) => {
-  const files = Array.from(event.target.files || []);
-  const validFiles = files.filter((f) => f instanceof File);
-  
-  const newFiles = validFiles.map((file) => {
-    file.preview = URL.createObjectURL(file);
-    return file;
-  });
+  const handleKycUpload = (event) => {
+    const files = Array.from(event.target.files || []);
+    const validFiles = files.filter((f) => f instanceof File);
 
-  setKycFiles((prev) => [...prev, ...newFiles]);
-};
+    const newFiles = validFiles.map((file) => {
+      file.preview = URL.createObjectURL(file);
+      return file;
+    });
+
+    setKycFiles((prev) => [...prev, ...newFiles]);
+  };
 
   const handleRemoveFile = (index) => {
     setKycFiles((prevFiles) => {
@@ -460,17 +468,17 @@ const handleKycUpload = (event) => {
     e.preventDefault();
     if (!validateForm()) return;
 
- const kycBase64 = await Promise.all(
-    kycFiles.map(
-      (file) =>
-        new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        })
-    )
-  );
+    const kycBase64 = await Promise.all(
+      kycFiles.map(
+        (file) =>
+          new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          })
+      )
+    );
 
     const payload = {
       ...formData,
@@ -540,21 +548,8 @@ const handleKycUpload = (event) => {
         params.value ? <Avatar src={params.value} alt="img" /> : "-",
     },
     { field: "businessName", headerName: "Business Name", flex: 1 },
-    {
-      field: "location",
-      headerName: "Location",
-      flex: 1,
-      renderCell: (params) => {
-        const loc = location.find((l) => {
-          const id = typeof l._id === "object" ? l._id.$oid : l._id;
-          return id === params.value;
-        });
+    { field: "location", headerName: "Location Name", flex: 1 },
 
-        if (!loc) return "—";
-
-        return `${loc.city}, ${loc.state}`;
-      },
-    },
 
     { field: "category", headerName: "Category", flex: 1 },
     {
@@ -700,8 +695,8 @@ const handleKycUpload = (event) => {
               >
                 <option value="">-- Select Location --</option>
                 {location.map((loc) => (
-                  <option key={loc._id} value={loc._id}>
-                    {` ${loc.city}`}
+                  <option key={loc._id} value={`${loc.city}, ${loc.state}`}>
+                    {`${loc.city}, ${loc.state}`}
                   </option>
                 ))}
               </select>
@@ -1113,7 +1108,69 @@ const handleKycUpload = (event) => {
       case 3:
         return (
           <>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100vh",
+                backgroundColor: "#f8f9fa",
+                px: 2,
+              }}
+            >
+              <Box
+                sx={{
+                  borderRadius: 2,
+                  p: { xs: 3, sm: 4 },
+                  textAlign: "center",
+                  maxWidth: 320,
+                  width: "100%",
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 600,
+                    fontSize: { xs: "1.1rem", sm: "1.25rem" },
+                    color: "#333",
+                    mb: 1,
+                  }}
+                >
+                  List Your Business on{" "}
+                  <Box component="span" sx={{ color: "#f57c00" }}>
+                    MassClick
+                  </Box>
+                </Typography>
 
+                <Typography
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: { xs: "1.2rem", sm: "1.4rem" },
+                    mb: 3,
+                  }}
+                >
+                  Just ₹ 99/- + GST
+                </Typography>
+
+                <Button
+                  variant="contained"
+                  onClick={handlePayNow}
+                  sx={{
+                    backgroundColor: "#f57c00",
+                    color: "#fff",
+                    fontWeight: 600,
+                    textTransform: "none",
+                    px: 4,
+                    py: 1.2,
+                    borderRadius: "6px",
+                    "&:hover": { backgroundColor: "#e66b00" },
+                  }}
+                >
+                  Pay Now
+                </Button>
+
+              </Box>
+            </Box>
           </>
         );
 

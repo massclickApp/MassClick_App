@@ -272,9 +272,12 @@ export default function Location() {
 
                 {error && (
                     <p className="location-error-text" style={{ marginTop: "16px" }}>
-                        {typeof error === "string"
-                            ? error
-                            : error.message || JSON.stringify(error)}
+                        {(() => {
+                            if (typeof error === "string") return error;
+                            if (error instanceof Error) return error.message;
+                            if (typeof error === "object") return JSON.stringify(error, null, 2);
+                            return String(error);
+                        })()}
                     </p>
                 )}
 

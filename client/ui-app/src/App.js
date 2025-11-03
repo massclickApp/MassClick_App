@@ -42,6 +42,7 @@ import { userMenuItems } from './Internals/clientComponent/categoryBar.js';
 import PopularCategoryPage from './Internals/clientComponent/popularCategories/popularCategoriesPage.js';
 import Profile from './Internals/Login/profile/profile.js';
 import { clientLogin } from './redux/actions/clientAuthAction.js';
+import PaymentStatus from './Internals/phonePay/paymentStatus.js';
 
 const ComingSoon = ({ title }) => (
   <div style={{ textAlign: 'center', marginTop: '20%' }}>
@@ -153,6 +154,7 @@ function App() {
               return <Route key={service.path} path={service.path} element={<Component />} />;
             })}
             <Route path="/:locationSlug/:businessName/:address/:id" element={<BusinessDetails />} />
+        <Route path="/payment-status/:transactionId" element={<PaymentStatus />} />
 
             <Route
               path="/write-review/:businessId/:ratingValue"
