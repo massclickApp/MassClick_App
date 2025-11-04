@@ -30,7 +30,9 @@ const RentAndHiringCards = () => {
 
     const rentAndHiring = clientBusinessList.filter(b =>
         b.category &&
-        ["rent", "hiring"].includes(b.category.toLowerCase())
+        ["rent", "hire", "hiring"].some((word) =>
+            b.category.toLowerCase().includes(word)
+        )
     );
 
     if (rentAndHiring.length === 0) {

@@ -9,7 +9,14 @@ const SearchResults = () => {
     const { location: locParam, category: catParam, searchTerm: termParam } = useParams();
     const locationState = useLocation();
     const results = locationState.state?.results || [];
-
+    
+ const createSlug = (text) => {
+        if (!text) return '';
+        return text
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)+/g, '');
+    };
     return (
         <>
             <CardsSearch /><br /><br /><br />
@@ -35,7 +42,12 @@ const SearchResults = () => {
                     ) : (
                         <div className="restaurants-list-wrapper">
                             {results.map((business) => {
+                                const averageRating = business.averageRating?.toFixed(1) || 0;
+                                const totalRatings = business.reviews?.length || 0;
 
+                                const nameSlug = createSlug(business.businessName);
+                                const locationSlug = createSlug(business.locationDetails || 'unknown');
+                                const address = createSlug(business.street || 'unknown');
                                 return (
                                     <CardDesign
                                         key={business._id}
@@ -45,15 +57,9 @@ const SearchResults = () => {
                                         address={`${business.locationDetails}`}
                                         details={`Experience: ${business.experience || 'N/A'} | Category: ${business.category || 'N/A'}`}
                                         imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
-                                        rating={business.rating || '4.5'}
-                                        reviews={business.reviews || '250'}
-                                        to={`/${(business.locationDetails || 'unknown')
-                                            .toLowerCase()
-                                            .replace(/\s+/g, '-')}/${(business.businessName || 'business')
-                                                .toLowerCase()
-                                                .replace(/\s+/g, '-')}/${(business.street || business.street || 'address')
-                                                    .toLowerCase()
-                                                    .replace(/\s+/g, '-')}/${business._id}`}
+                                        rating={averageRating}
+                                        reviews={totalRatings}
+                                        to={`/${locationSlug}/${nameSlug}/${address}/${business._id}`}
                                     />
                                 );
                             })}
