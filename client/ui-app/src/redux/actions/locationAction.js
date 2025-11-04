@@ -3,7 +3,8 @@ import {
   FETCH_LOCATION_REQUEST, FETCH_LOCATION_SUCCESS, FETCH_LOCATION_FAILURE,
   CREATE_LOCATION_REQUEST, CREATE_LOCATION_SUCCESS, CREATE_LOCATION_FAILURE,
   EDIT_LOCATION_REQUEST, EDIT_LOCATION_SUCCESS, EDIT_LOCATION_FAILURE,
-  DELETE_LOCATION_REQUEST, DELETE_LOCATION_SUCCESS, DELETE_LOCATION_FAILURE
+  DELETE_LOCATION_REQUEST, DELETE_LOCATION_SUCCESS, DELETE_LOCATION_FAILURE,
+   FETCH_IP_LOCATION_REQUEST,FETCH_IP_LOCATION_SUCCESS,FETCH_IP_LOCATION_FAILURE,
 } from "../actions/userActionTypes.js";
 
 const API_URL = process.env.REACT_APP_API_URL;
@@ -90,6 +91,26 @@ export const deleteLocation = (id) => async (dispatch) => {
       type: DELETE_LOCATION_FAILURE,
       payload: error.response?.data || error.message,
     });
+    throw error;
+  }
+};
+export const getIpLocation = () => async (dispatch) => {
+  dispatch({ type: FETCH_IP_LOCATION_REQUEST });
+
+  try {
+    const token = localStorage.getItem("clientAccessToken");
+    if (!token) throw new Error("No valid access token found");
+
+    const response = await axios.get(`${API_URL}/location/getip`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const locationData = response.data.data;
+    dispatch({ type: FETCH_IP_LOCATION_SUCCESS, payload: locationData });
+    return locationData;
+  } catch (error) {
+    const errPayload = error.response?.data || error.message;
+    dispatch({ type: FETCH_IP_LOCATION_FAILURE, payload: errPayload });
     throw error;
   }
 };

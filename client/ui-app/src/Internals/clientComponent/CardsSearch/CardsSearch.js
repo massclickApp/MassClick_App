@@ -103,10 +103,6 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [categoryRef]);
 
-
-
-
-
   const capitalizeWords = (str) => {
     if (!str) return '';
     return str.toLowerCase().split(' ').map(word => {
@@ -126,8 +122,6 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
     const logLocation = locationName || 'Global';
 
     dispatch(logSearchActivity(logCategory, logLocation));
-
-  
 
     const filteredBusinesses = clientBusinessList.filter((business) => {
       const matchesSearchTerm =
@@ -233,9 +227,7 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
             </Box>
           </div>
 
-          {/* Search Inputs */}
           <div className="search-area">
-            {/* Location Input */}
             <div className="input-group location-group">
               <LocationOnIcon className="input-adornment start" />
               <input
@@ -265,13 +257,11 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
               <MicIcon className="input-adornment end" />
             </div>
 
-            {/* Search Button */}
             <button className="search-btn" onClick={handleSearch}>
               <span>Search</span> <i className="fa-solid fa-magnifying-glass"></i>
             </button>
           </div>
 
-          {/* Add Business Button */}
           <Button
             variant="contained"
             startIcon={<AddIcon />}
@@ -297,7 +287,6 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
           </Button>
         </div>
 
-        {/* Modal */}
         <AddBusinessModel open={isModalOpen} handleClose={handleCloseModal} />
       </header>
     </>

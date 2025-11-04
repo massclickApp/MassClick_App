@@ -44,8 +44,7 @@ export const createPhonePePayment = async (amount, userId) => {
 
     const paymentUrl = response.data?.data?.instrumentResponse?.redirectInfo?.url;
         const qrString = response.data?.data?.instrumentResponse?.redirectInfo?.qrCode;
-console.log("paymentUrl",paymentUrl);
-console.log("qrString",paymentUrl);
+
 
     return { paymentUrl, transactionId, qrString };
   } catch (error) {
