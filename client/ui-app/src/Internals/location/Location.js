@@ -25,6 +25,7 @@ import {
 } from "@mui/material";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import CustomizedTable from "../../components/Table/CustomizedTable.js";
 
 export default function Location() {
     const dispatch = useDispatch();
@@ -168,39 +169,29 @@ export default function Location() {
         }));
 
     const locationList = [
-        { field: "country", headerName: "Country", flex: 1 },
-        { field: "state", headerName: "State", flex: 1 },
-        { field: "district", headerName: "District", flex: 1 },
-        { field: "city", headerName: "City", flex: 1 },
-        { field: "pincode", headerName: "Pincode", flex: 1 },
-        { field: "addressLine1", headerName: "AddressLine1", flex: 1 },
-        { field: "addressLine2", headerName: "AddressLine2", flex: 1 },
+        { id: "country", label: "Country" },
+        { id: "state", label: "State" },
+        { id: "district", label: "District" },
+        { id: "city", label: "City" },
+        { id: "pincode", label: "Pincode" },
+        { id: "addressLine1", label: "Address Line 1" },
+        { id: "addressLine2", label: "Address Line 2" },
         {
-            field: "action",
-            headerName: "Action",
-            flex: 1,
-            sortable: false,
-            filterable: false,
-            renderCell: (params) => (
+            id: "action",
+            label: "Action",
+            renderCell: (_, row) => (
                 <div style={{ display: "flex", gap: "8px" }}>
-                    <IconButton
-                        color="primary"
-                        size="small"
-                        onClick={() => handleEdit(params.row)}
-                    >
+                    <IconButton color="primary" size="small" onClick={() => handleEdit(row)}>
                         <EditRoundedIcon fontSize="small" />
                     </IconButton>
-                    <IconButton
-                        color="error"
-                        size="small"
-                        onClick={() => handleDeleteClick(params.row)}
-                    >
+                    <IconButton color="error" size="small" onClick={() => handleDeleteClick(row)}>
                         <DeleteOutlineRoundedIcon fontSize="small" />
                     </IconButton>
                 </div>
             ),
         },
     ];
+
 
     const fields = [
         { label: "Country", name: "country", required: true, type: "text" },
@@ -281,14 +272,13 @@ export default function Location() {
                     </p>
                 )}
 
-                <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
-                    <Typography variant="h6" gutterBottom>
-                        Location Table
-                    </Typography>
-                    <Box sx={{ height: 500, width: "100%" }}>
-                        <CustomizedDataGrid rows={rows} columns={locationList} />
-                    </Box>
-                </Paper>
+                <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
+                    Location Table
+                </Typography>
+
+                <Box sx={{ width: "100%" }}>
+                    <CustomizedTable data={rows} columns={locationList} />
+                </Box>
 
                 <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
                     <DialogTitle>Confirm Delete</DialogTitle>

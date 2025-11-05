@@ -22,6 +22,7 @@ import {
 
 import BusinessCard from './businessCard';
 import ChartUserByBusiness from './ChartUserByCountry';
+import CustomizedTable from './Table/CustomizedTable.js';
 
 export default function MainGrid() {
   const { enqueueSnackbar } = useSnackbar();
@@ -78,64 +79,52 @@ export default function MainGrid() {
 
 
   const businessListTable = [
-    { field: "clientId", headerName: "ClientId", flex: 1 },
+    { id: "clientId", label: "Client ID" },
     {
-      field: "bannerImage",
-      headerName: "Banner Image",
-      flex: 1,
-      renderCell: (params) =>
-        params.value ? <Avatar src={params.value} alt="img" /> : "-",
+      id: "bannerImage",
+      label: "Banner Image",
+      renderCell: (value) => (value ? <Avatar src={value} alt="img" /> : "-"),
     },
-    { field: "businessName", headerName: "Business Name", flex: 1 },
-    { field: "location", headerName: "Location Name", flex: 1 },
-
-    { field: "category", headerName: "Category", flex: 1 },
+    { id: "businessName", label: "Business Name" },
+    { id: "location", label: "Location Name" },
+    { id: "category", label: "Category" },
     {
-      field: "createdBy",
-      headerName: "Created By",
-      flex: 1,
-      renderCell: (params) => {
-        if (!params.value) return "—";
+      id: "createdBy",
+      label: "Created By",
+      renderCell: (value) => {
+        if (!value) return "—";
 
         const createdById =
-          typeof params.value === "object" && params.value.$oid
-            ? params.value.$oid
-            : params.value;
-
+          typeof value === "object" && value.$oid ? value.$oid : value;
         const user = users.find((u) => {
-          const userId = typeof u._id === "object" && u._id.$oid ? u._id.$oid : u._id;
+          const userId =
+            typeof u._id === "object" && u._id.$oid ? u._id.$oid : u._id;
           return userId === createdById;
         });
 
         return user ? user.userName : "—";
       },
     },
-
     {
-      field: "isActive",
-      headerName: "Status",
-      flex: 1,
-      renderCell: (params) => {
-        const isActive = activeStatus[params.row._id] ?? params.row.activeBusinesses;
-        const businessName = params.row.businessName;
+      id: "isActive",
+      label: "Status",
+      renderCell: (_, row) => {
+        const isActive = activeStatus[row._id] ?? row.activeBusinesses;
+        const businessName = row.businessName;
 
         const handleClick = async () => {
           const newStatus = !isActive;
-          setActiveStatus(prev => ({ ...prev, [params.row._id]: newStatus }));
+          setActiveStatus((prev) => ({ ...prev, [row._id]: newStatus }));
 
           try {
-            await dispatch(toggleBusinessStatus({ id: params.row._id, newStatus }));
-
-            if (newStatus) {
-              enqueueSnackbar(`${businessName} is now Active!`, { variant: 'success' });
-            } else {
-              enqueueSnackbar(`${businessName} is now Inactive!`, { variant: 'error' });
-            }
-
+            await dispatch(toggleBusinessStatus({ id: row._id, newStatus }));
+            enqueueSnackbar(
+              `${businessName} is now ${newStatus ? "Active" : "Inactive"}!`,
+              { variant: newStatus ? "success" : "error" }
+            );
           } catch (err) {
-            setActiveStatus(prev => ({ ...prev, [params.row._id]: isActive }));
-            enqueueSnackbar('Failed to update status.', { variant: 'error' });
-            console.error(err);
+            setActiveStatus((prev) => ({ ...prev, [row._id]: isActive }));
+            enqueueSnackbar("Failed to update status.", { variant: "error" });
           }
         };
 
@@ -151,20 +140,13 @@ export default function MainGrid() {
               fontSize: "0.8rem",
               color: "#fff",
               textTransform: "none",
-              boxShadow: isActive
-                ? "0 2px 6px rgba(76, 175, 80, 0.4)"
-                : "0 2px 6px rgba(244, 67, 54, 0.4)",
               background: isActive
                 ? "linear-gradient(135deg, #4caf50, #388e3c)"
                 : "linear-gradient(135deg, #ef5350, #c62828)",
-              transition: "all 0.3s ease",
               '&:hover': {
                 background: isActive
                   ? "linear-gradient(135deg, #66bb6a, #2e7d32)"
                   : "linear-gradient(135deg, #ef5350, #b71c1c)",
-                boxShadow: isActive
-                  ? "0 4px 12px rgba(76, 175, 80, 0.6)"
-                  : "0 4px 12px rgba(244, 67, 54, 0.6)",
               },
             }}
           >
@@ -172,13 +154,9 @@ export default function MainGrid() {
           </Button>
         );
       },
-    }
-
-
-
-
-
+    },
   ];
+
 
   return (
     <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
@@ -198,14 +176,14 @@ export default function MainGrid() {
           <ChartUserByBusiness />
         </Grid>
       </Grid><br />
-      <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
-        <Typography variant="h6" gutterBottom>
+      <Grid elevation={3} sx={{ p: 3, borderRadius: 2 }}>
+                <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
           BusinessList Table
         </Typography>
-        <Box sx={{ height: 500, width: "100%" }}>
-          <CustomizedDataGrid rows={rows} columns={businessListTable} />
+        <Box sx={{ width: "100%" }}>
+          <CustomizedTable data={rows} columns={businessListTable} />
         </Box>
-      </Paper>
+      </Grid>
       {/* Footer */}
     </Box>
   );

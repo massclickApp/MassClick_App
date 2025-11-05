@@ -27,6 +27,7 @@ import {
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import CustomizedTable from "../../components/Table/CustomizedTable";
 
 export default function Category() {
   const dispatch = useDispatch();
@@ -226,49 +227,38 @@ export default function Category() {
       isActive: cat.isActive,
     }));
 
-  const categoryList = [
-    {
-      field: "categoryImage",
-      headerName: "Image",
-      flex: 1,
-      renderCell: (params) =>
-        params.value ? <Avatar src={params.value} alt="img" /> : "-",
-    },
-    { field: "category", headerName: "Category", flex: 1 },
-    { field: "categoryType", headerName: "Type", flex: 1 },
-    { field: "subCategoryType", headerName: "Sub Type", flex: 1 },
-    { field: "title", headerName: "Title", flex: 1 },
-    { field: "keywords", headerName: "Keywords", flex: 1 },
-    { field: "description", headerName: "Description", flex: 1 },
-    { field: "seoTitle", headerName: "SEO Title", flex: 1 },
-    { field: "seoDescription", headerName: "SEO Description", flex: 1 },
-    { field: "slug", headerName: "Slug", flex: 1 },
-    {
-      field: "action",
-      headerName: "Action",
-      flex: 1,
-      sortable: false,
-      filterable: false,
-      renderCell: (params) => (
-        <div style={{ display: "flex", gap: "8px" }}>
-          <IconButton
-            color="primary"
-            size="small"
-            onClick={() => handleEdit(params.row)}
-          >
-            <EditRoundedIcon fontSize="small" />
-          </IconButton>
-          <IconButton
-            color="error"
-            size="small"
-            onClick={() => handleDelete(params.row)}
-          >
-            <DeleteOutlineRoundedIcon fontSize="small" />
-          </IconButton>
-        </div>
-      ),
-    },
-  ];
+ const categoryList = [
+  {
+    id: "categoryImage",
+    label: "Image",
+    renderCell: (value) =>
+      value ? <Avatar src={value} alt="Category" /> : "-",
+  },
+  { id: "category", label: "Category" },
+  { id: "categoryType", label: "Type" },
+  { id: "subCategoryType", label: "Sub Type" },
+  { id: "title", label: "Title" },
+  { id: "keywords", label: "Keywords" },
+  { id: "description", label: "Description" },
+  { id: "seoTitle", label: "SEO Title" },
+  { id: "seoDescription", label: "SEO Description" },
+  { id: "slug", label: "Slug" },
+  {
+    id: "action",
+    label: "Action",
+    renderCell: (_, row) => (
+      <div style={{ display: "flex", gap: "8px" }}>
+        <IconButton color="primary" size="small" onClick={() => handleEdit(row)}>
+          <EditRoundedIcon fontSize="small" />
+        </IconButton>
+        <IconButton color="error" size="small" onClick={() => handleDelete(row)}>
+          <DeleteOutlineRoundedIcon fontSize="small" />
+        </IconButton>
+      </div>
+    ),
+  },
+];
+
 
   return (
     <div className="category-page">
@@ -469,14 +459,12 @@ export default function Category() {
       </div>
 
       {/* Category Table */}
-      <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
-        <Typography variant="h6" gutterBottom>
+                <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
           Category Table
         </Typography>
-        <Box sx={{ height: 500, width: "100%" }}>
-          <CustomizedDataGrid rows={rows} columns={categoryList} />
+        <Box sx={{ width: "100%" }}>
+          <CustomizedTable data={rows} columns={categoryList} />
         </Box>
-      </Paper>
 
       {/* Delete Dialog */}
       <Dialog

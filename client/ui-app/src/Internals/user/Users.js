@@ -20,6 +20,7 @@ import './user.css'
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import CustomizedTable from "../../components/Table/CustomizedTable.js";
 
 export default function User() {
   const dispatch = useDispatch();
@@ -205,52 +206,50 @@ export default function User() {
       };
     });
 
-  const userList = [
-    {
-      field: "userProfile",
-      headerName: "User Profile",
-      flex: 0.8,
-      renderCell: (params) =>
-        params.value ? <Avatar src={params.value} alt="img" /> : "-",
+const userList = [
+  {
+    id: "userProfile",
+    label: "User Profile",
+    renderCell: (value) =>
+      value ? <Avatar src={value} alt="User" /> : "-",
+  },
+  { id: "userName", label: "User Name" },
+  { id: "emailId", label: "Email" },
+  { id: "role", label: "Role" },
+  {
+    id: "managedInfo",
+    label: "Assigned Manager / Managed Officers",
+    renderCell: (_, row) => {
+      if (row.role === "SalesManager") {
+        return (
+          <Box component="span" sx={{ whiteSpace: "normal", lineHeight: "1.2" }}>
+            {row.salesOfficers || "-"}
+          </Box>
+        );
+      } else if (row.role === "SalesOfficer") {
+        return row.managedBy || "-";
+      }
+      return "-";
     },
-    { field: "userName", headerName: "User Name", flex: 1.2 },
-    { field: "emailId", headerName: "Email", flex: 1.5 },
-    { field: "role", headerName: "Role", flex: 1 },
-    { 
-      field: "managedInfo", 
-      headerName: "Assigned Manager / Managed Officers", 
-      flex: 2,
-      renderCell: (params) => {
-        if (params.row.role === 'SalesManager') {
-          return (
-            <Box component="span" sx={{ whiteSpace: 'normal', lineHeight: '1.2' }}>
-              {params.row.salesOfficers}
-            </Box>
-          );
-        } else if (params.row.role === 'SalesOfficer') {
-          return params.row.managedBy || '-';
-        }
-        return '-';
-      },
-    },
-    { field: "businessLocation", headerName: "Business Location", flex: 1.2 },
-    { field: "businessCategory", headerName: "Business Category", flex: 1.2 },
-    {
-      field: "action",
-      headerName: "Action",
-      flex: 0.8,
-      renderCell: (params) => (
-        <div style={{ display: "flex", gap: "8px" }}>
-          <IconButton color="primary" size="small" onClick={() => handleEdit(params.row)}>
-            <EditRoundedIcon fontSize="small" />
-          </IconButton>
-          <IconButton color="error" size="small" onClick={() => handleDeleteClick(params.row)}>
-            <DeleteOutlineRoundedIcon fontSize="small" />
-          </IconButton>
-        </div>
-      ),
-    },
-  ];
+  },
+  { id: "businessLocation", label: "Business Location" },
+  { id: "businessCategory", label: "Business Category" },
+  {
+    id: "action",
+    label: "Action",
+    renderCell: (_, row) => (
+      <div style={{ display: "flex", gap: "8px" }}>
+        <IconButton color="primary" size="small" onClick={() => handleEdit(row)}>
+          <EditRoundedIcon fontSize="small" />
+        </IconButton>
+        <IconButton color="error" size="small" onClick={() => handleDeleteClick(row)}>
+          <DeleteOutlineRoundedIcon fontSize="small" />
+        </IconButton>
+      </div>
+    ),
+  },
+];
+
 
   // Modified fields array: Role is removed to be manually placed in the form
   const fields = [
@@ -403,14 +402,12 @@ export default function User() {
 
       </div>
 
-      <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
-        <Typography variant="h6" gutterBottom>
+                <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
           User Table
         </Typography>
-        <Box sx={{ height: 500, width: "100%" }}>
-          <CustomizedDataGrid rows={rows} columns={userList} />
+        <Box sx={{ width: "100%" }}>
+          <CustomizedTable data={rows} columns={userList} />
         </Box>
-      </Paper>
 
       <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
         <DialogTitle>Confirm Delete</DialogTitle>

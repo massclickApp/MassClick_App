@@ -56,6 +56,7 @@ import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import CollectionsBookmarkOutlinedIcon from '@mui/icons-material/CollectionsBookmarkOutlined';
 import { createPhonePePayment } from "../../redux/actions/phonePayAction.js";
+import CustomizedTable from "../../components/Table/CustomizedTable.js";
 
 
 const ORANGE_PRIMARY = '#FF8C00';
@@ -539,78 +540,60 @@ export default function BusinessList() {
 
 
   const businessListTable = [
-    { field: "clientId", headerName: "ClientId", flex: 1 },
+    { id: "clientId", label: "Client ID" },
     {
-      field: "bannerImage",
-      headerName: "Banner Image",
-      flex: 1,
-      renderCell: (params) =>
-        params.value ? <Avatar src={params.value} alt="img" /> : "-",
+      id: "bannerImage",
+      label: "Banner Image",
+      renderCell: (value) =>
+        value ? <Avatar src={value} alt="Banner" /> : "-",
     },
-    { field: "businessName", headerName: "Business Name", flex: 1 },
-    { field: "location", headerName: "Location Name", flex: 1 },
-
-
-    { field: "category", headerName: "Category", flex: 1 },
+    { id: "businessName", label: "Business Name" },
+    { id: "location", label: "Location Name" },
+    { id: "category", label: "Category" },
     {
-      field: "createdBy",
-      headerName: "Created By",
-      flex: 1,
-      renderCell: (params) => {
-        if (!params.value) return "—";
+      id: "createdBy",
+      label: "Created By",
+      renderCell: (value) => {
+        if (!value) return "—";
 
         const createdById =
-          typeof params.value === "object" && params.value.$oid
-            ? params.value.$oid
-            : params.value;
+          typeof value === "object" && value.$oid ? value.$oid : value;
 
         const user = users.find((u) => {
-          const userId = typeof u._id === "object" && u._id.$oid ? u._id.$oid : u._id;
+          const userId =
+            typeof u._id === "object" && u._id.$oid ? u._id.$oid : u._id;
           return userId === createdById;
         });
 
         return user ? user.userName : "—";
       },
     },
-    { field: "isActive", headerName: "Status", flex: 1 },
 
     {
-      field: "action",
-      headerName: "Action",
-      flex: 1,
-      sortable: false,
-      filterable: false,
-      renderCell: (params) => (
+      id: "action",
+      label: "Action",
+      renderCell: (_, row) => (
         <div style={{ display: "flex", gap: "8px" }}>
-          <IconButton color="primary"
-            size="small"
-            onClick={() => handleEdit(params.row)}>
+          <IconButton color="primary" size="small" onClick={() => handleEdit(row)}>
             <EditRoundedIcon fontSize="small" />
           </IconButton>
-          <IconButton color="error"
-            size="small"
-            onClick={() => handleDelete(params.row)}>
+          <IconButton color="error" size="small" onClick={() => handleDelete(row)}>
             <DeleteOutlineRoundedIcon fontSize="small" />
           </IconButton>
         </div>
       ),
     },
     {
-      field: "gallery",
-      headerName: "Gallery",
-      flex: 1,
-      sortable: false,
-      filterable: false,
-      renderCell: (params) => (
-        <IconButton
-          color="primary"
-          onClick={() => handleOpenGallery(params.row._id)}
-        >
+      id: "gallery",
+      label: "Gallery",
+      renderCell: (_, row) => (
+        <IconButton color="primary" onClick={() => handleOpenGallery(row._id)}>
           <CollectionsBookmarkOutlinedIcon />
         </IconButton>
       ),
     },
   ];
+
 
   const renderStepContent = (step) => {
     switch (step) {
@@ -1242,16 +1225,13 @@ export default function BusinessList() {
       </div>
 
       {/* Business Table */}
-      <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
-        <Typography variant="h6" gutterBottom>
-          BusinessList Table
-        </Typography>
-        <Box sx={{ height: 500, width: "100%" }}>
-          <CustomizedDataGrid rows={rows} columns={businessListTable} />
-        </Box>
-      </Paper>
+      <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
+        BusinessList Table
+      </Typography>
+      <Box sx={{ width: "100%" }}>
+        <CustomizedTable data={rows} columns={businessListTable} />
+      </Box>
 
-      {/* Delete Dialog */}
       <Dialog open={deleteDialog.open} onClose={() => setDeleteDialog({ open: false, id: null, name: "" })}>
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
@@ -1267,7 +1247,6 @@ export default function BusinessList() {
         </DialogActions>
       </Dialog>
 
-      {/* Gallery Dialog */}
       <Dialog open={galleryDialog.open} onClose={handleCloseGallery} maxWidth="md" fullWidth>
         <DialogTitle>Gallery - {galleryDialog.data?.businessName}</DialogTitle>
         <DialogContent dividers>

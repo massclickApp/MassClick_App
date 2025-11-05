@@ -25,6 +25,7 @@ import {
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import './clients.css'
+import CustomizedTable from "../../components/Table/CustomizedTable.js";
 
 export default function UserClients() {
   const dispatch = useDispatch();
@@ -165,30 +166,28 @@ export default function UserClients() {
     }));
 
   const clientList = [
-    { field: "clientId", headerName: "Client ID", flex: 1 },
-    { field: "name", headerName: "Name", flex: 1 },
-    { field: "emailId", headerName: "Email", flex: 1 },
-    { field: "contact", headerName: "Contact", flex: 1 },
-    { field: "businessName", headerName: "Business Name", flex: 1 },
-    { field: "businessAddress", headerName: "Business Address", flex: 1 },
-    {
-      field: "action",
-      headerName: "Action",
-      flex: 1,
-      sortable: false,
-      filterable: false,
-      renderCell: (params) => (
-        <div style={{ display: "flex", gap: "8px" }}>
-          <IconButton color="primary" size="small" onClick={() => handleEdit(params.row)}>
-            <EditRoundedIcon fontSize="small" />
-          </IconButton>
-          <IconButton color="error" size="small" onClick={() => handleDeleteClick(params.row)}>
-            <DeleteOutlineRoundedIcon fontSize="small" />
-          </IconButton>
-        </div>
-      ),
-    },
-  ];
+  { id: "clientId", label: "Client ID" },
+  { id: "name", label: "Name" },
+  { id: "emailId", label: "Email" },
+  { id: "contact", label: "Contact" },
+  { id: "businessName", label: "Business Name" },
+  { id: "businessAddress", label: "Business Address" },
+  {
+    id: "action",
+    label: "Action",
+    renderCell: (_, row) => (
+      <div style={{ display: "flex", gap: "8px" }}>
+        <IconButton color="primary" size="small" onClick={() => handleEdit(row)}>
+          <EditRoundedIcon fontSize="small" />
+        </IconButton>
+        <IconButton color="error" size="small" onClick={() => handleDeleteClick(row)}>
+          <DeleteOutlineRoundedIcon fontSize="small" />
+        </IconButton>
+      </div>
+    ),
+  },
+];
+
 
   const fields = [
     { label: "Name", name: "name", required: true, type: "text" },
@@ -264,15 +263,12 @@ export default function UserClients() {
     )}
   </div>
 
-  {/* Table Section */}
- <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
-        <Typography variant="h6" gutterBottom>
+                <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
           Client Table
         </Typography>
-        <Box sx={{ height: 500, width: "100%" }}>
-          <CustomizedDataGrid rows={rows} columns={clientList} />
+        <Box sx={{ width: "100%" }}>
+          <CustomizedTable data={rows} columns={clientList} />
         </Box>
-      </Paper>
 
   {/* Delete Confirmation Dialog */}
   <Dialog open={deleteDialogOpen} onClose={cancelDelete}>

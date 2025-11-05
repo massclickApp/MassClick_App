@@ -25,6 +25,7 @@ import {
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import './roles.css'
+import CustomizedTable from "../../components/Table/CustomizedTable";
 
 export default function Roles() {
     const dispatch = useDispatch();
@@ -144,36 +145,26 @@ export default function Roles() {
         }));
 
     const rolesList = [
-        { field: "roleName", headerName: "RoleName", flex: 1 },
-        { field: "permissions", headerName: "Permissions", flex: 1 },
-        { field: "description", headerName: "Description", flex: 1 },
-        { field: "createdBy", headerName: "CreatedBy", flex: 1 },
+        { id: "roleName", label: "Role Name" },
+        { id: "permissions", label: "Permissions" },
+        { id: "description", label: "Description" },
+        { id: "createdBy", label: "Created By" },
         {
-            field: "action",
-            headerName: "Action",
-            flex: 1,
-            sortable: false,
-            filterable: false,
-            renderCell: (params) => (
+            id: "action",
+            label: "Action",
+            renderCell: (_, row) => (
                 <div style={{ display: "flex", gap: "8px" }}>
-                    <IconButton
-                        color="primary"
-                        size="small"
-                        onClick={() => handleEdit(params.row)}
-                    >
+                    <IconButton color="primary" size="small" onClick={() => handleEdit(row)}>
                         <EditRoundedIcon fontSize="small" />
                     </IconButton>
-                    <IconButton
-                        color="error"
-                        size="small"
-                        onClick={() => handleDeleteClick(params.row)}
-                    >
+                    <IconButton color="error" size="small" onClick={() => handleDeleteClick(row)}>
                         <DeleteOutlineRoundedIcon fontSize="small" />
                     </IconButton>
                 </div>
             ),
         },
     ];
+
 
     const fields = [
         { label: "RoleName", name: "roleName", required: true, type: "text" },
@@ -227,15 +218,12 @@ export default function Roles() {
             </div>
 
             {/* 🔹 Roles Table Section */}
-            <h3>Roles Table</h3>
-            <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
-                <Typography variant="h6" gutterBottom>
-                    Roles Table
-                </Typography>
-                <Box sx={{ height: 500, width: "100%" }}>
-                    <CustomizedDataGrid rows={rows} columns={rolesList} />
-                </Box>
-            </Paper>
+                <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
+                Roles Table
+            </Typography>
+            <Box sx={{ width: "100%" }}>
+                <CustomizedTable data={rows} columns={rolesList} />
+            </Box>
 
             {/* 🔹 Delete Confirmation Dialog */}
             <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
