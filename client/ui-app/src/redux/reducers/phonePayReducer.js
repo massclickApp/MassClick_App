@@ -11,7 +11,7 @@ const initialState = {
   loading: false,
   paymentUrl: null,
   transactionId: null,
-  qrString: null, // <--- NEW STATE FIELD
+  qrString: null,
   statusData: null,
   error: null,
 };
@@ -20,8 +20,7 @@ const phonepeReducer = (state = initialState, action) => {
   switch (action.type) {
     case CREATE_PAYMENT_REQUEST:
     case CHECK_PAYMENT_STATUS_REQUEST:
-      // Clear previous payment data on new request
-      return { ...state, loading: true, error: null, paymentUrl: null, qrString: null }; 
+      return { ...state, loading: true, error: null };
 
     case CREATE_PAYMENT_SUCCESS:
       return {
@@ -32,6 +31,20 @@ const phonepeReducer = (state = initialState, action) => {
         qrString: action.payload.qrString,
       };
 
+    case CHECK_PAYMENT_STATUS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        statusData: action.payload,
+      };
+
+    case CREATE_PAYMENT_FAILURE:
+    case CHECK_PAYMENT_STATUS_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
 
     default:
       return state;

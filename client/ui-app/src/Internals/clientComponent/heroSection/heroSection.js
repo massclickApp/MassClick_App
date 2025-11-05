@@ -81,7 +81,6 @@ const HeroSection = ({
     dispatch(getAllSearchLogs());
   }, [dispatch]);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (categoryRef.current && !categoryRef.current.contains(event.target)) {
@@ -92,7 +91,6 @@ const HeroSection = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [categoryRef]);
 
-  // Format capitalization for recent searches
   const capitalizeWords = (str) => {
     if (!str) return "";
     return str

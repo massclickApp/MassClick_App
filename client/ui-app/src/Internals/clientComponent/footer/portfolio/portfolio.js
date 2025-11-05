@@ -4,10 +4,17 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import LaunchIcon from '@mui/icons-material/Launch';
 import CardsSearch from '../../CardsSearch/CardsSearch';
 import Footer from '../footer';
+import geoPark from "../../../../assets/portfolio/geopark.jpg"
+import ginfraBricks from "../../../../assets/portfolio/ginfraBricks.jpg"
+import vestleySchool from "../../../../assets/portfolio/vestleySchool.jpeg"
+import royalSathyam from "../../../../assets/portfolio/royalSathyam.jpeg"
+import varahaBoutique from "../../../../assets/portfolio/varahaBoutique.jpg"
+import meinfotech from "../../../../assets/portfolio/meinfotech.jpg"
+import armSons from "../../../../assets/portfolio/arm-sons.jpg"
+import abiramiTimbers from "../../../../assets/portfolio/abiramitimber.jpg"
 
-// ----------------------------------------------------
-// Project Data (Use placeholder images for testing)
-// ----------------------------------------------------
+
+
 const projectData = [
     {
         id: 1,
@@ -15,16 +22,16 @@ const projectData = [
         category: "Web Design",
         description: "Full-stack development of a scalable, multi-region e-commerce solution with custom payment gateways.",
         tags: ["React", "Node.js", "Booking Engine"],
-        image: "path/to/geopark-project.jpg",
+        image: geoPark,
         link: "https://geopark.in/"
     },
     {
         id: 2,
-        title: "ME Infotech", // Matches 'https://meinfotech.com/'
+        title: "ME Infotech", 
         category: "Web Design",
         description: "High-performance Google Ads and Facebook campaign resulting in a 40% increase in qualified construction leads.",
         tags: ["Data Annotation", "Tech Services"],
-        image: "path/to/meinfotech-campaign.jpg",
+        image: meinfotech,
         link: "https://meinfotech.com/"
     },
     {
@@ -33,7 +40,7 @@ const projectData = [
         category: "Web Design",
         description: "Comprehensive local SEO strategy boosting client to the #1 position in the Google 3-pack for all primary keywords.",
         tags: ["School Website", "Events"],
-        image: "path/to/westleyschool.jpg",
+        image: vestleySchool,
         link: "https://westleyschool.com/"
     },
     {
@@ -42,7 +49,7 @@ const projectData = [
         category: "Web Design",
         description: "Complete redesign and branding of a B2B company's corporate website and visual assets.",
         tags: ["B2B", "Materials"],
-        image: "path/to/jinfabricks-site.jpg",
+        image: ginfraBricks,
         link: "https://jinfabricks.com/"
     },
     {
@@ -51,7 +58,7 @@ const projectData = [
         category: "Web Design",
         description: "Developed and executed a content strategy leading to a 300% growth in organic social media engagement.",
         tags: ["Hospitality", "Booking"],
-        image: "path/to/hotel-sam-media.jpg",
+        image: royalSathyam,
         link: "https://lsngrouphotels.in/"
     },
     {
@@ -60,7 +67,7 @@ const projectData = [
         category: "Web Design",
         description: "In-depth technical audit to resolve crawling issues, resulting in a 25% improvement in indexation rate.",
         tags: ["B2C", "Home Goods"],
-        image: "path/to/rmsons-audit.jpg",
+        image: armSons,
         link: "https://rmsons.in/"
     },
     {
@@ -69,8 +76,8 @@ const projectData = [
         category: "Web Design",
         description: "Website showcasing heavy vehicle sales and dealership information.",
         tags: ["Automotive", "Dealership"],
-        image: "path/to/trailer-dealer.jpg",
-        link: "https://sriabiramitrailerdealer.com/"
+        image: abiramiTimbers,
+        link: "https://armbuildmart.in/"
     },
     {
         id: 8,
@@ -78,31 +85,33 @@ const projectData = [
         category: "Web Design",
         description: "E-commerce platform for a boutique with focus on high-quality visuals and user experience.",
         tags: ["E-commerce", "Boutique", "Fashion"],
-        image: "path/to/varaha-boutique.jpg",
+        image: varahaBoutique,
         link: "https://varahaboutique.com/"
     },
-    // Note: The ninth website screenshot does not clearly show the URL, so I will skip it.
 ];
 
 const categories = ["All", "Web Design", "Digital Marketing", "SEO"];
 
 const PortfolioCard = ({ project }) => (
-    <div className="portfolio-card">
-        {/* Replace this div with an <img> tag pointing to project.image */}
-        <div className="card-image-placeholder" style={{backgroundImage: `url(${project.image})`}}>
-            <img src={project.image} alt={project.title} className="card-image-actual" />
-        </div>
-        
-        <div className="card-overlay">
-            <h3 className="overlay-title">{project.title}</h3>
-            <p className="overlay-category">{project.category}</p>
-            <a href={project.link} className="overlay-button" aria-label={`View ${project.title} project`}>
-                <LaunchIcon />
-                <VisibilityIcon />
-            </a>
-        </div>
+  <div className="portfolio-card">
+    <img src={project.image} alt={project.title} className="card-image-actual" />
+
+    <div className="card-overlay">
+      <h3 className="overlay-title">{project.title}</h3>
+      <p className="overlay-category">{project.category}</p>
+      <a
+        href={project.link}
+        className="overlay-button"
+        aria-label={`View ${project.title} project`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <LaunchIcon />
+      </a>
     </div>
+  </div>
 );
+
 
 const Portfolio = () => {
     const [activeFilter, setActiveFilter] = useState("All");
@@ -115,42 +124,42 @@ const Portfolio = () => {
     }, [activeFilter]);
 
     return (
-         <>
-            <CardsSearch /><br/><br/><br/>
-        <section className="section-portfolio">
-            <div className="portfolio-header-wrapper">
-                <h2 className="section-title-portfolio">Our <span className="highlight-text-portfolio">Successful</span> Projects</h2>
-                <p className="section-subtitle-portfolio">
-                    Explore the work that delivers results. From high-conversion design to top-ranking digital strategy, see what we've accomplished.
-                </p>
-            </div>
+        <>
+            <CardsSearch /><br /><br /><br />
+            <section className="section-portfolio">
+                <div className="portfolio-header-wrapper">
+                    <h2 className="section-title-portfolio">Our <span className="highlight-text-portfolio">Successful</span> Projects</h2>
+                    <p className="section-subtitle-portfolio">
+                        Explore the work that delivers results. From high-conversion design to top-ranking digital strategy, see what we've accomplished.
+                    </p>
+                </div>
 
-            {/* Filter Tabs/Buttons */}
-            <div className="portfolio-filter-tabs">
-                {categories.map(cat => (
-                    <button
-                        key={cat}
-                        className={`filter-tab-button ${activeFilter === cat ? 'active' : ''}`}
-                        onClick={() => setActiveFilter(cat)}
-                    >
-                        {cat}
-                    </button>
-                ))}
-            </div>
+                {/* Filter Tabs/Buttons */}
+                <div className="portfolio-filter-tabs">
+                    {categories.map(cat => (
+                        <button
+                            key={cat}
+                            className={`filter-tab-button ${activeFilter === cat ? 'active' : ''}`}
+                            onClick={() => setActiveFilter(cat)}
+                        >
+                            {cat}
+                        </button>
+                    ))}
+                </div>
 
-            {/* Project Grid */}
-            <div className="portfolio-grid">
-                {filteredProjects.map(project => (
-                    <PortfolioCard key={project.id} project={project} />
-                ))}
-            </div>
-            
-            {/* Optional: Load More Button */}
-            <div className="load-more-wrapper">
-                <button className="load-more-button">Load More Work</button>
-            </div>
-        </section>
-         <Footer />
+                {/* Project Grid */}
+                <div className="portfolio-grid">
+                    {filteredProjects.map(project => (
+                        <PortfolioCard key={project.id} project={project} />
+                    ))}
+                </div>
+
+                {/* Optional: Load More Button */}
+                <div className="load-more-wrapper">
+                    <button className="load-more-button">Load More Work</button>
+                </div>
+            </section>
+            <Footer />
         </>
     );
 };

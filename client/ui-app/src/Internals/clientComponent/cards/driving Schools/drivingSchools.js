@@ -23,7 +23,7 @@ const DrivingSchoolsCards = () => {
     const drivingSchools = clientBusinessList.filter(
         (b) =>
             b.category &&
-            b.category.toLowerCase().includes("Driving Schools".toLowerCase())
+            b.category.toLowerCase().includes("Driving School".toLowerCase())
     );
     const createSlug = (text) => {
         if (!text) return '';
