@@ -126,7 +126,7 @@
 }
 
 .card-icon {
-    color: var(--color-card-background); 
+    color: var(--color-primary);
     font-size: 3rem !important;
 }
 

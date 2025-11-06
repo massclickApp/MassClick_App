@@ -43,6 +43,7 @@ import PopularCategoryPage from './Internals/clientComponent/popularCategories/p
 import Profile from './Internals/Login/profile/profile.js';
 import { clientLogin } from './redux/actions/clientAuthAction.js';
 import PaymentStatus from './Internals/phonePay/paymentStatus.js';
+import ScrollToTop from './scrollTop.js';
 
 const ComingSoon = ({ title }) => (
   <div style={{ textAlign: 'center', marginTop: '20%' }}>
@@ -124,6 +125,7 @@ function App() {
         preventDuplicate
       >
         <Router>
+          <ScrollToTop />
           <Routes>
             <Route
               path="/"

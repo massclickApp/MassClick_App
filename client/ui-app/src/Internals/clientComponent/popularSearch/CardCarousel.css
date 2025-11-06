@@ -8,20 +8,17 @@
     --card-shadow-hover: 0 12px 30px rgba(0, 0, 0, 0.25);
     --transition-smooth: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
     --card-gap: 20px;
-    --card-fixed-width: 270px; /* Fixed width for predictable layout */
+    --card-fixed-width: 270px;
 }
 
-/* --- Base Carousel Container --- */
 .carousel-container {
     position: relative;
     margin: 60px auto;
-    /* max-width is now tighter to center the content well */
     max-width: 1700px;
-    padding: 30px 20px; /* Padding for mobile screens */
+    padding: 30px 20px; 
     box-shadow: 0 10px 50px rgba(0, 0, 0, 0.05), 0 0 4px rgba(0, 0, 0, 0.03);
     border-radius: 20px;
-    background-color: var(--card-bg-color); /* Changed to white for better look based on image */
-    /* Remove overflow: hidden; here to keep the shadow simple, use it on cards-wrapper if needed */
+    background-color: var(--card-bg-color); 
 }
 
 .section-title {
