@@ -614,12 +614,10 @@ body {
   box-shadow: 0 0 10px rgba(255, 140, 0, 0.25);
 }
 
-/* Completed step */
 .Mui-completed .MuiStepIcon-root {
   background-color: #ffb84d;
 }
 
-/* Label text */
 .MuiStepLabel-label {
   font-size: 0.9rem;
   color: #374151;
