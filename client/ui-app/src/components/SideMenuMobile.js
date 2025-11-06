@@ -11,7 +11,7 @@ import MenuButton from './MenuButton';
 import MenuContent from './MenuContent';
 import CardAlert from './CardAlert';
 
-export default function SideMenuMobile({ open, toggleDrawer }) {
+export default function SideMenuMobile({ open, toggleDrawer, handleClose }) {
   return (
     <Drawer
       anchor="right"
@@ -52,7 +52,7 @@ export default function SideMenuMobile({ open, toggleDrawer }) {
         </Stack>
         <Divider />
         <Stack sx={{ flexGrow: 1 }}>
-          <MenuContent />
+          <MenuContent onItemClick={handleClose} />
           <Divider />
         </Stack>
         <CardAlert />

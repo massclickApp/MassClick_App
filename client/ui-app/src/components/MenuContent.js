@@ -15,7 +15,7 @@ import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import InterpreterModeIcon from '@mui/icons-material/InterpreterMode';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
-export default function SideMenu() {
+export default function SideMenu({ onItemClick }) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -47,8 +47,10 @@ const userRole = localStorage.getItem('userRole') || 'Guest';
             <ListItem key={index} disablePadding sx={{ display: 'block', mb: 1 }}>
               <ListItemButton
                 selected={selected}
-                onClick={() => navigate(item.path)}
-                sx={{
+                onClick={() => {
+                  navigate(item.path);
+                  if (onItemClick) onItemClick(); 
+                }} sx={{
                   borderRadius: 1,
                   backgroundColor: selected ? '#FF8C42' : 'transparent',
                   '&:hover': {
