@@ -21,7 +21,7 @@ import BusinessListing from './Internals/clientComponent/home.js';
 import { featuredServices } from './Internals/clientComponent/featuredService/featureService.js';
 import { SnackbarProvider } from 'notistack';
 import SearchResults from './Internals/clientComponent/SearchResult/SearchResult.js';
-import { categoriesServices } from './Internals/clientComponent/serviceCard.js';
+import { categoriesServices } from './Internals/clientComponent/serviceCard/serviceCard.js';
 import TrendingCards from './Internals/clientComponent/trendingSearch/trendingCard.js';
 import BusinessDetails from './Internals/clientComponent/cards/cardDetails.js';
 import AboutUsPage from './Internals/clientComponent/footer/aboutUs/aboutUsPage.js';

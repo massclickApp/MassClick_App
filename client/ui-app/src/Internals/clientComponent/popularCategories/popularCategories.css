@@ -2,7 +2,7 @@
 
 .popular-categories-container-text {
     /* Set a max-width and padding consistent with a typical website content area */
-    max-width: 1550px;
+    max-width: 1750px;
     margin: 40px auto; 
     padding: 20px; 
     /* Light grey background for the container, matching your image */
@@ -12,7 +12,7 @@
     /* Color and size matching the image */
     font-size: 1.5rem; 
     font-weight: 700;
-    color: #ff6600; /* Your specific orange brand color */
+    color: #E67E22; /* Your specific orange brand color */
     margin-bottom: 25px;
     letter-spacing: -0.5px;
 }

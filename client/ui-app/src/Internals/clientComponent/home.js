@@ -4,13 +4,13 @@ import { useSelector } from 'react-redux';
 import HeroSection from '../clientComponent/heroSection/heroSection.js';
 import CategoryBar from '../clientComponent/categoryBar';
 import FeaturedServices from '../clientComponent/featuredService/featureService.js';
-import ServiceCardsGrid from '../clientComponent/serviceCard';
+import ServiceCardsGrid from '../clientComponent/serviceCard/serviceCard.js';
 import TrendingSearchesCarousel from './trendingSearch/trendingSearch';
 import CardCarousel from './popularSearch/popularSearch';
 import TopTourist from './topTourist/topTourist';
 import MassClickBanner from './massClickBanner/massClickBanner';
 import SearchResults from './SearchResult/SearchResult';
-import RecentActivities from './recentActivities/recentActivites';
+// import RecentActivities from './recentActivities/recentActivites';
 import PopularCategories from './popularCategories/popularCategories';
 import Footer from './footer/footer';
 import CardsSearch from './CardsSearch/CardsSearch';
@@ -115,7 +115,7 @@ const LandingPage = () => {
                     <CardCarousel />
                     <TopTourist />
                     <MassClickBanner />
-                    <RecentActivities />
+                    {/* <RecentActivities /> */}
                     <PopularCategories />
                     <Footer />
                 </>

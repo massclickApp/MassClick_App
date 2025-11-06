@@ -42,7 +42,7 @@ const CardCarousel = () => {
         <div className="carousel-container">
             <h1
                 className="section-title text-3xl font-bold text-gray-800 mb-6"
-                style={{ color: '#E67E22', textAlign: 'start' }}
+                style={{ color: '#E67E22', textAlign: 'start', fontSize: '2rem'  }}
             >
                 Popular Searches
             </h1>

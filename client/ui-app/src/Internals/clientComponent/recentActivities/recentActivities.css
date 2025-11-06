@@ -12,7 +12,7 @@
 /* --- Section Container (The main wrapper) --- */
 .recent-activities-section {
     position: relative;
-    max-width: 1580px;
+    max-width: 1750px;
     margin: 40px auto;
     padding: 0 20px; /* Horizontal padding for the section itself */
 }

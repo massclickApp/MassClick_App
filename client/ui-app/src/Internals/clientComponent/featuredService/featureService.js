@@ -89,7 +89,7 @@ const FeaturedServicesSection = () => {
           key={index}
           onClick={() => navigate(service.path)}
         >
-          <img src={service.icon} alt={service.name} className="service-icon" />
+          <img src={service.icon} alt={service.name} className="service-icons" />
           <div className="service-name">{service.name}</div>
         </div>
       ))}
