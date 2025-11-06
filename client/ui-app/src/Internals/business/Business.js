@@ -851,7 +851,7 @@ export default function BusinessList() {
               />
             </div><br />
 
-            <div className="form-input-group col-span-all">
+            <div className="form-input-group col-span-all"><br/><br/>
               <h3 style={{ marginBottom: "15px" }}>Opening Hours</h3>
               <div className="opening-hours-container">
                 {formData.openingHours.map((hour, index) => (

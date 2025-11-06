@@ -3,7 +3,7 @@ import { Box, Drawer, List, ListItem, ListItemText } from '@mui/material';
 import { useSelector } from 'react-redux';
 import HeroSection from '../clientComponent/heroSection/heroSection.js';
 import CategoryBar from '../clientComponent/categoryBar';
-import FeaturedServices from '../clientComponent/featureService';
+import FeaturedServices from '../clientComponent/featuredService/featureService.js';
 import ServiceCardsGrid from '../clientComponent/serviceCard';
 import TrendingSearchesCarousel from './trendingSearch/trendingSearch';
 import CardCarousel from './popularSearch/popularSearch';

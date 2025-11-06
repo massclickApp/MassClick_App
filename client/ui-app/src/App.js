@@ -18,7 +18,7 @@ import Location from './Internals/location/Location.js';
 import MainGrid from './components/MainGrid.js';
 import PrivateRoute from './PrivateRoute';
 import BusinessListing from './Internals/clientComponent/home.js';
-import { featuredServices } from './Internals/clientComponent/featureService.js';
+import { featuredServices } from './Internals/clientComponent/featuredService/featureService.js';
 import { SnackbarProvider } from 'notistack';
 import SearchResults from './Internals/clientComponent/SearchResult/SearchResult.js';
 import { categoriesServices } from './Internals/clientComponent/serviceCard.js';
