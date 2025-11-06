@@ -2,16 +2,16 @@ import React from 'react';
 import './seo.css';
 import SeoImage from '../../../../assets/seo1.jpg'; // Your local background image
 // Placeholder for a possible secondary image, if needed
-import searchGraphic from '../../../../assets/seo.jpg'; 
+import searchGraphic from '../../../../assets/seo.jpg';
 import Footer from '../footer';
 import CardsSearch from '../../CardsSearch/CardsSearch';
 
 const Seo = () => {
     return (
         <>
-            <CardsSearch /><br/><br/><br/>
+            <CardsSearch /><br /><br /><br />
             <div className="seo-container">
-                
+
                 {/* 1. Hero Section */}
                 <header className="seo-hero-section" style={{ backgroundImage: `url(${SeoImage})` }}>
                     <div className="hero-overlay">
@@ -41,28 +41,28 @@ const Seo = () => {
                     </div>
                 </section>
 
-                {/* 3. Services/Cards Section - NEW ICONS */}
+                {/* 3. Services/Cards Section - UPDATED CLASS NAMES */}
                 <section className="seo-services-section">
-                    <h2 className="section-heading">Our Expertise</h2>
-                    <div className="services-grid">
-                        
+                    <h2 className="seo-section-heading">Our Expertise</h2>
+                    <div className="seo-services-grid">
+
                         {/* Card 1: Regional/Local */}
-                        <div className="service-card">
-                            <i className="fas fa-map-marker-alt card-icon"></i> {/* Font Awesome Icon */}
-                            <h3>For regional/local businesses</h3>
-                            <ul className="service-list">
+                        <div className="seo-service-card">
+                            <i className="fas fa-map-marker-alt seo-card-icon"></i> {/* Font Awesome Icon */}
+                            <h3 className="seo-service-heading">For regional/local businesses</h3>
+                            <ul className="seo-service-list">
                                 <li>SEO services to optimize local presence.</li>
                                 <li>Allows your website to be found locally in your area.</li>
                                 <li>Results in improvement in locally targeted website traffic providing significant new business.</li>
                                 <li>Ideal for businesses with a physical location.</li>
                             </ul>
                         </div>
-                        
+
                         {/* Card 2: National & International */}
-                        <div className="service-card primary-card">
-                            <i className="fas fa-globe card-icon"></i> {/* Font Awesome Icon */}
-                            <h3>National & International SEO</h3>
-                            <ul className="service-list">
+                        <div className="seo-service-card primary-card">
+                            <i className="fas fa-globe seo-card-icon"></i> {/* Font Awesome Icon */}
+                            <h3 className="seo-service-heading">National & International SEO</h3>
+                            <ul className="seo-service-list">
                                 <li>Sell products or services to a larger audience.</li>
                                 <li>Reach customers outside your city, state or country.</li>
                                 <li>Custom SEO campaign to reach national or international customers.</li>
@@ -72,15 +72,16 @@ const Seo = () => {
                         </div>
 
                         {/* Card 3: Ecommerce SEO */}
-                        <div className="service-card">
-                            <i className="fas fa-shopping-cart card-icon"></i> {/* Font Awesome Icon */}
-                            <h3>Ecommerce SEO</h3>
-                            <ul className="service-list">
+                        <div className="seo-service-card">
+                            <i className="fas fa-shopping-cart seo-card-icon"></i> {/* Font Awesome Icon */}
+                            <h3 className="seo-service-heading">Ecommerce SEO</h3>
+                            <ul className="seo-service-list">
                                 <li>Get new buyers for your online shop.</li>
                                 <li>Expert SEO services to boost your ecommerce website.</li>
                                 <li>Works for ecommerce website in any category or niche.</li>
                                 <li>Results in targeted customers looking to buy your products.</li>
                                 <li>Ideal for businesses selling products online.</li>
+                                <li>Earn more leads and conversions.</li>
                             </ul>
                         </div>
 

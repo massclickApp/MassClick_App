@@ -1,5 +1,5 @@
 /* ======================================= */
-/* GLOBAL/BASE STYLES & VARIABLES          */
+/* GLOBAL/BASE STYLES & VARIABLES          */
 /* ======================================= */
 :root {
     --primary-orange: #ff6600;
@@ -10,35 +10,36 @@
 }
 
 .digital-marketing-page {
-    font-family: 'Helvetica Neue', Arial, sans-serif; 
+    font-family: 'Helvetica Neue', Arial, sans-serif;
     color: var(--dark-text);
     line-height: 1.5;
 }
+
 /* ======================================= */
-/* CUSTOM FORM INPUT STYLES (New Section)  */
+/* CUSTOM FORM INPUT STYLES (Enquiry Modal)*/
 /* ======================================= */
 
 /* Base style for both input and textarea */
 .custom-form-input,
 .custom-form-textarea {
-    width: 100%; /* Ensures full width and responsiveness within the modal's maxWidth */
-    padding: 15px 20px; /* Generous padding for a modern, spacious look */
-    border: 2px solid #ddd; /* Light gray border */
-    border-radius: 8px; /* Rounded corners for attractiveness */
+    width: 100%;
+    padding: 15px 20px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
     font-size: 1em;
     font-family: inherit;
     color: var(--dark-text);
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    box-sizing: border-box; /* Crucial for responsive width calculation */
+    box-sizing: border-box;
     /* Remove default focus styles */
-    outline: none; 
+    outline: none;
 }
 
 /* Focused State for Interaction/Attractiveness */
 .custom-form-input:focus,
 .custom-form-textarea:focus {
-    border-color: var(--primary-orange); /* Highlight border on focus */
-    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.3); /* Subtle orange glow */
+    border-color: var(--primary-orange);
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.3);
     background-color: #fff;
 }
 
@@ -51,22 +52,24 @@
 
 /* Specific styling for the textarea */
 .custom-form-textarea {
-    resize: vertical; /* Allow vertical resizing, prevent horizontal */
-    min-height: 120px; /* Ensures enough space for the project description */
+    resize: vertical;
+    min-height: 120px;
 }
+
 /* Base style for the vibrant orange background sections */
 .dm-intro-section,
-.dm-cta-section {
-    background-color: var(--primary-orange); 
+.digital-cta-section {
+    /* UPDATED: Changed .dm-cta-section to .digital-cta-section */
+    background-color: var(--primary-orange);
     color: #ffffff;
     padding: var(--mobile-padding);
     display: flex;
-    flex-direction: column; 
-    gap: 40px; 
+    flex-direction: column;
+    gap: 40px;
 }
 
 /* ======================================= */
-/* SECTION 1: INTRO (Mobile First)         */
+/* SECTION 1: INTRO (dm- prefix kept)      */
 /* ======================================= */
 .dm-intro-section {
     padding-top: 60px;
@@ -74,13 +77,13 @@
 }
 
 .dm-intro-content {
-    order: 2; 
+    order: 2;
 }
 
 .dm-title {
     font-size: 2.8em;
     margin-bottom: 25px;
-    font-weight: 800; 
+    font-weight: 800;
     letter-spacing: -0.5px;
 }
 
@@ -91,74 +94,79 @@
 }
 
 .dm-visual-container {
-    order: 1; 
+    order: 1;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 300px; 
+    min-height: 300px;
 }
 
-/* NEW: Style for the digitmarketing.jpg image */
 .dm-main-graphic-image {
-    width: 100%; /* Make it fill its container */
-    max-width: 400px; /* Limit max size for large screens */
+    width: 100%;
+    max-width: 400px;
     height: auto;
-    border-radius: 15px; /* Slightly rounded corners for a modern touch */
-    object-fit: contain; /* Ensures the whole image is visible, scales down */
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
+    border-radius: 15px;
+    object-fit: contain;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
 
-/* --- REMOVED OLD GRAPHIC PLACEHOLDER STYLES --- */
-/*
-.dm-graphic-placeholder { ... }
-.dm-graphic-text { ... }
-.dm-graphic-text-marketing { ... }
-.dm-graphic-ring { ... }
-.social-icons-cluster .icon { ... }
-*/
-
-
 /* ======================================= */
-/* SECTION 2: SERVICES (Mobile First)      */
+/* SECTION 2: DIGITAL SERVICES 🚀          */
+/* Renamed: dm-services-section -> digital-services-section */
+/* Renamed: services-title -> digital-services-title */
+/* Renamed: services-grid -> digital-services-grid */
+/* Renamed: service-card -> digital-service-card */
+/* Renamed: service-icon -> digital-service-icon */
+/* Renamed: icon-* -> digital-icon-* */
+/* Renamed: service-heading -> digital-service-heading */
+/* Renamed: service-description -> digital-service-description */
 /* ======================================= */
-.dm-services-section {
+.digital-services-section {
+    /* UPDATED */
     padding: 60px 20px;
-    background-color: var(--light-bg); 
+    background-color: var(--light-bg);
     text-align: center;
 }
 
-.services-title {
+.digital-services-title {
+    /* UPDATED */
     font-size: 2.2em;
     margin-bottom: 50px;
     color: var(--dark-text);
     font-weight: 700;
 }
 
-.services-grid {
+.digital-services-grid {
+    /* UPDATED */
     display: grid;
     grid-template-columns: 1fr;
     gap: 25px;
+    margin: 0 auto;
+    /* Added to help center the grid on desktop */
 }
 
-.service-card {
+.digital-service-card {
+    /* UPDATED */
     background-color: #ffffff;
     padding: 30px;
-    border-radius: 10px; 
+    border-radius: 10px;
     box-shadow: var(--card-shadow);
     text-align: left;
     transition: all 0.3s ease-in-out;
     position: relative;
-    border-top: 4px solid transparent; 
+    border-top: 4px solid transparent;
 }
 
-.service-card:hover {
+.digital-service-card:hover {
+    /* UPDATED */
     transform: translateY(-8px);
     box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
-    border-top: 4px solid var(--primary-orange); 
+    border-top: 4px solid var(--primary-orange);
 }
 
-.service-icon {
+.digital-service-icon {
+    /* UPDATED */
     display: block;
     width: 40px;
     height: 40px;
@@ -167,43 +175,115 @@
     margin-bottom: 15px;
     opacity: 0.7;
     position: relative;
-    /* Add specific icon content/backgrounds here for each service if needed */
 }
-/* Example for an icon placeholder - replace with actual icon fonts or SVGs */
-.icon-seo::after { content: '🔍'; font-size: 1.5em; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white;}
-.icon-ppc::after { content: '💰'; font-size: 1.5em; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white;}
-.icon-social::after { content: '🗣️'; font-size: 1.5em; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white;}
-.icon-sem::after { content: '📈'; font-size: 1.5em; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white;}
-.icon-gmb::after { content: '📍'; font-size: 1.5em; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white;}
-.icon-email::after { content: '📧'; font-size: 1.5em; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white;}
+
+/* Icon content updates (using digital-icon-*) */
+.digital-icon-seo::after {
+    content: '🔍';
+    font-size: 1.5em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+}
+
+/* UPDATED */
+.digital-icon-ppc::after {
+    content: '💰';
+    font-size: 1.5em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+}
+
+/* UPDATED */
+.digital-icon-social::after {
+    content: '🗣️';
+    font-size: 1.5em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+}
+
+/* UPDATED */
+.digital-icon-sem::after {
+    content: '📈';
+    font-size: 1.5em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+}
+
+/* UPDATED */
+.digital-icon-gmb::after {
+    content: '📍';
+    font-size: 1.5em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+}
+
+/* UPDATED */
+.digital-icon-email::after {
+    content: '📧';
+    font-size: 1.5em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+}
+
+/* UPDATED */
 
 
-.service-heading {
+.digital-service-heading {
+    /* UPDATED */
     font-size: 1.3em;
     font-weight: 700;
-    color: var(--dark-text); 
+    color: var(--dark-text);
     margin-bottom: 10px;
 }
 
-.service-description {
+.digital-service-description {
+    /* UPDATED */
     font-size: 1em;
     color: #555;
 }
 
 /* ======================================= */
-/* SECTION 3: CTA (Mobile First)           */
+/* SECTION 3: CTA                          */
+/* Renamed: dm-cta-section -> digital-cta-section */
+/* Renamed: cta-left-visual -> digital-cta-left-visual */
+/* Renamed: cta-local-image -> digital-cta-local-image */
+/* Renamed: cta-right-content -> digital-cta-right-content */
+/* Renamed: cta-title -> digital-cta-title */
+/* Renamed: cta-text -> digital-cta-text */
+/* Renamed: cta-button -> digital-cta-button (Though the button is MUI, included for completeness) */
 /* ======================================= */
-.dm-cta-section {
+.digital-cta-section {
+    /* UPDATED */
     padding: 60px 20px;
     text-align: center;
 }
 
-.cta-left-visual {
-    order: 1; 
+.digital-cta-left-visual {
+    /* UPDATED */
+    order: 1;
     padding: 0;
 }
 
-.cta-local-image {
+.digital-cta-local-image {
+    /* UPDATED */
     width: 100%;
     max-width: 400px;
     height: auto;
@@ -212,25 +292,29 @@
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
-.cta-right-content {
-    order: 2; 
+.digital-cta-right-content {
+    /* UPDATED */
+    order: 2;
     text-align: left;
 }
 
-.cta-title {
+.digital-cta-title {
+    /* UPDATED */
     font-size: 2.2em;
     margin-bottom: 20px;
     font-weight: 800;
     line-height: 1.2;
 }
 
-.cta-text {
+.digital-cta-text {
+    /* UPDATED */
     font-size: 1.05em;
     line-height: 1.7;
     margin-bottom: 30px;
 }
 
-.cta-button {
+.digital-cta-button {
+    /* UPDATED (Retained base style if a custom button class was used) */
     background-color: white;
     color: var(--primary-orange);
     padding: 12px 25px;
@@ -243,23 +327,28 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.cta-button:hover {
+.digital-cta-button:hover {
+    /* UPDATED */
     background-color: #f7f7f7;
     color: #cc5200;
 }
 
 /* ======================================= */
-/* MEDIA QUERIES (TABLET)                  */
+/* MEDIA QUERIES (TABLET)                  */
 /* ======================================= */
 @media (min-width: 768px) {
+
     .dm-intro-section,
-    .dm-cta-section {
+    .digital-cta-section,
+    /* UPDATED */
+    .digital-services-section {
+        /* UPDATED */
         padding: 80px 40px;
     }
 
     /* SECTION 1: INTRO */
     .dm-intro-section {
-        flex-direction: row; 
+        flex-direction: row;
         text-align: left;
     }
 
@@ -271,38 +360,42 @@
     .dm-visual-container {
         flex: 1;
         min-height: auto;
-        order: 2; 
-        display: flex; /* Ensure image is centered in its container */
+        order: 2;
+        display: flex;
         justify-content: center;
         align-items: center;
     }
 
     .dm-main-graphic-image {
-        max-width: 100%; /* Adjust max-width for tablet */
-        max-height: 450px; /* Add a max height if desired */
+        max-width: 100%;
+        max-height: 450px;
     }
 
     .dm-title {
         font-size: 3.5em;
     }
 
-    /* SECTION 2: SERVICES */
-    .dm-services-section {
+    /* SECTION 2: DIGITAL SERVICES */
+    .digital-services-section {
+        /* UPDATED */
         padding: 80px 40px;
     }
 
-    .services-grid {
+    .digital-services-grid {
+        /* UPDATED */
         grid-template-columns: repeat(2, 1fr);
         max-width: 900px;
     }
 
     /* SECTION 3: CTA */
-    .dm-cta-section {
-        flex-direction: row; 
+    .digital-cta-section {
+        /* UPDATED */
+        flex-direction: row;
         text-align: left;
     }
 
-    .cta-left-visual {
+    .digital-cta-left-visual {
+        /* UPDATED */
         flex: 1;
         order: 1;
         padding-right: 30px;
@@ -310,57 +403,64 @@
         justify-content: center;
     }
 
-    .cta-right-content {
+    .digital-cta-right-content {
+        /* UPDATED */
         flex: 1;
         order: 2;
         padding-left: 30px;
     }
 
-    .cta-local-image {
-        max-width: 100%; 
+    .digital-cta-local-image {
+        /* UPDATED */
+        max-width: 100%;
     }
 }
 
 
 /* ======================================= */
-/* MEDIA QUERIES (DESKTOP)                 */
+/* MEDIA QUERIES (DESKTOP)                 */
 /* ======================================= */
 @media (min-width: 1024px) {
+
     .dm-intro-section,
-    .dm-cta-section,
-    .dm-services-section {
+    .digital-cta-section,
+    /* UPDATED */
+    .digital-services-section {
+        /* UPDATED */
         padding-left: 80px;
         padding-right: 80px;
     }
 
-    .digital-marketing-page > section {
+    .digital-marketing-page>section {
         max-width: 1400px;
         margin-left: auto;
         margin-right: auto;
     }
-    
+
     .dm-intro-section {
         padding-top: 100px;
         padding-bottom: 100px;
     }
 
     .dm-main-graphic-image {
-        max-width: 550px; /* Larger max width for desktop */
+        max-width: 550px;
     }
 
     .dm-title {
         font-size: 4.5em;
     }
 
-    /* SECTION 2: SERVICES */
-    .services-grid {
+    /* SECTION 2: DIGITAL SERVICES */
+    .digital-services-grid {
+        /* UPDATED */
         grid-template-columns: repeat(3, 1fr);
         gap: 30px;
         max-width: 1200px;
     }
 
     /* SECTION 3: CTA */
-    .cta-title {
+    .digital-cta-title {
+        /* UPDATED */
         font-size: 3em;
     }
 }

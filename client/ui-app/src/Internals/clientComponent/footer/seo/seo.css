@@ -1,14 +1,15 @@
-/* ========================================================== */
-/* Global/Base Styles (Mobile First Approach) */
-/* ========================================================== */
+
 :root {
-    --accent-color: #ff6b00;  /* Your orange as a highlight */
-    --dark-bg: #1a1a1a;       /* Dark background for contrast */
+    --accent-color: #ff6b00;
+    /* Your orange as a highlight */
+    --dark-bg: #1a1a1a;
+    /* Dark background for contrast */
     --light-bg: #ffffff;
     --text-dark: #333;
     --text-light: #f8f8f8;
     --shadow-deep: 0 10px 30px rgba(0, 0, 0, 0.15);
-    --font-family-modern: 'Inter', sans-serif; /* Assumes Inter font is linked */
+    --font-family-modern: 'Inter', sans-serif;
+    /* Assumes Inter font is linked */
 }
 
 .seo-container {
@@ -18,7 +19,8 @@
     overflow-x: hidden;
 }
 
-.section-heading {
+/* Renamed from .section-heading to .global-section-heading for clarity */
+.global-section-heading {
     font-size: 2.2em;
     font-weight: 700;
     margin-bottom: 20px;
@@ -29,16 +31,19 @@
 /* -------------------- 1. Hero Section -------------------- */
 .seo-hero-section {
     position: relative;
-    height: 40vh; /* Good height for mobile hero */
+    height: 40vh;
+    /* Good height for mobile hero */
     background-size: cover;
-    background-position: center 30%; /* Adjust to focus on the top of the image */
+    background-position: center 30%;
+    /* Adjust to focus on the top of the image */
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .hero-overlay {
-    background-color: rgba(0, 0, 0, 0.7); /* Dark overlay for text readability */
+    background-color: rgba(0, 0, 0, 0.7);
+    /* Dark overlay for text readability */
     position: absolute;
     top: 0;
     left: 0;
@@ -68,12 +73,14 @@
 .seo-intro-section {
     padding: 60px 5%;
     display: flex;
-    flex-direction: column; /* Stacked on mobile */
+    flex-direction: column;
+    /* Stacked on mobile */
     gap: 40px;
 }
 
 .intro-image-area {
-    order: -1; /* Image appears above text on mobile */
+    order: -1;
+    /* Image appears above text on mobile */
     text-align: center;
 }
 
@@ -81,14 +88,14 @@
     width: 80%;
     max-width: 450px;
     height: auto;
-    /* Optional: Subtle animation or style */
     transition: transform 0.4s ease-in-out;
 }
+
 .search-graphic:hover {
     transform: scale(1.03);
 }
 
-.intro-text-content .section-heading {
+.intro-text-content .global-section-heading {
     text-align: left;
     color: var(--dark-bg);
 }
@@ -99,27 +106,32 @@
     color: var(--text-dark);
 }
 
-/* -------------------- 3. Services/Cards Section -------------------- */
+/* -------------------- 3. Services/Cards Section (UPDATED) -------------------- */
 .seo-services-section {
-    background-color: var(light-bg); /* Dark section for strong contrast */
+    background-color: var(light-bg);
     color: var(--text-light);
     padding: 80px 5%;
 }
 
-.seo-services-section .section-heading {
+.seo-services-section .seo-section-heading {
+    /* UPDATED */
     color: var(--accent-color);
     margin-bottom: 60px;
+    text-align: center;
 }
 
-.services-grid {
+.seo-services-grid {
+    /* UPDATED */
     display: grid;
-    grid-template-columns: 1fr; /* Single column on mobile */
+    grid-template-columns: 1fr;
+    /* Single column on mobile */
     gap: 30px;
     max-width: 1200px;
     margin: 0 auto;
 }
 
-.service-card {
+.seo-service-card {
+    /* UPDATED */
     background-color: var(--light-bg);
     color: var(--text-dark);
     padding: 30px;
@@ -129,44 +141,52 @@
     border-bottom: 5px solid var(--primary-color);
 }
 
-.service-card:hover {
+.seo-service-card:hover {
+    /* UPDATED */
     transform: translateY(-8px);
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
 }
 
 .primary-card {
     /* Highlight the middle card, often the most popular/important */
-    border-bottom: 5px solid var(--accent-color); 
+    border-bottom: 5px solid var(--accent-color);
 }
 
-.card-icon {
+.seo-card-icon {
+    /* UPDATED */
     font-size: 3em;
     display: block;
     margin-bottom: 10px;
-    color: var(--primary-color); /* Uses CSS color instead of emoji for control */
+    color: var(--primary-color);
 }
 
-.service-card h3 {
+.seo-service-heading {
+    /* UPDATED */
     font-size: 1.5em;
     font-weight: 700;
     margin-bottom: 15px;
     color: var(--dark-bg);
 }
 
-.service-list {
-    list-style: none; /* Remove default bullets */
+.seo-service-list {
+    /* UPDATED */
+    list-style: none;
+    /* Remove default bullets */
     padding-left: 0;
 }
 
-.service-list li {
+.seo-service-list li {
+    /* UPDATED */
     font-size: 1em;
     padding-left: 20px;
     position: relative;
     margin-bottom: 10px;
 }
 
-.service-list li::before {
-    content: '✓'; /* Custom checkmark for a cleaner look */
+.seo-service-list li::before {
+    /* UPDATED */
+    content: '✓';
+    /* Custom checkmark for a cleaner look */
     color: var(--primary-color);
     font-weight: bold;
     position: absolute;
@@ -180,19 +200,15 @@
     .seo-hero-section {
         height: 50vh;
     }
-    
+
     .hero-title {
         font-size: 3.5em;
     }
 
     /* Cards: Two columns on tablet */
-    .services-grid {
+    .seo-services-grid {
+        /* UPDATED */
         grid-template-columns: 1fr 1fr;
-    }
-    
-    .primary-card {
-        /* On tablet, make the middle card span both columns if desired, 
-           or just keep it in one position. Keeping it simple here. */
     }
 }
 
@@ -201,7 +217,7 @@
     .seo-hero-section {
         height: 60vh;
     }
-    
+
     .hero-title {
         font-size: 4em;
     }
@@ -215,19 +231,17 @@
         gap: 80px;
     }
 
-     .intro-image-area {
-        flex: 0 0 60%; 
+    .intro-image-area {
+        flex: 0 0 60%;
         max-width: 60%;
         text-align: left;
     }
 
-     .search-graphic {
-        /* Ensure the image fills its new container width */
+    .search-graphic {
         width: 100%;
-        max-width: 100%; /* Override the 450px max-width from mobile */
-        /* Add visual polish */
+        max-width: 100%;
         border-radius: 12px;
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2); 
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
     }
 
 
@@ -236,7 +250,8 @@
         max-width: 40%;
     }
 
-    .services-grid {
+    .seo-services-grid {
+        /* UPDATED */
         grid-template-columns: repeat(3, 1fr);
         gap: 40px;
     }
