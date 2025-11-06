@@ -261,43 +261,43 @@ export default function Category() {
 
 
   return (
-    <div className="category-page">
+    <div className="category-page-container"> 
       {/* Category Form */}
-      <div className="category-card form-section">
-        <h2 className="card-title">
+      <div className="category-form-section"> 
+        <h2 className="category-card-title"> 
           {editMode ? "Edit Category" : "Add New Category"}
         </h2>
-        <form onSubmit={handleSubmit} className="form-grid">
-          <div className="form-input-group">
-            <label className="input-label">Category</label>
+        <form onSubmit={handleSubmit} className="category-form-grid"> 
+          <div className="category-form-input-group"> 
+            <label className="category-input-label">Category</label>
             <input
               type="text"
               name="category"
-              className={`text-input ${errors.category ? "error" : ""}`}
+              className={`category-text-input ${errors.category ? "category-error" : ""}`} 
               value={formData.category}
               onChange={handleChange}
             />
             {errors.category && (
-              <p className="error-text">{errors.category}</p>
+              <p className="category-error-text">{errors.category}</p> 
             )}
           </div>
 
-          <div className="form-input-group">
-            <label className="input-label">Slug (Auto)</label>
+          <div className="category-form-input-group"> {/* UPDATED CLASS NAME */}
+            <label className="category-input-label">Slug (Auto)</label> {/* UPDATED CLASS NAME */}
             <input
               type="text"
               name="slug"
-              className="text-input"
+              className="category-text-input" 
               value={formData.slug}
               readOnly
             />
           </div>
 
-          <div className="form-input-group">
-            <label className="input-label">Category Type</label>
+          <div className="category-form-input-group"> {/* UPDATED CLASS NAME */}
+            <label className="category-input-label">Category Type</label> {/* UPDATED CLASS NAME */}
             <select
               name="categoryType"
-              className={`select-input ${errors.categoryType ? "error" : ""}`}
+              className={`category-select-input ${errors.categoryType ? "category-error" : ""}`}
               value={formData.categoryType}
               onChange={handleChange}
             >
@@ -306,18 +306,17 @@ export default function Category() {
               <option value="Sub Category">Sub Category</option>
             </select>
             {errors.categoryType && (
-              <p className="error-text">{errors.categoryType}</p>
+              <p className="category-error-text">{errors.categoryType}</p> 
             )}
           </div>
 
           {formData.categoryType === "Sub Category" && (
-            <div className="form-input-group">
-              <label className="input-label">Sub Category Type</label>
+            <div className="category-form-input-group"> {/* UPDATED CLASS NAME */}
+              <label className="category-input-label">Sub Category Type</label> {/* UPDATED CLASS NAME */}
               <select
                 name="subCategoryType"
-                className={`select-input ${
-                  errors.subCategoryType ? "error" : ""
-                }`}
+                className={`category-select-input ${errors.subCategoryType ? "category-error" : ""
+                  }`} 
                 value={formData.subCategoryType}
                 onChange={handleChange}
               >
@@ -329,25 +328,25 @@ export default function Category() {
                 ))}
               </select>
               {errors.subCategoryType && (
-                <p className="error-text">{errors.subCategoryType}</p>
+                <p className="category-error-text">{errors.subCategoryType}</p> 
               )}
             </div>
           )}
 
-          <div className="form-input-group">
-            <label className="input-label">Title</label>
+          <div className="category-form-input-group"> {/* UPDATED CLASS NAME */}
+            <label className="category-input-label">Title</label> {/* UPDATED CLASS NAME */}
             <input
               type="text"
               name="title"
-              className={`text-input ${errors.title ? "error" : ""}`}
+              className={`category-text-input ${errors.title ? "category-error" : ""}`} 
               value={formData.title}
               onChange={handleChange}
             />
-            {errors.title && <p className="error-text">{errors.title}</p>}
+            {errors.title && <p className="category-error-text">{errors.title}</p>} {/* UPDATED CLASS NAME */}
           </div>
 
-          <div className="form-input-group">
-            <label className="input-label">Keywords</label>
+          <div className="category-form-input-group"> {/* UPDATED CLASS NAME */}
+            <label className="category-input-label">Keywords</label> {/* UPDATED CLASS NAME */}
             <Autocomplete
               multiple
               freeSolo
@@ -366,51 +365,50 @@ export default function Category() {
             />
           </div>
 
-          <div className="form-input-group col-span-2">
-            <label className="input-label">Description</label>
+          <div className="category-form-input-group category-col-span-2"> {/* UPDATED CLASS NAME */}
+            <label className="category-input-label">Description</label> {/* UPDATED CLASS NAME */}
             <textarea
               name="description"
-              className={`text-input text-area ${
-                errors.description ? "error" : ""
-              }`}
+              className={`category-text-input category-text-area ${errors.description ? "category-error" : ""
+                }`} 
               value={formData.description}
               onChange={handleChange}
               rows="3"
             />
             {errors.description && (
-              <p className="error-text">{errors.description}</p>
+              <p className="category-error-text">{errors.description}</p> 
             )}
           </div>
 
-          <div className="form-input-group">
-            <label className="input-label">SEO Title</label>
+          <div className="category-form-input-group"> {/* UPDATED CLASS NAME */}
+            <label className="category-input-label">SEO Title</label> {/* UPDATED CLASS NAME */}
             <input
               type="text"
               name="seoTitle"
-              className="text-input"
+              className="category-text-input"
               value={formData.seoTitle}
               onChange={handleChange}
             />
           </div>
 
-          <div className="form-input-group">
-            <label className="input-label">SEO Description</label>
+          <div className="category-form-input-group"> {/* UPDATED CLASS NAME */}
+            <label className="category-input-label">SEO Description</label> {/* UPDATED CLASS NAME */}
             <input
               type="text"
               name="seoDescription"
-              className="text-input"
+              className="category-text-input" 
               value={formData.seoDescription}
               onChange={handleChange}
             />
           </div>
 
-          <div className="form-input-group col-span-all upload-section">
-            <div className="upload-content">
+          <div className="category-form-input-group category-col-span-all category-upload-section"> {/* UPDATED CLASS NAMES */}
+            <div className="category-upload-content"> {/* UPDATED CLASS NAME */}
               <Button
                 variant="contained"
                 startIcon={<CloudUploadIcon />}
                 component="label"
-                className="upload-button"
+                className="category-upload-button" 
               >
                 Upload Image
                 <input
@@ -425,13 +423,13 @@ export default function Category() {
                 <Avatar
                   src={preview}
                   sx={{ width: 56, height: 56 }}
-                  className="preview-avatar"
+                  className="category-preview-avatar" 
                 />
               )}
               <div style={{ marginBottom: "10px" }}>
                 <button
                   type="submit"
-                  className="submit-button"
+                  className="category-submit-button" 
                   disabled={loading}
                 >
                   {loading ? (
@@ -447,24 +445,26 @@ export default function Category() {
           </div>
         </form>
         {error && (
-          <p className="error-text" style={{ marginTop: "16px" }}>
-              {(() => {
-      if (typeof error === "string") return error;
-      if (error instanceof Error) return error.message;
-      if (typeof error === "object") return JSON.stringify(error, null, 2);
-      return String(error);
-    })()}
+          <p className="category-error-text" style={{ marginTop: "16px" }}>
+            {" "}
+            {/* UPDATED CLASS NAME */}
+            {(() => {
+              if (typeof error === "string") return error;
+              if (error instanceof Error) return error.message;
+              if (typeof error === "object") return JSON.stringify(error, null, 2);
+              return String(error);
+            })()}
           </p>
         )}
       </div>
 
       {/* Category Table */}
-                <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
-          Category Table
-        </Typography>
-        <Box sx={{ width: "100%" }}>
-          <CustomizedTable data={rows} columns={categoryList} />
-        </Box>
+      <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
+        Category Table
+      </Typography>
+      <Box sx={{ width: "100%" }}>
+        <CustomizedTable data={rows} columns={categoryList} />
+      </Box>
 
       {/* Delete Dialog */}
       <Dialog
