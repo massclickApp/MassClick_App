@@ -44,6 +44,7 @@ import Profile from './Internals/Login/profile/profile.js';
 import { clientLogin } from './redux/actions/clientAuthAction.js';
 import PaymentStatus from './Internals/phonePay/paymentStatus.js';
 import ScrollToTop from './scrollTop.js';
+import LeadsPage from './Internals/clientComponent/LeadsPage/leadsPage.js';
 
 const ComingSoon = ({ title }) => (
   <div style={{ textAlign: 'center', marginTop: '20%' }}>
@@ -162,6 +163,7 @@ function App() {
               path="/write-review/:businessId/:ratingValue"
               element={<WriteReviewPage />}
             />
+            <Route path="leads" element={<LeadsPage />} />
 
             {categoriesServices.flatMap((category, categoryIndex) =>
               category.items.map((item, itemIndex) => {

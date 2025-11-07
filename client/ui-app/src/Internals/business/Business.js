@@ -369,17 +369,32 @@ export default function BusinessList() {
     setBusinessValue(content);
     setFormData((prev) => ({ ...prev, businessDetails: content }));
   };
-  const handleOpeningHourChange = (index, field, value) => {
+  const handleOpeningHourChange = (index, field, value) => {debugger
     setFormData((prev) => {
       const updatedHours = [...(prev.openingHours || defaultOpeningHours)];
+
       updatedHours[index][field] = value;
+
       if (field === "isClosed" && value) {
         updatedHours[index].open = "";
         updatedHours[index].close = "";
       }
+
+      if (index === 0 && (field === "open" || field === "close")) {
+        const monday = updatedHours[0];
+
+        for (let i = 1; i < updatedHours.length; i++) {
+          if (!updatedHours[i].isClosed && !updatedHours[i].is24Hours) {
+            updatedHours[i].open = monday.open;
+            updatedHours[i].close = monday.close;
+          }
+        }
+      }
+
       return { ...prev, openingHours: updatedHours };
     });
   };
+
   useEffect(() => {
     dispatch(getAllBusinessList());
     dispatch(getAllLocation());
@@ -444,7 +459,6 @@ export default function BusinessList() {
       businessDetails: "",
       openingHours: defaultOpeningHours,
       kycDocuments: "",
-
     });
     setBusinessValue("");
     setPreview(null);
@@ -851,7 +865,7 @@ export default function BusinessList() {
               />
             </div><br />
 
-            <div className="form-input-group col-span-all"><br/><br/>
+            <div className="form-input-group col-span-all"><br /><br />
               <h3 style={{ marginBottom: "15px" }}>Opening Hours</h3>
               <div className="opening-hours-container">
                 {formData.openingHours.map((hour, index) => (

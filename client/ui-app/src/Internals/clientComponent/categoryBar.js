@@ -180,6 +180,15 @@ const CategoryBar = () => {
             navigate(item.path);
         }
     };
+    const handleCategoryClick = (name) => {
+        if (name === "Leads") {
+            navigate("/leads");
+        } else if (name === "Advertise") {
+            navigate("/advertise"); 
+        } else if (name === "Free Listing") {
+            navigate("/free-listing"); 
+        }
+    };
 
 
 
@@ -411,6 +420,7 @@ const CategoryBar = () => {
                             key={index}
                             variant="text"
                             startIcon={category.icon}
+                            onClick={() => handleCategoryClick(category.name)}
                             sx={{
                                 color: "text.primary",
                                 fontWeight: 600,
