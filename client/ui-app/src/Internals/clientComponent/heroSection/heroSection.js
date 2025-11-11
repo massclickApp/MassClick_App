@@ -74,6 +74,12 @@ const HeroSection = ({
     (state) => state.businessListReducer || { clientBusinessList: [] }
   );
   const { searchLogs, clientBusinessList = [] } = businessListState;
+  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchTerm), 200);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
 
   useEffect(() => {
     dispatch(getAllClientBusinessList());
@@ -200,16 +206,61 @@ const HeroSection = ({
               className="custom-input"
               placeholder="Search for..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                setSearchTerm(value);
+                setIsCategoryDropdownOpen(true);
+              }}
               onFocus={() => setIsCategoryDropdownOpen(true)}
             />
-            {isCategoryDropdownOpen && searchTerm.length < 1 && (
+
+            {isCategoryDropdownOpen && searchTerm.trim().length < 2 && (
               <CategoryDropdown
                 options={categoryOptions}
                 setSearchTerm={setSearchTerm}
                 closeDropdown={() => setIsCategoryDropdownOpen(false)}
               />
             )}
+
+            {isCategoryDropdownOpen && searchTerm.trim().length >= 2 && (
+              <div className="category-custom-dropdown">
+                <div className="trending-label">SUGGESTIONS</div>
+                <div className="options-list-container" style={{ maxHeight: "200px" }}>
+                  {clientBusinessList
+                    .filter((business) => {
+                      const value = debouncedSearch.toLowerCase();
+                      return (
+                        business.businessName?.toLowerCase().includes(value) ||
+                        business.category?.toLowerCase().includes(value)
+                      );
+                    })
+                    .slice(0, 10)
+                    .map((business, index) => (
+                      <div
+                        key={index}
+                        className="option-item"
+                        onClick={() => {
+                          setSearchTerm(business.businessName);
+                          setIsCategoryDropdownOpen(false);
+                        }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          padding: "4px 8px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <SearchIcon style={{ marginRight: "6px", color: "#ff7b00" }} />
+                        <span>{business.businessName}</span>
+                        <span style={{ marginLeft: "auto", color: "gray", fontSize: "12px" }}>
+                          {business.category}
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
+
             <MicIcon className="input-adornment end" />
           </div>
 

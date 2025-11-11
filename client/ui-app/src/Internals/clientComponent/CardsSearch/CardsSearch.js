@@ -72,7 +72,6 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
   const { searchLogs, clientBusinessList = [] } = businessListState;
   const { category = [] } = categoryState;
 
-  // Local state
   const [internalLocationName, setInternalLocationName] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryName, setCategoryName] = useState("");
@@ -84,7 +83,13 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const categoryRef = useRef(null);
 
+const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
 
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchTerm), 200);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+  
   useEffect(() => {
     dispatch(getAllLocation());
     dispatch(getAllClientBusinessList());
@@ -239,23 +244,67 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
             </div>
 
             <div className="input-group search-group" ref={categoryRef}>
-              <input
-                className="custom-input"
-                placeholder="Search for ..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onFocus={() => setIsCategoryDropdownOpen(true)}
+            <input
+              className="custom-input"
+              placeholder="Search for..."
+              value={searchTerm}
+              onChange={(e) => {
+                const value = e.target.value;
+                setSearchTerm(value);
+                setIsCategoryDropdownOpen(true);
+              }}
+              onFocus={() => setIsCategoryDropdownOpen(true)}
+            />
 
+            {isCategoryDropdownOpen && searchTerm.trim().length < 2 && (
+              <CategoryDropdown
+                options={categoryOptions}
+                setSearchTerm={setSearchTerm}
+                closeDropdown={() => setIsCategoryDropdownOpen(false)}
               />
-              {isCategoryDropdownOpen && searchTerm.length < 1 && (
-                <CategoryDropdown
-                  options={categoryOptions}
-                  setSearchTerm={setSearchTerm}
-                  closeDropdown={() => setIsCategoryDropdownOpen(false)}
-                />
-              )}
-              <MicIcon className="input-adornment end" />
-            </div>
+            )}
+
+            {isCategoryDropdownOpen && searchTerm.trim().length >= 2 && (
+              <div className="category-custom-dropdown">
+                <div className="trending-label">SUGGESTIONS</div>
+                <div className="options-list-container" style={{ maxHeight: "200px" }}>
+                  {clientBusinessList
+                    .filter((business) => {
+                      const value = debouncedSearch.toLowerCase();
+                      return (
+                        business.businessName?.toLowerCase().includes(value) ||
+                        business.category?.toLowerCase().includes(value)
+                      );
+                    })
+                    .slice(0, 10)
+                    .map((business, index) => (
+                      <div
+                        key={index}
+                        className="option-item"
+                        onClick={() => {
+                          setSearchTerm(business.businessName);
+                          setIsCategoryDropdownOpen(false);
+                        }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          padding: "4px 8px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <SearchIcon style={{ marginRight: "6px", color: "#ff7b00" }} />
+                        <span>{business.businessName}</span>
+                        <span style={{ marginLeft: "auto", color: "gray", fontSize: "12px" }}>
+                          {business.category}
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
+
+            <MicIcon className="input-adornment end" />
+          </div>
 
             <button className="search-btn" onClick={handleSearch}>
               <span>Search</span> <i className="fa-solid fa-magnifying-glass"></i>
