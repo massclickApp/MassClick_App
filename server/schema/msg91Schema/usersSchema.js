@@ -8,7 +8,7 @@
     firstTimeUser: { type: Boolean, default: false },
     profileImageKey: { type: String, default: "" },
     email: { type: String, },
-    emailVerified: { type: Boolean, default: false },
+    emailVerified: { type: String, },
     mobileNumber1: { type: String, unique: true, required: true },
     currentOtp: { type: String, default: null },
     otpGeneratedAt: { type: Date, default: null },

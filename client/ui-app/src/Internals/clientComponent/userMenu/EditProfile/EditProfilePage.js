@@ -40,9 +40,7 @@ const PersonalDetails = ({ formData, handleChange, handleImageUpload }) => (
             required
             onChange={(e) => handleChange(e, "email")}
           />
-          <button type="button" className="btn-verify">
-            {formData.emailVerified ? "Verified ✓" : "Verify"}
-          </button>
+         
         </div>
       </div>
 
