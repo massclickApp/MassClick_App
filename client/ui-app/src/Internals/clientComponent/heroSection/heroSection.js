@@ -2,18 +2,17 @@ import React, { useEffect, useState, useRef } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import MicIcon from "@mui/icons-material/Mic";
+import HistoryToggleOffIcon from "@mui/icons-material/HistoryToggleOff";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  getAllBusinessList,
   getAllClientBusinessList,
-  logSearchActivity,
   getAllSearchLogs,
 } from "../../../redux/actions/businessListAction";
 import { getAllCategory } from "../../../redux/actions/categoryAction";
+import { logUserSearch } from "../../../redux/actions/otpAction";
 import backgroundImage from "../../../assets/background.png";
 import { useNavigate } from "react-router-dom";
 import "./hero.css";
-import HistoryToggleOffIcon from "@mui/icons-material/HistoryToggleOff";
 
 const CategoryDropdown = ({ options, setSearchTerm, closeDropdown }) => {
   const MAX_HEIGHT_PX = 200;
@@ -55,6 +54,7 @@ const CategoryDropdown = ({ options, setSearchTerm, closeDropdown }) => {
   );
 };
 
+// Main Hero Section
 const HeroSection = ({
   searchTerm,
   setSearchTerm,
@@ -66,20 +66,20 @@ const HeroSection = ({
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const categoryRef = useRef(null);
 
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
-  const categoryRef = useRef(null);
+  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
 
   const businessListState = useSelector(
     (state) => state.businessListReducer || { clientBusinessList: [] }
   );
   const { searchLogs, clientBusinessList = [] } = businessListState;
-  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
+
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchTerm), 200);
     return () => clearTimeout(timer);
   }, [searchTerm]);
-
 
   useEffect(() => {
     dispatch(getAllClientBusinessList());
@@ -108,66 +108,72 @@ const HeroSection = ({
 
   const categoryOptions = [
     ...new Set(
-      businessListState.searchLogs.map((log) =>
-        capitalizeWords(log.categoryName)
-      )
+      (searchLogs || []).map((log) => capitalizeWords(log.categoryName))
     ),
   ].filter(Boolean);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
+  const handleSearch = async (e) => {
+  e.preventDefault();
 
-    const finalSearchTerm = searchTerm;
-    const logCategory = categoryName || finalSearchTerm || "All Categories";
-    const logLocation = locationName || "Global";
+  const finalSearchTerm = searchTerm?.trim();
+  const logLocation = locationName || "Global";
 
-    dispatch(logSearchActivity(logCategory, logLocation));
+  // Filter businesses first
+  const filteredBusinesses = clientBusinessList.filter((business) => {
+    const matchesSearchTerm =
+      !finalSearchTerm ||
+      (business.businessName &&
+        business.businessName
+          .toLowerCase()
+          .includes(finalSearchTerm.toLowerCase())) ||
+      (business.category &&
+        business.category
+          .toLowerCase()
+          .includes(finalSearchTerm.toLowerCase())) ||
+      (Array.isArray(business.keywords) &&
+        business.keywords.some((keyword) =>
+          keyword.toLowerCase().includes(finalSearchTerm.toLowerCase())
+        ));
 
-    const filteredBusinesses = clientBusinessList.filter((business) => {
-      const matchesSearchTerm =
-        !finalSearchTerm ||
-        (business.businessName &&
-          business.businessName
-            .toLowerCase()
-            .includes(finalSearchTerm.toLowerCase())) ||
-        (business.category &&
-          business.category
-            .toLowerCase()
-            .includes(finalSearchTerm.toLowerCase())) ||
-        (Array.isArray(business.keywords) &&
-          business.keywords.some((keyword) =>
-            keyword.toLowerCase().includes(finalSearchTerm.toLowerCase())
-          ));
+    const matchesCategory =
+      !categoryName ||
+      (business.category &&
+        business.category.toLowerCase() === categoryName.toLowerCase());
+
+    const matchesLocation =
+      !locationName ||
+      [business.location, business.plotNumber, business.street, business.pincode]
+        .filter(Boolean)
+        .some((field) =>
+          field.toLowerCase().includes(locationName.toLowerCase())
+        );
+
+    return matchesSearchTerm && matchesCategory && matchesLocation;
+  });
 
 
-      const matchesCategory =
-        !categoryName ||
-        (business.category &&
-          business.category.toLowerCase() === categoryName.toLowerCase());
+  const derivedCategory =
+    filteredBusinesses.length > 0 && filteredBusinesses[0].category
+      ? filteredBusinesses[0].category
+      : categoryName || finalSearchTerm || "All Categories";
 
-      const matchesLocation =
-        !locationName ||
-        [
-          business.location,
-          business.plotNumber,
-          business.street,
-          business.pincode,
-        ]
-          .filter(Boolean)
-          .some((field) =>
-            field.toLowerCase().includes(locationName.toLowerCase())
-          );
+  const logCategory = derivedCategory;
 
-      return matchesSearchTerm && matchesCategory && matchesLocation;
-    });
+  let authUser = JSON.parse(localStorage.getItem("authUser") || "{}");
+  let userId = authUser?._id;
 
-    if (setSearchResults) setSearchResults(filteredBusinesses);
 
-    const loc = (locationName || "All").replace(/\s+/g, "");
-    const term = (finalSearchTerm || "All").replace(/\s+/g, "");
+  if (userId && finalSearchTerm) {
+    dispatch(logUserSearch(userId, finalSearchTerm, logLocation, logCategory));
+  }
 
-    navigate(`/${loc}/${term}`, { state: { results: filteredBusinesses } });
-  };
+  if (setSearchResults) setSearchResults(filteredBusinesses);
+
+  const loc = (locationName || "All").replace(/\s+/g, "");
+  const term = (finalSearchTerm || "All").replace(/\s+/g, "");
+  navigate(`/${loc}/${term}`, { state: { results: filteredBusinesses } });
+};
+
 
   return (
     <div
@@ -188,8 +194,9 @@ const HeroSection = ({
           MassClick.
         </p>
 
+        {/* ===== SEARCH BAR ===== */}
         <form className="search-bar-container" onSubmit={handleSearch}>
-          {/* Manual Location Input */}
+          {/* Location Input */}
           <div className="input-group location-group">
             <LocationOnIcon className="input-adornment start" />
             <input
@@ -214,6 +221,7 @@ const HeroSection = ({
               onFocus={() => setIsCategoryDropdownOpen(true)}
             />
 
+            {/* RECENT SEARCHES DROPDOWN */}
             {isCategoryDropdownOpen && searchTerm.trim().length < 2 && (
               <CategoryDropdown
                 options={categoryOptions}
@@ -222,10 +230,14 @@ const HeroSection = ({
               />
             )}
 
+            {/* LIVE SEARCH SUGGESTIONS */}
             {isCategoryDropdownOpen && searchTerm.trim().length >= 2 && (
               <div className="category-custom-dropdown">
                 <div className="trending-label">SUGGESTIONS</div>
-                <div className="options-list-container" style={{ maxHeight: "200px" }}>
+                <div
+                  className="options-list-container"
+                  style={{ maxHeight: "200px" }}
+                >
                   {clientBusinessList
                     .filter((business) => {
                       const value = debouncedSearch.toLowerCase();
@@ -250,9 +262,17 @@ const HeroSection = ({
                           cursor: "pointer",
                         }}
                       >
-                        <SearchIcon style={{ marginRight: "6px", color: "#ff7b00" }} />
+                        <SearchIcon
+                          style={{ marginRight: "6px", color: "#ff7b00" }}
+                        />
                         <span>{business.businessName}</span>
-                        <span style={{ marginLeft: "auto", color: "gray", fontSize: "12px" }}>
+                        <span
+                          style={{
+                            marginLeft: "auto",
+                            color: "gray",
+                            fontSize: "12px",
+                          }}
+                        >
                           {business.category}
                         </span>
                       </div>

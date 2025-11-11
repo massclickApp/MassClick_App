@@ -4,7 +4,8 @@ import {
   USER_LOGOUT,
   UPDATE_OTP_USER_REQUEST, UPDATE_OTP_USER_SUCCESS, UPDATE_OTP_USER_FAILURE,
   VIEW_OTP_USER_REQUEST, VIEW_OTP_USER_SUCCESS, VIEW_OTP_USER_FAILURE,
-  VIEWALL_OTP_USER_REQUEST, VIEWALL_OTP_USER_SUCCESS, VIEWALL_OTP_USER_FAILURE
+  VIEWALL_OTP_USER_REQUEST, VIEWALL_OTP_USER_SUCCESS, VIEWALL_OTP_USER_FAILURE,
+  LOG_USER_SEARCH_REQUEST, LOG_USER_SEARCH_SUCCESS, LOG_USER_SEARCH_FAILURE,
 } from "../actions/userActionTypes";
 
 const initialState = {
@@ -14,34 +15,46 @@ const initialState = {
   verifyResponse: null,
   updateResponse: null,
   viewResponse: null,
-  viewAllResponse: null
+  viewAllResponse: null,
+  searchLogResponse: null, 
 };
 
 export default function otpReducer(state = initialState, action) {
   switch (action.type) {
+    // ====== REQUEST STATES ======
     case SEND_OTP_REQUEST:
     case VERIFY_OTP_REQUEST:
     case UPDATE_OTP_USER_REQUEST:
     case VIEW_OTP_USER_REQUEST:
     case VIEWALL_OTP_USER_REQUEST:
+    case LOG_USER_SEARCH_REQUEST:
       return { ...state, loading: true, error: null };
 
+    // ====== SUCCESS STATES ======
     case SEND_OTP_SUCCESS:
       return { ...state, loading: false, otpResponse: action.payload, error: null };
+
     case VERIFY_OTP_SUCCESS:
       return { ...state, loading: false, verifyResponse: action.payload, error: null };
+
     case UPDATE_OTP_USER_SUCCESS:
       return { ...state, loading: false, updateResponse: action.payload, error: null };
+
     case VIEW_OTP_USER_SUCCESS:
       return { ...state, loading: false, viewResponse: action.payload, error: null };
+
     case VIEWALL_OTP_USER_SUCCESS:
       return { ...state, loading: false, viewAllResponse: action.payload, error: null };
+
+    case LOG_USER_SEARCH_SUCCESS:
+      return { ...state, loading: false, searchLogResponse: action.payload, error: null };
 
     case SEND_OTP_FAILURE:
     case VERIFY_OTP_FAILURE:
     case UPDATE_OTP_USER_FAILURE:
     case VIEW_OTP_USER_FAILURE:
     case VIEWALL_OTP_USER_FAILURE:
+    case LOG_USER_SEARCH_FAILURE:
       return { ...state, loading: false, error: action.payload };
 
     case USER_LOGOUT:

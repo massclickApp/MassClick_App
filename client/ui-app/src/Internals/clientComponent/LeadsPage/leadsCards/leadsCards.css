@@ -1,0 +1,210 @@
+.search-history-page {
+  padding: 24px;
+  background: linear-gradient(180deg, #f9fafc 0%, #eef1f4 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.search-history-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 780px;
+}
+
+.search-history-header h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #222;
+}
+
+.search-history-cards {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+}
+
+/* Modern Card */
+.modern-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  padding: 22px;
+  width: 100%;
+  max-width: 950px;
+  transition: all 0.25s ease;
+  border: 1px solid rgba(230, 230, 230, 0.7);
+}
+
+.modern-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Header */
+.modern-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.badge-hot {
+  background: #ffeae3;
+  color: #ff4800;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.date {
+  font-size: 13px;
+  color: #777;
+  margin-top: 4px;
+}
+
+.card-right {
+  display: flex;
+  gap: 14px;
+}
+
+.mui-icon {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 22px !important;
+}
+
+.mui-icon:hover {
+  transform: scale(1.2);
+}
+
+.call {
+  color: #007bff;
+}
+
+.whatsapp {
+  color: #25d366;
+}
+
+.mail {
+  color: #ea4335;
+}
+
+.share {
+  color: #555;
+}
+
+/* Content */
+.modern-card-content {
+  margin-bottom: 8px;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 4px;
+}
+
+.location {
+  font-size: 15px;
+  color: #555;
+}
+
+.category {
+  font-size: 14px;
+  color: #888;
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: #eee;
+  margin: 14px 0;
+}
+
+/* Description */
+.card-description p {
+  font-size: 15px;
+  color: #333;
+  line-height: 1.6;
+}
+
+.source {
+  margin-top: 6px;
+  color: #666;
+  font-size: 13px;
+}
+
+.source-highlight {
+  color: #007bff;
+  font-weight: 600;
+}
+
+/* WhatsApp Share Section */
+.whatsapp-section {
+  background: #f4fdf7;
+  border: 1px solid #c7eac8;
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 16px;
+}
+
+.whatsapp-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #2e7d32;
+  margin-bottom: 10px;
+}
+
+.whatsapp-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modern-card {
+    max-width: 90%;
+    padding: 18px;
+  }
+
+  .search-history-header h2 {
+    font-size: 20px;
+  }
+
+  .mui-icon {
+    font-size: 20px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .modern-card {
+    max-width: 95%;
+    padding: 16px;
+  }
+
+  .search-history-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .card-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .whatsapp-buttons {
+    flex-direction: column;
+  }
+}

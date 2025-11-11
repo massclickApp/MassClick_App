@@ -25,7 +25,6 @@ export default function BusinessListPage() {
             <p className="cta-tax-info">+ GST</p>
           </div>
 
-          {/* Payment Integration button */}
           <button
             onClick={handlePayNow}
             className="btn-pay-now"

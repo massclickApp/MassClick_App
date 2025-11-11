@@ -100,14 +100,13 @@ const BusinessDetail = () => {
     const [showFullGallery, setShowFullGallery] = useState(false);
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
     const [showFullHours, setShowFullHours] = useState(false);
-    const [showShareOptions, setShowShareOptions] = useState(false); // Manages the share popup
+    const [showShareOptions, setShowShareOptions] = useState(false);
     const [showContactModal, setShowContactModal] = useState(false);
     const [activeTab, setActiveTab] = useState('Overview');
     const [reviewLimit, setReviewLimit] = useState(3);
-    // ✅ NEW: Refs for each major section to scroll to
     const overviewRef = useRef(null);
     const quickInfoRef = useRef(null);
-    const servicesRef = useRef(null); // Assuming a services section exists or will be added
+    const servicesRef = useRef(null); 
     const photosRef = useRef(null);
     const reviewsRef = useRef(null);
     useEffect(() => {
@@ -126,7 +125,7 @@ const BusinessDetail = () => {
     const bannerImageSrc = mainImage || firstImage;
     const restaurantOptions = business.restaurantOptions;
     const website = business.website
-    const fullAddress = business.locationDetails
+    const fullAddress = `${business.plotNumber}, ${business.street}, ${business.location}`;
 
     const displayedAverageRating = business.averageRating?.toFixed(1) || 0;
     const totalRatings = business?.reviews?.length || 0;
@@ -191,7 +190,6 @@ const BusinessDetail = () => {
         }
     };
 
-    // NEW: Handle Copying the Current Page URL
     const handleCopyLink = (e) => {
         e.preventDefault();
         const linkToCopy = window.location.href;
@@ -200,7 +198,7 @@ const BusinessDetail = () => {
             navigator.clipboard.writeText(linkToCopy)
                 .then(() => {
                     alert("Link copied to clipboard!");
-                    setShowShareOptions(false); // Close the popup
+                    setShowShareOptions(false); 
                 })
                 .catch(err => {
                     console.error("Failed to copy link: ", err);

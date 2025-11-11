@@ -45,6 +45,7 @@ import { clientLogin } from './redux/actions/clientAuthAction.js';
 import PaymentStatus from './Internals/phonePay/paymentStatus.js';
 import ScrollToTop from './scrollTop.js';
 import LeadsPage from './Internals/clientComponent/LeadsPage/leadsPage.js';
+import LeadsCardHistory  from './Internals/clientComponent/LeadsPage/leadsCards/leadsCards.js';
 
 const ComingSoon = ({ title }) => (
   <div style={{ textAlign: 'center', marginTop: '20%' }}>
@@ -157,14 +158,14 @@ function App() {
               return <Route key={service.path} path={service.path} element={<Component />} />;
             })}
             <Route path="/:locationSlug/:businessName/:address/:id" element={<BusinessDetails />} />
-        <Route path="/payment-status/:transactionId" element={<PaymentStatus />} />
+            <Route path="/payment-status/:transactionId" element={<PaymentStatus />} />
 
             <Route
               path="/write-review/:businessId/:ratingValue"
               element={<WriteReviewPage />}
             />
-            <Route path="leads" element={<LeadsPage />} />
-
+              <Route path="/leads" element={<LeadsPage />} />
+              <Route path="/user/search-history" element={<LeadsCardHistory  />} />
             {categoriesServices.flatMap((category, categoryIndex) =>
               category.items.map((item, itemIndex) => {
                 const path = item.path || item.route || `auto-path-${categoryIndex}-${itemIndex}`;

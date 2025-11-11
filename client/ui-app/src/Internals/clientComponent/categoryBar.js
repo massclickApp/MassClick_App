@@ -89,11 +89,11 @@ const languages = [
 
 export const userMenuItems = [
     { name: "User Dashboard", path: "/user_dashboard", icon: <DashboardIcon color="action" />, component: DashboardPage },
-    { name: "User Account", path: "/user_account", icon: <AccountBoxIcon color="action" />, component: AccountPage },
+    { name: "User Edit Profile", path: "/user_edit-profile", icon: <EditIcon color="action" />, component: EditProfilePage },
+    // { name: "User Account", path: "/user_account", icon: <AccountBoxIcon color="action" />, component: AccountPage },
     { name: "User BusinessList", path: "/user_business-list", icon: <BusinessCenterIcon color="action" />, component: BusinessListPage },
     { name: "User Favorites", path: "/user_favorites", icon: <FavoriteBorderIcon color="action" />, component: FavoritesPage },
     { name: "User Saved", path: "/user_saved", icon: <BookmarkBorderIcon color="action" />, component: SavedPage },
-    { name: "User Edit Profile", path: "/user_edit-profile", icon: <EditIcon color="action" />, component: EditProfilePage },
     { name: "User My Transaction", path: "/user_my-transaction", icon: <AccountBalanceWalletIcon color="action" />, component: MyTransactionPage },
     { name: "User Notifications", path: "/user_notifications", icon: <NotificationsActiveIcon color="action" />, component: NotificationsPage },
     { name: "User Customer Service", path: "/user_customer-service", icon: <HeadsetMicIcon color="action" />, component: CustomerServicePage },

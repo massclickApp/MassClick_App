@@ -140,3 +140,33 @@ export const deleteOtpUser = async (req, res) => {
         res.status(500).json({ success: false, message: err.message });
     }
 };
+export const logUserSearch = async (req, res) => {
+  try {
+    const { userId, query, location, category } = req.body;
+
+    if (!userId || !query) {
+      return res.status(400).json({ success: false, message: "UserId and query required" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    user.searchHistory.push({
+      query,
+      location: location || "Global",
+      category: category || "General",
+      searchedAt: new Date(),
+    });
+
+    if (user.searchHistory.length > 20) {
+      user.searchHistory = user.searchHistory.slice(-20);
+    }
+
+    await user.save();
+
+    res.json({ success: true, message: "Search logged successfully", searchHistory: user.searchHistory });
+  } catch (err) {
+    console.error("Error logging search:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
