@@ -149,7 +149,6 @@ export const viewAllBusinessList = async (role, userId) => {
         const manager = await userModel.findById(userId).lean();
         const salesOfficerIds = manager?.salesBy || [];
 
-        // include manager themselves + their sales officers
         const allowedCreators = [
             new mongoose.Types.ObjectId(userId),
             ...salesOfficerIds.map((id) => new mongoose.Types.ObjectId(id)),

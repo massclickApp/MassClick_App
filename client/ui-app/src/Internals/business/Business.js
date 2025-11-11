@@ -17,13 +17,10 @@ import DetailsIcon from '@mui/icons-material/Details';
 import PrivacyTipIcon from '@mui/icons-material/PrivacyTip';
 import CategoryIcon from '@mui/icons-material/Category';
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
+import { Payment as PaymentIcon, CheckCircle, HourglassEmpty, Cancel } from "@mui/icons-material";
 import {
   Box,
   Button,
-  Container,
-  Grid,
-  Paper,
-  TextField,
   Typography,
   CircularProgress,
   IconButton,
@@ -48,6 +45,7 @@ import {
   ListItemText,
   OutlinedInput
 } from "@mui/material";
+import { useSnackbar } from 'notistack';
 
 import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
@@ -55,8 +53,9 @@ import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import CollectionsBookmarkOutlinedIcon from '@mui/icons-material/CollectionsBookmarkOutlined';
-import { createPhonePePayment } from "../../redux/actions/phonePayAction.js";
+import { checkPhonePeStatus, createPhonePePayment } from "../../redux/actions/phonePayAction.js";
 import CustomizedTable from "../../components/Table/CustomizedTable.js";
+import Tooltip from "@mui/material/Tooltip";
 
 
 const ORANGE_PRIMARY = '#FF8C00';
@@ -134,12 +133,13 @@ const steps = [
   "Business Details",
   "Category",
   "Privacy Settings",
-  "Payment & KYC Verification"
+  "Payment"
 ];
 
 
 export default function BusinessList() {
   const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
   const { businessList = [], loading, error } = useSelector(
     (state) => state.businessListReducer || {}
   );
@@ -158,17 +158,34 @@ export default function BusinessList() {
   const [editId, setEditId] = useState(null);
   const [errors, setErrors] = useState({});
   const [newGalleryImages, setNewGalleryImages] = useState([]);
-
+  const [createdBusinessId, setCreatedBusinessId] = useState(null);
+  const [createUserId, setCreateUserId] = useState(null)
   const [galleryDialog, setGalleryDialog] = useState({
     open: false,
     data: null,
   });
-  const { qrString, paymentUrl, transactionId } = useSelector((state) => state.phonepe);
-  const userId = "68fefc5fe093cbcab9e84d43";
 
-  const handlePayNow = () => {
+  const handlePayNow = (row) => {
     const amount = 1;
-    dispatch(createPhonePePayment(amount, userId));
+
+    let businessId =
+      row?._id?.$oid || row?._id || row?.businessId || row?.id || createdBusinessId;
+    let userId =
+      row?.createdBy?.$oid ||
+      (typeof row?.createdBy === "string" ? row.createdBy : null) ||
+      createUserId;
+
+    if (!row) {
+      businessId = createdBusinessId;
+      userId = createUserId;
+    }
+
+    if (!businessId || !userId) {
+      console.error("❌ Missing businessId or userId:", { businessId, userId });
+      return;
+    }
+
+    dispatch(createPhonePePayment(amount, userId, businessId));
   };
 
   const [activeStep, setActiveStep] = useState(0);
@@ -369,7 +386,7 @@ export default function BusinessList() {
     setBusinessValue(content);
     setFormData((prev) => ({ ...prev, businessDetails: content }));
   };
-  const handleOpeningHourChange = (index, field, value) => {debugger
+  const handleOpeningHourChange = (index, field, value) => {
     setFormData((prev) => {
       const updatedHours = [...(prev.openingHours || defaultOpeningHours)];
 
@@ -401,6 +418,7 @@ export default function BusinessList() {
     dispatch(getAllCategory())
     dispatch(getAllUsersClient())
     dispatch(getAllUsers())
+    dispatch(checkPhonePeStatus());
   }, [dispatch]);
 
   const handleChange = (e) => {
@@ -479,6 +497,50 @@ export default function BusinessList() {
     }
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   if (!validateForm()) return;
+
+  //   const kycBase64 = await Promise.all(
+  //     kycFiles.map(
+  //       (file) =>
+  //         new Promise((resolve, reject) => {
+  //           const reader = new FileReader();
+  //           reader.onload = () => resolve(reader.result);
+  //           reader.onerror = reject;
+  //           reader.readAsDataURL(file);
+  //         })
+  //     )
+  //   );
+
+  //   const payload = {
+  //     ...formData,
+  //     businessDetails: businessvalue,
+  //     kycDocuments: kycBase64
+  //   };
+
+  //   if (editMode && editId) {
+  //     dispatch(editBusinessList(editId, payload))
+  //       .then(() => {
+  //         enqueueSnackbar(`${formData.businessName} updated successfully!`, { variant: 'success' });
+  //         resetForm();
+  //         dispatch(getAllBusinessList());
+  //         setActiveStep(3);
+  //       })
+  //       .catch((err) => console.error("Edit failed:", err));
+  //   } else {
+  //     dispatch(createBusinessList(payload))
+  //       .then(() => {
+  //         enqueueSnackbar(`${formData.businessName} created successfully!`, { variant: 'success' });
+  //         resetForm();
+  //         dispatch(getAllBusinessList());
+  //         setActiveStep(3);
+  //       })
+  //       .catch((err) => console.error("Create failed:", err));
+  //   }
+  // };
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -498,26 +560,48 @@ export default function BusinessList() {
     const payload = {
       ...formData,
       businessDetails: businessvalue,
-      kycDocuments: kycBase64
+      kycDocuments: kycBase64,
     };
+    try {
+      let response;
 
-    if (editMode && editId) {
-      dispatch(editBusinessList(editId, payload))
-        .then(() => {
-          resetForm();
-          dispatch(getAllBusinessList());
-        })
-        .catch((err) => console.error("Edit failed:", err));
-    } else {
-      dispatch(createBusinessList(payload))
-        .then(() => {
-          resetForm();
-          dispatch(getAllBusinessList());
-        })
-        .catch((err) => console.error("Create failed:", err));
+      if (editMode && editId) {
+        response = await dispatch(editBusinessList(editId, payload));
+        enqueueSnackbar(`${formData.businessName} updated successfully!`, {
+          variant: "success",
+        });
+      } else {
+        response = await dispatch(createBusinessList(payload));
+
+        const businessId =
+          response?.data?._id ||
+          response?._id ||
+          response?.payload?._id ||
+          response?.payload?.data?._id;
+
+        const userId =
+          response?.data?.createdBy ||
+          response?.createdBy ||
+          response?.payload?.createdBy ||
+          response?.payload?.data?.createdBy;
+
+        if (businessId) {
+          setCreatedBusinessId(businessId);
+        }
+        if (userId) {
+          setCreateUserId(userId)
+        }
+        enqueueSnackbar(`${formData.businessName} created successfully!`, {
+          variant: "success",
+        });
+      }
+
+      dispatch(getAllBusinessList());
+      setActiveStep(3);
+    } catch (err) {
+      console.error("Error saving business:", err);
     }
   };
-
 
   const rows = businessList.map((bl, index) => ({
     id: bl._id || index,
@@ -549,6 +633,7 @@ export default function BusinessList() {
     businessDetails: bl.businessDetails || "-",
     openingHours: bl.openingHours || defaultOpeningHours,
     createdBy: bl.createdBy,
+    payment: bl.payment || [],
 
   }));
 
@@ -582,7 +667,54 @@ export default function BusinessList() {
         return user ? user.userName : "—";
       },
     },
+    {
+      id: "payment",
+      label: "Payment",
+      renderCell: (value, row) => {
+        const paymentArray = Array.isArray(value) ? value : [];
+        const lastPayment = paymentArray[paymentArray.length - 1];
+        const status = lastPayment?.paymentStatus?.toLowerCase() || "pending";
 
+        let icon = <PaymentIcon />;
+        let color = "warning";
+        let isDisabled = false;
+        let tooltipText = "Click to make a payment";
+
+        if (status === "paid") {
+          icon = <CheckCircle />;
+          color = "success";
+          isDisabled = true;
+          tooltipText = "✅ Payment received — thank you for your purchase!";
+        } else if (status === "failed") {
+          icon = <Cancel />;
+          color = "error";
+          tooltipText = "❌ Payment failed — please try again.";
+        } else if (status === "pending") {
+          icon = <HourglassEmpty />;
+          color = "warning";
+          tooltipText = "⏳ Payment is pending — complete the process.";
+        }
+
+        return (
+          <Tooltip title={tooltipText} arrow>
+            <span>
+              <IconButton
+                color={color}
+                onClick={!isDisabled ? () => handlePayNow(row) : undefined}
+                disabled={isDisabled}
+                sx={{
+                  cursor: isDisabled ? "not-allowed" : "pointer",
+                  transition: "transform 0.2s ease",
+                  "&:hover": { transform: !isDisabled ? "scale(1.1)" : "none" },
+                }}
+              >
+                {icon}
+              </IconButton>
+            </span>
+          </Tooltip>
+        );
+      },
+    },
     {
       id: "action",
       label: "Action",
@@ -775,7 +907,6 @@ export default function BusinessList() {
               {errors.whatsappNumber && <p className="error-text">{errors.whatsappNumber}</p>}
             </div>
 
-            {/* Experience */}
             <div className="form-input-group">
               <label htmlFor="experience" className="input-label">Experience</label>
               <input
@@ -789,7 +920,6 @@ export default function BusinessList() {
               {errors.experience && <p className="error-text">{errors.experience}</p>}
             </div>
 
-            {/* Google Map */}
             <div className="form-input-group">
               <label htmlFor="googleMap" className="input-label">Google Map</label>
               <input
@@ -802,7 +932,6 @@ export default function BusinessList() {
               />
             </div>
 
-            {/* Website */}
             <div className="form-input-group">
               <label htmlFor="website" className="input-label">Website</label>
               <input
@@ -815,7 +944,6 @@ export default function BusinessList() {
               />
             </div>
 
-            {/* Social Links */}
             {["facebook", "instagram", "youtube", "pinterest", "twitter", "linkedin"].map((field) => (
               <div className="form-input-group" key={field}>
                 <label htmlFor={field} className="input-label">{field.charAt(0).toUpperCase() + field.slice(1)}</label>
@@ -1201,28 +1329,59 @@ export default function BusinessList() {
             {renderStepContent(activeStep)}
           </div>
 
-          <div className="col-span-all upload-section" style={{ display: 'flex', justifyContent: 'space-between', marginTop: activeStep !== 2 ? '28px' : '150px' }}>
-
-            {activeStep > 0 && (
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: "20px" }}>
-                <button type="button" className="submit-button" onClick={handleBack}>
+          <div
+            className="col-span-all upload-section"
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginTop: activeStep !== 3 ? "28px" : "150px",
+            }}
+          >
+            {activeStep > 0 && activeStep < steps.length - 1 && (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  marginBottom: "-88px",
+                }}
+              >
+                <button
+                  type="button"
+                  className="submit-button"
+                  onClick={handleBack}
+                >
                   <SkipPreviousIcon />
                 </button>
               </div>
             )}
 
-            {activeStep < steps.length - 1 ? (
-              <div style={{ width: "100%", display: "flex", justifyContent: "flex-end", marginTop: "20px" }}>
-                <button type="button" className="submit-button" onClick={handleNext}>
+            {activeStep < steps.length - 2 ? (
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <button
+                  type="button"
+                  className="submit-button"
+                  onClick={handleNext}
+                >
                   <SkipNextIcon />
                 </button>
               </div>
-            ) : (
+            ) : activeStep === steps.length - 2 ? (
               <button
                 type="submit"
                 className="submit-button"
                 disabled={loading}
-                style={{ marginLeft: 'auto', display: "flex", justifyContent: "flex-end", marginTop: "30px" }}
+                style={{
+                  marginLeft: "auto",
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  marginTop: "10px",
+                }}
               >
                 {loading ? (
                   <CircularProgress size={24} color="inherit" />
@@ -1232,13 +1391,11 @@ export default function BusinessList() {
                   "Create"
                 )}
               </button>
-            )}
-
+            ) : null}
           </div>
         </form>
       </div>
 
-      {/* Business Table */}
       <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
         BusinessList Table
       </Typography>

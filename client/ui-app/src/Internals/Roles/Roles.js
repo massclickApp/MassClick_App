@@ -44,7 +44,6 @@ export default function Roles() {
 
     const [editingId, setEditingId] = useState(null);
 
-    // 🔹 State for delete dialog
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedRow, setSelectedRow] = useState(null);
 
@@ -171,7 +170,6 @@ export default function Roles() {
         { label: "Permissions", name: "permissions", required: true, type: "text" },
         { label: "Descriptions", name: "description", required: true, type: "text" },
         { label: "CreatedBy", name: "createdBy", required: true, type: "text" },
-
     ];
 
     return (

@@ -105,10 +105,6 @@ export const userMenuItems = [
     { name: "Logout", isLogout: true, path: "/logout", icon: <ExitToAppIcon color="action" /> }, // <-- NEW: Logout item flag
 ];
 
-
-
-
-
 const CategoryBar = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -127,7 +123,6 @@ const CategoryBar = () => {
     }
 }, [dispatch]);
 
-    // <-- NEW: Add login state
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -190,8 +185,6 @@ const CategoryBar = () => {
         }
     };
 
-
-
     const drawerList = (currentPath) => (
         <Box sx={{ width: 320 }} role="presentation" onClick={handleDrawerToggle(false)} onKeyDown={handleDrawerToggle(false)}>
 
@@ -228,7 +221,6 @@ const CategoryBar = () => {
 
                     const isActive = currentPath === item.path;
 
-                    /* Special Case 1: Language Selector */
                     if (item.isLanguageSwitch) {
                         return (
                             <ListItem key={item.name} disablePadding sx={{ py: 1.5, px: 3, borderTop: '1px solid #f0f0f0' }}>
@@ -240,7 +232,6 @@ const CategoryBar = () => {
                                     <Select
                                         value={selectedLanguage}
                                         onChange={(e) => setSelectedLanguage(e.target.value)}
-                                        // Prevents closing the drawer when interacting with the select
                                         onClick={(e) => e.stopPropagation()}
                                         sx={{
                                             fontSize: "0.9rem",
@@ -274,7 +265,6 @@ const CategoryBar = () => {
                                     sx={{
                                         py: 1.2,
                                         px: 3, // Consistent padding
-                                        // Highlight for active/logout items
                                         bgcolor: isActive ? 'rgba(247, 148, 29, 0.08)' : (item.isLogout ? 'rgba(255, 0, 0, 0.05)' : 'transparent'),
                                         '&:hover': {
                                             bgcolor: isActive ? 'rgba(247, 148, 29, 0.15)' : (item.isLogout ? 'rgba(255, 0, 0, 0.1)' : 'rgba(0, 0, 0, 0.04)')
@@ -381,7 +371,6 @@ const CategoryBar = () => {
                     </Box>
                 </Box>
 
-                {/* Desktop Navigation */}
                 <Box
                     sx={{
                         display: { xs: "none", sm: "flex" },

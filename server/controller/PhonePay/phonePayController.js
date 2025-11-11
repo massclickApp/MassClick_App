@@ -3,8 +3,8 @@ import { BAD_REQUEST } from "../../errorCodes.js";
 
 export const createPaymentAction = async (req, res) => {
   try {
-    const { amount, userId } = req.body;
-    const result = await createPhonePePayment(amount, userId);
+    const { amount, userId, businessId } = req.body; 
+    const result = await createPhonePePayment(amount, userId, businessId);
     res.send(result);
   } catch (error) {
     console.error(error);

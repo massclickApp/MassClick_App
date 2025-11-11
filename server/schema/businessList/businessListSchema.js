@@ -1,29 +1,23 @@
 import mongoose from "mongoose"
 const { Schema } = mongoose;
 
-
-
-
 const reviewSchema = new mongoose.Schema({
-  // Store the numerical rating
   rating: {
     type: Number,
     required: true,
     min: 0.5,
     max: 5
   },
-  // Store the user's written experience
   ratingExperience: {
     type: String,
     required: true,
     trim: true
   },
   ratingLove: {
-    type: [String], // Array of strings for multiple tags
+    type: [String],
     default: []
   },
-  // Store the user's ID and Username for display
-  userId: { // Recommended: Store the user's ID
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     default: null,
@@ -39,6 +33,52 @@ const reviewSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
+  },
+});
+const paymentSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+  businessId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "BusinessList",
+    required: false,
+  },
+  transactionId: {
+    type: String,
+  },
+  orderId: {
+    type: String,
+    default: null,
+  },
+  amount: {
+    type: Number,
+  },
+  gstAmount: {
+    type: Number,
+    default: 0,
+  },
+  totalAmount: {
+    type: Number,
+    default: 0,
+  },
+  paymentGateway: {
+    type: String,
+    default: "phonepe",
+  },
+  paymentStatus: {
+    type: String,
+    enum: ["PENDING", "SUCCESS", "FAILED"],
+    default: "PENDING",
+  },
+  paymentDate: {
+    type: Date,
+    default: null,
+  },
+  responseData: {
+    type: Object,
+    default: {},
   },
 });
 
@@ -83,6 +123,10 @@ const businessListSchema = new mongoose.Schema({
   globalAddress: { type: String, default: '', },
   reviews: {
     type: [reviewSchema],
+    default: []
+  },
+  payment: {
+    type: [paymentSchema],
     default: []
   },
   kycDocumentsKey: [{ type: String, default: '' }],

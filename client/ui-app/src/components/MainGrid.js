@@ -13,7 +13,9 @@ import { getAllBusinessList, toggleBusinessStatus } from "../redux/actions/busin
 import { useSnackbar } from 'notistack';
 import { getAllLocation } from "../redux/actions/locationAction";
 import { getAllUsers } from "../redux/actions/userAction.js";
-
+import { Payment as PaymentIcon, CheckCircle, HourglassEmpty, Cancel } from "@mui/icons-material";
+import Tooltip from "@mui/material/Tooltip";
+import IconButton from '@mui/material/IconButton';
 import {
   Paper,
   Avatar,
@@ -23,6 +25,7 @@ import {
 import BusinessCard from './businessCard';
 import ChartUserByBusiness from './ChartUserByCountry';
 import CustomizedTable from './Table/CustomizedTable.js';
+import { createPhonePePayment } from '../redux/actions/phonePayAction.js';
 
 export default function MainGrid() {
   const { enqueueSnackbar } = useSnackbar();
@@ -74,9 +77,25 @@ export default function MainGrid() {
     businessDetails: bl.businessDetails || "-",
     activeBusinesses: bl.activeBusinesses,
     createdBy: bl.createdBy,
+    payment: bl.payment || [],
+
   }));
 
+  const handlePayNow = (row) => {
+    const amount = 1;
 
+    const businessId = row?._id?.$oid || row?._id || row?.businessId || row?.id;
+
+    const userId =
+      row?.createdBy?.$oid ||
+      (typeof row?.createdBy === "string" ? row.createdBy : null);
+
+    if (!businessId || !userId) {
+      console.error("Missing businessId or userId:", { businessId, userId });
+      return;
+    }
+    dispatch(createPhonePePayment(amount, userId, businessId));
+  };
 
   const businessListTable = [
     { id: "clientId", label: "Client ID" },
@@ -103,6 +122,54 @@ export default function MainGrid() {
         });
 
         return user ? user.userName : "—";
+      },
+    },
+    {
+      id: "payment",
+      label: "Payment",
+      renderCell: (value, row) => {
+        const paymentArray = Array.isArray(value) ? value : [];
+        const lastPayment = paymentArray[paymentArray.length - 1];
+        const status = lastPayment?.paymentStatus?.toLowerCase() || "pending";
+
+        let icon = <PaymentIcon />;
+        let color = "warning";
+        let isDisabled = false;
+        let tooltipText = "Click to make a payment";
+
+        if (status === "paid") {
+          icon = <CheckCircle />;
+          color = "success";
+          isDisabled = true;
+          tooltipText = "✅ Payment received — thank you for your purchase!";
+        } else if (status === "failed") {
+          icon = <Cancel />;
+          color = "error";
+          tooltipText = "❌ Payment failed — please try again.";
+        } else if (status === "pending") {
+          icon = <HourglassEmpty />;
+          color = "warning";
+          tooltipText = "⏳ Payment is pending — complete the process.";
+        }
+
+        return (
+          <Tooltip title={tooltipText} arrow>
+            <span>
+              <IconButton
+                color={color}
+                onClick={!isDisabled ? () => handlePayNow(row) : undefined}
+                disabled={isDisabled}
+                sx={{
+                  cursor: isDisabled ? "not-allowed" : "pointer",
+                  transition: "transform 0.2s ease",
+                  "&:hover": { transform: !isDisabled ? "scale(1.1)" : "none" },
+                }}
+              >
+                {icon}
+              </IconButton>
+            </span>
+          </Tooltip>
+        );
       },
     },
     {
@@ -177,7 +244,7 @@ export default function MainGrid() {
         </Grid>
       </Grid><br />
       <Grid elevation={3} sx={{ p: 3, borderRadius: 2 }}>
-                <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
+        <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
           BusinessList Table
         </Typography>
         <Box sx={{ width: "100%" }}>

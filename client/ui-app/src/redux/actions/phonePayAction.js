@@ -10,14 +10,14 @@ import {
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-export const createPhonePePayment = (amount, userId) => async (dispatch) => {
+export const createPhonePePayment = (amount, userId, businessId) => async (dispatch) => {
   dispatch({ type: CREATE_PAYMENT_REQUEST });
 
   try {
     const token = localStorage.getItem("accessToken");
     const response = await axios.post(
       `${API_URL}/phonepe/create`,
-      { amount, userId },
+  { amount, userId, businessId }, 
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -44,7 +44,6 @@ export const createPhonePePayment = (amount, userId) => async (dispatch) => {
   }
 };
 
-// 🔹 Check Payment Status
 export const checkPhonePeStatus = (transactionId) => async (dispatch) => {
   dispatch({ type: CHECK_PAYMENT_STATUS_REQUEST });
 

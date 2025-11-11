@@ -26,8 +26,6 @@ const LandingPage = () => {
     const [categoryName, setCategoryName] = useState("");
     const heroSectionRef = useRef(null);
 
-
-
     useEffect(() => {
         const handleScroll = () => {
             if (heroSectionRef.current) {
@@ -101,7 +99,8 @@ const LandingPage = () => {
                     categoryName={categoryName}
                     setCategoryName={setCategoryName}
                     setSearchResults={setSearchResults}
-                />            </Box>
+                />            
+                </Box>
 
             {isSearching ? (
                 <Box sx={{ mt: 4, mb: 4, px: { xs: 2, sm: 4, md: 6 } }}>
