@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { relogin, getClientToken } from './redux/actions/authAction.js';
+import { relogin } from './redux/actions/authAction.js';
 
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -111,27 +111,27 @@ function App() {
     initAuth();
   }, [dispatch]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const expiresAt = localStorage.getItem('accessTokenExpiresAt');
-      if (!expiresAt) return;
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     const expiresAt = localStorage.getItem('accessTokenExpiresAt');
+  //     if (!expiresAt) return;
 
-      const expiryTime = new Date(expiresAt).getTime();
-      const now = Date.now();
+  //     const expiryTime = new Date(expiresAt).getTime();
+  //     const now = Date.now();
 
-      if (now >= expiryTime) {
-        setShowTokenExpired(true);
-        clearInterval(interval);
-        return;
-      }
+  //     if (now >= expiryTime) {
+  //       setShowTokenExpired(true);
+  //       clearInterval(interval);
+  //       return;
+  //     }
 
-      if (now >= expiryTime - 60000) {
-        dispatch(relogin());
-      }
-    }, 30000);
+  //     if (now >= expiryTime - 60000) {
+  //       dispatch(relogin());
+  //     }
+  //   }, 30000);
 
-    return () => clearInterval(interval);
-  }, [dispatch]);
+  //   return () => clearInterval(interval);
+  // }, [dispatch]);
 
   if (!authChecked) {
     return (

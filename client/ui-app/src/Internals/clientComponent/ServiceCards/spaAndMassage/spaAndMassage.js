@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import "./spaAndMassage.css";
 import CardDesign from "../../cards/cards.js";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllBusinessList } from "../../../../redux/actions/businessListAction.js";
+import {  getAllClientBusinessList } from "../../../../redux/actions/businessListAction.js";
 import CardsSearch from "../../../clientComponent/CardsSearch/CardsSearch.js";
 import { useNavigate } from 'react-router-dom';
 
@@ -11,17 +11,17 @@ const SpaAndMassageCards = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { businessList = [] } = useSelector(
+    const { clientBusinessList = [] } = useSelector(
         (state) => state.businessListReducer || {}
     )
 
     useEffect(() => {
-        dispatch(getAllBusinessList());
+        dispatch(getAllClientBusinessList());
     }, [dispatch]);
 
     const keywords = ["beauty", "spa", "parlour", "salon", "beauty parlour"];
 
-    const spaAndMassage = businessList.filter((b) => {
+    const spaAndMassage = clientBusinessList.filter((b) => {
         if (!b.category) return false;
         const name = b.category.toLowerCase();
         return keywords.some((keyword) => name.includes(keyword.toLowerCase()));

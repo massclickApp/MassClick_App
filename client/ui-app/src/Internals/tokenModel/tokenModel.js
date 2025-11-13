@@ -6,8 +6,6 @@ import { Modal, Box, Button, Typography } from "@mui/material";
 const TokenExpiredModal = () => {
   const dispatch = useDispatch();
   const open = useSelector((state) => state.auth.showTokenExpiredModal);
-console.log("open",open);
-
 
   const handleRelogin = async () => {
     try {
