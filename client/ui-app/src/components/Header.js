@@ -10,6 +10,7 @@ import NotificationModal from "./notificationModel.js";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const userRole = localStorage.getItem("userRole");
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -32,9 +33,15 @@ export default function Header() {
 
         <Stack direction="row" sx={{ gap: 1 }}>
           <CustomDatePicker />
-          <MenuButton showBadge aria-label="Open notifications" onClick={handleOpen}>
-            <NotificationsRoundedIcon />
-          </MenuButton>
+          {userRole === "SuperAdmin" && (
+            <MenuButton
+              showBadge
+              aria-label="Open notifications"
+              onClick={handleOpen}
+            >
+              <NotificationsRoundedIcon />
+            </MenuButton>
+          )}
           <OptionsMenu />
         </Stack>
       </Stack>

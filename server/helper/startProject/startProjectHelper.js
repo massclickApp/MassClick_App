@@ -2,26 +2,15 @@ import { ObjectId } from "mongodb";
 import startProjectModel from "../../model/startProject/startProjectModel.js"; 
 
 export const createStartYourProject = async function (reqBody = {}) {
-    try {
-        const projectData = {
-            fullName: reqBody.name,        
-            email: reqBody.email,          
-            contactNumber: reqBody.phone,  
-            message: reqBody.message,      
-            
-          
-        };
-        
-        const projectDocument = new startProjectModel(projectData);
-        const result = await projectDocument.save();
-        return result;
-    } catch (error) {
-        console.error("Error saving start project enquiry:", error);
-        if (error.name === 'ValidationError') {
-            throw new Error(`Validation failed: ${Object.values(error.errors).map(e => e.message).join(', ')}`);
-        }
-        throw error;
-    }
+  try {
+    const projectDocument = new startProjectModel(reqBody);
+    const result = await projectDocument.save();
+    return result;
+
+  } catch (error) {
+    console.error("Error saving start project enquiry:", error);
+    throw error;
+  }
 };
 
 

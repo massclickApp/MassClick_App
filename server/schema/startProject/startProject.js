@@ -4,20 +4,49 @@ const startProjectSchema = new mongoose.Schema({
 
     fullName: {
         type: String,
-        required: true,
         trim: true
     },
     contactNumber: {
         type: String,
-        required: true
     },
     email: {
         type: String,
-        required: true,
     },
     message: {
         type: String,
-        required: true
+    },
+    businessName: {
+        type: String,
+    },
+    businessType: {
+        type: String,
+    },
+    category: {
+        type: String,
+    },
+    subCategory: {
+        type: String,
+    },
+    address: {
+        type: String,
+    },
+    city: {
+        type: String,
+    },
+    state: {
+        type: String,
+    },
+    country: {
+        type: String,
+    },
+    postalCode: {
+        type: String,
+    },
+    businessPhone: {
+        type: String,
+    },
+    notes: {
+        type: String,
     },
     isActive: { type: Boolean, default: true },
     submittedAt: {

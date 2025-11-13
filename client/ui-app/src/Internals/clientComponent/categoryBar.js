@@ -39,7 +39,7 @@ import {
 } from "@mui/icons-material";
 import MI from "../../assets/Mi.png";
 import AddBusinessModal from "./AddBusinessModel.js";
-
+import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
@@ -76,6 +76,8 @@ const categories = [
     { name: "Leads", icon: <MailIcon /> },
     { name: "Advertise", icon: <CampaignIcon /> },
     { name: "Free Listing", icon: <ListAltIcon /> },
+    { name: "Business Enquiry", icon: <AppRegistrationIcon /> },
+
 ];
 
 const languages = [
@@ -185,6 +187,8 @@ const CategoryBar = () => {
             navigate("/advertise");
         } else if (name === "Free Listing") {
             navigate("/free-listing");
+        } else if (name === "Business Enquiry") {
+            navigate("/business-enquiry");
         }
     };
 
@@ -216,7 +220,7 @@ const CategoryBar = () => {
                     </Typography>
                 </Box>
 
-                <Avatar sx={{ width: 48, height: 48, ml: 2, bgcolor: '#F7941D' }}>P</Avatar> 
+                <Avatar sx={{ width: 48, height: 48, ml: 2, bgcolor: '#F7941D' }}>P</Avatar>
             </Box>
 
             <List disablePadding>

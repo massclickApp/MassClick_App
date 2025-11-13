@@ -47,6 +47,7 @@ import ScrollToTop from './scrollTop.js';
 import LeadsPage from './Internals/clientComponent/LeadsPage/leadsPage.js';
 import LeadsCardHistory from './Internals/clientComponent/LeadsPage/leadsCards/leadsCards.js';
 import TokenExpiredModal from './Internals/tokenModel/tokenModel.js';
+import BusinessEnquiry from './Internals/clientComponent/businessEnquiry/businessEnquiry.js';
 
 const ComingSoon = ({ title }) => (
   <div style={{ textAlign: 'center', marginTop: '20%' }}>
@@ -188,8 +189,9 @@ function App() {
               path="/write-review/:businessId/:ratingValue"
               element={<WriteReviewPage />}
             />
-              <Route path="/leads" element={<LeadsPage />} />
-              <Route path="/user/search-history" element={<LeadsCardHistory  />} />
+            <Route path="/leads" element={<LeadsPage />} />
+            <Route path="/user/search-history" element={<LeadsCardHistory />} />
+            <Route path="/business-enquiry" element={<BusinessEnquiry />} />
             {categoriesServices.flatMap((category, categoryIndex) =>
               category.items.map((item, itemIndex) => {
                 const path = item.path || item.route || `auto-path-${categoryIndex}-${itemIndex}`;

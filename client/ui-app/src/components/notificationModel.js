@@ -27,7 +27,7 @@ export default function NotificationDropdown({ open, handleClose }) {
   );
 
   const [selected, setSelected] = useState(null);
-  const [readNotifications, setReadNotifications] = useState([]); 
+  const [readNotifications, setReadNotifications] = useState([]);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -71,6 +71,14 @@ export default function NotificationDropdown({ open, handleClose }) {
     overflowY: "auto",
     padding: "10px 12px",
   };
+const detailItem = {
+  fontSize: "0.9rem",
+  mb: 1,
+  color: "#333",
+  lineHeight: 1.4,
+  display: "flex",
+  gap: "6px",
+};
 
   return (
     open && (
@@ -165,7 +173,7 @@ export default function NotificationDropdown({ open, handleClose }) {
                               textOverflow: "ellipsis",
                             }}
                           >
-                            {proj.message}
+                            {proj.businessName}
                           </Typography>
                         }
                       />
@@ -176,7 +184,7 @@ export default function NotificationDropdown({ open, handleClose }) {
             ) : (
               <Slide direction="left" in={!!selected} mountOnEnter unmountOnExit>
                 <Box>
-                  {/* Detail Header */}
+                  {/* Header */}
                   <Box
                     display="flex"
                     alignItems="center"
@@ -188,6 +196,7 @@ export default function NotificationDropdown({ open, handleClose }) {
                       <Avatar sx={{ bgcolor: accentColor }}>
                         {selected.fullName?.charAt(0)?.toUpperCase() || "U"}
                       </Avatar>
+
                       <Box>
                         <Typography
                           sx={{
@@ -199,13 +208,9 @@ export default function NotificationDropdown({ open, handleClose }) {
                         >
                           {selected.fullName}
                         </Typography>
-                        <Typography
-                          sx={{
-                            color: "#555",
-                            fontSize: "0.85rem",
-                          }}
-                        >
-                          {selected.message}
+
+                        <Typography sx={{ color: "#777", fontSize: "0.8rem" }}>
+                          {selected.businessName || "No Business Name"}
                         </Typography>
                       </Box>
                     </Box>
@@ -221,44 +226,91 @@ export default function NotificationDropdown({ open, handleClose }) {
 
                   <Divider sx={{ mb: 2 }} />
 
-                  {/* Details */}
-                  <Box px={1}>
-                    <Typography
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        fontSize: "0.9rem",
-                        mb: 0.8,
-                        color: "#333",
-                      }}
-                    >
-                      📞 {selected.contactNumber || "N/A"}
+                  {/* DETAILS SECTION */}
+                  <Box px={1} sx={{ maxHeight: "60vh", overflowY: "auto" }}>
+
+                    {/* Contact Number */}
+                    <Typography sx={detailItem}>
+                      📞 <b>Contact:</b> {selected.contactNumber || "N/A"}
                     </Typography>
 
-                    <Typography
-                      sx={{
-                        fontSize: "0.9rem",
-                        mb: 0.8,
-                        color: "#333",
-                      }}
-                    >
-                      ✉️ {selected.email || "N/A"}
+                    {/* Email */}
+                    <Typography sx={detailItem}>
+                      ✉️ <b>Email:</b> {selected.email || "N/A"}
                     </Typography>
 
-                    <Typography
-                      sx={{
-                        fontSize: "0.8rem",
-                        color: "#777",
-                      }}
-                    >
-                      🕒{" "}
+                    {/* Business Name */}
+                    <Typography sx={detailItem}>
+                      🏢 <b>Business Name:</b> {selected.businessName || "N/A"}
+                    </Typography>
+
+                    {/* Business Type */}
+                    <Typography sx={detailItem}>
+                      🏭 <b>Business Type:</b> {selected.businessType || "N/A"}
+                    </Typography>
+
+                    {/* Category */}
+                    <Typography sx={detailItem}>
+                      📂 <b>Category:</b> {selected.category || "N/A"}
+                    </Typography>
+
+                    {/* Sub Category */}
+                    <Typography sx={detailItem}>
+                      📁 <b>Sub Category:</b> {selected.subCategory || "N/A"}
+                    </Typography>
+
+                    {/* Business Phone */}
+                    <Typography sx={detailItem}>
+                      ☎️ <b>Business Phone:</b> {selected.businessPhone || "N/A"}
+                    </Typography>
+
+                    {/* Address */}
+                    <Typography sx={detailItem}>
+                      📍 <b>Address:</b> {selected.address || "N/A"}
+                    </Typography>
+
+                    {/* City */}
+                    <Typography sx={detailItem}>
+                      🏙️ <b>City:</b> {selected.city || "N/A"}
+                    </Typography>
+
+                    {/* State */}
+                    <Typography sx={detailItem}>
+                      🗺️ <b>State:</b> {selected.state || "N/A"}
+                    </Typography>
+
+                    {/* Country */}
+                    <Typography sx={detailItem}>
+                      🌎 <b>Country:</b> {selected.country || "N/A"}
+                    </Typography>
+
+                    {/* Postal Code */}
+                    <Typography sx={detailItem}>
+                      🔢 <b>Postal Code:</b> {selected.postalCode || "N/A"}
+                    </Typography>
+
+                    {/* Message */}
+                    <Typography sx={detailItem}>
+                      💬 <b>Message:</b> {selected.message || "N/A"}
+                    </Typography>
+
+                    {/* Notes */}
+                    <Typography sx={detailItem}>
+                      📝 <b>Notes:</b> {selected.notes || "N/A"}
+                    </Typography>
+
+                    {/* Submitted At */}
+                    <Typography sx={{ ...detailItem, color: "#888" }}>
+                      🕒 <b>Submitted:</b>{" "}
                       {selected.submittedAt
                         ? new Date(selected.submittedAt).toLocaleString()
                         : ""}
                     </Typography>
+
                   </Box>
                 </Box>
               </Slide>
+
             )}
           </Box>
         )}
