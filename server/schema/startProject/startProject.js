@@ -19,6 +19,7 @@ const startProjectSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    isActive: { type: Boolean, default: true },
     submittedAt: {
         type: Date,
         default: Date.now

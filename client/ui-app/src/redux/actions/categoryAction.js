@@ -11,8 +11,8 @@ const API_URL = process.env.REACT_APP_API_URL;
 export const getAllCategory = () => async (dispatch) => {
   dispatch({ type: FETCH_CATEGORY_REQUEST });
   try {
-    let token =
-      localStorage.getItem("accessToken") || localStorage.getItem("clientAccessToken");
+        const token = localStorage.getItem("accessToken");
+
 
     if (!token) {
       throw new Error("No valid access token found");

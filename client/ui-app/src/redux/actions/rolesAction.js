@@ -13,14 +13,10 @@ export const getAllRoles = () => async (dispatch) => {
   dispatch({ type: FETCH_ROLES_REQUEST });
   try {
     const token = localStorage.getItem("accessToken");
-    console.log("API_URL", API_URL);
-    console.log("Token", token);
-
+   
     const response = await axios.get(`${API_URL}/roles/viewall`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-
-    console.log("API Response", response.data); 
 
     const roles = response.data;
     dispatch({ type: FETCH_ROLES_SUCCESS, payload: roles });
@@ -45,7 +41,6 @@ export const createRoles = (rolesData) => async (dispatch) => {debugger
         });
 
         const roles = response.data.data || response.data;
-console.log("roles", roles)
         dispatch({ type: CREATE_ROLES_SUCCESS, payload: roles });
 
         return roles;

@@ -7,11 +7,12 @@ import { getAllLocation } from "../../../redux/actions/locationAction";
 import { getAllBusinessList, getAllClientBusinessList, getAllSearchLogs, logSearchActivity } from "../../../redux/actions/businessListAction";
 import { getAllCategory } from "../../../redux/actions/categoryAction";
 import Tooltip from "@mui/material/Tooltip";
-
+import { categoryBarHelpers } from "../categoryBar";
 import {
   Box,
   Typography,
   Button,
+  IconButton,
 } from "@mui/material";
 import MicIcon from "@mui/icons-material/Mic";
 import AddIcon from "@mui/icons-material/Add";
@@ -21,9 +22,7 @@ import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
 import HistoryToggleOffIcon from '@mui/icons-material/HistoryToggleOff';
 import MI from "../../../assets/Mi.png";
 import AddBusinessModel from "../AddBusinessModel";
-
-
-
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 const CategoryDropdown = ({ options, setSearchTerm, closeDropdown }) => {
   const MAX_HEIGHT_PX = 200;
@@ -83,13 +82,13 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const categoryRef = useRef(null);
 
-const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
+  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchTerm), 200);
     return () => clearTimeout(timer);
   }, [searchTerm]);
-  
+
   useEffect(() => {
     dispatch(getAllLocation());
     dispatch(getAllClientBusinessList());
@@ -176,6 +175,9 @@ const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
 
+  const loggedIn = categoryBarHelpers.checkLogin();
+
+
   return (
     <>
       <header
@@ -244,96 +246,113 @@ const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
             </div>
 
             <div className="input-group search-group" ref={categoryRef}>
-            <input
-              className="custom-input"
-              placeholder="Search for..."
-              value={searchTerm}
-              onChange={(e) => {
-                const value = e.target.value;
-                setSearchTerm(value);
-                setIsCategoryDropdownOpen(true);
-              }}
-              onFocus={() => setIsCategoryDropdownOpen(true)}
-            />
-
-            {isCategoryDropdownOpen && searchTerm.trim().length < 2 && (
-              <CategoryDropdown
-                options={categoryOptions}
-                setSearchTerm={setSearchTerm}
-                closeDropdown={() => setIsCategoryDropdownOpen(false)}
+              <input
+                className="custom-input"
+                placeholder="Search for..."
+                value={searchTerm}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSearchTerm(value);
+                  setIsCategoryDropdownOpen(true);
+                }}
+                onFocus={() => setIsCategoryDropdownOpen(true)}
               />
-            )}
 
-            {isCategoryDropdownOpen && searchTerm.trim().length >= 2 && (
-              <div className="category-custom-dropdown">
-                <div className="trending-label">SUGGESTIONS</div>
-                <div className="options-list-container" style={{ maxHeight: "200px" }}>
-                  {clientBusinessList
-                    .filter((business) => {
-                      const value = debouncedSearch.toLowerCase();
-                      return (
-                        business.businessName?.toLowerCase().includes(value) ||
-                        business.category?.toLowerCase().includes(value)
-                      );
-                    })
-                    .slice(0, 10)
-                    .map((business, index) => (
-                      <div
-                        key={index}
-                        className="option-item"
-                        onClick={() => {
-                          setSearchTerm(business.businessName);
-                          setIsCategoryDropdownOpen(false);
-                        }}
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          padding: "4px 8px",
-                          cursor: "pointer",
-                        }}
-                      >
-                        <SearchIcon style={{ marginRight: "6px", color: "#ff7b00" }} />
-                        <span>{business.businessName}</span>
-                        <span style={{ marginLeft: "auto", color: "gray", fontSize: "12px" }}>
-                          {business.category}
-                        </span>
-                      </div>
-                    ))}
+              {isCategoryDropdownOpen && searchTerm.trim().length < 2 && (
+                <CategoryDropdown
+                  options={categoryOptions}
+                  setSearchTerm={setSearchTerm}
+                  closeDropdown={() => setIsCategoryDropdownOpen(false)}
+                />
+              )}
+
+              {isCategoryDropdownOpen && searchTerm.trim().length >= 2 && (
+                <div className="category-custom-dropdown">
+                  <div className="trending-label">SUGGESTIONS</div>
+                  <div className="options-list-container" style={{ maxHeight: "200px" }}>
+                    {clientBusinessList
+                      .filter((business) => {
+                        const value = debouncedSearch.toLowerCase();
+                        return (
+                          business.businessName?.toLowerCase().includes(value) ||
+                          business.category?.toLowerCase().includes(value)
+                        );
+                      })
+                      .slice(0, 10)
+                      .map((business, index) => (
+                        <div
+                          key={index}
+                          className="option-item"
+                          onClick={() => {
+                            setSearchTerm(business.businessName);
+                            setIsCategoryDropdownOpen(false);
+                          }}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            padding: "4px 8px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          <SearchIcon style={{ marginRight: "6px", color: "#ff7b00" }} />
+                          <span>{business.businessName}</span>
+                          <span style={{ marginLeft: "auto", color: "gray", fontSize: "12px" }}>
+                            {business.category}
+                          </span>
+                        </div>
+                      ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            <MicIcon className="input-adornment end" />
-          </div>
+              <MicIcon className="input-adornment end" />
+            </div>
 
             <button className="search-btn" onClick={handleSearch}>
               <span>Search</span> <i className="fa-solid fa-magnifying-glass"></i>
             </button>
           </div>
 
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={handleOpenModal}
-            sx={{
-              display: { xs: "none", md: "flex" },
-              background: "linear-gradient(45deg, #FF6F00, #F7941D)",
-              color: "white",
-              textTransform: "none",
-              fontSize: { xs: "0.9rem", sm: "1rem" },
-              borderRadius: "30px",
-              px: { xs: 2.5, sm: 3.5 },
-              py: { xs: 1, sm: 1.2 },
-              whiteSpace: "nowrap",
-              boxShadow: "0 10px 30px rgba(255, 123, 0, 0.4)",
-              "&:hover": {
-                background: "linear-gradient(45deg, #cc5a0f, #ff8a2d)",
-                boxShadow: "0 15px 40px rgba(255, 123, 0, 0.5)",
-              },
-            }}
-          >
-            Add Your Business
-          </Button>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            {!loggedIn ? (
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={handleOpenModal}
+                sx={{
+                  background: "linear-gradient(45deg, #FF6F00, #F7941D)",
+                  color: "white",
+                  textTransform: "none",
+                  fontSize: { xs: "0.9rem", sm: "1rem" },
+                  borderRadius: "30px",
+                  px: { xs: 2.5, sm: 3.5 },
+                  py: { xs: 1, sm: 1.2 },
+                  whiteSpace: "nowrap",
+                  transition: "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
+                  "&:hover": {
+                    background: "linear-gradient(45deg, #cc5a0f, #ff8a2d)",
+                    boxShadow: "0 15px 40px rgba(255, 123, 0, 0.5)",
+                  },
+                }}
+              >
+                Business
+              </Button>
+            ) : (
+              <IconButton
+                onClick={() => window.dispatchEvent(new Event("openUserDrawer"))}
+                sx={{
+                  color: "gray",
+                  bgcolor: "rgba(0,0,0,0.04)",
+                  "&:hover": {
+                    background: "linear-gradient(45deg, #ea6d11, #ff9c3b)",
+                    color: "white",
+                  },
+                }}
+              >
+                <AccountCircleIcon sx={{ fontSize: 28 }} />
+              </IconButton>
+            )}
+          </Box>
         </div>
 
         <AddBusinessModel open={isModalOpen} handleClose={handleCloseModal} />

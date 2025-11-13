@@ -14,6 +14,7 @@ import SearchResults from './SearchResult/SearchResult';
 import PopularCategories from './popularCategories/popularCategories';
 import Footer from './footer/footer';
 import CardsSearch from './CardsSearch/CardsSearch';
+import OTPLoginModel from './AddBusinessModel.js'
 
 const STICKY_SEARCH_BAR_HEIGHT = 85;
 
@@ -22,23 +23,45 @@ const LandingPage = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [locationName, setLocationName] = useState("");
-    const [searchTerm, setSearchTerm] = useState("");     // <-- lift state
+    const [searchTerm, setSearchTerm] = useState("");
     const [categoryName, setCategoryName] = useState("");
     const heroSectionRef = useRef(null);
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const [checkedLogin, setCheckedLogin] = useState(false);
+
+
+    const isUserLoggedIn = () => {
+        try {
+            const storedUser = localStorage.getItem('authUser');
+            if (!storedUser) return false;
+            const parsedUser = JSON.parse(storedUser);
+            return !!(parsedUser && parsedUser.mobileNumber1Verified);
+        } catch {
+            return false;
+        }
+    };
 
     useEffect(() => {
         const handleScroll = () => {
             if (heroSectionRef.current) {
                 const heroHeight = heroSectionRef.current.offsetHeight || 600;
-                setIsScrolled(window.scrollY > heroHeight + 50);
+                const scrolled = window.scrollY > heroHeight + 50;
+                setIsScrolled(scrolled);
+
+                if (scrolled && !checkedLogin) {
+                    setCheckedLogin(true);
+                    const loggedIn = isUserLoggedIn();
+                    if (!loggedIn) {
+                        setShowLoginModal(true);
+                    }
+                }
             }
         };
 
         window.addEventListener('scroll', handleScroll);
         handleScroll();
-
         return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    }, [checkedLogin]);
 
     const handleMobileMenuClose = () => setMobileMenuOpen(false);
 
@@ -62,8 +85,9 @@ const LandingPage = () => {
                 {drawerContent}
             </Drawer>
 
-            {!isScrolled && !isSearching && <CategoryBar />}
-
+            <Box sx={{ display: isScrolled ? 'none' : 'block' }}>
+                <CategoryBar />
+            </Box>
             {isScrolled && (
                 <Box
                     sx={{
@@ -99,8 +123,8 @@ const LandingPage = () => {
                     categoryName={categoryName}
                     setCategoryName={setCategoryName}
                     setSearchResults={setSearchResults}
-                />            
-                </Box>
+                />
+            </Box>
 
             {isSearching ? (
                 <Box sx={{ mt: 4, mb: 4, px: { xs: 2, sm: 4, md: 6 } }}>
@@ -119,6 +143,8 @@ const LandingPage = () => {
                     <Footer />
                 </>
             )}
+            <OTPLoginModel open={showLoginModal} handleClose={() => setShowLoginModal(false)} />
+
         </Box>
     );
 };

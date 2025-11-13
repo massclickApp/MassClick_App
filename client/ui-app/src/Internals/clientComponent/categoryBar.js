@@ -108,7 +108,7 @@ export const userMenuItems = [
 const CategoryBar = () => {
     const navigate = useNavigate();
     const location = useLocation();
-  const dispatch = useDispatch();
+    const dispatch = useDispatch();
 
     const [selectedLanguage, setSelectedLanguage] = useState("English");
     const [anchorEl, setAnchorEl] = useState(null);
@@ -117,11 +117,11 @@ const CategoryBar = () => {
     const { viewResponse, verifyResponse } = otpState;
     const userName = viewResponse?.user?.userName || '';
     useEffect(() => {
-    const mobile = localStorage.getItem("mobileNumber"); 
-    if (mobile) {
-        dispatch(viewOtpUser(mobile));
-    }
-}, [dispatch]);
+        const mobile = localStorage.getItem("mobileNumber");
+        if (mobile) {
+            dispatch(viewOtpUser(mobile));
+        }
+    }, [dispatch]);
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -140,6 +140,7 @@ const CategoryBar = () => {
     const handleLogout = () => {
         localStorage.removeItem("authToken");
         localStorage.removeItem("mobileNumber");
+        localStorage.removeItem("authUser");
 
         setIsLoggedIn(false);
         setIsDrawerOpen(false);
@@ -149,14 +150,16 @@ const CategoryBar = () => {
 
     useEffect(() => {
         checkLogin();
-
         window.addEventListener("storage", checkLogin);
-
         window.addEventListener("authChange", checkLogin);
+
+        const handleOpenDrawer = () => setIsDrawerOpen(true);
+        window.addEventListener("openUserDrawer", handleOpenDrawer);
 
         return () => {
             window.removeEventListener("storage", checkLogin);
             window.removeEventListener("authChange", checkLogin);
+            window.removeEventListener("openUserDrawer", handleOpenDrawer);
         };
     }, []);
 
@@ -179,9 +182,9 @@ const CategoryBar = () => {
         if (name === "Leads") {
             navigate("/leads");
         } else if (name === "Advertise") {
-            navigate("/advertise"); 
+            navigate("/advertise");
         } else if (name === "Free Listing") {
-            navigate("/free-listing"); 
+            navigate("/free-listing");
         }
     };
 
@@ -213,7 +216,7 @@ const CategoryBar = () => {
                     </Typography>
                 </Box>
 
-                <Avatar sx={{ width: 48, height: 48, ml: 2, bgcolor: '#F7941D' }}>P</Avatar> {/* Added an initial for visual */}
+                <Avatar sx={{ width: 48, height: 48, ml: 2, bgcolor: '#F7941D' }}>P</Avatar> 
             </Box>
 
             <List disablePadding>
@@ -272,7 +275,6 @@ const CategoryBar = () => {
                                     }}
                                 >
                                     <ListItemIcon sx={{ minWidth: 40 }}>
-                                        {/* Use a Box to control icon color and size */}
                                         <Box sx={{ color: isActive ? '#F7941D' : (item.isLogout ? 'error.main' : 'text.secondary') }}>
                                             {item.icon}
                                         </Box>
@@ -613,3 +615,16 @@ const CategoryBar = () => {
 };
 
 export default CategoryBar;
+
+export const categoryBarHelpers = {
+    checkLogin: () => {
+        const token = localStorage.getItem("authToken");
+        return !!token;
+    },
+    handleLogout: (navigate) => {
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("mobileNumber");
+        window.dispatchEvent(new Event("authChange"));
+        navigate("/home");
+    },
+};

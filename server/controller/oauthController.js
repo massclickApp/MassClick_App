@@ -47,15 +47,23 @@ export const oauthToken = async (req, res) => {
     }
 };
 export const logoutAction = async (req, res) => {
-    try {
-        const token = req.headers.authorization?.split(' ')[1]; 
-        if (!token) {
-            return res.status(UNAUTHORIZED.code).send('No token provided.');
-        }
-        await logoutUsers(token);
-        res.status(200).send({ message: 'Logout successful' });
-    } catch (error) {
-        console.error(error);
-        return res.status(BAD_REQUEST.code).send(error.message);
+  try {
+    const authHeader = req.headers.authorization;
+    const accessToken = authHeader?.split(" ")[1];
+
+    if (!accessToken) {
+      return res.status(UNAUTHORIZED.code).json({ error: "No token provided." });
     }
+
+    const result = await logoutUsers(accessToken);
+
+    if (!result.success) {
+      return res.status(BAD_REQUEST.code).json({ error: result.message });
+    }
+
+    res.status(200).json({ message: "Logout successful" });
+  } catch (error) {
+    console.error("Logout Error:", error);
+    return res.status(BAD_REQUEST.code).json({ error: error.message });
+  }
 };

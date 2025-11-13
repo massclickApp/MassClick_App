@@ -15,7 +15,6 @@ const getClient = (clientId, clientSecret) => clientModel.findOne({ clientId, cl
 const saveToken = async (token, client, user) => {
     const userId = user.userId || 'client_user_id';
 
-    // Delete existing token for same user
     await oauthModel.deleteMany({ 'user.userId': userId });
 
     const tokenInstance = new oauthModel({
@@ -116,47 +115,65 @@ export const oauthValidation = async (req) => {
 
 // ---------- OAuth Authentication Middleware ----------
 export const oauthAuthentication = async (req, res, next) => {
-  const request = new OAuth2Server.Request(req);
-  const response = new OAuth2Server.Response(res);
+    const request = new OAuth2Server.Request(req);
+    const response = new OAuth2Server.Response(res);
 
-  try {
-    const token = await oauthtoken.authenticate(request, response);
+    try {
+        const token = await oauthtoken.authenticate(request, response);
 
-    const userId = token.user?.userId;
-    if (mongoose.Types.ObjectId.isValid(userId)) {
-      const latestUser = await userModel.findById(userId).lean();
-      if (latestUser) {
-        token.user.userRole = latestUser.role;
-      }
+        const userId = token.user?.userId;
+        if (mongoose.Types.ObjectId.isValid(userId)) {
+            const latestUser = await userModel.findById(userId).lean();
+            if (latestUser) {
+                token.user.userRole = latestUser.role;
+            }
+        }
+
+        req.authUser = token.user;
+        next();
+    } catch (err) {
+        console.error("OAuth Authentication Error:", err);
+        return res.status(UNAUTHORIZED.code).send({ error: err.message });
     }
-
-    req.authUser = token.user;
-    next();
-  } catch (err) {
-    console.error("OAuth Authentication Error:", err);
-    return res.status(UNAUTHORIZED.code).send({ error: err.message });
-  }
 };
 
-// ---------- Refresh Token Handler ----------
 export const handleRefreshTokenRequest = async (req, res) => {
     const request = new OAuth2Server.Request(req);
     const response = new OAuth2Server.Response(res);
 
     try {
         const tokenInfo = await oauthtoken.token(request, response);
-        res.json(tokenInfo);
+        return tokenInfo;
     } catch (error) {
         res.status(error.code || 500).json({ error: error.message });
     }
 };
 
-// ---------- Logout User ----------
-export const logoutUsers = async (token) => {
-    const result = await oauthModel.findOneAndDelete({ accessToken: token });
-    if (!result) {
-     
-        return true;
+export const logoutUsers = async (accessToken) => {
+  try {
+    const tokenRecord = await oauthModel.findOne({ accessToken }).lean();
+
+    if (!tokenRecord) {
+      console.warn("No token found for logout");
+      return false;
     }
+
+    const { user, client } = tokenRecord;
+
+    if (!client?.clientId) {
+      console.warn("Client ID missing in token");
+      return false;
+    }
+
+    const deleteQuery = {
+      "client.clientId": client.clientId,
+    };
+
+    const deleteResult = await oauthModel.deleteMany(deleteQuery);
+
     return true;
+  } catch (error) {
+    console.error("Logout cleanup error:", error);
+    return false;
+  }
 };

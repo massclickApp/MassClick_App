@@ -1,23 +1,23 @@
-  import {
-    LOGIN_REQUEST,
-    LOGIN_SUCCESS,
-    LOGIN_FAILURE,
-    LOGOUT,
-    RELOGIN_REQUEST,
-    RELOGIN_SUCCESS,
-    RELOGIN_FAILURE,
-    CLIENT_LOGIN_REQUEST,
-    CLIENT_LOGIN_SUCCESS,
-    CLIENT_LOGIN_FAILURE,
-  } from '../actions/authAction.js';
+import {
+  LOGIN_REQUEST,
+  LOGIN_SUCCESS,
+  LOGIN_FAILURE,
+  LOGOUT,
+  RELOGIN_REQUEST,
+  RELOGIN_SUCCESS,
+  RELOGIN_FAILURE,
+  CLIENT_LOGIN_REQUEST,
+  CLIENT_LOGIN_SUCCESS,
+  CLIENT_LOGIN_FAILURE,
+} from '../actions/authAction.js';
 
-  // authReducer.js
 const initialState = {
   user: null,
   loading: false,
   error: null,
   accessToken: null,
   refreshToken: null,
+  showTokenExpiredModal: false, // 👈 new state
 };
 
 export default function authReducer(state = initialState, action) {
@@ -36,6 +36,7 @@ export default function authReducer(state = initialState, action) {
         user: action.payload.user,
         accessToken: action.payload.accessToken,
         refreshToken: action.payload.refreshToken,
+        showTokenExpiredModal: false,
         error: null,
       };
 
@@ -44,6 +45,12 @@ export default function authReducer(state = initialState, action) {
     case CLIENT_LOGIN_FAILURE:
       return { ...state, loading: false, error: action.payload };
 
+    case "SHOW_TOKEN_EXPIRED_MODAL":
+      return { ...state, showTokenExpiredModal: true };
+
+    case "HIDE_TOKEN_EXPIRED_MODAL":
+      return { ...state, showTokenExpiredModal: false };
+
     case LOGOUT:
       return { ...initialState };
 
@@ -51,4 +58,3 @@ export default function authReducer(state = initialState, action) {
       return state;
   }
 }
-

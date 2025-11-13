@@ -40,15 +40,13 @@ export const getAllEnquiry = () => async (dispatch) => {
 export const createEnquiry = (enquiryData) => async (dispatch) => { 
     dispatch({ type: CREATE_ENQUIRY_REQUEST }); // Use ENQUIRY type
     try {
-        // NOTE: The frontend form submission for a public user usually does NOT need the 'Authorization' header.
-        // I will keep it for now based on your router setup, but consider removing `oauthAuthentication` from the public POST route.
+    
         const token = localStorage.getItem("accessToken"); 
         
        const response = await axios.post(`${API_URL}/enquiry/create`, enquiryData, { 
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        // The backend `addEnquiryAction` sends data inside an object with a `data` key.
         const createdEnquiry = response.data.data || response.data; 
 
         dispatch({ type: CREATE_ENQUIRY_SUCCESS, payload: createdEnquiry });

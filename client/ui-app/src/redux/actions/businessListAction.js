@@ -14,11 +14,19 @@ import {
 import { getClientToken } from "./clientAuthAction.js";
 const API_URL = process.env.REACT_APP_API_URL;
 
+const getValidToken = async (dispatch) => {
+  let token = localStorage.getItem("accessToken");
+  if (!token) token = await dispatch(getClientToken());
+  if (!token) throw new Error("No valid token found");
+  return token;
+};
+
+
 export const getAllBusinessList = () => async (dispatch) => {
   dispatch({ type: FETCH_BUSINESS_REQUEST });
 
   try {
-    const token = localStorage.getItem("accessToken");
+    const token = await getValidToken(dispatch);
 
     if (!token) {
       throw new Error("No valid access token found");
@@ -91,8 +99,8 @@ export const toggleBusinessStatus = ({ id, newStatus }) => async (dispatch) => {
   dispatch({ type: ACTIVE_BUSINESS_REQUEST });
 
   try {
-    let token =
-      localStorage.getItem("accessToken") || localStorage.getItem("clientAccessToken");
+       const token = localStorage.getItem("accessToken");
+
 
     if (!token) {
       throw new Error("No valid access token found");
@@ -136,9 +144,8 @@ export const editBusinessList = (id, businessData) => async (dispatch) => {
 export const deleteBusinessList = (id) => async (dispatch) => {
   dispatch({ type: DELETE_BUSINESS_REQUEST });
   try {
-    let token =
-      localStorage.getItem("accessToken") || localStorage.getItem("clientAccessToken");
-    console.log("token", token);
+       const token = localStorage.getItem("accessToken");
+
 
     if (!token) {
       throw new Error("No valid access token found");
@@ -155,9 +162,7 @@ export const deleteBusinessList = (id) => async (dispatch) => {
 export const getTrendingSearches = (location) => async (dispatch) => {
   dispatch({ type: FETCH_TRENDING_REQUEST });
   try {
-    let token =
-      localStorage.getItem("accessToken") || localStorage.getItem("clientAccessToken");
-    console.log("token", token);
+   const token = await dispatch(getClientToken());
 
     if (!token) {
       throw new Error("No valid access token found");
@@ -180,9 +185,9 @@ export const getTrendingSearches = (location) => async (dispatch) => {
 };
 
 
-export const logSearchActivity = (categoryName, location) => async () => {
+export const logSearchActivity = (categoryName, location) => async (dispatch) => {
   try {
-    const token = localStorage.getItem("accessToken");
+   const token = await dispatch(getClientToken());
 
     await axios.post(
       `${API_URL}/businesslist/log-search`,
@@ -202,9 +207,7 @@ export const getAllSearchLogs = () => async (dispatch) => {
   dispatch({ type: FETCH_SEARCH_LOGS_REQUEST });
 
   try {
-    let token =
-      localStorage.getItem("accessToken") || localStorage.getItem("clientAccessToken");
-    console.log("token", token);
+   const token = await dispatch(getClientToken());
 
     if (!token) {
       throw new Error("No valid access token found");

@@ -5,12 +5,10 @@ import './BusinessList.css'
 export default function BusinessListPage() {
 
     const handlePayNow = () => {
-    // In a real application, this would trigger the PhonePe (or other payment gateway) SDK
-    // Example:
+  
     console.log("Initiating payment via PhonePe for MassClick Business Listing...");
     alert("Redirecting to PhonePe for secure payment...");
-    // window.location.href = "YOUR_PHONEPE_PAYMENT_URL"; 
-    // Or, call a backend API that initiates the PhonePe flow.
+  
   };
   return (
   <>

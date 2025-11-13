@@ -12,8 +12,8 @@ const API_URL = process.env.REACT_APP_API_URL;
 export const getAllLocation = () => async (dispatch) => {
   dispatch({ type: FETCH_LOCATION_REQUEST });
   try {
-    let token =
-      localStorage.getItem("accessToken") || localStorage.getItem("clientAccessToken");
+        const token = localStorage.getItem("accessToken");
+
 
     if (!token) {
       throw new Error("No valid access token found");

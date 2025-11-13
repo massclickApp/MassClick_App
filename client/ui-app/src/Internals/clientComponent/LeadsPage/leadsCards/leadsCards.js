@@ -21,6 +21,7 @@ import {
   Chip,
 } from "@mui/material";
 import CardsSearch from "../../CardsSearch/CardsSearch";
+import FastRewindIcon from '@mui/icons-material/FastRewind';
 
 const LeadsCardHistory = () => {
   const location = useLocation();
@@ -220,7 +221,7 @@ const LeadsCardHistory = () => {
               fontWeight: 600,
             }}
           >
-            ←
+            <FastRewindIcon />
           </Button>
           <h2>User Search History</h2>
         </header>
@@ -353,7 +354,6 @@ const LeadsCardHistory = () => {
         )}
       </div>
 
-      {/* ✅ Universal Modal */}
       <Modal
         open={openModal}
         onClose={handleCloseModal}

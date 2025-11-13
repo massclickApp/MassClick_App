@@ -36,22 +36,18 @@ export default function OptionsMenu() {
         navigate('/dashboard/profile');   // 2. Navigate to the Profile page
     };
 
-    // Handler for Logout
     const handleLogout = async () => {
-        const id = user?._id?.$oid; // Adjusted to match your user object structure
+        const id = user?._id?.$oid;
         await dispatch(logout(id)); 
         handleClose();
-        navigate('/'); // Redirect to home/login page after logout
+        navigate('/');
     };
 
-    // Handler to open the menu
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
-    // NOTE: The 'Profile' and 'My account' menu items often link to the same place.
-    // I'm assuming 'My account' is the one you want to link to the Profile page.
-    // I've also linked the 'Profile' item to the same handler for redundancy.
+
 
     return (
         <React.Fragment>
@@ -60,7 +56,6 @@ export default function OptionsMenu() {
                 onClick={handleClick}
                 sx={{ borderColor: 'transparent', p: 0 }}
             >
-                {/* Profile Avatar Box */}
                 <Box
                     sx={{
                         width: 40,
@@ -74,7 +69,6 @@ export default function OptionsMenu() {
                         boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
                     }}
                 >
-                    {/* Placeholder for Profile Picture or Default Icon */}
                     <AccountCircleRoundedIcon sx={{ width: 40, height: 40, color: 'primary.main' }} />
                 </Box>
             </MenuButton>
@@ -84,7 +78,6 @@ export default function OptionsMenu() {
                 id="menu"
                 open={open}
                 onClose={handleClose}
-                // Removed onClick={handleClose} from Menu component to allow item clicks
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                 sx={{
@@ -93,7 +86,6 @@ export default function OptionsMenu() {
                     [`& .${dividerClasses.root}`]: { margin: '4px -4px' },
                 }}
             >
-                {/* 1. Profile/My account Items with Navigation */}
                 <MenuItem onClick={handleProfileClick}>
                     Profile
                 </MenuItem>
@@ -103,15 +95,13 @@ export default function OptionsMenu() {
                 
                 <Divider />
                 
-                {/* Other Menu Items */}
                 <MenuItem onClick={handleClose}>Add another account</MenuItem>
                 <MenuItem onClick={handleClose}>Settings</MenuItem>
                 
                 <Divider />
                 
-                {/* 2. Logout Item */}
                 <MenuItem
-                    onClick={handleLogout} // Use the dedicated handleLogout function
+                    onClick={handleLogout} 
                     sx={{
                         [`& .${listItemIconClasses.root}`]: { ml: 'auto', minWidth: 0 },
                     }}

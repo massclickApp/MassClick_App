@@ -97,7 +97,9 @@ const OTPLoginModal = ({ open, handleClose }) => {
                     borderRadius: isMobile ? '0' : "24px",
                     boxShadow: isMobile ? 'none' : "0 15px 40px rgba(0, 0, 0, 0.15)",
                     p: { xs: 2, sm: 4 },
-                    minHeight: '400px',
+                    width: isMobile ? '100%' : '420px',
+                    minHeight: '480px',
+                    transition: 'height 0.3s ease-in-out',
                     backgroundColor: theme.palette.grey[50],
                 },
             }}
@@ -186,8 +188,8 @@ const OTPLoginModal = ({ open, handleClose }) => {
                                         <Typography variant="body2" color="text.secondary">
                                             I Agree to
                                             <MuiLink
-                                                component={RouterLink} 
-                                                to="/terms"           
+                                                component={RouterLink}
+                                                to="/terms"
                                                 underline="hover"
                                                 sx={{ color: '#FF6F00', fontWeight: 600 }}
                                             >
@@ -281,9 +283,6 @@ const OTPLoginModal = ({ open, handleClose }) => {
                                 '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: theme.palette.primary.main },
                             }}
                         />
-
-
-
 
                         <Button
                             fullWidth

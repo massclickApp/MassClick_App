@@ -23,6 +23,13 @@ const CLIENT_SECRET = process.env.REACT_APP_OAUTH_CLIENT_SECRET;
 
 
 export const clientLogin = () => async (dispatch) => {
+  const existingToken = localStorage.getItem("clientAccessToken");
+  const expiresAt = localStorage.getItem("clientAccessTokenExpiresAt");
+
+  if (existingToken && new Date(expiresAt) > new Date()) {
+    return { accessToken: existingToken };
+  }
+
   dispatch({ type: CLIENT_LOGIN_REQUEST });
 
   try {
@@ -31,15 +38,15 @@ export const clientLogin = () => async (dispatch) => {
       clientSecret: CLIENT_SECRET,
     });
 
-    const { accessToken, refreshToken, user, accessTokenExpiresAt } = response.data;
+    const { accessToken, refreshToken, accessTokenExpiresAt } = response.data;
 
-    localStorage.setItem('clientAccessToken', accessToken);
-    localStorage.setItem('clientRefreshToken', refreshToken);
-    localStorage.setItem('ClientAccessTokenExpiresAt', accessTokenExpiresAt);
+    localStorage.setItem("clientAccessToken", accessToken);
+    localStorage.setItem("clientAccessTokenExpiresAt", accessTokenExpiresAt);
+    localStorage.setItem("clientRefreshToken", refreshToken);
 
     dispatch({
       type: CLIENT_LOGIN_SUCCESS,
-      payload: { accessToken, refreshToken, user },
+      payload: { accessToken, refreshToken },
     });
 
     return response.data;
@@ -52,6 +59,7 @@ export const clientLogin = () => async (dispatch) => {
   }
 };
 
+
 export const login = (userName, password) => async (dispatch) => {
   dispatch({ type: LOGIN_REQUEST });
 
@@ -60,18 +68,19 @@ export const login = (userName, password) => async (dispatch) => {
       grant_type: 'password',
       client_id: CLIENT_ID,
       client_secret: CLIENT_SECRET,
-      username: userName, 
-      password, 
+      username: userName,
+      password,
     });
 
     const response = await axios.post(`${API_URL}/oauth/login`, data, {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
     });
 
-    const { accessToken, refreshToken, user } = response.data;
+    const { accessToken, refreshToken, accessTokenExpiresAt, user } = response.data;
 
     localStorage.setItem('accessToken', accessToken);
     localStorage.setItem('refreshToken', refreshToken);
+    localStorage.setItem('accessTokenExpiresAt', accessTokenExpiresAt);
     localStorage.setItem('userRole', user.userRole);
     localStorage.setItem('userName', user.userName || user.email);
 
@@ -130,7 +139,7 @@ export const relogin = () => async (dispatch) => {
 // authActions.js
 // authActions.js
 export const logout = () => async (dispatch) => {
-  const token = localStorage.getItem("accessToken") || localStorage.getItem("accestoken");
+  const token = localStorage.getItem("accessToken");
 
   try {
     if (token) {
@@ -142,11 +151,27 @@ export const logout = () => async (dispatch) => {
   } catch (err) {
     console.error("Logout error:", err);
   } finally {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("accestoken");
+    const keysToRemove = [
+      "accessToken",
+      "refreshToken",
+      "accessTokenExpiresAt",
+      "userRole",
+      "userName",
+      "clientAccessToken",
+      "clientRefreshToken",
+      "clientAccessTokenExpiresAt",
+    ];
+
+    keysToRemove.forEach((key) => localStorage.removeItem(key));
+
+    sessionStorage.clear();
+
     dispatch({ type: LOGOUT });
+
+    window.location.href = "/";
   }
 };
+
 export const getClientToken = () => async (dispatch) => {
   let clientAccessToken = localStorage.getItem("clientAccessToken");
   const expiresAtRaw = sessionStorage.getItem("clientAccessTokenExpiresAt");
@@ -171,8 +196,11 @@ export const getClientToken = () => async (dispatch) => {
     }
   }
 
-  return clientAccessToken; 
+  return clientAccessToken;
 };
+export const showTokenExpiredModal = (show) => ({
+  type: show ? "SHOW_TOKEN_EXPIRED_MODAL" : "HIDE_TOKEN_EXPIRED_MODAL",
+});
 
 
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { relogin } from './redux/actions/authAction.js';
+import { relogin, getClientToken } from './redux/actions/authAction.js';
 
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -45,7 +45,8 @@ import { clientLogin } from './redux/actions/clientAuthAction.js';
 import PaymentStatus from './Internals/phonePay/paymentStatus.js';
 import ScrollToTop from './scrollTop.js';
 import LeadsPage from './Internals/clientComponent/LeadsPage/leadsPage.js';
-import LeadsCardHistory  from './Internals/clientComponent/LeadsPage/leadsCards/leadsCards.js';
+import LeadsCardHistory from './Internals/clientComponent/LeadsPage/leadsCards/leadsCards.js';
+import TokenExpiredModal from './Internals/tokenModel/tokenModel.js';
 
 const ComingSoon = ({ title }) => (
   <div style={{ textAlign: 'center', marginTop: '20%' }}>
@@ -72,6 +73,7 @@ const FooterRoutes = [
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
+    const [showTokenExpired, setShowTokenExpired] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -107,6 +109,28 @@ function App() {
     };
 
     initAuth();
+  }, [dispatch]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const expiresAt = localStorage.getItem('accessTokenExpiresAt');
+      if (!expiresAt) return;
+
+      const expiryTime = new Date(expiresAt).getTime();
+      const now = Date.now();
+
+      if (now >= expiryTime) {
+        setShowTokenExpired(true);
+        clearInterval(interval);
+        return;
+      }
+
+      if (now >= expiryTime - 60000) {
+        dispatch(relogin());
+      }
+    }, 30000);
+
+    return () => clearInterval(interval);
   }, [dispatch]);
 
   if (!authChecked) {
@@ -189,6 +213,7 @@ function App() {
             </Route>
           </Routes>
         </Router>
+        {showTokenExpired && <TokenExpiredModal onClose={() => setShowTokenExpired(false)} />}
       </SnackbarProvider>
     </ThemeProvider>
   );
