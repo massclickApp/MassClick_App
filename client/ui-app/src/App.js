@@ -112,28 +112,6 @@ function App() {
     initAuth();
   }, [dispatch]);
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     const expiresAt = localStorage.getItem('accessTokenExpiresAt');
-  //     if (!expiresAt) return;
-
-  //     const expiryTime = new Date(expiresAt).getTime();
-  //     const now = Date.now();
-
-  //     if (now >= expiryTime) {
-  //       setShowTokenExpired(true);
-  //       clearInterval(interval);
-  //       return;
-  //     }
-
-  //     if (now >= expiryTime - 60000) {
-  //       dispatch(relogin());
-  //     }
-  //   }, 30000);
-
-  //   return () => clearInterval(interval);
-  // }, [dispatch]);
-
   if (!authChecked) {
     return (
       <div style={{ textAlign: 'center', marginTop: '20%' }}>

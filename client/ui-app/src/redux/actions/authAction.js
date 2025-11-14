@@ -76,7 +76,7 @@ export const login = (userName, password) => async (dispatch) => {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
     });
 
-    const { accessToken, refreshToken, accessTokenExpiresAt, user } = response.data;
+    const { accessToken, refreshToken, accessTokenExpiresAt, user = {} } = response.data;
 
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
