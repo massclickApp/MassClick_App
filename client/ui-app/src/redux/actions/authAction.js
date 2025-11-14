@@ -81,8 +81,8 @@ export const login = (userName, password) => async (dispatch) => {
     localStorage.setItem('accessToken', accessToken);
     localStorage.setItem('refreshToken', refreshToken);
     localStorage.setItem('accessTokenExpiresAt', accessTokenExpiresAt);
-    localStorage.setItem('userRole', user.userRole);
-    localStorage.setItem('userName', user.userName || user.email);
+    localStorage.setItem('userRole', user?.userRole || '');
+    localStorage.setItem('userName', user?.userName || user?.email || '');
 
     dispatch({
       type: LOGIN_SUCCESS,
