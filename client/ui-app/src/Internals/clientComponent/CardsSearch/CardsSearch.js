@@ -304,15 +304,12 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
                   </div>
                 </div>
               )}
-
               <MicIcon className="input-adornment end" />
             </div>
-
             <button className="search-btn" onClick={handleSearch}>
               <span>Search</span> <i className="fa-solid fa-magnifying-glass"></i>
             </button>
           </div>
-
           <Box sx={{ display: "flex", alignItems: "center" }}>
             {!loggedIn ? (
               <Button

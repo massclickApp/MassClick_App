@@ -15,6 +15,16 @@
     transform: translateY(0);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
+.input-group {
+    background: #fff !important;
+    border-radius: 30px;
+    border: 1px solid rgba(0,0,0,0.08);
+
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08) !important;
+
+    backdrop-filter: none !important;
+    filter: none !important;
+}
 
 .search-header-content {
     display: flex;
