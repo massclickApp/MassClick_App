@@ -17,7 +17,6 @@ const initialState = {
   error: null,
   accessToken: null,
   refreshToken: null,
-  showTokenExpiredModal: false, // 👈 new state
 };
 
 export default function authReducer(state = initialState, action) {
@@ -36,7 +35,6 @@ export default function authReducer(state = initialState, action) {
         user: action.payload.user,
         accessToken: action.payload.accessToken,
         refreshToken: action.payload.refreshToken,
-        showTokenExpiredModal: false,
         error: null,
       };
 
@@ -44,12 +42,6 @@ export default function authReducer(state = initialState, action) {
     case RELOGIN_FAILURE:
     case CLIENT_LOGIN_FAILURE:
       return { ...state, loading: false, error: action.payload };
-
-    case "SHOW_TOKEN_EXPIRED_MODAL":
-      return { ...state, showTokenExpiredModal: true };
-
-    case "HIDE_TOKEN_EXPIRED_MODAL":
-      return { ...state, showTokenExpiredModal: false };
 
     case LOGOUT:
       return { ...initialState };

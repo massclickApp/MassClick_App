@@ -15,25 +15,8 @@ const API_URL = process.env.REACT_APP_API_URL;
 
 const getValidToken = async (dispatch) => {
   let token = localStorage.getItem("accessToken");
-
-  if (!token || token.length < 20) {
-    const newToken = await dispatch(getClientToken());
-    if (newToken) {
-      localStorage.setItem("accessToken", newToken);
-      return newToken;
-    }
-  }
-
-  const tokenParts = token.split(".");
-  if (tokenParts.length === 3) {
-    const payload = JSON.parse(atob(tokenParts[1]));
-    if (payload.exp * 1000 < Date.now()) {
-      const newToken = await dispatch(getClientToken());
-      localStorage.setItem("accessToken", newToken);
-      return newToken;
-    }
-  }
-
+  if (!token) token = await dispatch(getClientToken());
+  if (!token) throw new Error("No valid token found");
   return token;
 };
 
