@@ -1,16 +1,16 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { relogin, showTokenExpiredModal } from "../../redux/actions/authAction.js";
+import { relogin } from "../../redux/actions/authAction.js";
 import { Modal, Box, Button, Typography } from "@mui/material";
 
 const TokenExpiredModal = () => {
   const dispatch = useDispatch();
-  const open = useSelector((state) => state.auth.showTokenExpiredModal);
+  // const open = useSelector((state) => state.auth.showTokenExpiredModal);
 
   const handleRelogin = async () => {
     try {
       await dispatch(relogin()); 
-      dispatch(showTokenExpiredModal(false)); 
+      // dispatch(showTokenExpiredModal(false)); 
     } catch (error) {
       console.error("Re-login failed", error);
       alert("Session expired completely. Please log in again.");
