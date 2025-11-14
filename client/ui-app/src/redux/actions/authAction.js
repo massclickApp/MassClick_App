@@ -65,7 +65,7 @@ export const login = (userName, password) => async (dispatch) => {
 
   try {
     const data = qs.stringify({
-      grant_type: 'password',
+      grant_type: "password",
       client_id: CLIENT_ID,
       client_secret: CLIENT_SECRET,
       username: userName,
@@ -78,11 +78,11 @@ export const login = (userName, password) => async (dispatch) => {
 
     const { accessToken, refreshToken, accessTokenExpiresAt, user } = response.data;
 
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
-    localStorage.setItem('accessTokenExpiresAt', accessTokenExpiresAt);
-    localStorage.setItem('userRole', user.userRole);
-    localStorage.setItem('userName', user.userName || user.email);
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
+    localStorage.setItem("accessTokenExpiresAt", accessTokenExpiresAt);
+    localStorage.setItem("userRole", user?.userRole || "");
+    localStorage.setItem("userName", user?.userName || user?.email || "");
 
     dispatch({
       type: LOGIN_SUCCESS,
