@@ -13,6 +13,66 @@
     box-sizing: border-box; /* Include padding/border in element's total width */
 }
 
+.pc-container {
+  padding: 20px 30px;
+  font-family: 'Inter', sans-serif;
+}
+
+.pc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pc-close-icon {
+  cursor: pointer;
+  font-size: 26px;
+}
+
+.pc-search {
+  margin: 20px 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: white;
+}
+
+.pc-search input {
+  border: none;
+  outline: none;
+  margin-left: 10px;
+  width: 100%;
+}
+
+.pc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: 40px;
+  row-gap: 25px;
+}
+
+.pc-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pc-item img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.pc-item span {
+  font-size: 15px;
+  color: #333;
+}
+
+
+
 
 @media (max-width: 992px) {
     .restaurants-list-wrapper {

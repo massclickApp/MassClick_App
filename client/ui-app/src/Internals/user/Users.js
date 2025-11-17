@@ -202,7 +202,7 @@ export default function User() {
         businessCategory: user.businessCategory || "-",
         managedBy: salesManagers.find(m => m._id === user.managedBy)?.userName || "-",
         managerIdForEdit: user.managedBy || "",
-        salesOfficers: managedOfficers, // Add the new field for the managed officers list
+        salesOfficers: managedOfficers, 
       };
     });
 

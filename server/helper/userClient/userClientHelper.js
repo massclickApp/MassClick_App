@@ -69,7 +69,7 @@ export const updateUserClients = async (id, data) => {
 };
 
 export const deleteUserClients = async (id) => {
-  if (!mongoose.Types.ObjectId.isValid(id)) throw new Error("Invalid user ID");
+    if (!ObjectId.isValid(id)) throw new Error("Invalid deletelocation ID");
 
   const user = await userClientModel.findByIdAndUpdate(
     id,

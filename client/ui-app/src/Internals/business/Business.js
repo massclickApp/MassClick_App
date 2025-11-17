@@ -376,8 +376,6 @@ export default function BusinessList() {
       newErrors.pincode = "Pincode should be 6 digits";
     }
 
-
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -603,7 +601,9 @@ export default function BusinessList() {
     }
   };
 
-  const rows = businessList.map((bl, index) => ({
+  const rows = businessList
+  .filter((c) => c.isActive)
+  .map((bl, index) => ({
     id: bl._id || index,
     _id: bl._id,
     clientId: bl.clientId || "-",
@@ -1003,10 +1003,8 @@ export default function BusinessList() {
                     data-closed={hour.isClosed}
                     data-247={hour.is24Hours}
                   >
-                    {/* 1. Day Label */}
                     <div className="day-label">{hour.day}</div>
 
-                    {/* 2. Time Group (Open/Close) */}
                     <div className="time-group">
                       <input
                         type="time"

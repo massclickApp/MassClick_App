@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, Typography, Box, Container, Grid } from '@mui/material';
 import { styled } from '@mui/system';
 import { useNavigate } from "react-router-dom";
@@ -74,26 +74,43 @@ export const featuredServices = [
   { name: "Driving Schools", icon: DrivingIcon, path: "/driving-schools", component: DrivingSchoolsCards },
   { name: "Packers & Movers", icon: PackersIcon, path: "/packers-movers", component: PackersAndMoversCards },
   { name: "Courier Service", icon: DeliveryIcon, path: "/courier-service", component: CourierServiceCards },
-  { name: "Popular Categories", icon: PopularIcon, path: "/popular-categories", component: PopularCategoriesCards },
+  { name: "Popular Categories", icon: PopularIcon, component: PopularCategoriesCards },
 ];
 
 
 const FeaturedServicesSection = () => {
   const navigate = useNavigate();
+  const [openPopularDrawer, setOpenPopularDrawer] = useState(false);
 
   return (
-     <div className="featured-services-container">
-      {featuredServices.map((service, index) => (
-        <div
-          className="service-card"
-          key={index}
-          onClick={() => navigate(service.path)}
-        >
-          <img src={service.icon} alt={service.name} className="service-icons" />
-          <div className="service-name">{service.name}</div>
-        </div>
-      ))}
-    </div>
+    <>
+      <div className="featured-services-container">
+        {featuredServices.map((service, index) => (
+          <div
+            className="service-card"
+            key={index}
+            onClick={() => {
+              
+              if (service.name === "Popular Categories") {
+                setOpenPopularDrawer(true);
+              } else {
+                navigate(service.path);
+              }
+            }}
+          >
+            <img src={service.icon} alt={service.name} className="service-icons" />
+            <div className="service-name">{service.name}</div>
+          </div>
+        ))}
+      </div>
+
+      {openPopularDrawer && (
+        <PopularCategoriesCards
+          openFromHome={true}
+          onClose={() => setOpenPopularDrawer(false)}
+        />
+      )}
+    </>
   );
 };
 export default FeaturedServicesSection;

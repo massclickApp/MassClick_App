@@ -48,6 +48,7 @@ import LeadsPage from './Internals/clientComponent/LeadsPage/leadsPage.js';
 import LeadsCardHistory from './Internals/clientComponent/LeadsPage/leadsCards/leadsCards.js';
 import TokenExpiredModal from './Internals/tokenModel/tokenModel.js';
 import BusinessEnquiry from './Internals/clientComponent/businessEnquiry/businessEnquiry.js';
+import CategoryDynamicPage from './Internals/clientComponent/cards/popularCategories/popularCategoryDrawer.js';
 
 const ComingSoon = ({ title }) => (
   <div style={{ textAlign: 'center', marginTop: '20%' }}>
@@ -63,7 +64,7 @@ const FooterRoutes = [
     { path: 'portfolio', title: 'Portfolio', element: <Portfolio />  },
     { path: 'terms', title: 'Terms and Conditions', element: <TermsAndConditions />  },
     { path: 'privacy', title: 'Privacy Policy' , element: <PrivacyPolicy />},
-    { path: 'refund', title: 'Refund Policy' , element: <RefundPolicy /> },
+    { path: 'refund', title: 'Refund Policy' , element: <RefundPolicy /> }, 
     { path: 'enquiry', title: 'Enquiry Now', element: <EnquiryNow /> },
     { path: 'services/web', title: 'Web Design & Development' , element: <WebDevSection />},
     { path: 'services/digital', title: 'Digital Marketing' , element: <DigitalMarketing />},
@@ -162,11 +163,11 @@ function App() {
             })}
             <Route path="/:locationSlug/:businessName/:address/:id" element={<BusinessDetails />} />
             <Route path="/payment-status/:transactionId" element={<PaymentStatus />} />
-
             <Route
               path="/write-review/:businessId/:ratingValue"
               element={<WriteReviewPage />}
             />
+            <Route path="/category/:categorySlug" element={<CategoryDynamicPage />} />
             <Route path="/leads" element={<LeadsPage />} />
             <Route path="/user/search-history" element={<LeadsCardHistory />} />
             <Route path="/business-enquiry" element={<BusinessEnquiry />} />
@@ -177,7 +178,6 @@ function App() {
                 return <Route key={path} path={path} element={<Component />} />;
               })
             )}
-
 
             <Route element={<PrivateRoute isAuthenticated={isAuthenticated} />}>
               <Route path="/dashboard" element={<Dashboard />}>

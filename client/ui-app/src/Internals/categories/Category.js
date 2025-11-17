@@ -502,7 +502,6 @@ export default function Category() {
         {error && (
           <p className="category-error-text" style={{ marginTop: "16px" }}>
             {" "}
-            {/* UPDATED CLASS NAME */}
             {(() => {
               if (typeof error === "string") return error;
               if (error instanceof Error) return error.message;
@@ -513,7 +512,6 @@ export default function Category() {
         )}
       </div>
 
-      {/* Category Table */}
       <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
         Category Table
       </Typography>
@@ -521,7 +519,6 @@ export default function Category() {
         <CustomizedTable data={rows} columns={categoryList} />
       </Box>
 
-      {/* Delete Dialog */}
       <Dialog
         open={deleteConfirm.open}
         onClose={() => setDeleteConfirm({ open: false, id: null })}

@@ -38,11 +38,11 @@ export default function CustomDatePicker() {
             hiddenLabel
             variant="outlined"
             size="small"
-            sx={{ display: 'none' }} // hide default textfield
+            sx={{ display: 'none' }} 
           />
         )}
         components={{
-          OpenPickerIcon: () => null, // hide default icon
+          OpenPickerIcon: () => null, 
         }}
         slots={{
           field: (pickerProps) => (
