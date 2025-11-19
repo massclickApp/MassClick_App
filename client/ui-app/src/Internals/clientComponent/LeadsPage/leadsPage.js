@@ -1,8 +1,12 @@
-import React, { useEffect } from "react";
+// ============================================
+// LeadsPage.jsx — FINAL & CORRECT VERSION
+// ============================================
+
+import React, { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import './leadsPage.css';
-import CardsSearch from "../CardsSearch/CardsSearch.js";
-import { viewAllOtpUsers } from "../../../redux/actions/otpAction.js";
+import "./leadsPage.css";
+import CardsSearch from "../CardsSearch/CardsSearch";
+import { viewAllOtpUsers } from "../../../redux/actions/otpAction";
 import { useNavigate } from "react-router-dom";
 
 const LeadsPage = () => {
@@ -10,63 +14,83 @@ const LeadsPage = () => {
   const navigate = useNavigate();
 
   const otpState = useSelector((state) => state.otp || {});
+  const viewAllResponse = Array.isArray(otpState.viewAllResponse)
+    ? otpState.viewAllResponse
+    : [];
+
+  const authUser = JSON.parse(localStorage.getItem("authUser") || "{}");
+
   const {
-    viewAllResponse = [],
-    loading = false,
-    error = null,
-  } = otpState;
+    businessName,
+    businessLocation,
+    businessCategory,
+    searchHistory = [],
+    mobileNumber1,
+    emailVerified,
+    userName,
+  } = authUser;
 
   useEffect(() => {
     dispatch(viewAllOtpUsers());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (viewAllResponse?.length > 0) {
+
+  const matchingEnquiries = useMemo(() => {
+    if (!Array.isArray(searchHistory)) return [];
+
+    return searchHistory.filter(
+      (item) =>
+        item.category &&
+        item.category.toLowerCase().trim() ===
+        businessCategory?.toLowerCase().trim()
+    );
+  }, [searchHistory, businessCategory]);
+
+  const enquiryCount = matchingEnquiries.length;
+
+
+  const handleSearchHistoryClick = () => {
+    if (enquiryCount === 0) {
+      alert("No search enquiries match your business category.");
+      return;
     }
-  }, [viewAllResponse]);
 
-  const firstUser =
-    Array.isArray(viewAllResponse) && viewAllResponse.length > 0
-      ? viewAllResponse[0]
-      : {};
-
- const {
-    businessName = "Business Name Not Available",
-    businessCategory = "Category Not Available",
-    businessLocation = "Location Not Available",
-    searchHistory = [],
-    userName,
-    mobileNumber1,
-    emailVerified,
-  } = firstUser;
-
-  const searchCount = searchHistory.length || 0;
-
-
-    const handleSearchHistoryClick = () => {
-    if (searchHistory.length > 0) {
-      navigate("/user/search-history", {
-        state: {
-          searchHistory,
-          userDetails: { userName, mobileNumber1, emailVerified },
-        },
-      });
-    } else {
-      alert("No search history found for this user.");
-    }
+    navigate("/user/search-history", {
+      state: {
+        searchHistory: matchingEnquiries,
+        userDetails: { userName, mobileNumber1, emailVerified },
+      },
+    });
   };
+
+
+  if (enquiryCount === 0) {
+    return (
+      <>
+        <CardsSearch />
+        <div style={{ padding: 40, textAlign: "center" }}>
+          <h2>No Leads Available</h2>
+          <p>No enquiries match your business category "{businessCategory}".</p>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
-      <CardsSearch /><br /><br /><br />
+      <CardsSearch />
+      <br />
+      <br />
+      <br />
+
       <div className="leads-page-container">
         <header className="leads-header">
           <div className="business-info">
             <h2>{businessName}</h2>
             <p>{businessLocation}</p>
             <span className="business-category">{businessCategory}</span>
-
           </div>
+
           <div className="support-section">
             <button className="support-btn">Customer Support</button>
           </div>
@@ -77,17 +101,21 @@ const LeadsPage = () => {
             className="stat-card highlight-card"
             onClick={handleSearchHistoryClick}
             style={{ cursor: "pointer" }}
-          >            <h3>{searchCount}</h3>
+          >
+            <h3>{enquiryCount}</h3>
             <p>Enquiries Received</p>
           </div>
+
           <div className="stat-card">
-            <h3>3</h3>
+            <h3>{enquiryCount}</h3>
             <p>Enquiries Responded</p>
           </div>
+
           <div className="stat-card">
             <h3>0</h3>
             <p>Avg. Response Time</p>
           </div>
+
           <div className="stat-card action-card">
             <p>Respond to Reviews</p>
             <button className="rating-btn">Get Ratings</button>
@@ -103,7 +131,7 @@ const LeadsPage = () => {
             <span className="icon">📩</span>
             <p>Hot Enquiries</p>
           </div>
-          <div className="badge">8</div>
+          <div className="badge">{enquiryCount}</div>
         </section>
       </div>
     </>

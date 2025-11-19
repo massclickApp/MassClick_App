@@ -49,6 +49,7 @@ import LeadsCardHistory from './Internals/clientComponent/LeadsPage/leadsCards/l
 import TokenExpiredModal from './Internals/tokenModel/tokenModel.js';
 import BusinessEnquiry from './Internals/clientComponent/businessEnquiry/businessEnquiry.js';
 import CategoryDynamicPage from './Internals/clientComponent/cards/popularCategories/popularCategoryDrawer.js';
+import EnquiryPage from './Internals/enquiry-page/enquiry-page.js';
 
 const ComingSoon = ({ title }) => (
   <div style={{ textAlign: 'center', marginTop: '20%' }}>
@@ -189,6 +190,7 @@ function App() {
                 <Route path="category" element={<Category />} />
                 <Route path="location" element={<Location />} />
                 <Route path="roles" element={<Roles />} />
+                <Route path="enquiry" element={<EnquiryPage />} />
               </Route>
             </Route>
           </Routes>

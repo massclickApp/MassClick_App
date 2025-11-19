@@ -1,12 +1,24 @@
+
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "./EditProfile.css";
 import Footer from "../../footer/footer";
 import CardsSearch from "../../CardsSearch/CardsSearch";
 import { viewOtpUser, updateOtpUser } from "../../../../redux/actions/otpAction";
+import { getAllCategory } from "../../../../redux/actions/categoryAction";
 import { Alert, AlertTitle } from "@mui/material";
 
-const PersonalDetails = ({ formData, handleChange, handleImageUpload }) => (
+/* ------------------------------------------------------------------------------------
+   STEP 1: PERSONAL DETAILS (UPDATED BUSINESS CATEGORY DROPDOWN HERE)
+------------------------------------------------------------------------------------ */
+const PersonalDetails = ({
+  formData,
+  handleChange,
+  handleImageUpload,
+  category,
+  loading,
+  error,
+}) => (
   <div className="form-step-content">
     <h3>Your Profile Details</h3>
     <p className="step-description">* Denotes mandatory fields</p>
@@ -40,7 +52,6 @@ const PersonalDetails = ({ formData, handleChange, handleImageUpload }) => (
             required
             onChange={(e) => handleChange(e, "email")}
           />
-         
         </div>
       </div>
 
@@ -51,9 +62,9 @@ const PersonalDetails = ({ formData, handleChange, handleImageUpload }) => (
           <input
             type="tel"
             value={formData.mobileNumber1 || ""}
-            placeholder="Enter Mobile Number"
             required
             readOnly
+            placeholder="Enter Mobile Number"
           />
           {formData.mobileNumber1Verified && <span className="verify-status">✓</span>}
         </div>
@@ -66,6 +77,49 @@ const PersonalDetails = ({ formData, handleChange, handleImageUpload }) => (
           value={formData.mobileNumber2 || ""}
           placeholder="Enter alternate number"
           onChange={(e) => handleChange(e, "mobileNumber2")}
+        />
+      </div>
+
+      <div className="form-field">
+        <label>Business Name</label>
+        <input
+          type="text"
+          value={formData.businessName || ""}
+          placeholder="Enter your business name"
+          onChange={(e) => handleChange(e, "businessName")}
+        />
+      </div>
+
+      {/* ------------------------------------------------------------------------  
+          UPDATED: BUSINESS CATEGORY DROPDOWN
+      ------------------------------------------------------------------------ */}
+      <div className="form-field">
+        <label>Business Category</label>
+
+        <select
+          value={formData.businessCategory || ""}
+          onChange={(e) => handleChange(e, "businessCategory")}
+        >
+          <option value="">Select Business Category</option>
+
+          {category &&
+            category.map((cat) => (
+              <option key={cat._id} value={cat.category}>
+                {cat.category}
+              </option>
+            ))}
+        </select>
+
+        {loading && <p>Loading categories…</p>}
+        {error && <p style={{ color: "red" }}>Failed to load categories</p>}
+      </div>
+
+      <div className="form-field">
+        <label>Business Location</label>
+        <input
+          type="text"
+          value={formData.businessLocation || ""}
+          onChange={(e) => handleChange(e, "businessLocation")}
         />
       </div>
 
@@ -96,18 +150,21 @@ const PersonalDetails = ({ formData, handleChange, handleImageUpload }) => (
           </button>
         </div>
       </div>
-
     </div>
   </div>
 );
 
-
+/* ------------------------------------------------------------------------------------
+   ADDRESS DETAILS (NO CHANGE)
+------------------------------------------------------------------------------------ */
 const AddressDetails = ({ formData, handleChange }) => (
   <div className="form-step-content">
     <h3>Address Details</h3>
     <p className="step-description">Enter your permanent and office addresses.</p>
+
     <div className="step-form-grid">
       <h4>Permanent Address</h4>
+
       <div className="form-field full-width">
         <label>Plot No. / Room No.</label>
         <input
@@ -116,6 +173,7 @@ const AddressDetails = ({ formData, handleChange }) => (
           onChange={(e) => handleChange(e, "plotNo", "permanentAddress")}
         />
       </div>
+
       <div className="form-field full-width">
         <label>Street / Area</label>
         <input
@@ -124,6 +182,7 @@ const AddressDetails = ({ formData, handleChange }) => (
           onChange={(e) => handleChange(e, "street", "permanentAddress")}
         />
       </div>
+
       <div className="form-field">
         <label>Pincode</label>
         <input
@@ -132,6 +191,7 @@ const AddressDetails = ({ formData, handleChange }) => (
           onChange={(e) => handleChange(e, "pincode", "permanentAddress")}
         />
       </div>
+
       <div className="form-field">
         <label>Home Landline</label>
         <input
@@ -140,6 +200,7 @@ const AddressDetails = ({ formData, handleChange }) => (
           onChange={(e) => handleChange(e, "homeLandline", "permanentAddress")}
         />
       </div>
+
       <div className="form-field">
         <label>Office Landline</label>
         <input
@@ -150,6 +211,7 @@ const AddressDetails = ({ formData, handleChange }) => (
       </div>
 
       <h4>Office Address</h4>
+
       <div className="form-field full-width">
         <label>Plot No. / Room No.</label>
         <input
@@ -158,6 +220,7 @@ const AddressDetails = ({ formData, handleChange }) => (
           onChange={(e) => handleChange(e, "plotNo", "officeAddress")}
         />
       </div>
+
       <div className="form-field full-width">
         <label>Street / Area</label>
         <input
@@ -166,6 +229,7 @@ const AddressDetails = ({ formData, handleChange }) => (
           onChange={(e) => handleChange(e, "street", "officeAddress")}
         />
       </div>
+
       <div className="form-field">
         <label>Pincode</label>
         <input
@@ -174,6 +238,7 @@ const AddressDetails = ({ formData, handleChange }) => (
           onChange={(e) => handleChange(e, "pincode", "officeAddress")}
         />
       </div>
+
       <div className="form-field">
         <label>Office Landline</label>
         <input
@@ -186,13 +251,14 @@ const AddressDetails = ({ formData, handleChange }) => (
   </div>
 );
 
-// --------------------
-// Step 3: Family & Friends
-// --------------------
+/* ------------------------------------------------------------------------------------
+   FAMILY & FRIENDS (NO CHANGE)
+------------------------------------------------------------------------------------ */
 const FamilyAndFriends = ({ formData, handleArrayChange }) => (
   <div className="form-step-content">
     <h3>Family and Friends</h3>
     <p className="step-description">Add family or friends you want to include.</p>
+
     {formData.familyAndFriends?.map((person, index) => (
       <div key={index} className="friend-block">
         <div className="form-field">
@@ -203,6 +269,7 @@ const FamilyAndFriends = ({ formData, handleArrayChange }) => (
             onChange={(e) => handleArrayChange(e, index, "name")}
           />
         </div>
+
         <div className="form-field">
           <label>Relation</label>
           <input
@@ -211,6 +278,7 @@ const FamilyAndFriends = ({ formData, handleArrayChange }) => (
             onChange={(e) => handleArrayChange(e, index, "relation")}
           />
         </div>
+
         <div className="form-field">
           <label>Contact Number</label>
           <input
@@ -219,6 +287,7 @@ const FamilyAndFriends = ({ formData, handleArrayChange }) => (
             onChange={(e) => handleArrayChange(e, index, "contactNumber")}
           />
         </div>
+
         <div className="form-field">
           <label>Email</label>
           <input
@@ -229,6 +298,7 @@ const FamilyAndFriends = ({ formData, handleArrayChange }) => (
         </div>
       </div>
     ))}
+
     <button
       type="button"
       className="btn-secondary"
@@ -239,9 +309,9 @@ const FamilyAndFriends = ({ formData, handleArrayChange }) => (
   </div>
 );
 
-// --------------------
-// Step 4: Favorites
-// --------------------
+/* ------------------------------------------------------------------------------------
+   FAVORITES (NO CHANGE)
+------------------------------------------------------------------------------------ */
 const Favorites = ({ formData, handleChange }) => (
   <div className="form-step-content">
     <h3>Your Favorites</h3>
@@ -297,9 +367,9 @@ const Favorites = ({ formData, handleChange }) => (
   </div>
 );
 
-// --------------------
-// Step 5: Completed
-// --------------------
+/* ------------------------------------------------------------------------------------
+   COMPLETED SCREEN
+------------------------------------------------------------------------------------ */
 const Completed = () => (
   <div className="form-step-content">
     <h3>Profile Completed!</h3>
@@ -307,18 +377,21 @@ const Completed = () => (
   </div>
 );
 
-// --------------------
-// Main Component
-// --------------------
+/* ------------------------------------------------------------------------------------
+   MAIN COMPONENT (UPDATED FOR CATEGORY FETCH)
+------------------------------------------------------------------------------------ */
 export default function MultiStepProfileForm() {
   const dispatch = useDispatch();
 
-
   const otpState = useSelector((state) => state.otpReducer || {});
-  const { viewResponse, verifyResponse } = otpState;
+  const { viewResponse } = otpState;
+
+  const { category = [], loading, error } = useSelector(
+    (state) => state.categoryReducer || {}
+  );
+
   const storedMobile = localStorage.getItem("mobileNumber") || "";
 
-  // Steps array
   const steps = [
     { id: 1, title: "Personal Details", component: PersonalDetails },
     { id: 2, title: "Addresses", component: AddressDetails },
@@ -327,150 +400,174 @@ export default function MultiStepProfileForm() {
     { id: 5, title: "Completed", component: Completed },
   ];
 
-
   const [currentStep, setCurrentStep] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [profileFile, setProfileFile] = useState(null);
+  const [loadingUser, setLoadingUser] = useState(true);
   const [successMessage, setSuccessMessage] = useState("");
 
   const [formData, setFormData] = useState({
     title: "Mr",
     userName: "",
-    profileImage: "",
     email: "",
     emailVerified: false,
+    profileImage: "",
     mobileNumber1: storedMobile,
     mobileNumber2: "",
-    permanentAddress: { plotNo: "", street: "", pincode: "", homeLandline: "", officeLandline: "" },
-    officeAddress: { plotNo: "", street: "", pincode: "", officeLandline: "" },
+    businessName: "",
+    businessCategory: "",
+    businessLocation: "",
+    permanentAddress: {
+      plotNo: "",
+      street: "",
+      pincode: "",
+      homeLandline: "",
+      officeLandline: "",
+    },
+    officeAddress: {
+      plotNo: "",
+      street: "",
+      pincode: "",
+      officeLandline: "",
+    },
     familyAndFriends: [],
     favorites: { colors: [], food: [], hobbies: [] },
   });
 
-
   const CurrentComponent = steps.find((s) => s.id === currentStep)?.component;
 
+  /* ---- FETCH CATEGORIES ---- */
+  useEffect(() => {
+    dispatch(getAllCategory());
+  }, [dispatch]);
+
+  /* ---- FETCH USER ---- */
   useEffect(() => {
     if (!storedMobile) return;
 
-    setLoading(true);
+    setLoadingUser(true);
+
     dispatch(viewOtpUser(storedMobile))
       .then((res) => {
         const user = res?.user;
         if (user) {
           setFormData((prev) => ({
             ...prev,
-            title: user.title || prev.title,
-            userName: user.userName || prev.userName,
-            profileImage: user.profileImage || prev.profileImage,
-            email: user.email || prev.email,
-            emailVerified: user.emailVerified || prev.emailVerified,
-            mobileNumber1: user.mobileNumber1 || prev.mobileNumber1,
-            mobileNumber2: user.mobileNumber2 || prev.mobileNumber2,
+            ...user,
             permanentAddress: { ...prev.permanentAddress, ...user.permanentAddress },
             officeAddress: { ...prev.officeAddress, ...user.officeAddress },
             favorites: { ...prev.favorites, ...user.favorites },
-            familyAndFriends: user.familyAndFriends || prev.familyAndFriends,
           }));
         }
       })
-      .finally(() => setLoading(false));
+      .finally(() => setLoadingUser(false));
   }, [storedMobile, dispatch]);
 
+  /* ---- IMAGE UPLOAD ---- */
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    setProfileFile(file);
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      setFormData((prev) => ({ ...prev, profileImage: reader.result }));
+      setFormData((prev) => ({
+        ...prev,
+        profileImage: reader.result,
+      }));
     };
     reader.readAsDataURL(file);
   };
 
-
+  /* ---- INPUT CHANGE ---- */
   const handleChange = (e, field, nested = null) => {
-    const value = e.target.value;
+    const val = e.target.value;
+
     if (nested) {
-      setFormData((prev) => ({ ...prev, [nested]: { ...prev[nested], [field]: value } }));
+      setFormData((prev) => ({
+        ...prev,
+        [nested]: {
+          ...prev[nested],
+          [field]: val,
+        },
+      }));
     } else {
-      setFormData((prev) => ({ ...prev, [field]: value }));
+      setFormData((prev) => ({
+        ...prev,
+        [field]: val,
+      }));
     }
   };
 
+  /* ---- ARRAY CHANGE (Family/Friends) ---- */
   const handleArrayChange = (e, index, field) => {
     setFormData((prev) => {
       const updated = [...prev.familyAndFriends];
+
       if (field === "add") {
         updated.push({ name: "", relation: "", contactNumber: "", email: "" });
       } else {
         updated[index] = { ...updated[index], [field]: e.target.value };
       }
+
       return { ...prev, familyAndFriends: updated };
     });
   };
 
+  /* ---- STEP HANDLERS ---- */
   const handleNext = () => setCurrentStep((p) => Math.min(p + 1, steps.length));
   const handleBack = () => setCurrentStep((p) => Math.max(p - 1, 1));
 
+  /* ---- SUBMIT ---- */
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (currentStep < steps.length) {
       handleNext();
     } else {
-      dispatch(updateOtpUser(formData.mobileNumber1, formData))
-        .then((res) => {
-          if (res.success) {
-            setFormData((prev) => ({
-              ...prev,
-              profileImage: res.user.profileImage || "",
-            }));
-
-            setSuccessMessage("Profile updated successfully!");
-
-            setCurrentStep(1);
-
-            setTimeout(() => setSuccessMessage(""), 3000);
-          } else {
-            setSuccessMessage("Failed to update profile");
-          }
-        })
-        .catch(() => setSuccessMessage("Failed to update profile"));
+      dispatch(updateOtpUser(formData.mobileNumber1, formData)).then((res) => {
+        if (res.success) {
+          setSuccessMessage("Profile updated successfully!");
+          setTimeout(() => setSuccessMessage(""), 3000);
+          setCurrentStep(1);
+        } else {
+          setSuccessMessage("Failed to update profile");
+        }
+      });
     }
   };
 
-
-
-
-  const progressPercentage = Math.round(((currentStep - 1) / (steps.length - 1)) * 100);
-
-
+  const progressPercent = Math.round(
+    ((currentStep - 1) / (steps.length - 1)) * 100
+  );
 
   return (
     <>
-      <CardsSearch /><br/><br/><br/>
+      <CardsSearch />
+      <br />
+      <br />
+      <br />
+
       <div className="profile-form-wrapper">
         <div className="profile-form-container">
+          {/* LEFT SIDEBAR */}
           <div className="sidebar-progress-container">
             <div className="overall-progress-header">
               <h4>FILL PROFILE IN FEW STEPS</h4>
+
               <div className="progress-bar-container">
                 <div
                   className="progress-bar-fill"
-                  style={{ width: `${progressPercentage}%` }}
+                  style={{ width: `${progressPercent}%` }}
                 ></div>
               </div>
-              <span>Overall Progress: {progressPercentage}%</span>
+
+              <span>Overall Progress: {progressPercent}%</span>
             </div>
 
             <ul className="step-navigation">
               {steps.map((step) => (
                 <li
                   key={step.id}
-                  className={`step-item ${step.id === currentStep ? "active" : ""} ${step.id < currentStep ? "completed" : ""
-                    }`}
+                  className={`step-item ${step.id === currentStep ? "active" : ""
+                    } ${step.id < currentStep ? "completed" : ""}`}
                   onClick={() => setCurrentStep(step.id)}
                 >
                   {step.id < currentStep ? "✔" : step.id}
@@ -480,6 +577,7 @@ export default function MultiStepProfileForm() {
             </ul>
           </div>
 
+          {/* RIGHT SIDE FORM */}
           <div className="form-content-area">
             {successMessage && (
               <Alert severity="success" sx={{ mb: 2 }}>
@@ -487,30 +585,41 @@ export default function MultiStepProfileForm() {
                 {successMessage}
               </Alert>
             )}
+
             <form onSubmit={handleSubmit}>
               <CurrentComponent
                 formData={formData}
                 handleChange={handleChange}
                 handleArrayChange={handleArrayChange}
                 handleImageUpload={handleImageUpload}
-
+                category={category}
+                loading={loading}
+                error={error}
               />
+
               <div className="form-actions-footer">
                 {currentStep > 1 && (
-                  <button type="button" className="btn-secondary" onClick={handleBack}>
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={handleBack}
+                  >
                     Back
                   </button>
                 )}
+
                 <button type="submit" className="btn-primary">
-                  {currentStep < steps.length ? "Save & Continue" : "Update Profile"}
+                  {currentStep < steps.length
+                    ? "Save & Continue"
+                    : "Update Profile"}
                 </button>
               </div>
             </form>
           </div>
         </div>
       </div>
-      <Footer />
 
+      <Footer />
     </>
   );
 }

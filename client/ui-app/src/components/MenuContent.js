@@ -14,14 +14,15 @@ import BusinessIcon from '@mui/icons-material/Business';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import InterpreterModeIcon from '@mui/icons-material/InterpreterMode';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import TodayIcon from '@mui/icons-material/Today';
 
 export default function SideMenu({ onItemClick }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-const userRole = localStorage.getItem('userRole') || 'Guest';
+  const userRole = localStorage.getItem('userRole') || 'Guest';
 
- const mainListItems = [
+  const mainListItems = [
     { text: 'Home', icon: <HomeRoundedIcon sx={{ fontSize: 38 }} />, path: '/dashboard' },
     { text: 'Category', icon: <CategoryIcon sx={{ fontSize: 38 }} />, path: '/dashboard/category' },
     { text: 'Location', icon: <LocationOnIcon sx={{ fontSize: 38 }} />, path: '/dashboard/location' },
@@ -29,8 +30,10 @@ const userRole = localStorage.getItem('userRole') || 'Guest';
     { text: 'Clients', icon: <SupportAgentIcon sx={{ fontSize: 38 }} />, path: '/dashboard/clients' },
     { text: 'Users', icon: <InterpreterModeIcon sx={{ fontSize: 38 }} />, path: '/dashboard/user', roles: ['SuperAdmin'] },
     { text: 'Role', icon: <AdminPanelSettingsIcon sx={{ fontSize: 38 }} />, path: '/dashboard/roles', roles: ['SuperAdmin'] },
+    { text: 'EnquiryPage', icon: <TodayIcon sx={{ fontSize: 38 }} />, path: '/dashboard/enquiry', roles: ['SuperAdmin'] },
   ];
- const filteredListItems = mainListItems.filter(item => {
+
+  const filteredListItems = mainListItems.filter(item => {
     if (!item.roles) {
       return true;
     }
@@ -49,7 +52,7 @@ const userRole = localStorage.getItem('userRole') || 'Guest';
                 selected={selected}
                 onClick={() => {
                   navigate(item.path);
-                  if (onItemClick) onItemClick(); 
+                  if (onItemClick) onItemClick();
                 }} sx={{
                   borderRadius: 1,
                   backgroundColor: selected ? '#FF8C42' : 'transparent',
@@ -74,7 +77,7 @@ const userRole = localStorage.getItem('userRole') || 'Guest';
                 <Typography
                   sx={{
                     fontSize: '1rem',
-                    fontWeight: 'bold', 
+                    fontWeight: 'bold',
                     color: selected ? '#FF8C42' : '#333'
                   }}
                 >

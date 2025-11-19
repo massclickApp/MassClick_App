@@ -1,0 +1,251 @@
+/* ===========================
+   MAIN WRAPPER
+=========================== */
+.business-enquiry-container {
+  width: 100%;
+  padding: 28px 20px;
+  box-sizing: border-box;
+  background: #f7f8fa;
+}
+
+/* Title */
+.business-enquiry-title {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  text-align: center;
+  margin-bottom: 26px;
+  color: #222;
+  font-family: "Inter", sans-serif;
+}
+
+/* ===========================
+   CARD LIST
+=========================== */
+.business-enquiry-card-list {
+  width: 100%;
+  max-width: 1150px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Card box */
+.business-enquiry-card {
+  background: #ffffff;
+  padding: 22px 26px;
+  border-left: 6px solid #ff8a35;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  transition: transform 0.20s ease, box-shadow 0.20s ease;
+}
+
+.business-enquiry-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+/* Header row */
+.business-enquiry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+/* Name */
+.business-enquiry-name {
+  font-size: 22px;
+  margin: 0;
+  color: #222;
+  font-weight: 600;
+  font-family: "Inter", sans-serif;
+}
+
+/* Info text */
+.business-enquiry-text {
+  margin: 8px 0;
+  font-size: 15.5px;
+  color: #4a4a4a;
+  line-height: 1.5;
+  font-family: "Inter", sans-serif;
+}
+
+/* ===========================
+   BUTTONS
+=========================== */
+.business-enquiry-btn-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: nowrap;
+}
+
+/* Button base style */
+.business-enquiry-view-btn,
+.business-enquiry-close-btn {
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  transition: 0.2s ease;
+}
+
+/* View button */
+.business-enquiry-view-btn {
+  background: #ffa533;
+}
+
+.business-enquiry-view-btn:hover {
+  background: #ff9412;
+}
+
+/* Close button */
+.business-enquiry-close-btn {
+  background: #ff6a3d;
+}
+
+.business-enquiry-close-btn:hover {
+  background: #e6511d;
+}
+
+/* ===========================
+   MODAL
+=========================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.50);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  backdrop-filter: blur(3px);
+}
+
+.modal-box {
+  width: 92%;
+  max-width: 520px;
+  background: white;
+  padding: 28px;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: popup 0.3s ease;
+}
+
+@keyframes popup {
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.modal-title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 18px;
+  color: #222;
+  font-family: "Inter", sans-serif;
+}
+
+.modal-content p {
+  margin: 8px 0;
+  font-size: 16px;
+  color: #333;
+  line-height: 1.55;
+  font-family: "Inter", sans-serif;
+}
+
+.modal-close-btn {
+  width: 100%;
+  padding: 12px;
+  background: #ff6a3d;
+  border: none;
+  color: white;
+  border-radius: 10px;
+  margin-top: 20px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  background: #e14f1b;
+}
+
+/* ===========================
+   RESPONSIVE DESIGN
+=========================== */
+
+/* Mobile (0–480px) */
+@media (max-width: 480px) {
+
+  .business-enquiry-title {
+    font-size: 26px;
+  }
+
+  .business-enquiry-card {
+    padding: 18px;
+  }
+
+  .business-enquiry-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .business-enquiry-name {
+    font-size: 20px;
+  }
+
+  .business-enquiry-btn-row {
+    width: 100%;
+  }
+
+  .business-enquiry-btn-row button {
+    flex: 1;
+  }
+
+  .modal-box {
+    width: 95%;
+    max-width: 400px;
+  }
+}
+
+/* Tablet (481–768px) */
+@media (max-width: 768px) {
+  .business-enquiry-title {
+    font-size: 28px;
+  }
+  .modal-box {
+    width: 88%;
+  }
+}
+
+/* Large Tablets / iPad (769–1024px) */
+@media (max-width: 1024px) {
+  .business-enquiry-card {
+    padding: 20px;
+  }
+}
+
+/* 4K / Ultra wide screens */
+@media (min-width: 1600px) {
+  .business-enquiry-card-list {
+    max-width: 1400px;
+  }
+  .business-enquiry-card {
+    padding: 26px 32px;
+  }
+  .business-enquiry-title {
+    font-size: 36px;
+  }
+}
