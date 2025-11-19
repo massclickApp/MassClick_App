@@ -10,6 +10,7 @@ import {
 } from "../../../redux/actions/businessListAction";
 import { getAllCategory } from "../../../redux/actions/categoryAction";
 import { logUserSearch } from "../../../redux/actions/otpAction";
+import { logSearchActivity } from "../../../redux/actions/businessListAction";
 import backgroundImage from "../../../assets/background.png";
 import { useNavigate } from "react-router-dom";
 import "./hero.css";
@@ -185,6 +186,8 @@ const HeroSection = ({
     if (userId && finalSearchTerm) {
       dispatch(logUserSearch(userId, finalSearchTerm, logLocation, logCategory));
     }
+    dispatch(logSearchActivity(logCategory, logLocation));
+
 
     if (setSearchResults) setSearchResults(filteredBusinesses);
 
