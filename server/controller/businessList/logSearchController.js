@@ -2,17 +2,29 @@ import { createSearchLog, getAllSearchLogs } from "../../helper/businessList/log
 
 export const logSearchAction = async (req, res) => {
     try {
-        const { categoryName, location } = req.body; 
-        
-        await createSearchLog({ categoryName, location }); 
+        const { categoryName, location, userDetails } = req.body;
+
+        const filteredUser = [{
+            userName: userDetails?.userName || "",
+            mobileNumber1: userDetails?.mobileNumber1 || "",
+            mobileNumber2: userDetails?.mobileNumber2 || "",
+            email: userDetails?.email || ""
+        }];
+
+        await createSearchLog({
+            categoryName,
+            location,
+            userDetails: filteredUser
+        });
 
         res.status(202).send({ message: "Search logged successfully" });
 
     } catch (error) {
         console.error("Error logging search:", error);
-        res.status(202).send({ message: "Search logged with error" }); 
+        res.status(500).send({ message: "Error logging search" });
     }
 };
+
 export const viewLogSearchAction = async (req, res) => {
     try {
         const logs = await getAllSearchLogs();

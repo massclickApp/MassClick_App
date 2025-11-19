@@ -184,24 +184,23 @@ export const getTrendingSearches = (location) => async (dispatch) => {
 };
 
 
-export const logSearchActivity = (categoryName, location) => async (dispatch) => {
-  try {
-   const token = await dispatch(getClientToken());
+export const logSearchActivity = (categoryName, location, userDetails) => 
+  async (dispatch) => {
+    try {
+      const token = await dispatch(getClientToken());
 
-    await axios.post(
-      `${API_URL}/businesslist/log-search`,
-      { categoryName, location },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+      await axios.post(
+        `${API_URL}/businesslist/log-search`,
+        { categoryName, location, userDetails }, 
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-    console.log(`Search logged for: ${categoryName} in ${location}`);
-
-  } catch (error) {
-    console.warn("Failed to log search activity:", error.message);
-  }
+    } catch (error) {
+      console.warn("Failed to log search activity:", error.message);
+    }
 };
+
+
 export const getAllSearchLogs = () => async (dispatch) => {
   dispatch({ type: FETCH_SEARCH_LOGS_REQUEST });
 

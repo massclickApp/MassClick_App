@@ -1,8 +1,8 @@
 // LeadsCardHistory.jsx
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./leadsCards.css";
-import { useSelector, useDispatch } from "react-redux";
+
 import {
   Phone as PhoneIcon,
   WhatsApp as WhatsAppIcon,
@@ -13,78 +13,79 @@ import {
   StarRate as StarIcon,
   Verified as VerifiedIcon,
   Cancel as CancelIcon,
-  ArrowBackIosNew as BackIcon
+  ArrowBackIosNew as BackIcon,
 } from "@mui/icons-material";
 
-import { Button, Modal, Box, Typography, Chip, IconButton } from "@mui/material";
-import CardsSearch from "../../CardsSearch/CardsSearch";
-import { getAllSearchLogs } from "../../../../redux/actions/businessListAction";
+import {
+  Button,
+  Modal,
+  Box,
+  Typography,
+  Chip,
+  IconButton,
+} from "@mui/material";
 
-const logoUrl =
-  "/mnt/data/30429df4-c55e-4274-a7ab-b2327308fb94.png";
+import CardsSearch from "../../CardsSearch/CardsSearch";
+
+const logoUrl = "/mnt/data/30429df4-c55e-4274-a7ab-b2327308fb94.png";
 
 const LeadsCardHistory = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
-  const { searchLogs } = useSelector(
-    (state) => state.businessListReducer
-  );
-
-  const searchHistory = location.state?.searchHistory || [];
-  const userDetails = location.state?.userDetails || {};
-
-  const { mobileNumber1, emailVerified } = userDetails;
+  // 👇 Comes from LeadsPage navigate(...)
+  const leadsUsers = location.state?.leadsUsers || [];
 
   const [openModal, setOpenModal] = useState(false);
   const [modalType, setModalType] = useState("");
-  const [modalPayload, setModalPayload] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
 
-  useEffect(() => {
-    dispatch(getAllSearchLogs());
-  }, [dispatch]);
-
-  const handleOpenModal = (type, payload = null) => {
+  const handleOpenModal = (type, user) => {
     setModalType(type);
-    setModalPayload(payload);
+    setSelectedUser(user);
     setOpenModal(true);
   };
 
   const handleCloseModal = () => {
     setModalType("");
-    setModalPayload(null);
+    setSelectedUser(null);
     setOpenModal(false);
   };
 
   const renderModalContent = () => {
+    if (!selectedUser) return null;
+
+    const phone = selectedUser.mobileNumber1 || selectedUser.mobileNumber2;
+    const email = selectedUser.email;
+
     switch (modalType) {
       case "phone":
         return (
           <>
             <Typography variant="h6">Call User</Typography>
-            <Typography sx={{ mt: 2 }}>
-              {modalPayload?.mobile || mobileNumber1}
-            </Typography>
-            <Button
-              variant="contained"
-              color="success"
-              href={`tel:${modalPayload?.mobile || mobileNumber1}`}
-              sx={{ mt: 3 }}
-            >
-              Call Now
-            </Button>
+            <Typography sx={{ mt: 2 }}>{phone || "No number"}</Typography>
+            {phone && (
+              <Button
+                variant="contained"
+                color="success"
+                href={`tel:${phone}`}
+                sx={{ mt: 3 }}
+              >
+                Call Now
+              </Button>
+            )}
           </>
         );
 
       case "email":
         return (
           <>
-            <Typography variant="h6">Email Status</Typography>
+            <Typography variant="h6">Email</Typography>
+            <Typography sx={{ mt: 2 }}>{email || "No email"}</Typography>
             <Chip
-              icon={emailVerified ? <VerifiedIcon /> : <CancelIcon />}
-              label={emailVerified ? "Verified" : "Not Verified"}
-              color={emailVerified ? "success" : "error"}
+              icon={email ? <VerifiedIcon /> : <CancelIcon />}
+              label={email ? "Email Available" : "No Email"}
+              color={email ? "success" : "error"}
               sx={{ mt: 2 }}
             />
           </>
@@ -94,19 +95,18 @@ const LeadsCardHistory = () => {
         return (
           <>
             <Typography variant="h6">WhatsApp</Typography>
-            <Typography sx={{ mt: 2 }}>
-              {modalPayload?.mobile || mobileNumber1}
-            </Typography>
-
-            <Button
-              variant="contained"
-              color="success"
-              href={`https://wa.me/${modalPayload?.mobile || mobileNumber1}`}
-              target="_blank"
-              sx={{ mt: 3 }}
-            >
-              Open WhatsApp
-            </Button>
+            <Typography sx={{ mt: 2 }}>{phone || "No number"}</Typography>
+            {phone && (
+              <Button
+                variant="contained"
+                color="success"
+                href={`https://wa.me/${phone}`}
+                target="_blank"
+                sx={{ mt: 3 }}
+              >
+                Open WhatsApp
+              </Button>
+            )}
           </>
         );
 
@@ -117,14 +117,14 @@ const LeadsCardHistory = () => {
 
   return (
     <>
-      {/* HEADER BAR */}
+      {/* HEADER */}
       <div className="lh-topbar">
         <div className="lh-topbar-inner">
           <div className="lh-brand">
             <img src={logoUrl} className="lh-logo" alt="Massclick" />
             <div>
               <div className="lh-title">Massclick</div>
-              <div className="lh-sub">India's Leading Local Search Engine</div>
+              <div className="lh-sub">India&apos;s Leading Local Search Engine</div>
             </div>
           </div>
 
@@ -138,59 +138,61 @@ const LeadsCardHistory = () => {
         </div>
       </div>
 
-      {/* MAIN CONTENT */}
+      {/* MAIN */}
       <main className="lh-container">
         <CardsSearch />
 
         <section className="lh-content-card">
           <header className="lh-header">
-            <h2>User Search History</h2>
+            <h2>Leads (Users who searched your category)</h2>
             <div className="lh-header-meta">
-              <div className="lh-count">
-                {searchHistory.length} results
-              </div>
+              <div className="lh-count">{leadsUsers.length} results</div>
             </div>
           </header>
 
-          {searchHistory.length === 0 ? (
+          {leadsUsers.length === 0 ? (
             <div className="lh-empty">
-              <p>No matching search history found.</p>
+              <p>No leads found.</p>
             </div>
           ) : (
             <div className="lh-grid">
-              {searchHistory.map((item) => (
-                <article className="lh-card" key={item._id}>
+              {leadsUsers.map((user, index) => (
+                <article className="lh-card" key={index}>
                   <div className="lh-card-head">
                     <div>
-                      <div className="lh-card-title">{item.query}</div>
+                      <div className="lh-card-title">
+                        {user.userName || "Unknown User"}
+                      </div>
                       <div className="lh-card-meta">
-                        <span>
-                          {new Date(item.searchedAt).toLocaleString()}
-                        </span>
+                        {user.time && (
+                          <span>{new Date(user.time).toLocaleString()}</span>
+                        )}
                         <span className="lh-dot">•</span>
-                        <span>{item.category}</span>
+                        <span>{user.email || "No email"}</span>
                         <span className="lh-location">
-                          — {item.location || "Global"}
+                          — {user.mobileNumber1 || user.mobileNumber2 || "No phone"}
                         </span>
                       </div>
                     </div>
 
                     <div className="lh-card-icons">
-                      <IconButton onClick={() => handleOpenModal("phone")}>
+                      <IconButton onClick={() => handleOpenModal("phone", user)}>
                         <PhoneIcon />
                       </IconButton>
-                      <IconButton onClick={() => handleOpenModal("whatsapp")}>
+                      <IconButton onClick={() => handleOpenModal("whatsapp", user)}>
                         <WhatsAppIcon />
                       </IconButton>
-                      <IconButton onClick={() => handleOpenModal("email")}>
+                      <IconButton onClick={() => handleOpenModal("email", user)}>
                         <EmailIcon />
                       </IconButton>
                       <IconButton
                         onClick={() =>
                           navigator.share
                             ? navigator.share({
-                                title: item.query,
-                                text: item.query,
+                                title: user.userName || "Lead",
+                                text: `${user.userName || ""} - ${
+                                  user.email || ""
+                                }`,
                                 url: window.location.href,
                               })
                             : alert("Sharing not supported")
@@ -204,8 +206,16 @@ const LeadsCardHistory = () => {
                   <div className="lh-divider" />
 
                   <div className="lh-card-body">
-                    This search <strong>{item.query}</strong> matches your
-                    business category.
+                    <p>
+                      This user searched your business category recently.
+                      <br />
+                      <strong>
+                        📞 {user.mobileNumber1}
+                        {user.mobileNumber2 ? `, ${user.mobileNumber2}` : ""}
+                      </strong>
+                      <br />
+                      <strong>✉️ {user.email || "No email"}</strong>
+                    </p>
                   </div>
 
                   <div className="lh-card-actions">

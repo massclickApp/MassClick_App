@@ -1,5 +1,5 @@
 // LeadsPage.jsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { viewAllOtpUsers } from "../../../redux/actions/otpAction";
 import { getAllSearchLogs } from "../../../redux/actions/businessListAction";
@@ -7,8 +7,7 @@ import { useNavigate } from "react-router-dom";
 import CardsSearch from "../CardsSearch/CardsSearch";
 import "./leadsPage.css";
 
-const logoUrl =
-  "/mnt/data/30429df4-c55e-4274-a7ab-b2327308fb94.png";
+const logoUrl = "/mnt/data/30429df4-c55e-4274-a7ab-b2327308fb94.png";
 
 function StatCard({ label, value, onClick, accent, children }) {
   return (
@@ -26,7 +25,7 @@ function StatCard({ label, value, onClick, accent, children }) {
   );
 }
 
-function LeadRow({ enquiry }) {
+function LeadRow({ user }) {
   return (
     <article className="lp-lead-row">
       <div className="lp-avatar">
@@ -44,14 +43,19 @@ function LeadRow({ enquiry }) {
 
       <div className="lp-lead-body">
         <div className="lp-lead-head">
-          <h4 className="lp-lead-title">
-            {enquiry?.title || enquiry?.category || "Enquiry"}
-          </h4>
-          <time className="lp-lead-time">{enquiry?.time || ""}</time>
+          <h4 className="lp-lead-title">{user.userName || "Unknown User"}</h4>
+          {user.time && (
+            <time className="lp-lead-time">
+              {new Date(user.time).toLocaleString()}
+            </time>
+          )}
         </div>
 
         <p className="lp-lead-desc">
-          {enquiry?.description || enquiry?.notes || "No details provided."}
+          📞 {user.mobileNumber1}
+          {user.mobileNumber2 ? `, ${user.mobileNumber2}` : ""}
+          <br />
+          ✉️ {user.email}
         </p>
       </div>
     </article>
@@ -77,7 +81,6 @@ export default function LeadsPage() {
     businessName,
     businessLocation,
     businessCategory,
-    searchHistory = [],
     mobileNumber1,
     emailVerified,
     userName,
@@ -88,42 +91,44 @@ export default function LeadsPage() {
     dispatch(getAllSearchLogs());
   }, [dispatch]);
 
-  // === USER SEARCH HISTORY MATCH ===
-  const matchingEnquiries = useMemo(() => {
-    if (!Array.isArray(searchHistory)) return [];
-    if (!businessCategory) return [];
-
-    return searchHistory.filter(
-      (item) =>
-        item?.category?.toLowerCase().trim() ===
-        businessCategory?.toLowerCase().trim()
-    );
-  }, [searchHistory, businessCategory]);
-
-  const matchedTrendingLogs = useMemo(() => {
+  // 🔍 All users who searched THIS business category (from searchLogs)
+  const matchedUsers = useMemo(() => {
     if (!searchLogs || !businessCategory) return [];
 
-    return searchLogs.filter(
+    const filteredLogs = searchLogs.filter(
       (log) =>
         log.categoryName?.toLowerCase().trim() ===
         businessCategory?.toLowerCase().trim()
     );
+
+    const users = [];
+
+    filteredLogs.forEach((log) => {
+      if (Array.isArray(log.userDetails)) {
+        log.userDetails.forEach((u) => {
+          users.push({
+            ...u,
+            time: log.createdAt,
+          });
+        });
+      }
+    });
+
+    return users;
   }, [searchLogs, businessCategory]);
 
-  const enquiryCount = matchingEnquiries.length;
-  const trendingCount = matchedTrendingLogs.length;
-  const [showLeadsList, setShowLeadsList] = useState(true);
+  const leadsCount = matchedUsers.length;
 
-  const handleSearchHistoryClick = () => {
-    if (matchingEnquiries.length === 0) {
-      alert("No matching enquiries found.");
+  const handleTotalLeadsClick = () => {
+    if (!matchedUsers.length) {
+      alert("No leads found.");
       return;
     }
 
+    // Navigate to leads details page with all users
     navigate("/user/search-history", {
       state: {
-        searchHistory: matchingEnquiries,
-        userDetails: { userName, mobileNumber1, emailVerified },
+        leadsUsers: matchedUsers,
       },
     });
   };
@@ -136,14 +141,22 @@ export default function LeadsPage() {
           <img src={logoUrl} alt="Massclick" className="lp-logo" />
           <div className="lp-brand">
             <div className="lp-brand-title">Massclick</div>
-            <div className="lp-brand-sub">India's Leading Local Search Engine</div>
+            <div className="lp-brand-sub">
+              India&apos;s Leading Local Search Engine
+            </div>
           </div>
         </div>
 
         <div className="lp-topbar-actions">
           <div className="lp-search-container">
-            <input className="lp-input lp-input-location" placeholder="Enter location manually..." />
-            <input className="lp-input lp-input-search" placeholder="Search for..." />
+            <input
+              className="lp-input lp-input-location"
+              placeholder="Enter location manually..."
+            />
+            <input
+              className="lp-input lp-input-search"
+              placeholder="Search for..."
+            />
             <button className="lp-btn lp-btn-primary">Search</button>
             <button className="lp-btn lp-btn-accent">+ Business</button>
           </div>
@@ -166,88 +179,38 @@ export default function LeadsPage() {
                 </span>
               </div>
             </div>
-
-            <div className="lp-actions">
-              <button
-                className="lp-toggle"
-                onClick={() => setShowLeadsList((s) => !s)}
-              >
-                {showLeadsList ? "Hide Leads" : "Show Leads"}
-              </button>
-            </div>
           </header>
 
           {/* STATS */}
           <div className="lp-stats-grid">
             <StatCard
-              label="User Enquiries"
-              value={enquiryCount}
+              label="Total Leads"
+              value={leadsCount}
               accent
-              onClick={handleSearchHistoryClick}
+              onClick={handleTotalLeadsClick}
             >
-              ⭐
-            </StatCard>
-
-            <StatCard label="Trending Searches" value={trendingCount}>
               🔥
             </StatCard>
           </div>
 
-          {/* LEADS LIST */}
+          {/* LEADS LIST PREVIEW */}
           <div className="lp-main-grid">
             <div className="lp-list-col">
-              {showLeadsList ? (
+              {matchedUsers.length > 0 ? (
                 <>
-                  {matchingEnquiries.length > 0 && (
-                    <>
-                      <h3>User Search Leads</h3>
-                      <div className="lp-leads-list">
-                        {matchingEnquiries.map((item) => (
-                          <LeadRow
-                            key={item._id}
-                            enquiry={{
-                              title: item.query,
-                              description: "User searched this category",
-                              time: new Date(item.searchedAt).toLocaleString(),
-                            }}
-                          />
-                        ))}
-                      </div>
-                    </>
-                  )}
-
-                  {matchedTrendingLogs.length > 0 && (
-                    <>
-                      <h3>Trending Leads</h3>
-                      <div className="lp-leads-list">
-                        {matchedTrendingLogs.map((log) => (
-                          <LeadRow
-                            key={log._id}
-                            enquiry={{
-                              title: log.categoryName,
-                              description:
-                                "Someone searched this category recently.",
-                              time: new Date(log.createdAt).toLocaleString(),
-                            }}
-                          />
-                        ))}
-                      </div>
-                    </>
-                  )}
-
-                  {matchingEnquiries.length === 0 &&
-                    matchedTrendingLogs.length === 0 && (
-                      <div className="lp-empty">
-                        <p>
-                          No leads found for{" "}
-                          <strong>{businessCategory}</strong>
-                        </p>
-                      </div>
-                    )}
+                  <h3>Leads (Users who searched your category)</h3>
+                  <div className="lp-leads-list">
+                    {matchedUsers.map((u, index) => (
+                      <LeadRow key={index} user={u} />
+                    ))}
+                  </div>
                 </>
               ) : (
-                <div className="lp-empty lp-empty-muted">
-                  Leads hidden. Toggle to view.
+                <div className="lp-empty">
+                  <p>
+                    No users searched for{" "}
+                    <strong>{businessCategory || "your category"}</strong> yet.
+                  </p>
                 </div>
               )}
             </div>

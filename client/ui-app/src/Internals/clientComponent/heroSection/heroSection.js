@@ -182,11 +182,18 @@ const HeroSection = ({
 
     let authUser = JSON.parse(localStorage.getItem("authUser") || "{}");
     let userId = authUser?._id;
+    let userDetails = {
+      userName: authUser?.userName,
+      mobileNumber1: authUser?.mobileNumber1,
+      mobileNumber2: authUser?.mobileNumber2,
+      email: authUser?.email
+    };
+    console.log("userDetails", userDetails);
 
     if (userId && finalSearchTerm) {
       dispatch(logUserSearch(userId, finalSearchTerm, logLocation, logCategory));
     }
-    dispatch(logSearchActivity(logCategory, logLocation));
+    dispatch(logSearchActivity(logCategory, logLocation, userDetails));
 
 
     if (setSearchResults) setSearchResults(filteredBusinesses);
