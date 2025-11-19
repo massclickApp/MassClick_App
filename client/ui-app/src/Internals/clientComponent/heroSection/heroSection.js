@@ -113,66 +113,85 @@ const HeroSection = ({
   ].filter(Boolean);
 
   const handleSearch = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const finalSearchTerm = searchTerm?.trim();
-  const logLocation = locationName || "Global";
+    const finalSearchTerm = searchTerm?.trim();
+    const logLocation = locationName || "Global";
 
-  // Filter businesses first
-  const filteredBusinesses = clientBusinessList.filter((business) => {
-    const matchesSearchTerm =
-      !finalSearchTerm ||
-      (business.businessName &&
-        business.businessName
-          .toLowerCase()
-          .includes(finalSearchTerm.toLowerCase())) ||
-      (business.category &&
-        business.category
-          .toLowerCase()
-          .includes(finalSearchTerm.toLowerCase())) ||
-      (Array.isArray(business.keywords) &&
-        business.keywords.some((keyword) =>
-          keyword.toLowerCase().includes(finalSearchTerm.toLowerCase())
-        ));
+    // Filter businesses first
+    const filteredBusinesses = clientBusinessList.filter((business) => {
+      const matchesSearchTerm =
+        !finalSearchTerm ||
+        (business.businessName &&
+          business.businessName
+            .toLowerCase()
+            .includes(finalSearchTerm.toLowerCase())) ||
+        (business.category &&
+          business.category
+            .toLowerCase()
+            .includes(finalSearchTerm.toLowerCase())) ||
+        (Array.isArray(business.keywords) &&
+          business.keywords.some((keyword) =>
+            keyword.toLowerCase().includes(finalSearchTerm.toLowerCase())
+          )) ||
 
-    const matchesCategory =
-      !categoryName ||
-      (business.category &&
-        business.category.toLowerCase() === categoryName.toLowerCase());
+        (business.description &&
+          business.description
+            .toLowerCase()
+            .includes(finalSearchTerm.toLowerCase())) ||
+        (business.seoDescription &&
+          business.seoDescription
+            .toLowerCase()
+            .includes(finalSearchTerm.toLowerCase())) ||
+        (business.seoTitle &&
+          business.seoTitle
+            .toLowerCase()
+            .includes(finalSearchTerm.toLowerCase())) ||
+        (business.title &&
+          business.title
+            .toLowerCase()
+            .includes(finalSearchTerm.toLowerCase())) ||
+        (business.slug &&
+          business.slug
+            .toLowerCase()
+            .includes(finalSearchTerm.toLowerCase()));
 
-    const matchesLocation =
-      !locationName ||
-      [business.location, business.plotNumber, business.street, business.pincode]
-        .filter(Boolean)
-        .some((field) =>
-          field.toLowerCase().includes(locationName.toLowerCase())
-        );
+      const matchesCategory =
+        !categoryName ||
+        (business.category &&
+          business.category.toLowerCase() === categoryName.toLowerCase());
 
-    return matchesSearchTerm && matchesCategory && matchesLocation;
-  });
+      const matchesLocation =
+        !locationName ||
+        [business.location, business.plotNumber, business.street, business.pincode]
+          .filter(Boolean)
+          .some((field) =>
+            field.toLowerCase().includes(locationName.toLowerCase())
+          );
 
+      return matchesSearchTerm && matchesCategory && matchesLocation;
+    });
 
-  const derivedCategory =
-    filteredBusinesses.length > 0 && filteredBusinesses[0].category
-      ? filteredBusinesses[0].category
-      : categoryName || finalSearchTerm || "All Categories";
+    const derivedCategory =
+      filteredBusinesses.length > 0 && filteredBusinesses[0].category
+        ? filteredBusinesses[0].category
+        : categoryName || finalSearchTerm || "All Categories";
 
-  const logCategory = derivedCategory;
+    const logCategory = derivedCategory;
 
-  let authUser = JSON.parse(localStorage.getItem("authUser") || "{}");
-  let userId = authUser?._id;
+    let authUser = JSON.parse(localStorage.getItem("authUser") || "{}");
+    let userId = authUser?._id;
 
+    if (userId && finalSearchTerm) {
+      dispatch(logUserSearch(userId, finalSearchTerm, logLocation, logCategory));
+    }
 
-  if (userId && finalSearchTerm) {
-    dispatch(logUserSearch(userId, finalSearchTerm, logLocation, logCategory));
-  }
+    if (setSearchResults) setSearchResults(filteredBusinesses);
 
-  if (setSearchResults) setSearchResults(filteredBusinesses);
-
-  const loc = (locationName || "All").replace(/\s+/g, "");
-  const term = (finalSearchTerm || "All").replace(/\s+/g, "");
-  navigate(`/${loc}/${term}`, { state: { results: filteredBusinesses } });
-};
+    const loc = (locationName || "All").replace(/\s+/g, "");
+    const term = (finalSearchTerm || "All").replace(/\s+/g, "");
+    navigate(`/${loc}/${term}`, { state: { results: filteredBusinesses } });
+  };
 
 
   return (

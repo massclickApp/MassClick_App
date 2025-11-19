@@ -5,6 +5,7 @@ import "./CardsSearch.css";
 
 import { getAllLocation } from "../../../redux/actions/locationAction";
 import { getAllBusinessList, getAllClientBusinessList, getAllSearchLogs, logSearchActivity } from "../../../redux/actions/businessListAction";
+import { logUserSearch } from "../../../redux/actions/otpAction";
 import { getAllCategory } from "../../../redux/actions/categoryAction";
 import Tooltip from "@mui/material/Tooltip";
 import { categoryBarHelpers } from "../categoryBar";
@@ -117,16 +118,13 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
     businessListState.searchLogs.map(log => capitalizeWords(log.categoryName))
   )].filter(Boolean);
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
 
-    const finalSearchTerm = searchTerm;
+    const finalSearchTerm = searchTerm?.trim();
+    const logLocation = locationName || "Global";
 
-    const logCategory = categoryName || finalSearchTerm || 'All Categories';
-    const logLocation = locationName || 'Global';
-
-    dispatch(logSearchActivity(logCategory, logLocation));
-
+    // Filter businesses first
     const filteredBusinesses = clientBusinessList.filter((business) => {
       const matchesSearchTerm =
         !finalSearchTerm ||
@@ -141,20 +139,37 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
         (Array.isArray(business.keywords) &&
           business.keywords.some((keyword) =>
             keyword.toLowerCase().includes(finalSearchTerm.toLowerCase())
-          ));
+          )) ||
+
+        (business.description &&
+          business.description
+            .toLowerCase()
+            .includes(finalSearchTerm.toLowerCase())) ||
+        (business.seoDescription &&
+          business.seoDescription
+            .toLowerCase()
+            .includes(finalSearchTerm.toLowerCase())) ||
+        (business.seoTitle &&
+          business.seoTitle
+            .toLowerCase()
+            .includes(finalSearchTerm.toLowerCase())) ||
+        (business.title &&
+          business.title
+            .toLowerCase()
+            .includes(finalSearchTerm.toLowerCase())) ||
+        (business.slug &&
+          business.slug
+            .toLowerCase()
+            .includes(finalSearchTerm.toLowerCase()));
 
       const matchesCategory =
         !categoryName ||
-        (business.category && business.category.toLowerCase() === categoryName.toLowerCase());
+        (business.category &&
+          business.category.toLowerCase() === categoryName.toLowerCase());
 
       const matchesLocation =
         !locationName ||
-        [
-          business.location,
-          business.plotNumber,
-          business.street,
-          business.pincode,
-        ]
+        [business.location, business.plotNumber, business.street, business.pincode]
           .filter(Boolean)
           .some((field) =>
             field.toLowerCase().includes(locationName.toLowerCase())
@@ -163,12 +178,24 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
       return matchesSearchTerm && matchesCategory && matchesLocation;
     });
 
+    const derivedCategory =
+      filteredBusinesses.length > 0 && filteredBusinesses[0].category
+        ? filteredBusinesses[0].category
+        : categoryName || finalSearchTerm || "All Categories";
+
+    const logCategory = derivedCategory;
+
+    let authUser = JSON.parse(localStorage.getItem("authUser") || "{}");
+    let userId = authUser?._id;
+
+    if (userId && finalSearchTerm) {
+      dispatch(logUserSearch(userId, finalSearchTerm, logLocation, logCategory));
+    }
+
     if (setSearchResults) setSearchResults(filteredBusinesses);
 
-    const loc = (locationName || 'All').replace(/\s+/g, '');
-    // const cat = (categoryName || 'All').replace(/\s+/g, '');
-    const term = (finalSearchTerm || 'All').replace(/\s+/g, '');
-
+    const loc = (locationName || "All").replace(/\s+/g, "");
+    const term = (finalSearchTerm || "All").replace(/\s+/g, "");
     navigate(`/${loc}/${term}`, { state: { results: filteredBusinesses } });
   };
 

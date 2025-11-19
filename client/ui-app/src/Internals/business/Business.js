@@ -306,6 +306,11 @@ export default function BusinessList() {
     location: "",
     category: "",
     keywords: "",
+    slug: "",
+    seoTitle: "",
+    seoDescription: "",
+    title: "",
+    description: "",
     bannerImage: "",
     googleMap: "",
     website: "",
@@ -419,10 +424,31 @@ export default function BusinessList() {
     dispatch(checkPhonePeStatus());
   }, [dispatch]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+const handleChange = (e) => {
+  const { name, value } = e.target;
+
+  if (name === "category") {
+    const selected = category.find((cat) => cat.category === value);
+
+    setFormData((prev) => ({
+      ...prev,
+      category: value,
+
+      keywords: selected?.keywords || [],
+
+      slug: selected?.slug || "",
+      seoTitle: selected?.seoTitle || "",
+      seoDescription: selected?.seoDescription || "",
+      title: selected?.title || "",
+      description: selected?.description || "",
+    }));
+
+    return; 
+  }
+
+  setFormData((prev) => ({ ...prev, [name]: value }));
+};
+
 
   const handleEdit = (row) => {
     setEditMode(true);
@@ -602,40 +628,40 @@ export default function BusinessList() {
   };
 
   const rows = businessList
-  .filter((c) => c.isActive)
-  .map((bl, index) => ({
-    id: bl._id || index,
-    _id: bl._id,
-    clientId: bl.clientId || "-",
-    businessName: bl.businessName || "-",
-    plotNumber: bl.plotNumber || "-",
-    street: bl.street || "-",
-    pincode: bl.pincode || "-",
-    globalAddress: bl.globalAddress || "-",
-    email: bl.email || "-",
-    contact: bl.contact || "-",
-    contactList: bl.contactList || "-",
-    gstin: bl.gstin || "-",
-    whatsappNumber: bl.whatsappNumber || "-",
-    experience: bl.experience || "-",
-    location: bl.location || "-",
-    category: bl.category || "-",
-    bannerImage: bl.bannerImage || null,
-    businessImages: bl.businessImages || [],
-    googleMap: bl.googleMap || "-",
-    website: bl.website || "-",
-    facebook: bl.facebook || "-",
-    instagram: bl.instagram || "-",
-    youtube: bl.youtube || "-",
-    pinterest: bl.pinterest || "-",
-    twitter: bl.twitter || "-",
-    linkedin: bl.linkedin || "-",
-    businessDetails: bl.businessDetails || "-",
-    openingHours: bl.openingHours || defaultOpeningHours,
-    createdBy: bl.createdBy,
-    payment: bl.payment || [],
+    .filter((c) => c.isActive)
+    .map((bl, index) => ({
+      id: bl._id || index,
+      _id: bl._id,
+      clientId: bl.clientId || "-",
+      businessName: bl.businessName || "-",
+      plotNumber: bl.plotNumber || "-",
+      street: bl.street || "-",
+      pincode: bl.pincode || "-",
+      globalAddress: bl.globalAddress || "-",
+      email: bl.email || "-",
+      contact: bl.contact || "-",
+      contactList: bl.contactList || "-",
+      gstin: bl.gstin || "-",
+      whatsappNumber: bl.whatsappNumber || "-",
+      experience: bl.experience || "-",
+      location: bl.location || "-",
+      category: bl.category || "-",
+      bannerImage: bl.bannerImage || null,
+      businessImages: bl.businessImages || [],
+      googleMap: bl.googleMap || "-",
+      website: bl.website || "-",
+      facebook: bl.facebook || "-",
+      instagram: bl.instagram || "-",
+      youtube: bl.youtube || "-",
+      pinterest: bl.pinterest || "-",
+      twitter: bl.twitter || "-",
+      linkedin: bl.linkedin || "-",
+      businessDetails: bl.businessDetails || "-",
+      openingHours: bl.openingHours || defaultOpeningHours,
+      createdBy: bl.createdBy,
+      payment: bl.payment || [],
 
-  }));
+    }));
 
 
   const businessListTable = [
@@ -1147,6 +1173,76 @@ export default function BusinessList() {
                 </FormControl>
               </div>
             )}
+            <div className="form-input-group">
+              <label htmlFor="slug" className="input-label">Slug</label>
+              <input
+                type="text"
+                id="slug"
+                name="slug"
+                className={`text-input ${errors.slug ? "error" : ""}`}
+                value={formData.slug || ""}
+                onChange={handleChange}
+                placeholder="Enter slug (e.g. gym, hotels, restaurants)"
+              />
+              {errors.slug && <p className="error-text">{errors.slug}</p>}
+            </div>
+
+            <div className="form-input-group">
+              <label htmlFor="seoTitle" className="input-label">SEO Title</label>
+              <input
+                type="text"
+                id="seoTitle"
+                name="seoTitle"
+                className={`text-input ${errors.seoTitle ? "error" : ""}`}
+                value={formData.seoTitle || ""}
+                onChange={handleChange}
+                placeholder="Enter SEO Title"
+              />
+              {errors.seoTitle && <p className="error-text">{errors.seoTitle}</p>}
+            </div>
+
+            <div className="form-input-group">
+              <label htmlFor="seoDescription" className="input-label">SEO Description</label>
+              <textarea
+                id="seoDescription"
+                name="seoDescription"
+                className={`textarea-input ${errors.seoDescription ? "error" : ""}`}
+                value={formData.seoDescription || ""}
+                onChange={handleChange}
+                placeholder="Write SEO description here..."
+                rows={3}
+              />
+              {errors.seoDescription && <p className="error-text">{errors.seoDescription}</p>}
+            </div>
+
+            <div className="form-input-group">
+              <label htmlFor="title" className="input-label">Title</label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                className={`text-input ${errors.title ? "error" : ""}`}
+                value={formData.title || ""}
+                onChange={handleChange}
+                placeholder="Enter category title"
+              />
+              {errors.title && <p className="error-text">{errors.title}</p>}
+            </div>
+
+            <div className="form-input-group">
+              <label htmlFor="description" className="input-label">Description</label>
+              <textarea
+                id="description"
+                name="description"
+                className={`textarea-input ${errors.description ? "error" : ""}`}
+                value={formData.description || ""}
+                onChange={handleChange}
+                placeholder="Enter category description"
+                rows={4}
+              />
+              {errors.description && <p className="error-text">{errors.description}</p>}
+            </div>
+
 
           </>
         );
