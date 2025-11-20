@@ -1,5 +1,5 @@
 // LeadsPage.jsx
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { viewAllOtpUsers } from "../../../redux/actions/otpAction";
 import { getAllSearchLogs } from "../../../redux/actions/businessListAction";
@@ -20,7 +20,9 @@ function StatCard({ label, value, onClick, accent, children }) {
         <div className="lp-stat-value">{value}</div>
         <div className="lp-stat-label">{label}</div>
       </div>
-      <div className="lp-stat-icon">{children}</div>
+      <div className="lp-stat-icon">
+        <span className="lp-stat-icon-inner">{children}</span>
+      </div>
     </button>
   );
 }
@@ -52,6 +54,8 @@ function LeadRow({ user }) {
         </div>
 
         <p className="lp-lead-desc">
+          <span className="lp-lead-label">Contact</span>
+          <br />
           📞 {user.mobileNumber1}
           {user.mobileNumber2 ? `, ${user.mobileNumber2}` : ""}
           <br />
@@ -86,12 +90,14 @@ export default function LeadsPage() {
     userName,
   } = authUser;
 
+  const [range, setRange] = useState("all"); 
+  const [repeatOnly, setRepeatOnly] = useState(false);
+
   useEffect(() => {
     dispatch(viewAllOtpUsers());
     dispatch(getAllSearchLogs());
   }, [dispatch]);
 
-  // 🔍 All users who searched THIS business category (from searchLogs)
   const matchedUsers = useMemo(() => {
     if (!searchLogs || !businessCategory) return [];
 
@@ -117,6 +123,74 @@ export default function LeadsPage() {
     return users;
   }, [searchLogs, businessCategory]);
 
+  const {
+    filteredUsers,
+    todayCount,
+    last7Count,
+    last30Count,
+    repeatCount,
+  } = useMemo(() => {
+    const msDay = 24 * 60 * 60 * 1000;
+    const now = new Date();
+    const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const sevenAgo = new Date(startToday.getTime() - 6 * msDay);
+    const thirtyAgo = new Date(startToday.getTime() - 29 * msDay);
+
+    const repeatMap = {};
+    let todayCount = 0;
+    let last7Count = 0;
+    let last30Count = 0;
+
+    matchedUsers.forEach((u) => {
+      const key = u.mobileNumber1 || u.email;
+      if (key) {
+        repeatMap[key] = (repeatMap[key] || 0) + 1;
+      }
+
+      if (u.time) {
+        const d = new Date(u.time);
+        if (!Number.isNaN(d.getTime())) {
+          if (d >= startToday) todayCount += 1;
+          if (d >= sevenAgo) last7Count += 1;
+          if (d >= thirtyAgo) last30Count += 1;
+        }
+      }
+    });
+
+    const repeatVisitorSet = new Set(
+      Object.keys(repeatMap).filter((k) => repeatMap[k] > 1)
+    );
+    const repeatCount = repeatVisitorSet.size;
+
+    const filteredUsers = matchedUsers.filter((u) => {
+      let ok = true;
+
+      if (range !== "all" && u.time) {
+        const d = new Date(u.time);
+        if (!Number.isNaN(d.getTime())) {
+          if (range === "today") {
+            ok = d >= startToday;
+          } else if (range === "7") {
+            ok = d >= sevenAgo;
+          } else if (range === "30") {
+            ok = d >= thirtyAgo;
+          }
+        }
+      }
+
+      if (!ok) return false;
+
+      if (repeatOnly) {
+        const key = u.mobileNumber1 || u.email;
+        if (!key || !repeatVisitorSet.has(key)) return false;
+      }
+
+      return true;
+    });
+
+    return { filteredUsers, todayCount, last7Count, last30Count, repeatCount };
+  }, [matchedUsers, range, repeatOnly]);
+
   const leadsCount = matchedUsers.length;
 
   const handleTotalLeadsClick = () => {
@@ -125,7 +199,6 @@ export default function LeadsPage() {
       return;
     }
 
-    // Navigate to leads details page with all users
     navigate("/user/search-history", {
       state: {
         leadsUsers: matchedUsers,
@@ -133,39 +206,19 @@ export default function LeadsPage() {
     });
   };
 
+  const qualityLabel =
+    leadsCount === 0
+      ? "No data yet"
+      : leadsCount > 20 || repeatCount > 5
+      ? "High quality"
+      : leadsCount > 5
+      ? "Moderate quality"
+      : "Low quality";
+
   return (
     <div className="lp-root">
-      {/* Header */}
-      <div className="lp-topbar">
-        <div className="lp-topbar-left">
-          <img src={logoUrl} alt="Massclick" className="lp-logo" />
-          <div className="lp-brand">
-            <div className="lp-brand-title">Massclick</div>
-            <div className="lp-brand-sub">
-              India&apos;s Leading Local Search Engine
-            </div>
-          </div>
-        </div>
-
-        <div className="lp-topbar-actions">
-          <div className="lp-search-container">
-            <input
-              className="lp-input lp-input-location"
-              placeholder="Enter location manually..."
-            />
-            <input
-              className="lp-input lp-input-search"
-              placeholder="Search for..."
-            />
-            <button className="lp-btn lp-btn-primary">Search</button>
-            <button className="lp-btn lp-btn-accent">+ Business</button>
-          </div>
-        </div>
-      </div>
-
       <main className="lp-container">
-        <CardsSearch />
-
+        <CardsSearch /><br/><br/><br/><br/>
         <section className="lp-card">
           <header className="lp-header">
             <div className="lp-business">
@@ -178,10 +231,12 @@ export default function LeadsPage() {
                   {businessCategory || "Category"}
                 </span>
               </div>
+              <p className="lp-business-subtitle">
+                Real-time leads from users who searched your business category.
+              </p>
             </div>
           </header>
 
-          {/* STATS */}
           <div className="lp-stats-grid">
             <StatCard
               label="Total Leads"
@@ -191,16 +246,88 @@ export default function LeadsPage() {
             >
               🔥
             </StatCard>
+
+            <StatCard label="Today" value={todayCount}>
+              📅
+            </StatCard>
+
+            <StatCard label="Last 7 Days" value={last7Count}>
+              📊
+            </StatCard>
+
+            <StatCard label="Repeat Visitors" value={repeatCount}>
+              ♻️
+            </StatCard>
           </div>
 
-          {/* LEADS LIST PREVIEW */}
           <div className="lp-main-grid">
             <div className="lp-list-col">
-              {matchedUsers.length > 0 ? (
+              <div className="lp-filters">
+                <div className="lp-filters-left">
+                  <span className="lp-filters-label">Filters:</span>
+                  <button
+                    type="button"
+                    className={`lp-filter-chip ${
+                      range === "all" ? "active" : ""
+                    }`}
+                    onClick={() => setRange("all")}
+                  >
+                    All time
+                  </button>
+                  <button
+                    type="button"
+                    className={`lp-filter-chip ${
+                      range === "today" ? "active" : ""
+                    }`}
+                    onClick={() => setRange("today")}
+                  >
+                    Today
+                  </button>
+                  <button
+                    type="button"
+                    className={`lp-filter-chip ${
+                      range === "7" ? "active" : ""
+                    }`}
+                    onClick={() => setRange("7")}
+                  >
+                    Last 7 days
+                  </button>
+                  <button
+                    type="button"
+                    className={`lp-filter-chip ${
+                      range === "30" ? "active" : ""
+                    }`}
+                    onClick={() => setRange("30")}
+                  >
+                    Last 30 days
+                  </button>
+                </div>
+
+                <div className="lp-filters-right">
+                  <button
+                    type="button"
+                    className={`lp-filter-chip lp-filter-toggle ${
+                      repeatOnly ? "active" : ""
+                    }`}
+                    onClick={() => setRepeatOnly((v) => !v)}
+                  >
+                    Repeat visitors only
+                  </button>
+                </div>
+              </div>
+
+              {filteredUsers.length > 0 ? (
                 <>
-                  <h3>Leads (Users who searched your category)</h3>
+                  <div className="lp-section-head">
+                    <h3 className="lp-section-title">
+                      Leads (Users who searched your category)
+                    </h3>
+                    <span className="lp-section-count">
+                      {filteredUsers.length} shown • {leadsCount} total
+                    </span>
+                  </div>
                   <div className="lp-leads-list">
-                    {matchedUsers.map((u, index) => (
+                    {filteredUsers.map((u, index) => (
                       <LeadRow key={index} user={u} />
                     ))}
                   </div>
@@ -208,26 +335,128 @@ export default function LeadsPage() {
               ) : (
                 <div className="lp-empty">
                   <p>
-                    No users searched for{" "}
-                    <strong>{businessCategory || "your category"}</strong> yet.
+                    No users found for the selected filters in{" "}
+                    <strong>{businessCategory || "your category"}</strong>.
                   </p>
                 </div>
               )}
             </div>
 
             <aside className="lp-side-col">
-              <div className="lp-card-block">
-                <div className="lp-small-label">Business Contact</div>
-                <div className="lp-contact-name">{userName || "Owner"}</div>
-                <div className="lp-contact-meta">
-                  <div>
-                    <strong>📞</strong> {mobileNumber1 || "—"}
+              {/* Insights card */}
+              <div className="lp-side-card lp-insight-card">
+                <div className="lp-small-label">Snapshot</div>
+                <h4 className="lp-side-title">Leads Insights</h4>
+
+                <div className="lp-insight-row">
+                  <span>Total leads</span>
+                  <strong>{leadsCount}</strong>
+                </div>
+                <div className="lp-insight-row">
+                  <span>Today</span>
+                  <strong>{todayCount}</strong>
+                </div>
+                <div className="lp-insight-row">
+                  <span>Last 7 days</span>
+                  <strong>{last7Count}</strong>
+                </div>
+                <div className="lp-insight-row">
+                  <span>Last 30 days</span>
+                  <strong>{last30Count}</strong>
+                </div>
+              </div>
+
+              {/* Lead quality card */}
+              <div className="lp-side-card lp-quality-card">
+                <div className="lp-small-label">Lead Quality</div>
+                <h4 className="lp-side-title">{qualityLabel}</h4>
+
+                <div className="lp-quality-rows">
+                  <div className="lp-quality-row">
+                    <span>High intent</span>
+                    <div className="lp-quality-bar">
+                      <span className="lp-quality-bar-fill high" />
+                    </div>
                   </div>
-                  <div>
-                    <strong>✉️</strong>{" "}
-                    {emailVerified ? "Verified" : "Not Verified"}
+                  <div className="lp-quality-row">
+                    <span>Warm</span>
+                    <div className="lp-quality-bar">
+                      <span className="lp-quality-bar-fill medium" />
+                    </div>
+                  </div>
+                  <div className="lp-quality-row">
+                    <span>Cold</span>
+                    <div className="lp-quality-bar">
+                      <span className="lp-quality-bar-fill low" />
+                    </div>
                   </div>
                 </div>
+              </div>
+
+              {/* Activity timeline */}
+              <div className="lp-side-card lp-timeline-card">
+                <div className="lp-small-label">Activity Timeline</div>
+                <ul className="lp-timeline-list">
+                  <li>
+                    <span className="lp-timeline-dot primary" />
+                    <div>
+                      <strong>Today</strong>
+                      <p>{todayCount} new leads</p>
+                    </div>
+                  </li>
+                  <li>
+                    <span className="lp-timeline-dot" />
+                    <div>
+                      <strong>Last 7 days</strong>
+                      <p>{last7Count} total leads</p>
+                    </div>
+                  </li>
+                  <li>
+                    <span className="lp-timeline-dot" />
+                    <div>
+                      <strong>Last 30 days</strong>
+                      <p>{last30Count} total leads</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Engagement mini chart */}
+              <div className="lp-side-card lp-chart-card">
+                <div className="lp-small-label">Engagement</div>
+                <h4 className="lp-side-title">When users search you</h4>
+                <div className="lp-chart-bars">
+                  <div className="lp-chart-bar">
+                    <div className="lp-chart-bar-fill morning" />
+                    <span>Morning</span>
+                  </div>
+                  <div className="lp-chart-bar">
+                    <div className="lp-chart-bar-fill afternoon" />
+                    <span>Afternoon</span>
+                  </div>
+                  <div className="lp-chart-bar">
+                    <div className="lp-chart-bar-fill evening" />
+                    <span>Evening</span>
+                  </div>
+                  <div className="lp-chart-bar">
+                    <div className="lp-chart-bar-fill night" />
+                    <span>Night</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="lp-side-card lp-tips-card">
+                <div className="lp-small-label">Conversion Tips</div>
+                <ul className="lp-tips-list">
+                  <li>Call new leads within 5 minutes.</li>
+                  <li>Send a short WhatsApp intro message.</li>
+                  <li>Add notes after each conversation.</li>
+                  <li>Ask for ratings after service is completed.</li>
+                </ul>
+
+                <button className="lp-btn lp-btn-primary full">
+                  View Detailed Analytics
+                </button>
               </div>
             </aside>
           </div>
