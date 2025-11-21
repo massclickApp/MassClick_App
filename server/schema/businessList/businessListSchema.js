@@ -95,6 +95,7 @@ const businessListSchema = new mongoose.Schema({
   gstin: { type: String, default: '', },
   whatsappNumber: { type: String, default: '', required: true },
   experience: { type: String, default: '', required: true },
+  businessesLive: { type: Boolean, default: false },
   openingHours: [
     {
       day: { type: String, required: true },

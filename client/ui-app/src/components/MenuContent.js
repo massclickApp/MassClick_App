@@ -83,7 +83,6 @@ export default function SideMenu({ onItemClick }) {
     return item.roles.includes(userRole);
   });
 
-  // sizes change slightly based on screen
 const iconSize = isMobile ? 30 : isTabletDown ? 34 : 38;
 const fontSize = isMobile ? "1rem" : "1.15rem"; 
 
