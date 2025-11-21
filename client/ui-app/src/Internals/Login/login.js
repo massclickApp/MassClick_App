@@ -79,9 +79,6 @@ export default function Login({ setIsAuthenticated }) {
             </div>
           </div>
 
-          <div className="corp-footer-note">
-            Designed for international teams, franchises &amp; multi-location brands.
-          </div>
         </section>
 
         {/* RIGHT: LOGIN CARD */}
