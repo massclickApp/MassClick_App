@@ -39,9 +39,7 @@ export default function Login({ setIsAuthenticated }) {
           <header className="corp-left-header">
             <div className="corp-logo-wrap">
               <img src={companyLogo} alt="MassClick" />
-              <span className="corp-logo-text">MassClick</span>
             </div>
-            <span className="corp-pill">Business Cloud</span>
           </header>
 
           <div className="corp-hero">
