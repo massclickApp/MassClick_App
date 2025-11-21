@@ -102,8 +102,8 @@ body {
 @media (min-width: 900px) {
     .right-sidebar {
         position: sticky;
-        top: 24px;
-        align-self: start;
+        top: 0 !important;
+        /* align-self: start; */
     }
 }
 

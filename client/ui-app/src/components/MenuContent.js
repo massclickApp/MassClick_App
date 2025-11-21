@@ -1,84 +1,186 @@
-import { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import Stack from '@mui/material/Stack';
-import { Typography, Box } from '@mui/material';
+import React from "react";
+import {
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  Stack,
+  Typography,
+  Box,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 
-import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import CategoryIcon from '@mui/icons-material/Category';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import BusinessIcon from '@mui/icons-material/Business';
-import SupportAgentIcon from '@mui/icons-material/SupportAgent';
-import InterpreterModeIcon from '@mui/icons-material/InterpreterMode';
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-import TodayIcon from '@mui/icons-material/Today';
+import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
+import CategoryIcon from "@mui/icons-material/Category";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import BusinessIcon from "@mui/icons-material/Business";
+import SupportAgentIcon from "@mui/icons-material/SupportAgent";
+import InterpreterModeIcon from "@mui/icons-material/InterpreterMode";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import TodayIcon from "@mui/icons-material/Today";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function SideMenu({ onItemClick }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const theme = useTheme();
 
-  const userRole = localStorage.getItem('userRole') || 'Guest';
+  // breakpoints for responsiveness
+  const isTabletDown = useMediaQuery(theme.breakpoints.down("md")); 
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); 
+
+  const userRole = localStorage.getItem("userRole") || "Guest";
 
   const mainListItems = [
-    { text: 'Home', icon: <HomeRoundedIcon sx={{ fontSize: 38 }} />, path: '/dashboard' },
-    { text: 'Category', icon: <CategoryIcon sx={{ fontSize: 38 }} />, path: '/dashboard/category' },
-    { text: 'Location', icon: <LocationOnIcon sx={{ fontSize: 38 }} />, path: '/dashboard/location' },
-    { text: 'Business', icon: <BusinessIcon sx={{ fontSize: 38 }} />, path: '/dashboard/business' },
-    { text: 'Clients', icon: <SupportAgentIcon sx={{ fontSize: 38 }} />, path: '/dashboard/clients' },
-    { text: 'Users', icon: <InterpreterModeIcon sx={{ fontSize: 38 }} />, path: '/dashboard/user', roles: ['SuperAdmin'] },
-    { text: 'Role', icon: <AdminPanelSettingsIcon sx={{ fontSize: 38 }} />, path: '/dashboard/roles', roles: ['SuperAdmin'] },
-    { text: 'EnquiryPage', icon: <TodayIcon sx={{ fontSize: 38 }} />, path: '/dashboard/enquiry', roles: ['SuperAdmin'] },
+    {
+      text: "Home",
+      icon: HomeRoundedIcon,
+      path: "/dashboard",
+    },
+    {
+      text: "Category",
+      icon: CategoryIcon,
+      path: "/dashboard/category",
+    },
+    {
+      text: "Location",
+      icon: LocationOnIcon,
+      path: "/dashboard/location",
+    },
+    {
+      text: "Business",
+      icon: BusinessIcon,
+      path: "/dashboard/business",
+    },
+    {
+      text: "Clients",
+      icon: SupportAgentIcon,
+      path: "/dashboard/clients",
+    },
+    {
+      text: "Users",
+      icon: InterpreterModeIcon,
+      path: "/dashboard/user",
+      roles: ["SuperAdmin"],
+    },
+    {
+      text: "Role",
+      icon: AdminPanelSettingsIcon,
+      path: "/dashboard/roles",
+      roles: ["SuperAdmin"],
+    },
+    {
+      text: "EnquiryPage",
+      icon: TodayIcon,
+      path: "/dashboard/enquiry",
+      roles: ["SuperAdmin"],
+    },
   ];
 
-  const filteredListItems = mainListItems.filter(item => {
-    if (!item.roles) {
-      return true;
-    }
+  const filteredListItems = mainListItems.filter((item) => {
+    if (!item.roles) return true;
     return item.roles.includes(userRole);
   });
 
+  // sizes change slightly based on screen
+const iconSize = isMobile ? 30 : isTabletDown ? 34 : 38;
+const fontSize = isMobile ? "1rem" : "1.15rem"; 
+
   return (
-    <Stack sx={{ flexGrow: 1, p: 1, justifyContent: 'space-between' }}>
-      <List dense>
+    <Stack
+      sx={{
+        flexGrow: 1,
+        p: 1.5,
+        justifyContent: "space-between",
+        bgcolor: "#fafafa",
+      }}
+    >
+      <List dense disablePadding>
         {filteredListItems.map((item, index) => {
           const selected = location.pathname === item.path;
+          const IconComp = item.icon;
 
           return (
-            <ListItem key={index} disablePadding sx={{ display: 'block', mb: 1 }}>
+            <ListItem
+              key={index}
+              disablePadding
+              sx={{
+                marginBottom: 0,
+                paddingBottom: 5,
+              }}
+            >
               <ListItemButton
                 selected={selected}
                 onClick={() => {
                   navigate(item.path);
                   if (onItemClick) onItemClick();
-                }} sx={{
-                  borderRadius: 1,
-                  backgroundColor: selected ? '#FF8C42' : 'transparent',
-                  '&:hover': {
-                    backgroundColor: selected ? '#FF8C42' : '#FFE0B2',
+                }}
+                sx={{
+                  position: "relative",
+                  borderRadius: 2,
+                  px: isMobile ? 1.2 : 1.6,
+                  py: isMobile ? 0.7 : 0.9,
+                  gap: 1.2,
+                  alignItems: "center",
+                  backgroundColor: selected ? "#fff3e8" : "transparent",
+                  "&:hover": {
+                    backgroundColor: selected ? "#ffe1c5" : "#f6f7fb",
                   },
-                  color: selected ? '#fff' : '#333',
-                  transition: 'all 0.2s ease-in-out',
+                  color: selected ? "#e1580f" : "#394150",
+                  transition: "all 0.18s ease-in-out",
+                  // left accent bar when selected
+                  "&::before": selected
+                    ? {
+                      content: '""',
+                      position: "absolute",
+                      left: 0,
+                      top: "16%",
+                      bottom: "16%",
+                      width: 3,
+                      borderRadius: 999,
+                      background:
+                        "linear-gradient(180deg,#ff8c42,#ff5a1f)",
+                    }
+                    : {},
                 }}
               >
                 <ListItemIcon
                   sx={{
-                    color: selected ? '#fff' : '#ea6d11',
-                    minWidth: '40px',
+                    minWidth: "auto",
+                    mr: 1.3,
                   }}
                 >
-                  <Box sx={{ fontSize: 38 }}>
-                    {item.icon}
+                  {/* icon pill */}
+                  <Box
+                    sx={{
+                      width: isMobile ? 34 : 38,
+                      height: isMobile ? 34 : 38,
+                      borderRadius: "50%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      bgcolor: selected ? "#ff8c42" : "#fff",
+                      boxShadow: selected
+                        ? "0 4px 10px rgba(255,140,66,0.4)"
+                        : "0 2px 6px rgba(15,23,42,0.08)",
+                      border: selected ? "none" : "1px solid #f0f0f5",
+                      color: selected ? "#fff" : "#ea6d11",
+                      transition: "all 0.18s ease-in-out",
+                    }}
+                  >
+                    <IconComp sx={{ fontSize: iconSize }} />
                   </Box>
                 </ListItemIcon>
 
+                {/* label */}
                 <Typography
+                  noWrap
                   sx={{
-                    fontSize: '1rem',
-                    fontWeight: 'bold',
-                    color: selected ? '#FF8C42' : '#333'
+                    fontSize,
+                    fontWeight: selected ? 700 : 500,
+                    color: selected ? "#e1580f" : "#333",
+                    letterSpacing: 0.2,
                   }}
                 >
                   {item.text}

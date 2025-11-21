@@ -22,8 +22,8 @@ import {
 
 } from "@mui/material";
 
-import BusinessCard from './businessCard';
-import ChartUserByBusiness from './ChartUserByCountry';
+import BusinessCard from './businessCard/businessCard.js';
+import ChartUserByBusiness from '../components/homePageChart/ChartUserByCountry.js';
 import CustomizedTable from './Table/CustomizedTable.js';
 import { createPhonePePayment } from '../redux/actions/phonePayAction.js';
 
@@ -244,9 +244,6 @@ export default function MainGrid() {
         </Grid>
       </Grid><br />
       <Grid elevation={3} sx={{ p: 3, borderRadius: 2 }}>
-        <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
-          BusinessList Table
-        </Typography>
         <Box sx={{ width: "100%" }}>
           <CustomizedTable data={rows} columns={businessListTable} />
         </Box>

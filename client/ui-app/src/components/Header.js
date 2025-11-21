@@ -36,7 +36,7 @@ export default function Header() {
             <MenuButton
               showBadge
               aria-label="Open notifications"
-              onClick={handleOpen}
+              // onClick={handleOpen}
             >
               <NotificationsRoundedIcon />
             </MenuButton>
