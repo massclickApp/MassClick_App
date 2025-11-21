@@ -227,17 +227,11 @@ export default function MainGrid() {
 
   return (
     <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
-      {/* Overview cards */}
-
       <Grid container spacing={2} columns={12} sx={{ mb: 2 }}>
-
-
-
         <Grid xs={12} md={6}>
           <BusinessCard />
         </Grid>
       </Grid>
-
       <Grid container spacing={2} columns={12} sx={{ mb: 2 }}>
         <Grid item xs={12} md={12}>
           <ChartUserByBusiness />

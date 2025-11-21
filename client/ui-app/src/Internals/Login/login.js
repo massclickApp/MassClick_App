@@ -1,33 +1,27 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../../redux/actions/authAction.js';
-
-
 import { useNavigate } from 'react-router-dom';
 import companyLogo from "../../assets/mclogo.png";
 
-import './login.css'
-
+import './login.css';
 
 export default function Login({ setIsAuthenticated }) {
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
   const navigate = useNavigate();
-  const [userName, setUserName] = useState('');
 
+  const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
-  const [mode, setMode] = useState('light');
   const [showPassword, setShowPassword] = useState(false);
-
-
 
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(login(userName, password));
   };
 
- useEffect(() => {
+  useEffect(() => {
     if (auth.user && auth.accessToken) {
       setIsAuthenticated(true);
       navigate("/dashboard");
@@ -35,105 +29,160 @@ export default function Login({ setIsAuthenticated }) {
   }, [auth, navigate, setIsAuthenticated]);
 
   return (
-    <div className={`login-page ${mode}`}>
-      <div className="login-left">
-        <div className="login-card">
-          <div className="login-header">
-            <div className="logo-area">
-              <img src={companyLogo} alt="Company Logo" className="logo" />
+    <div className="corp-shell">
+      <div className="corp-container">
+
+        {/* LEFT: INFO / BRAND SIDE */}
+        <section className="corp-left corp-animate-left">
+          {/* soft blob background is via CSS pseudo-elements */}
+
+          <header className="corp-left-header">
+            <div className="corp-logo-wrap">
+              <img src={companyLogo} alt="MassClick" />
+              <span className="corp-logo-text">MassClick</span>
             </div>
-            <button
-              type="button"
-              className="theme-toggle"
-              onClick={() => setMode(mode === 'light' ? 'dark' : 'light')}
-            >
-              {mode === 'light' ? '🌙' : '☀️'}
-            </button>
+            <span className="corp-pill">Business Cloud</span>
+          </header>
+
+          <div className="corp-hero">
+            <h1>
+              Discover &amp; manage
+              <span>local businesses globally.</span>
+            </h1>
+            <p>
+              MassClick helps teams search, organize and activate business data
+              across markets – with a single, scalable platform.
+            </p>
           </div>
 
-          <h1>Sign in</h1>
-          <p className="signup-text">
-            New to company? <a href="#">Sign up!</a>
-          </p>
+          <div className="corp-stats">
+            <div className="corp-stat-card">
+              <div className="stat-icon">🌍</div>
+              <div>
+                <span className="stat-number">5k+</span>
+                <span className="stat-label">Clients globally</span>
+              </div>
+            </div>
+            <div className="corp-stat-card">
+              <div className="stat-icon">⏱</div>
+              <div>
+                <span className="stat-number">24/7</span>
+                <span className="stat-label">Support</span>
+              </div>
+            </div>
+            <div className="corp-stat-card">
+              <div className="stat-icon">📊</div>
+              <div>
+                <span className="stat-number">Single</span>
+                <span className="stat-label">Unified console</span>
+              </div>
+            </div>
+          </div>
 
-          {auth.error && (
-            <p className="error-msg">
-              {auth.error.message || auth.error}
-            </p>
-          )}
+          <div className="corp-footer-note">
+            Designed for international teams, franchises &amp; multi-location brands.
+          </div>
+        </section>
 
-          <form onSubmit={handleSubmit} className="login-form">
-            <label>
-              Username
-              <input
-                type="text"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-                placeholder="Enter your username"
-                required
-              />
-            </label>
+        {/* RIGHT: LOGIN CARD */}
+        <section className="corp-right">
+          <div className="corp-card corp-animate-card">
+            <header className="corp-card-header">
+              <div>
+                <h2>Sign in</h2>
+                <p>Use your work credentials to access the console.</p>
+              </div>
 
-            <label>
-              Password
-              <div className="password-container">
+              <div className="corp-lang">
+                <label htmlFor="lang-select">Language</label>
+                <select id="lang-select" defaultValue="en">
+                  <option value="en">English</option>
+                  <option value="es">Español</option>
+                  <option value="fr">Français</option>
+                  <option value="de">Deutsch</option>
+                </select>
+              </div>
+            </header>
+
+            {auth.error && (
+              <p className="corp-error">
+                {auth.error.message || auth.error}
+              </p>
+            )}
+
+            <form className="corp-form" onSubmit={handleSubmit}>
+              <div className="corp-field">
+                <label htmlFor="username">Username</label>
                 <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
+                  id="username"
+                  type="text"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  placeholder="name@company.com"
+                  autoComplete="username"
                   required
                 />
-                <span
-                  className="toggle-password"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? '🙈' : '👁️'}
-                </span>
               </div>
-            </label>
 
-            <div className="options-row">
-              <label className="remember-me">
-                <input
-                  type="checkbox"
-                  checked={remember}
-                  onChange={(e) => setRemember(e.target.checked)}
-                />
-                Remember me
-              </label>
-              <a href="#" className="forgot-password">Forgot password?</a>
-            </div>
+              <div className="corp-field">
+                <label htmlFor="password">Password</label>
+                <div className="corp-password-wrap">
+                  <input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    autoComplete="current-password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="corp-eye"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? '🙈' : '👁️'}
+                  </button>
+                </div>
+              </div>
 
-            <button
-              type="submit"
-              className="btn-primary"
-              disabled={auth.loading}
-            >
-              {auth.loading ? 'Logging in...' : 'Sign In'}
-            </button>
-          </form>
+              <div className="corp-row-between">
+                <label className="corp-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={remember}
+                    onChange={(e) => setRemember(e.target.checked)}
+                  />
+                  <span>Remember me</span>
+                </label>
+                <button type="button" className="corp-link">
+                  Forgot password?
+                </button>
+              </div>
 
-          <p className="footer-text">
-            © MassClick {new Date().getFullYear()}
-          </p>
-        </div>
-      </div>
+              <button
+                type="submit"
+                className="corp-primary-btn"
+                disabled={auth.loading}
+              >
+                {auth.loading ? 'Signing you in...' : 'Login'}
+              </button>
 
-      {/* Right side - Info Section */}
-      <div className="login-right">
-        <div className="info-text">
-          <h2>Discover & Connect with Local Businesses Instantly</h2>
-          <p>
-            Your trusted search engine for restaurants, shops, and services worldwide.
-          </p>
-          <p>
-            Explore reviews, ratings, contact details, and directions — all in one place.
-          </p>
-          <p>
-            Bringing local businesses closer to you with a world-class experience.
-          </p>
-        </div>
+              <p className="corp-signup">
+                New to MassClick? <a href="#">Talk to sales</a>
+              </p>
+            </form>
+
+            <footer className="corp-card-footer">
+              <span>© {new Date().getFullYear()} MassClick</span>
+              <span className="corp-status">
+                <span className="status-dot" /> Systems: Operational
+              </span>
+            </footer>
+          </div>
+        </section>
+
       </div>
     </div>
   );

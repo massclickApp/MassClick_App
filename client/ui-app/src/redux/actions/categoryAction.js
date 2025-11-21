@@ -5,21 +5,27 @@ import {
   EDIT_CATEGORY_REQUEST, EDIT_CATEGORY_SUCCESS, EDIT_CATEGORY_FAILURE,
   DELETE_CATEGORY_REQUEST, DELETE_CATEGORY_SUCCESS, DELETE_CATEGORY_FAILURE
 } from "../actions/userActionTypes.js";
+import { getClientToken } from "./clientAuthAction.js";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
 export const getAllCategory = () => async (dispatch) => {
   dispatch({ type: FETCH_CATEGORY_REQUEST });
-  try {
-        const token = localStorage.getItem("accessToken");
 
+  try {
+    let token = localStorage.getItem("accessToken");
 
     if (!token) {
-      throw new Error("No valid access token found");
-    } const response = await axios.get(`${API_URL}/category/viewall`, {
+      token = await dispatch(getClientToken()); 
+    }
+
+    if (!token) {
+      throw new Error("Unable to get access token.");
+    }
+
+    const response = await axios.get(`${API_URL}/category/viewall`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-
 
     let category = [];
     if (Array.isArray(response.data)) {
@@ -30,7 +36,10 @@ export const getAllCategory = () => async (dispatch) => {
       category = response.data.clients;
     }
 
-    dispatch({ type: FETCH_CATEGORY_SUCCESS, payload: category });
+    dispatch({
+      type: FETCH_CATEGORY_SUCCESS,
+      payload: category,
+    });
   } catch (error) {
     dispatch({
       type: FETCH_CATEGORY_FAILURE,

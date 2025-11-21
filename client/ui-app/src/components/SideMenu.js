@@ -10,6 +10,7 @@ import SelectContent from './SelectContent';
 import MenuContent from './MenuContent';
 import CardAlert from './CardAlert';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -25,11 +26,20 @@ const Drawer = styled(MuiDrawer)({
 });
 
 export default function SideMenu() {
+  const navigate = useNavigate();
+  const user = useSelector((state) => state.auth.user);
+  const username = user?.userName || 'Guest';
+  const role = user?.userRole || 'Guest';
 
-const user = useSelector((state) => state.auth.user);
-const username = user?.userName || 'Guest'; 
-const role = user?.userRole || 'Guest';
-  return (  
+  const getInitials = (name) => {
+    if (!name) return "";
+    const parts = name.trim().split(" ");
+    if (parts.length === 1) {
+      return parts[0].charAt(0).toUpperCase();
+    }
+    return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+  };
+  return (
     <Drawer
       variant="permanent"
       sx={{
@@ -72,11 +82,22 @@ const role = user?.userRole || 'Guest';
       >
         <Avatar
           sizes="small"
-          alt="Riley Carter"
-          src="/static/images/avatar/7.jpg"
-          sx={{ width: 36, height: 36 }}
-        />
-        <Box sx={{ mr: 'auto' }}>
+          alt={username}
+          sx={{
+            width: 36,
+            height: 36,
+            bgcolor: 'primary.main',
+            color: 'white',
+            fontWeight: 600,
+            fontSize: '14px',
+            cursor: 'pointer'
+          }}
+          onClick={() => navigate('/dashboard/profile')}
+        >
+          {getInitials(username)}
+        </Avatar>
+
+        <Box sx={{ mr: 'auto', cursor: 'pointer', }} onClick={() => navigate('/dashboard/profile')} >
           <Typography variant="body2" sx={{ fontWeight: 500, lineHeight: '16px' }}>
             {username}
           </Typography>
