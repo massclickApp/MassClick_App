@@ -32,10 +32,8 @@ export default function Login({ setIsAuthenticated }) {
     <div className="corp-shell">
       <div className="corp-container">
 
-        {/* LEFT: INFO / BRAND SIDE */}
+        {/* LEFT SECTION */}
         <section className="corp-left corp-animate-left">
-          {/* soft blob background is via CSS pseudo-elements */}
-
           <header className="corp-left-header">
             <div className="corp-logo-wrap">
               <img src={companyLogo} alt="MassClick" />
@@ -76,10 +74,9 @@ export default function Login({ setIsAuthenticated }) {
               </div>
             </div>
           </div>
-
         </section>
 
-        {/* RIGHT: LOGIN CARD */}
+        {/* RIGHT LOGIN CARD */}
         <section className="corp-right">
           <div className="corp-card corp-animate-card">
             <header className="corp-card-header">
@@ -98,8 +95,23 @@ export default function Login({ setIsAuthenticated }) {
                 </select>
               </div>
             </header>
- 
             <form className="corp-form" onSubmit={handleSubmit}>
+
+              {/* 🔴 ERROR MESSAGE DISPLAY */}
+              {auth.error && (
+                <div style={{
+                  background: '#ffe6e6',
+                  color: '#d00000',
+                  padding: '10px',
+                  borderRadius: '6px',
+                  marginBottom: '15px',
+                  textAlign: 'center',
+                  fontWeight: 'bold'
+                }}>
+                  {auth.error}
+                </div>
+              )}
+
               <div className="corp-field">
                 <label htmlFor="username">Username</label>
                 <input

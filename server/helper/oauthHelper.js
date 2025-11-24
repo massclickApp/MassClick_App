@@ -53,8 +53,13 @@ const getUser = async (userName, password) => {
             role: user.role,
         };
     } catch (err) {
-        console.error('Error in getUser:', err);
-        return false;
+        const message = err.error || "Invalid credentials";
+        const statusCode = err.status || 401;
+
+        const oauthError = new OAuth2Server.InvalidGrantError(message);
+        oauthError.code = statusCode;
+
+        throw oauthError;  
     }
 };
 

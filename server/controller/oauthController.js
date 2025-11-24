@@ -4,10 +4,16 @@ import { oauthAuthentication, oauthValidation, logoutUsers, handleRefreshTokenRe
 export const oauthAction = async (req, res) => {
     try {
         const result = await oauthValidation(req);
-        res.send(result);
+
+        if (result.error) {
+            return res.status(401).json({ error: result.error });
+        }
+
+        return res.status(200).json(result);
+
     } catch (error) {
         console.error(error);
-        return res.status(BAD_REQUEST.code).send({error:error.message});
+        return res.status(400).json({ error: error.message });
     }
 };
 export const oauthClientAction = async (req, res) => {

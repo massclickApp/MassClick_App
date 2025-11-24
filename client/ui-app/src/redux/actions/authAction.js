@@ -90,7 +90,7 @@ export const login = (userName, password) => async (dispatch) => {
     console.error("Login error:", error.response?.data || error.message);
     dispatch({
       type: LOGIN_FAILURE,
-      payload: error.response?.data || error.message,
+      payload: error.response?.data?.error || error.message,
     });
   }
 };
@@ -129,11 +129,10 @@ export const relogin = () => async (dispatch) => {
       error.response?.data?.message ||
       error.message ||
       "Something went wrong";
- 
     dispatch({
       type: RELOGIN_FAILURE,
-    payload: message,
-  });
+      payload: message,
+    });
     throw error;
   }
 };
