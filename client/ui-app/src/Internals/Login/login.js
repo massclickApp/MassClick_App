@@ -32,7 +32,6 @@ export default function Login({ setIsAuthenticated }) {
     <div className="corp-shell">
       <div className="corp-container">
 
-        {/* LEFT SECTION */}
         <section className="corp-left corp-animate-left">
           <header className="corp-left-header">
             <div className="corp-logo-wrap">
@@ -76,7 +75,6 @@ export default function Login({ setIsAuthenticated }) {
           </div>
         </section>
 
-        {/* RIGHT LOGIN CARD */}
         <section className="corp-right">
           <div className="corp-card corp-animate-card">
             <header className="corp-card-header">
@@ -97,7 +95,6 @@ export default function Login({ setIsAuthenticated }) {
             </header>
             <form className="corp-form" onSubmit={handleSubmit}>
 
-              {/* 🔴 ERROR MESSAGE DISPLAY */}
               {auth.error && (
                 <div style={{
                   background: '#ffe6e6',

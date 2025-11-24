@@ -14,8 +14,8 @@ import CardsSearch from '../../CardsSearch/CardsSearch';
 
 const Card = ({ Icon, title, description }) => (
     <div className="card-item">
-        <div className="card-icon-wrapper">
-            <Icon className="card-icon" />
+        <div className="about-card-icon-wrapper">
+            <Icon className="about-card-icon" />
         </div>
         <h4 className="card-title">{title}</h4>
         <p className="card-description">{description}</p>
