@@ -21,11 +21,14 @@ const BeautySpaCards = () => {
 
     const keywords = ["beauty", "spa", "parlour", "salon", "beauty parlour"];
 
-    const beautyBusinesses = clientBusinessList.filter((b) => {
-        if (!b.businessName) return false;
-        const name = b.businessName.toLowerCase();
-        return keywords.some((keyword) => name.includes(keyword.toLowerCase()));
-    });
+  const beautyBusinesses = clientBusinessList.filter((b) => {
+    if (!b.businessName) return false;
+
+    if (b.businessesLive !== true) return false;
+
+    const name = b.businessName.toLowerCase();
+    return keywords.some((keyword) => name.includes(keyword.toLowerCase()));
+});
     const createSlug = (text) => {
         if (!text) return '';
         return text

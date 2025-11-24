@@ -22,6 +22,7 @@ const InterlockBricksCards = () => {
 
     const interlockBricks = clientBusinessList.filter(
         (b) =>
+             b.businessesLive === true &&  
             b.category &&
             b.category.toLowerCase().includes("interlock bricks".toLowerCase())
     );

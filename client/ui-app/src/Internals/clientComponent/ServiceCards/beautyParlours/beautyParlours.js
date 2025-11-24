@@ -23,6 +23,7 @@ const BeautyParloursCards = () => {
 
     const beautyParlours = clientBusinessList.filter(
         (b) =>
+             b.businessesLive === true &&  
             b.category &&
             /\bbeauty\s*parlou?r\b/i.test(b.category)
     );

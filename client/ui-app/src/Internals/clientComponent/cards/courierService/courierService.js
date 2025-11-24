@@ -21,6 +21,7 @@ const CourierServiceCards = () => {
 
     const courierService = clientBusinessList.filter(
         (b) =>
+            b.businessesLive === true &&
             b.category &&
             b.category.toLowerCase().includes("courier service".toLowerCase())
     );
@@ -59,7 +60,7 @@ const CourierServiceCards = () => {
 
                     const nameSlug = createSlug(business.businessName);
                     const locationSlug = createSlug(business.locationDetails || 'unknown');
-                    const address = createSlug(business.street || 'unknown');                 
+                    const address = createSlug(business.street || 'unknown');
                     return (
                         <CardDesign
                             key={business._id}

@@ -30,7 +30,8 @@ const PetShopsCards = () => {
     };
 
     const petShops = clientBusinessList.filter(
-        (b) => b.category && /pet\s*shops/i.test(b.category)
+        (b) => b.businessesLive === true &&
+            b.category && /pet\s*shops/i.test(b.category)
     );
 
     if (petShops.length === 0) {

@@ -20,7 +20,7 @@ const SalonsCards = () => {
     }, [dispatch]);
 
     const salons = clientBusinessList.filter(
-        (b) => b.category && /\bsalons?\b/i.test(b.category)
+        (b) => b.businessesLive === true &&  b.category && /\bsalons?\b/i.test(b.category)
     );
     const createSlug = (text) => {
         if (!text) return '';

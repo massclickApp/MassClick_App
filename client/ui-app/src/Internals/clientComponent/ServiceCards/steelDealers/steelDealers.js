@@ -21,7 +21,7 @@ const SteelDealersCards = () => {
     }, [dispatch]);
 
     const steelDealers = clientBusinessList.filter(
-        (b) => b.category && /\bsteel\s*dealers?\b/i.test(b.category)
+        (b) => b.businessesLive === true &&  b.category && /\bsteel\s*dealers?\b/i.test(b.category)
     );
     const createSlug = (text) => {
         if (!text) return '';

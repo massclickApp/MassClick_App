@@ -21,7 +21,8 @@ const DentistsCards = () => {
 
 
     const dentists = clientBusinessList.filter(
-        (b) => b.category && /dentist/i.test(b.category)
+        (b) => b.businessesLive === true &&
+            b.category && /dentist/i.test(b.category)
     );
 
     const createSlug = (text) => {

@@ -24,6 +24,7 @@ const TvServiceCards = () => {
 
     const tvServices = clientBusinessList.filter(
         (b) =>
+             b.businessesLive === true && 
             b.category &&
             b.category.toLowerCase().includes("tv service".toLowerCase())
     );

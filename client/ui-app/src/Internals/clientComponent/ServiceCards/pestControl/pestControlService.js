@@ -23,6 +23,7 @@ const PestControlCards = () => {
 
     const pestControl = clientBusinessList.filter(
         (b) =>
+             b.businessesLive === true &&  
             b.category &&
             b.category.toLowerCase().includes("pest control".toLowerCase())
     );

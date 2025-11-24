@@ -124,43 +124,30 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
     const finalSearchTerm = searchTerm?.trim();
     const logLocation = locationName || "Global";
 
-    // Filter businesses first
-    const filteredBusinesses = clientBusinessList.filter((business) => {
+   const filteredBusinesses = clientBusinessList.filter((business) => {
+
+      if (business.businessesLive !== true) return false;
+
       const matchesSearchTerm =
         !finalSearchTerm ||
         (business.businessName &&
-          business.businessName
-            .toLowerCase()
-            .includes(finalSearchTerm.toLowerCase())) ||
+          business.businessName.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
         (business.category &&
-          business.category
-            .toLowerCase()
-            .includes(finalSearchTerm.toLowerCase())) ||
+          business.category.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
         (Array.isArray(business.keywords) &&
           business.keywords.some((keyword) =>
             keyword.toLowerCase().includes(finalSearchTerm.toLowerCase())
           )) ||
-
         (business.description &&
-          business.description
-            .toLowerCase()
-            .includes(finalSearchTerm.toLowerCase())) ||
+          business.description.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
         (business.seoDescription &&
-          business.seoDescription
-            .toLowerCase()
-            .includes(finalSearchTerm.toLowerCase())) ||
+          business.seoDescription.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
         (business.seoTitle &&
-          business.seoTitle
-            .toLowerCase()
-            .includes(finalSearchTerm.toLowerCase())) ||
+          business.seoTitle.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
         (business.title &&
-          business.title
-            .toLowerCase()
-            .includes(finalSearchTerm.toLowerCase())) ||
+          business.title.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
         (business.slug &&
-          business.slug
-            .toLowerCase()
-            .includes(finalSearchTerm.toLowerCase()));
+          business.slug.toLowerCase().includes(finalSearchTerm.toLowerCase()));
 
       const matchesCategory =
         !categoryName ||
@@ -297,9 +284,13 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
                 <div className="category-custom-dropdown">
                   <div className="trending-label">SUGGESTIONS</div>
                   <div className="options-list-container" style={{ maxHeight: "200px" }}>
-                    {clientBusinessList
+                    {
+                    clientBusinessList
                       .filter((business) => {
+                        if (business.businessesLive !== true) return false;
+
                         const value = debouncedSearch.toLowerCase();
+
                         return (
                           business.businessName?.toLowerCase().includes(value) ||
                           business.category?.toLowerCase().includes(value)

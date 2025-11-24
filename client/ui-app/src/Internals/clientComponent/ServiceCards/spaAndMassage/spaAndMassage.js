@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import "./spaAndMassage.css";
 import CardDesign from "../../cards/cards.js";
 import { useDispatch, useSelector } from "react-redux";
-import {  getAllClientBusinessList } from "../../../../redux/actions/businessListAction.js";
+import { getAllClientBusinessList } from "../../../../redux/actions/businessListAction.js";
 import CardsSearch from "../../../clientComponent/CardsSearch/CardsSearch.js";
 import { useNavigate } from 'react-router-dom';
 
@@ -23,6 +23,8 @@ const SpaAndMassageCards = () => {
 
     const spaAndMassage = clientBusinessList.filter((b) => {
         if (!b.category) return false;
+        if (b.businessesLive !== true) return false;
+
         const name = b.category.toLowerCase();
         return keywords.some((keyword) => name.includes(keyword.toLowerCase()));
     });

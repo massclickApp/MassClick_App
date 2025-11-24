@@ -121,41 +121,29 @@ const HeroSection = ({
 
     // Filter businesses first
     const filteredBusinesses = clientBusinessList.filter((business) => {
+
+      if (business.businessesLive !== true) return false;
+
       const matchesSearchTerm =
         !finalSearchTerm ||
         (business.businessName &&
-          business.businessName
-            .toLowerCase()
-            .includes(finalSearchTerm.toLowerCase())) ||
+          business.businessName.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
         (business.category &&
-          business.category
-            .toLowerCase()
-            .includes(finalSearchTerm.toLowerCase())) ||
+          business.category.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
         (Array.isArray(business.keywords) &&
           business.keywords.some((keyword) =>
             keyword.toLowerCase().includes(finalSearchTerm.toLowerCase())
           )) ||
-
         (business.description &&
-          business.description
-            .toLowerCase()
-            .includes(finalSearchTerm.toLowerCase())) ||
+          business.description.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
         (business.seoDescription &&
-          business.seoDescription
-            .toLowerCase()
-            .includes(finalSearchTerm.toLowerCase())) ||
+          business.seoDescription.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
         (business.seoTitle &&
-          business.seoTitle
-            .toLowerCase()
-            .includes(finalSearchTerm.toLowerCase())) ||
+          business.seoTitle.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
         (business.title &&
-          business.title
-            .toLowerCase()
-            .includes(finalSearchTerm.toLowerCase())) ||
+          business.title.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
         (business.slug &&
-          business.slug
-            .toLowerCase()
-            .includes(finalSearchTerm.toLowerCase()));
+          business.slug.toLowerCase().includes(finalSearchTerm.toLowerCase()));
 
       const matchesCategory =
         !categoryName ||
@@ -173,6 +161,7 @@ const HeroSection = ({
       return matchesSearchTerm && matchesCategory && matchesLocation;
     });
 
+
     const derivedCategory =
       filteredBusinesses.length > 0 && filteredBusinesses[0].category
         ? filteredBusinesses[0].category
@@ -188,7 +177,6 @@ const HeroSection = ({
       mobileNumber2: authUser?.mobileNumber2,
       email: authUser?.email
     };
-    console.log("userDetails", userDetails);
 
     if (userId && finalSearchTerm) {
       dispatch(logUserSearch(userId, finalSearchTerm, logLocation, logCategory));
@@ -259,7 +247,6 @@ const HeroSection = ({
               />
             )}
 
-            {/* LIVE SEARCH SUGGESTIONS */}
             {isCategoryDropdownOpen && searchTerm.trim().length >= 2 && (
               <div className="category-custom-dropdown">
                 <div className="trending-label">SUGGESTIONS</div>
@@ -267,45 +254,50 @@ const HeroSection = ({
                   className="options-list-container"
                   style={{ maxHeight: "200px" }}
                 >
-                  {clientBusinessList
-                    .filter((business) => {
-                      const value = debouncedSearch.toLowerCase();
-                      return (
-                        business.businessName?.toLowerCase().includes(value) ||
-                        business.category?.toLowerCase().includes(value)
-                      );
-                    })
-                    .slice(0, 10)
-                    .map((business, index) => (
-                      <div
-                        key={index}
-                        className="option-item"
-                        onClick={() => {
-                          setSearchTerm(business.businessName);
-                          setIsCategoryDropdownOpen(false);
-                        }}
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          padding: "4px 8px",
-                          cursor: "pointer",
-                        }}
-                      >
-                        <SearchIcon
-                          style={{ marginRight: "6px", color: "#ff7b00" }}
-                        />
-                        <span>{business.businessName}</span>
-                        <span
+                  {
+                    clientBusinessList
+                      .filter((business) => {
+                        if (business.businessesLive !== true) return false;
+
+                        const value = debouncedSearch.toLowerCase();
+
+                        return (
+                          business.businessName?.toLowerCase().includes(value) ||
+                          business.category?.toLowerCase().includes(value)
+                        );
+                      })
+                      .slice(0, 10)
+
+                      .map((business, index) => (
+                        <div
+                          key={index}
+                          className="option-item"
+                          onClick={() => {
+                            setSearchTerm(business.businessName);
+                            setIsCategoryDropdownOpen(false);
+                          }}
                           style={{
-                            marginLeft: "auto",
-                            color: "gray",
-                            fontSize: "12px",
+                            display: "flex",
+                            alignItems: "center",
+                            padding: "4px 8px",
+                            cursor: "pointer",
                           }}
                         >
-                          {business.category}
-                        </span>
-                      </div>
-                    ))}
+                          <SearchIcon
+                            style={{ marginRight: "6px", color: "#ff7b00" }}
+                          />
+                          <span>{business.businessName}</span>
+                          <span
+                            style={{
+                              marginLeft: "auto",
+                              color: "gray",
+                              fontSize: "12px",
+                            }}
+                          >
+                            {business.category}
+                          </span>
+                        </div>
+                      ))}
                 </div>
               </div>
             )}

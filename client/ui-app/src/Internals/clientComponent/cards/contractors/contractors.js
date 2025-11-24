@@ -20,9 +20,12 @@ const ContractorsCards = () => {
     }, [dispatch]);
 
 
-    const contractors = clientBusinessList.filter(
-        (b) => b.category && /\bcontract\w*\b/i.test(b.category)
-    );
+ const contractors = clientBusinessList.filter(
+    (b) =>
+        b.businessesLive === true &&      
+        b.category &&
+        /\bcontract\w*\b/i.test(b.category)
+);
 
  const createSlug = (text) => {
         if (!text) return '';

@@ -26,6 +26,7 @@ const TrendingCards = () => {
 
     const filteredBusinesses = clientBusinessList.filter((b) => {
         if (!b.category) return false;
+        if (b.businessesLive !== true) return false;
 
         const category = b.category.toLowerCase();
 

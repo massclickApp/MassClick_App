@@ -23,6 +23,7 @@ const LoansCards = () => {
 
     const loans = clientBusinessList.filter(
         (b) =>
+            b.businessesLive === true &&
             b.category &&
             b.category.toLowerCase().includes("Loans".toLowerCase())
     );

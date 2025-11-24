@@ -20,7 +20,7 @@ const WeddingPlanCards = () => {
 
 
     const weddingPlan = clientBusinessList.filter(
-        (b) =>
+        (b) => b.businessesLive === true &&
             b.category &&
             b.category.toLowerCase().includes("wedding plan".toLowerCase())
     );
@@ -56,7 +56,7 @@ const WeddingPlanCards = () => {
                     const averageRating = business.averageRating?.toFixed(1) || 0;
                     const totalRatings = business.reviews?.length || 0;
 
-                   const nameSlug = createSlug(business.businessName);
+                    const nameSlug = createSlug(business.businessName);
                     const locationSlug = createSlug(business.locationDetails || 'unknown');
                     const address = createSlug(business.street || 'unknown');
 

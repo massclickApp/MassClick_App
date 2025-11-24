@@ -21,6 +21,7 @@ const FencingCards = () => {
 
     const fencing = clientBusinessList.filter(
         (b) =>
+             b.businessesLive === true && 
             b.category &&
             b.category.toLowerCase().includes("fencing".toLowerCase())
     );

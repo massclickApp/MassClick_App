@@ -20,6 +20,7 @@ const HotelCards = () => {
 
     const hotels = clientBusinessList.filter(
         (b) =>
+            b.businessesLive === true &&
             b.category &&
             b.category.toLowerCase().includes("hotel".toLowerCase())
     );

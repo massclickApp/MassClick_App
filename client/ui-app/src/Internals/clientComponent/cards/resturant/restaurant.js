@@ -21,6 +21,7 @@ const RestaurantsCards = () => {
 
     const restaurants = clientBusinessList.filter(
         (b) =>
+            b.businessesLive === true &&
             b.category &&
             b.category.toLowerCase().includes("restaurants".toLowerCase())
     );

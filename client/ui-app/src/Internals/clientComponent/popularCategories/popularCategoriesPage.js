@@ -12,7 +12,7 @@ const PopularCategoryPage = () => {
     const { clientBusinessList = [] } = useSelector(state => state.businessListReducer || {});
     const [filteredBusinesses, setFilteredBusinesses] = useState([]);
 
-  const createSlug = (text) => {
+    const createSlug = (text) => {
         if (!text) return '';
         return text
             .toLowerCase()
@@ -27,6 +27,7 @@ const PopularCategoryPage = () => {
 
         const filtered = clientBusinessList.filter(b => {
             if (!b.businessName && !b.category) return false;
+            if (b.businessesLive !== true) return false;
 
             const categoryLower = (b.category || '').toLowerCase();
             const nameLower = (b.businessName || '').toLowerCase();

@@ -21,6 +21,7 @@ const EducationCards = () => {
 
     const education = clientBusinessList.filter(
         (b) =>
+            b.businessesLive === true &&
             b.category &&
             b.category.toLowerCase().includes("Education".toLowerCase())
     );

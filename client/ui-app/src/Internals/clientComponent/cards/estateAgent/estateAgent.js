@@ -22,7 +22,8 @@ const EstateAgentCards = () => {
 
 
     const estateAgent = clientBusinessList.filter(
-        (b) => b.category && /\b(agent|agents|estate agent|estate agents)\b/i.test(b.category)
+        (b) => b.businessesLive === true &&
+            b.category && /\b(agent|agents|estate agent|estate agents)\b/i.test(b.category)
     );
 
     const createSlug = (text) => {
@@ -59,7 +60,7 @@ const EstateAgentCards = () => {
 
                     const nameSlug = createSlug(business.businessName);
                     const locationSlug = createSlug(business.locationDetails || 'unknown');
-                    const address = createSlug(business.street || 'unknown');          
+                    const address = createSlug(business.street || 'unknown');
                     return (
                         <CardDesign
                             key={business._id}

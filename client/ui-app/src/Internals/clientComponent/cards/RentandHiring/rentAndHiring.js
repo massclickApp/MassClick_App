@@ -29,6 +29,7 @@ const RentAndHiringCards = () => {
     };
 
     const rentAndHiring = clientBusinessList.filter(b =>
+        b.businessesLive === true &&
         b.category &&
         ["rent", "hire", "hiring"].some((word) =>
             b.category.toLowerCase().includes(word)

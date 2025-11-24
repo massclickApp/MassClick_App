@@ -21,6 +21,7 @@ const HospitalsCards = () => {
 
     const hospitals = clientBusinessList.filter(
         (b) =>
+            b.businessesLive === true &&
             b.category &&
             /hospital/i.test(b.category)
     );

@@ -23,6 +23,7 @@ const CarServiceCards = () => {
 
     const carServices = clientBusinessList.filter(
         (b) =>
+             b.businessesLive === true &&  
             b.category &&
             b.category.toLowerCase().includes("car service".toLowerCase())
     );

@@ -19,11 +19,12 @@ const PgAndHostelsCards = () => {
         dispatch(getAllClientBusinessList());
     }, [dispatch]);
 
-    const pgAndHostels = clientBusinessList.filter((b) =>
+    const pgAndHostels = clientBusinessList.filter((b) => b.businessesLive === true &&
+
         /pg|hostel/i.test(b.category)
     );
 
-const createSlug = (text) => {
+    const createSlug = (text) => {
         if (!text) return '';
         return text
             .toLowerCase()

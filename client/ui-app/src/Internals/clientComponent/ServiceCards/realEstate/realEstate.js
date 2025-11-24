@@ -21,7 +21,7 @@ const RealEstateCards = () => {
     }, [dispatch]);
 
     const realEstate = clientBusinessList.filter(
-        (b) => b.category && /\breal\s*estates?\b/i.test(b.category)
+        (b) => b.businessesLive === true &&  b.category && /\breal\s*estates?\b/i.test(b.category)
     );
 
     const createSlug = (text) => {

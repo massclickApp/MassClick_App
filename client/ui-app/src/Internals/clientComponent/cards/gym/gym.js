@@ -22,6 +22,7 @@ const GymCards = () => {
 
     const Gym = clientBusinessList.filter(
         (b) =>
+            b.businessesLive === true &&
             b.category &&
             b.category.toLowerCase().includes("Gym".toLowerCase())
     );
