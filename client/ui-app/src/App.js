@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { relogin } from './redux/actions/authAction.js';
 
@@ -134,8 +134,9 @@ function App() {
         <Router>
           <ScrollToTop />
           <Routes>
+            <Route path="/" element={<Navigate to="/home" replace />} />
             <Route
-              path="/"
+              path="/admin"
               element={
                 <Login
                   setIsAuthenticated={setIsAuthenticated}
@@ -143,7 +144,7 @@ function App() {
                 />
               }
             />
-            <Route path="home" element={<BusinessListing />} />
+            <Route path="/home" element={<BusinessListing />} />
             <Route path="/category/:categorySlug" element={<PopularCategoryPage />} />
             {userMenuItems.map((item) => {
               const Component = item.component || (() => <ComingSoon title={item.name} />);

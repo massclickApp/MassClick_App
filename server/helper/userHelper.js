@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import userModel from "../model/userModel.js"
 import { uploadImageToS3, getSignedUrlByKey } from "../s3Uploder.js";
+import bcrypt from "bcrypt";
 
 const updateManagerSalesBy = async (officerId, newManagerId, oldManagerId) => {
     if (oldManagerId && ObjectId.isValid(oldManagerId)) {
@@ -11,26 +12,32 @@ const updateManagerSalesBy = async (officerId, newManagerId, oldManagerId) => {
 
     if (newManagerId && ObjectId.isValid(newManagerId)) {
         await userModel.findByIdAndUpdate(newManagerId, {
-            $addToSet: { salesBy: officerId } 
+            $addToSet: { salesBy: officerId }
         }, { new: false });
     }
 };
 
 export const createUsers = async function (reqBody = {}) {
     try {
+ 
+      if (reqBody.password) {
+        const saltRounds = 10;
+        reqBody.password = await bcrypt.hash(reqBody.password, saltRounds);
+      }
+ 
         if (reqBody.userProfile) {
             const uploadResult = await uploadImageToS3(
                 reqBody.userProfile,
                 `admin/users/profile-${Date.now()}`
             );
             delete reqBody.userProfile;
-            reqBody.userProfileKey = uploadResult.key; 
+          reqBody.userProfileKey = uploadResult.key;
         }
 
         if (reqBody.managedBy) {
-             reqBody.managedBy = new ObjectId(reqBody.managedBy);
+          reqBody.managedBy = new ObjectId(reqBody.managedBy);
         } else if (reqBody.role === 'SalesOfficer') {
-             reqBody.managedBy = null;
+          reqBody.managedBy = null;
         }
 
         const usersDocument = new userModel(reqBody);
@@ -123,9 +130,9 @@ export const updateUser = async (id, data) => {
 
     if (updatedUser.role === 'SalesOfficer') {
         const currentManagerId = updatedUser.managedBy;
-        
-        const managerChanged = (!currentManagerId && oldManagerId) || 
-                               (currentManagerId && !oldManagerId) || 
+       
+        const managerChanged = (!currentManagerId && oldManagerId) ||
+                               (currentManagerId && !oldManagerId) ||
                                (currentManagerId && oldManagerId && !currentManagerId.equals(oldManagerId));
 
         if (managerChanged) {

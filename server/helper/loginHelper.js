@@ -1,8 +1,8 @@
 import userModel from "../model/userModel.js";
 import oauthModel from '../model/oauthModel.js';
+import bcrypt from "bcrypt";
 
 export const userValidation = async function (userName, password) {
-
     const trimmedUserName = userName.trim();
     const trimmedPassword = password.trim();
 
@@ -18,8 +18,9 @@ export const userValidation = async function (userName, password) {
             console.error('User is blocked');
             throw { error: 'User is blocked', status: 401 };
         }
-
-        if (user.password !== trimmedPassword) {
+ 
+        const isMatched = await bcrypt.compare(trimmedPassword, user.password);
+        if (!isMatched) {
             console.error('Invalid password');
             throw { error: 'Invalid password', status: 401 };
         }

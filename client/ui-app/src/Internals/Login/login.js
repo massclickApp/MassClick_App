@@ -98,13 +98,7 @@ export default function Login({ setIsAuthenticated }) {
                 </select>
               </div>
             </header>
-
-            {auth.error && (
-              <p className="corp-error">
-                {auth.error.message || auth.error}
-              </p>
-            )}
-
+ 
             <form className="corp-form" onSubmit={handleSubmit}>
               <div className="corp-field">
                 <label htmlFor="username">Username</label>

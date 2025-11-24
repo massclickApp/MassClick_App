@@ -32,15 +32,15 @@ export default function OptionsMenu() {
     };
 
     const handleProfileClick = () => {
-        handleClose();          // 1. Close the menu
-        navigate('/dashboard/profile');   // 2. Navigate to the Profile page
+        handleClose();          
+        navigate('/dashboard/profile');   
     };
 
     const handleLogout = async () => {
         const id = user?._id?.$oid;
-        await dispatch(logout(id)); 
+        await dispatch(logout(id));
         handleClose();
-        navigate('/');
+        navigate('/admin');
     };
 
     const handleClick = (event) => {
@@ -92,16 +92,12 @@ export default function OptionsMenu() {
                 <MenuItem onClick={handleProfileClick}>
                     My account
                 </MenuItem>
-                
                 <Divider />
-                
                 <MenuItem onClick={handleClose}>Add another account</MenuItem>
                 <MenuItem onClick={handleClose}>Settings</MenuItem>
-                
                 <Divider />
-                
                 <MenuItem
-                    onClick={handleLogout} 
+                    onClick={handleLogout}
                     sx={{
                         [`& .${listItemIconClasses.root}`]: { ml: 'auto', minWidth: 0 },
                     }}

@@ -124,10 +124,16 @@ export const relogin = () => async (dispatch) => {
 
     return response.data;
   } catch (error) {
+    const message =
+      error.response?.data?.error || // string from API
+      error.response?.data?.message ||
+      error.message ||
+      "Something went wrong";
+ 
     dispatch({
       type: RELOGIN_FAILURE,
-      payload: error.response?.data || error.message,
-    });
+    payload: message,
+  });
     throw error;
   }
 };
@@ -170,7 +176,7 @@ export const logout = () => async (dispatch) => {
 
     dispatch({ type: LOGOUT });
 
-    window.location.href = "/";
+    window.location.href = "/admin";
   }
 };
 
