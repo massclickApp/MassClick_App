@@ -125,37 +125,20 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <SnackbarProvider
-        maxSnack={3}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        autoHideDuration={5000}
-        preventDuplicate
-      >
+      <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} autoHideDuration={5000} preventDuplicate>
         <Router>
           <ScrollToTop />
           <Routes>
             <Route path="/" element={<Navigate to="/home" replace />} />
-            <Route
-              path="/admin"
-              element={
-                <Login
-                  setIsAuthenticated={setIsAuthenticated}
-                  isAuthenticated={isAuthenticated}
-                />
-              }
-            />
+            <Route path="/admin" element={<Login setIsAuthenticated={setIsAuthenticated} isAuthenticated={isAuthenticated} />} />
             <Route path="/home" element={<BusinessListing />} />
-            <Route path="/category/:categorySlug" element={<PopularCategoryPage />} />
+            <Route path="/category/:categorySlug" element={<CategoryDynamicPage />} />
             {userMenuItems.map((item) => {
               const Component = item.component || (() => <ComingSoon title={item.name} />);
               return <Route key={item.path} path={item.path} element={<Component />} />;
             })}
             {FooterRoutes.map((route) => (
-              <Route
-                key={route.path}
-                path={route.path}
-                element={route.element || <ComingSoon title={route.title} />}
-              />
+              <Route key={route.path} path={route.path} element={route.element} />
             ))}
             <Route path="/:location/:searchTerm" element={<SearchResults />} />
             <Route path="/trending/:categorySlug" element={<TrendingCards />} />
@@ -165,11 +148,7 @@ function App() {
             })}
             <Route path="/:locationSlug/:businessName/:address/:id" element={<BusinessDetails />} />
             <Route path="/payment-status/:transactionId" element={<PaymentStatus />} />
-            <Route
-              path="/write-review/:businessId/:ratingValue"
-              element={<WriteReviewPage />}
-            />
-            <Route path="/category/:categorySlug" element={<CategoryDynamicPage />} />
+            <Route path="/write-review/:businessId/:ratingValue" element={<WriteReviewPage />} />
             <Route path="/leads" element={<LeadsPage />} />
             <Route path="/user/search-history" element={<LeadsCardHistory />} />
             <Route path="/business-enquiry" element={<BusinessEnquiry />} />

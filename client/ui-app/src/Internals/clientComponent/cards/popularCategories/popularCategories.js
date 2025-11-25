@@ -51,51 +51,51 @@ import ScrapBuyers from "../../../../assets/features/scrap-buyers.png";
 import VocationalTraining from "../../../../assets/features/vocational-training.png";
 
 
-const STATIC_CATEGORIES = [
+export const STATIC_CATEGORIES = [
     { icon: ACService, label: "AC Service", path: "/ac-service" },
-    { icon: Astrologers, label: "Astrologers", path: "/astrologers" },
-    { icon: BodyMassage, label: "Body Massage Centers", path: "/beauty/spa-massages" },
+    { icon: Astrologers, label: "Astrologer", path: "/astrologers" },
+    { icon: BodyMassage, label: "Body Massage Center", path: "/beauty/spa-massages" },
     { icon: BeautySpa, label: "Beauty Spa", path: "/beauty-spa" },
 
     { icon: CarHire, label: "Car Hire", path: "/car-hire" },
-    { icon: Caterers, label: "Caterers", path: "/caterers" },
+    { icon: Caterers, label: "Catering Services", path: "/caterers" },
     { icon: CharteredAccountant, label: "Chartered Accountant", path: "/ca" },
     { icon: ComputerTraining, label: "Computer Training Institutes", path: "/computer-training" },
 
     { icon: CourierServices, label: "Courier Services", path: "/courier-service" },
     { icon: LaptopRepair, label: "Computer & Laptop Repair", path: "/laptop-repair" },
     { icon: CarRepair, label: "Car Repair & Services", path: "/services/car-service" },
-    { icon: Dermatologists, label: "Dermatologists", path: "/dermatologists" },
+    { icon: Dermatologists, label: "Dermatologist", path: "/dermatologists" },
 
-    { icon: Dentists, label: "Dentists", path: "/dentists" },
-    { icon: Electricians, label: "Electricians", path: "/electricians" },
+    { icon: Dentists, label: "Dentist", path: "/dentists" },
+    { icon: Electricians, label: "Electrician", path: "/electricians" },
     { icon: EventOrganiser, label: "Event Organizer", path: "/event-organisers" },
     { icon: RealEstate, label: "Real Estate", path: "/real-estate" },
 
-    { icon: Fabricators, label: "Fabricators", path: "/fabricators" },
-    { icon: FurnitureRepair, label: "Furniture Repair Services", path: "/furniture-repair" },
-    { icon: Hospitals, label: "Hospitals", path: "/hospitals" },
-    { icon: HouseKeeping, label: "House keeping Services", path: "/house-keeping" },
+    { icon: Fabricators, label: "Fabricator", path: "/fabricators" },
+    { icon: FurnitureRepair, label: "Furniture Repair Service", path: "/furniture-repair" },
+    { icon: Hospitals, label: "Hospital", path: "/hospitals" },
+    { icon: HouseKeeping, label: "House keeping Service", path: "/house-keeping" },
 
     { icon: Hobbies, label: "Hobbies", path: "/hobbies" },
-    { icon: InteriorDesigners, label: "Interior Designers", path: "/interior-designers" },
-    { icon: InternetWeb, label: "Internet Website Designers", path: "/web-designers" },
-    { icon: Jewellery, label: "Jewellery Showrooms", path: "/jewellery" },
+    { icon: InteriorDesigners, label: "Interior Designer", path: "/interior-designers" },
+    { icon: InternetWeb, label: "Internet Website Designer", path: "/web-designers" },
+    { icon: Jewellery, label: "Jewellery Showroom", path: "/jewellery" },
 
-    { icon: Lawyers, label: "Lawyers", path: "/lawyers" },
-    { icon: Transporters, label: "Transporters", path: "/transporters" },
-    { icon: Photographers, label: "Photographers", path: "/photographers" },
-    { icon: NursingServices, label: "Nursing Services", path: "/nursing-services" },
+    { icon: Lawyers, label: "Lawyer", path: "/lawyers" },
+    { icon: Transporters, label: "Transporter", path: "/transporters" },
+    { icon: Photographers, label: "Photographer", path: "/photographers" },
+    { icon: NursingServices, label: "Nursing Service", path: "/nursing-services" },
 
-    { icon: Printing, label: "Printing & Publishing Services", path: "/printing" },
-    { icon: Placement, label: "Placement Services", path: "/placement" },
-    { icon: PestControl, label: "Pest Control Services", path: "/services/pest-control-service" },
-    { icon: Painting, label: "Painting Contractors", path: "/painting-contractors" },
+    { icon: Printing, label: "Printing & Publishing Service", path: "/printing" },
+    { icon: Placement, label: "Placement Service", path: "/placement" },
+    { icon: PestControl, label: "Pest Control Service", path: "/services/pest-control-service" },
+    { icon: Painting, label: "Painting Contractor", path: "/painting-contractors" },
 
-    { icon: PackersMovers, label: "Packers & Movers", path: "/packers-movers" },
-    { icon: ScrapDealers, label: "Scrap Dealers", path: "/scrap-dealers" },
-    { icon: ScrapBuyers, label: "Scrap Buyers", path: "/scrap-buyers" },
-    { icon: Registration, label: "Registration Consultants", path: "/registration-consultants" },
+    { icon: PackersMovers, label: "Packers & Mover", path: "/packers-movers" },
+    { icon: ScrapDealers, label: "Scrap Dealer", path: "/scrap-dealers" },
+    { icon: ScrapBuyers, label: "Scrap Buyer", path: "/scrap-buyers" },
+    { icon: Registration, label: "Registration Consultant", path: "/registration-consultants" },
 
     { icon: SecuritySystem, label: "Security System", path: "/security-system" },
     { icon: Coaching, label: "Coaching", path: "/coaching" },

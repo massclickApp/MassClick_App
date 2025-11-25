@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../../redux/actions/authAction.js';
 import { useNavigate } from 'react-router-dom';
 import companyLogo from "../../assets/mclogo.png";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 import './login.css';
 
@@ -140,7 +142,7 @@ export default function Login({ setIsAuthenticated }) {
                     onClick={() => setShowPassword(!showPassword)}
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
-                    {showPassword ? '🙈' : '👁️'}
+                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
                   </button>
                 </div>
               </div>
@@ -158,7 +160,6 @@ export default function Login({ setIsAuthenticated }) {
                   Forgot password?
                 </button>
               </div>
-
               <button
                 type="submit"
                 className="corp-primary-btn"
@@ -166,12 +167,10 @@ export default function Login({ setIsAuthenticated }) {
               >
                 {auth.loading ? 'Signing you in...' : 'Login'}
               </button>
-
               <p className="corp-signup">
                 New to MassClick? <a href="#">Talk to sales</a>
               </p>
             </form>
-
             <footer className="corp-card-footer">
               <span>© {new Date().getFullYear()} MassClick</span>
               <span className="corp-status">
