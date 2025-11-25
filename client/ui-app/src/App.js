@@ -45,6 +45,8 @@ import { clientLogin } from './redux/actions/clientAuthAction.js';
 import PaymentStatus from './Internals/phonePay/paymentStatus.js';
 import ScrollToTop from './scrollTop.js';
 import LeadsPage from './Internals/clientComponent/LeadsPage/leadsPage.js';
+import AdvertisePage from './Internals/clientComponent/advertise/advertise.js';
+import FreeListingPage from './Internals/clientComponent/free-Listing/free-Listing.js';
 import LeadsCardHistory from './Internals/clientComponent/LeadsPage/leadsCards/leadsCards.js';
 import TokenExpiredModal from './Internals/tokenModel/tokenModel.js';
 import BusinessEnquiry from './Internals/clientComponent/businessEnquiry/businessEnquiry.js';
@@ -150,6 +152,8 @@ function App() {
             <Route path="/payment-status/:transactionId" element={<PaymentStatus />} />
             <Route path="/write-review/:businessId/:ratingValue" element={<WriteReviewPage />} />
             <Route path="/leads" element={<LeadsPage />} />
+            <Route path="/free-listing" element={<FreeListingPage />} />
+            <Route path="/advertise" element={<AdvertisePage />} />
             <Route path="/user/search-history" element={<LeadsCardHistory />} />
             <Route path="/business-enquiry" element={<BusinessEnquiry />} />
             {categoriesServices.flatMap((category, categoryIndex) =>

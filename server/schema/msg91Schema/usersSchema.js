@@ -4,7 +4,15 @@ const message91UsersSchema = new mongoose.Schema({
   title: { type: String, enum: ["Mr", "Ms"], default: "Ms" },
   userName: { type: String, },
   businessName: { type: String, default: "" },
-  businessCategory: { type: String, default: "" },
+businessCategory: {
+  category: { type: String, default: "" },
+  title: { type: String, default: "" },
+  keywords: { type: [String], default: [] },
+  description: { type: String, default: "" },
+  slug: { type: String, default: "" },
+  seoTitle: { type: String, default: "" },
+  seoDescription: { type: String, default: "" }
+},
   businessLocation: { type: String, default: "" },
   firstTimeUser: { type: Boolean, default: false },
   profileImageKey: { type: String, default: "" },

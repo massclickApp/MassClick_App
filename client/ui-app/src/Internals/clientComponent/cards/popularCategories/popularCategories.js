@@ -167,7 +167,6 @@ const PopularCategoriesDrawer = ({ openFromHome = false, onClose }) => {
                             });
                             setDrawerOpen(false);
                         }}
-
                     >
                         <img src={cat.icon} alt={cat.label} className="pc-icon" />
                         <span>{cat.label}</span>

@@ -90,7 +90,7 @@ export default function LeadsPage() {
     userName,
   } = authUser;
 
-  const [range, setRange] = useState("all"); 
+  const [range, setRange] = useState("all");
   const [repeatOnly, setRepeatOnly] = useState(false);
 
   useEffect(() => {
@@ -101,11 +101,23 @@ export default function LeadsPage() {
   const matchedUsers = useMemo(() => {
     if (!searchLogs || !businessCategory) return [];
 
-    const filteredLogs = searchLogs.filter(
-      (log) =>
-        log.categoryName?.toLowerCase().trim() ===
-        businessCategory?.toLowerCase().trim()
+    const categoryName = businessCategory?.category?.toLowerCase() || "";
+    const titleName = businessCategory?.title?.toLowerCase() || "";
+    const seoTitleName = businessCategory?.seoTitle?.toLowerCase() || "";
+    const keywords = (businessCategory?.keywords || []).map(k =>
+      k.toLowerCase()
     );
+
+    const filteredLogs = searchLogs.filter((log) => {
+      const logCat = log.categoryName?.toLowerCase() || "";
+
+      return (
+        logCat.includes(categoryName) ||
+        logCat.includes(titleName) ||
+        logCat.includes(seoTitleName) ||
+        keywords.some((kw) => logCat.includes(kw))
+      );
+    });
 
     const users = [];
 
@@ -122,6 +134,7 @@ export default function LeadsPage() {
 
     return users;
   }, [searchLogs, businessCategory]);
+
 
   const {
     filteredUsers,
@@ -210,15 +223,15 @@ export default function LeadsPage() {
     leadsCount === 0
       ? "No data yet"
       : leadsCount > 20 || repeatCount > 5
-      ? "High quality"
-      : leadsCount > 5
-      ? "Moderate quality"
-      : "Low quality";
+        ? "High quality"
+        : leadsCount > 5
+          ? "Moderate quality"
+          : "Low quality";
 
   return (
     <div className="lp-root">
       <main className="lp-container">
-        <CardsSearch /><br/><br/><br/><br/>
+        <CardsSearch /><br /><br /><br /><br />
         <section className="lp-card">
           <header className="lp-header">
             <div className="lp-business">
@@ -228,7 +241,7 @@ export default function LeadsPage() {
               <div className="lp-business-meta">
                 <span>{businessLocation || "Location not set"}</span>
                 <span className="lp-pill">
-                  {businessCategory || "Category"}
+                  {businessCategory?.category || "Category"}
                 </span>
               </div>
               <p className="lp-business-subtitle">
@@ -267,36 +280,32 @@ export default function LeadsPage() {
                   <span className="lp-filters-label">Filters:</span>
                   <button
                     type="button"
-                    className={`lp-filter-chip ${
-                      range === "all" ? "active" : ""
-                    }`}
+                    className={`lp-filter-chip ${range === "all" ? "active" : ""
+                      }`}
                     onClick={() => setRange("all")}
                   >
                     All time
                   </button>
                   <button
                     type="button"
-                    className={`lp-filter-chip ${
-                      range === "today" ? "active" : ""
-                    }`}
+                    className={`lp-filter-chip ${range === "today" ? "active" : ""
+                      }`}
                     onClick={() => setRange("today")}
                   >
                     Today
                   </button>
                   <button
                     type="button"
-                    className={`lp-filter-chip ${
-                      range === "7" ? "active" : ""
-                    }`}
+                    className={`lp-filter-chip ${range === "7" ? "active" : ""
+                      }`}
                     onClick={() => setRange("7")}
                   >
                     Last 7 days
                   </button>
                   <button
                     type="button"
-                    className={`lp-filter-chip ${
-                      range === "30" ? "active" : ""
-                    }`}
+                    className={`lp-filter-chip ${range === "30" ? "active" : ""
+                      }`}
                     onClick={() => setRange("30")}
                   >
                     Last 30 days
@@ -306,9 +315,8 @@ export default function LeadsPage() {
                 <div className="lp-filters-right">
                   <button
                     type="button"
-                    className={`lp-filter-chip lp-filter-toggle ${
-                      repeatOnly ? "active" : ""
-                    }`}
+                    className={`lp-filter-chip lp-filter-toggle ${repeatOnly ? "active" : ""
+                      }`}
                     onClick={() => setRepeatOnly((v) => !v)}
                   >
                     Repeat visitors only
@@ -336,7 +344,7 @@ export default function LeadsPage() {
                 <div className="lp-empty">
                   <p>
                     No users found for the selected filters in{" "}
-                    <strong>{businessCategory || "your category"}</strong>.
+                    <strong>{businessCategory?.category || "your category"}</strong>
                   </p>
                 </div>
               )}

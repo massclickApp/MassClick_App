@@ -41,23 +41,19 @@ const LeadsCardHistory = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [expandedIcons, setExpandedIcons] = useState({});
 
-  // New: local UI state for search + sort
   const [searchText, setSearchText] = useState("");
-  const [sortBy, setSortBy] = useState("latest"); // latest | oldest | name
+  const [sortBy, setSortBy] = useState("latest"); 
 
-  // === Summary metrics ===
   const totalLeads = leadsUsers.length;
   const phoneReadyCount = leadsUsers.filter(
     (u) => u.mobileNumber1 || u.mobileNumber2
   ).length;
   const emailReadyCount = leadsUsers.filter((u) => u.email).length;
-  const whatsappReadyCount = phoneReadyCount; // same as phone-ready for now
+  const whatsappReadyCount = phoneReadyCount; 
 
-  // === Filter + sort leads for display ===
   const filteredLeads = useMemo(() => {
     let data = [...leadsUsers];
 
-    // Filter by search text (name or email)
     if (searchText.trim()) {
       const value = searchText.toLowerCase();
       data = data.filter((u) => {

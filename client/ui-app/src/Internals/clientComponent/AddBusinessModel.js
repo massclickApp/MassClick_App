@@ -50,6 +50,7 @@ const OTPLoginModal = ({ open, handleClose }) => {
     const [otpSent, setOtpSent] = React.useState(false);
     const [otp, setOtp] = React.useState('');
     const [userName, setUserName] = React.useState('');
+    
     const dispatch = useDispatch();
 
     const handleSendOtp = async () => {

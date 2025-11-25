@@ -18,6 +18,7 @@ const PersonalDetails = ({
   category,
   loading,
   error,
+  handleCategorySelect,
 }) => (
   <div className="form-step-content">
     <h3>Your Profile Details</h3>
@@ -97,14 +98,14 @@ const PersonalDetails = ({
         <label>Business Category</label>
 
         <select
-          value={formData.businessCategory || ""}
-          onChange={(e) => handleChange(e, "businessCategory")}
+          value={formData.businessCategory ? JSON.stringify(formData.businessCategory) : ""}
+          onChange={handleCategorySelect}
         >
           <option value="">Select Business Category</option>
 
           {category &&
             category.map((cat) => (
-              <option key={cat._id} value={cat.category}>
+              <option key={cat._id} value={JSON.stringify(cat)}>
                 {cat.category}
               </option>
             ))}
@@ -439,6 +440,18 @@ export default function MultiStepProfileForm() {
     dispatch(getAllCategory());
   }, [dispatch]);
 
+  const handleCategorySelect = (e) => {
+    const selectedCat = JSON.parse(e.target.value);
+
+    setFormData((prev) => ({
+      ...prev,
+      businessCategory: selectedCat,
+    }));
+  };
+
+
+
+
   /* ---- FETCH USER ---- */
   useEffect(() => {
     if (!storedMobile) return;
@@ -522,7 +535,26 @@ export default function MultiStepProfileForm() {
     if (currentStep < steps.length) {
       handleNext();
     } else {
-      dispatch(updateOtpUser(formData.mobileNumber1, formData)).then((res) => {
+      const bc = formData.businessCategory;
+
+      const filteredCategory = bc
+        ? {
+          category: bc.category,
+          title: bc.title,
+          keywords: bc.keywords,
+          description: bc.description,
+          slug: bc.slug,
+          seoTitle: bc.seoTitle,
+          seoDescription: bc.seoDescription,
+        }
+        : "";
+
+      const payload = {
+        ...formData,
+        businessCategory: filteredCategory,
+      };
+
+      dispatch(updateOtpUser(formData.mobileNumber1, payload)).then((res) => {
         if (res.success) {
           setSuccessMessage("Profile updated successfully!");
           setTimeout(() => setSuccessMessage(""), 3000);
@@ -533,6 +565,21 @@ export default function MultiStepProfileForm() {
       });
     }
   };
+useEffect(() => {
+  if (category.length === 0 || !formData.businessCategory) return;
+
+  const match = category.find(
+    (cat) => cat.category === formData.businessCategory.category
+  );
+
+  if (match) {
+    setFormData((prev) => ({
+      ...prev,
+      businessCategory: match,
+    }));
+  }
+}, [category, loadingUser]);
+
 
   const progressPercent = Math.round(
     ((currentStep - 1) / (steps.length - 1)) * 100
@@ -595,6 +642,7 @@ export default function MultiStepProfileForm() {
                 category={category}
                 loading={loading}
                 error={error}
+                handleCategorySelect={handleCategorySelect}
               />
 
               <div className="form-actions-footer">

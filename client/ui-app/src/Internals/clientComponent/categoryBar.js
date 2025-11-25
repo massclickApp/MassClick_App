@@ -77,7 +77,6 @@ const categories = [
     { name: "Advertise", icon: <CampaignIcon /> },
     { name: "Free Listing", icon: <ListAltIcon /> },
     { name: "Business Enquiry", icon: <AppRegistrationIcon /> },
-
 ];
 
 const languages = [
@@ -127,6 +126,7 @@ const CategoryBar = () => {
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
 
     const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
     const handleMenuClose = () => setAnchorEl(null);
@@ -181,9 +181,18 @@ const CategoryBar = () => {
         }
     };
     const handleCategoryClick = (name) => {
-        if (name === "Leads") {
-            navigate("/leads");
-        } else if (name === "Advertise") {
+         if (name === "Leads") {
+        const authUser = localStorage.getItem("authUser");
+
+        if (!authUser) {
+            setIsModalOpen(true);
+            return;
+        }
+
+        navigate("/leads");
+        return;
+    }
+        else if (name === "Advertise") {
             navigate("/advertise");
         } else if (name === "Free Listing") {
             navigate("/free-listing");
@@ -449,7 +458,6 @@ const CategoryBar = () => {
                     ))}
                 </Box>
 
-                {/* Desktop Right Section */}
                 <Box
                     sx={{
                         display: { xs: "none", sm: "flex" },
@@ -457,7 +465,6 @@ const CategoryBar = () => {
                         gap: { sm: 1.5, md: 2 },
                     }}
                 >
-                    {/* <-- UPDATED: Conditional rendering based on login */}
                     {!isLoggedIn ? (
                         <Button
                             variant="contained"
