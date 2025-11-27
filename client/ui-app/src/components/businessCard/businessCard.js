@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import StoreIcon from "@mui/icons-material/Store";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import WhatshotIcon from '@mui/icons-material/Whatshot';
+import WhatshotIcon from "@mui/icons-material/Whatshot";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllBusinessList } from "../../redux/actions/businessListAction";
 
@@ -46,8 +46,11 @@ export default function SelectActionCard() {
     const activeCount = list.filter((b) => b.activeBusinesses === true).length;
 
     /* ------------------------------------------------------------
-       4. Growth Calculation (Dynamic)
+       4. Inactive Count (NEW CARD)
     ------------------------------------------------------------- */
+    const inactiveCount = totalCount - activeCount;
+
+
     const calculateGrowth = (current, previous) => {
         if (previous === 0) return "+0%";
         const percentage = ((current - previous) / previous) * 100;
@@ -75,17 +78,11 @@ export default function SelectActionCard() {
     const businessGrowth = calculateGrowth(currentWeekCount, previousWeekCount);
 
     /* ------------------------------------------------------------
-       5. HOT CATEGORY — Most Common Category
+       6. HOT CATEGORY
     ------------------------------------------------------------- */
-
-    /* ------------------------------------------------------------
-   5. HOT CATEGORY — Most Common Category (ONLY Active Businesses)
-------------------------------------------------------------- */
-
     const activeBusinessesOnly = list.filter((b) => b.activeBusinesses === true);
 
     const categoryCount = {};
-
     activeBusinessesOnly.forEach((b) => {
         if (b.category) {
             categoryCount[b.category] = (categoryCount[b.category] || 0) + 1;
@@ -93,16 +90,14 @@ export default function SelectActionCard() {
     });
 
     let hotCategory = "No Category";
-
     if (Object.keys(categoryCount).length > 0) {
         hotCategory = Object.keys(categoryCount).reduce((a, b) =>
             categoryCount[a] > categoryCount[b] ? a : b
         );
     }
 
-
     /* ------------------------------------------------------------
-       6. Cards Array
+       7. All Cards (5 Cards Now)
     ------------------------------------------------------------- */
     const cards = [
         {
@@ -142,13 +137,17 @@ export default function SelectActionCard() {
             growth: "+0%",
         },
 
-
-
+        /* ⭐ NEW CARD ⭐ */
+        {
+            id: 5,
+            title: "Inactive Businesses",
+            value: inactiveCount,
+            icon: <ShoppingCartIcon />,
+            color: "#d32f2f",
+            growth: calculateGrowth(inactiveCount, previousWeekCount),
+        },
     ];
 
-    /* ------------------------------------------------------------
-       7. Return UI
-    ------------------------------------------------------------- */
     return (
         <div className="card-grid">
             {cards.map((card) => (
@@ -160,8 +159,7 @@ export default function SelectActionCard() {
                     </h2>
 
                     <p
-                        className={`card-growth ${card.growth.startsWith("-") ? "down" : "up"
-                            }`}
+                        className={`card-growth ${card.growth.startsWith("-") ? "down" : "up"}`}
                     >
                         {card.growth} from last week
                     </p>
