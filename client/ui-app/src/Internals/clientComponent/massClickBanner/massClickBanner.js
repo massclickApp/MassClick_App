@@ -1,35 +1,70 @@
-import React from 'react';
-import './MassClickBanner.css'; 
+import React from "react";
+import "./MassClickBanner.css";
+import MI from "../../../assets/Mi.png";
 
 const MassClickBanner = () => {
   return (
-    <div className="massclick-banner-container">
-      <div className="massclick-shape-top-right"></div>
-      <div className="massclick-shape-bottom-center"></div>
+    <section className="mc-banner">
+      <div className="mc-banner-inner">
+        {/* LEFT */}
+        <div className="mc-left">
+          <div className="mc-brand-row">
+            <div className="mc-logo-pill">
+              <img src={MI} alt="MassClick Logo" className="mc-logo-img" />
+            </div>
 
-      <div className="massclick-content">
-        <div className="massclick-logo-section">
-          <div className="massclick-logo">
-            <span className="massclick-text-mass">Mass</span>
-            <span className="massclick-text-mass">Click</span>
-            <sup className="massclick-trademark">™</sup>
+            <div>
+              <h1 className="mc-logo-text">
+                <span className="mc-logo-mass">Mass</span>
+                <span className="mc-logo-click">Click</span>
+                <sup className="mc-logo-tm">™</sup>
+              </h1>
+              <p className="mc-tagline">India&apos;s Leading Local Search Engine</p>
+            </div>
           </div>
-          <p className="massclick-tagline">India's Leading Local Search Engine</p>
 
-          <h2 className="massclick-headline">Your One-Stop Destination for Local Business Listing</h2>
-        </div>
+          <h2 className="mc-heading">
+            Your One-Stop Destination for{" "}
+            <span className="mc-highlight">Local Business Listing</span>
+          </h2>
 
-        <div className="massclick-cta-section">
-          <p className="massclick-cta-text">
-            List Your Business on <strong className="massclick-cta-brand">MassClick</strong> today
+          <p className="mc-description">
+            Help customers discover you instantly on MassClick. Improve visibility,
+            build trust and grow enquiries across your city – all with a single
+            listing.
           </p>
 
-          <div className="massclick-price-button">
-            at <span className="massclick-price-amount">₹ 2500 /-</span>
+          <ul className="mc-points">
+            <li>Appear in local search results instantly</li>
+            <li>Dedicated business profile with photos & contact details</li>
+            <li>Priority placement in relevant categories</li>
+          </ul>
+        </div>
+
+        {/* RIGHT */}
+        <div className="mc-right">
+          <div className="mc-price-card">
+            <span className="mc-offer-label">Launch Offer</span>
+
+            <p className="mc-price-title">List Your Business on MassClick</p>
+
+            <div className="mc-price-row">
+              <span className="mc-price-currency">₹</span>
+              <span className="mc-price-main">2500</span>
+              <span className="mc-price-sub">/ listing</span>
+            </div>
+
+            <button className="mc-cta-btn">
+              Get Started Now
+            </button>
+
+            <p className="mc-note">
+              No hidden charges • Go live within 24 hours
+            </p>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

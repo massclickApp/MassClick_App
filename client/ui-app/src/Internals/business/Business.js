@@ -363,7 +363,6 @@ export default function BusinessList() {
     if (!formData.experience) newErrors.experience = "Experience is required";
     if (!formData.location) newErrors.location = "Location is required";
     if (!formData.category) newErrors.category = "Category is required";
-    if (!businessvalue || businessvalue === "<p><br></p>") newErrors.businessDetails = "Business Details is required";
 
     if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Invalid email format";
@@ -567,8 +566,15 @@ const handleChange = (e) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
-
+    
+ if (!validateForm()) {
+    enqueueSnackbar("Please fill all required required fields before proceeding.", {
+      variant: "error",
+      autoHideDuration: 3000,
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    return;
+  }
     const kycBase64 = await Promise.all(
       kycFiles.map(
         (file) =>

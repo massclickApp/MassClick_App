@@ -1,30 +1,66 @@
+/* ======================================= */
+/* PREMIUM INTERNATIONAL-LEVEL CARD DESIGN */
+/* ======================================= */
+
+:root {
+  --brand-orange: #ff9800;
+  --brand-orange-light: #ffb74d;
+  --brand-blue: #007bff;
+  --brand-blue-light: #4da3ff;
+  --brand-green: #25d366;
+  --brand-green-light: #42e881;
+
+  --text-dark: #222;
+  --text-medium: #555;
+  --text-light: #777;
+
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 10px;
+
+  --shadow-soft: 0 10px 28px rgba(0, 0, 0, 0.09);
+  --shadow-hover: 0 16px 32px rgba(0, 0, 0, 0.14);
+
+  --transition-smooth: 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* ======================================= */
+/* CARD WRAPPER */
+/* ======================================= */
 
 .base-card {
   display: flex;
   gap: 20px;
-  padding: 18px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(230, 230, 230, 0.6);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
+  padding: 20px;
   width: 100%;
+
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(225, 225, 225, 0.7);
+
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(8px);
+
+  transition: var(--transition-smooth);
 }
 
 .base-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-hover);
 }
 
+/* ======================================= */
+/* IMAGE SIDE */
+/* ======================================= */
 
 .card-image-container {
-  flex-shrink: 0;
   width: 140px;
   height: 140px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
+
+  background: #f5f5f5;
   overflow: hidden;
-  background: #f9f9f9;
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -34,26 +70,39 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform .35s ease;
 }
 
+/* Modern small zoom on hover */
 .base-card:hover .card-image {
-  transform: scale(1.05);
+  transform: scale(1.06);
 }
 
+/* ======================================= */
+/* CONTENT SIDE */
+/* ======================================= */
 
 .card-content {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  gap: 6px;
 }
 
+/* Title */
+.card-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin: 4px 0 6px;
+  line-height: 1.3;
+}
+
+/* Meta information */
 .card-meta {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-bottom: 6px;
   flex-wrap: wrap;
 }
 
@@ -61,86 +110,116 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  color: var(--text-medium);
   font-size: 0.9rem;
-  color: #555;
 }
 
-
-.card-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #222;
-  margin: 6px 0;
-  line-height: 1.3;
-}
-
+/* Info rows */
 .card-category,
 .card-address,
 .card-details {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+
   font-size: 0.95rem;
-  color: #444;
-  margin: 4px 0;
+  color: var(--text-medium);
+
+  line-height: 1.35;
 }
 
 .icon {
-  color: #0288d1;
   font-size: 20px !important;
+  color: #0288d1;
 }
 
-/* ------------------------------ */
-/* Action Buttons */
-/* ------------------------------ */
-.card-actions {
+/* ======================================= */
+/* ACTION BUTTONS */
+/* ======================================= */
+
+/* ACTION BUTTONS AREA */
+.cardpage-actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: auto;
+  gap: 12px;
+  margin-top: 12px;
+
+  /* Make actions sit naturally, not full justification */
+  justify-content: flex-start;
 }
 
+/* BUTTONS */
 .card-action-button {
-  flex: 1;
-  min-width: 100px;
+  padding: 10px 18px;
+  border-radius: 10px;
   border: none;
-  border-radius: 8px;
-  padding: 10px 14px;
+
   font-size: 0.95rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  color: white;
+
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
+
+  cursor: pointer;
+  transition: 0.25s ease;
+  color: #fff;
+
+  /* FIXED SIZE (THIS FIXES EVERYTHING) */
+  width: 150px;         /* Perfect desktop width */
+  max-width: 160px;
+  min-width: 120px;
+
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
 }
 
+/* BUTTON COLORS */
 .phone-button {
-  background-color: #ff9800;
+  background: linear-gradient(90deg, #ff9800, #ffb74d);
 }
 
 .whatsapp-button {
-  background-color: #25d366;
+  background: linear-gradient(90deg, #25d366, #42e881);
 }
 
 .enquiry-button {
-  background-color: #007bff;
+  background: linear-gradient(90deg, #007bff, #4da3ff);
 }
 
+/* HOVER */
 .card-action-button:hover {
   transform: translateY(-2px);
-  opacity: 0.9;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+  opacity: 0.95;
 }
 
-/* ------------------------------ */
-/* Responsiveness */
-/* ------------------------------ */
+/* MOBILE VERSION */
+@media (max-width: 768px) {
+  .cardpage-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .card-action-button {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+
+.card-action-button:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ======================================= */
+/* RESPONSIVENESS */
+/* ======================================= */
+
 @media (max-width: 992px) {
   .base-card {
     gap: 14px;
-    padding: 14px;
+    padding: 16px;
   }
 
   .card-image-container {
@@ -149,34 +228,25 @@
   }
 
   .card-title {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
   }
 }
 
 @media (max-width: 600px) {
   .base-card {
     flex-direction: column;
-    align-items: center;
     text-align: center;
+    align-items: center;
+    gap: 18px;
   }
 
   .card-image-container {
     width: 100%;
     height: 180px;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
   }
 
   .card-content {
-    width: 100%;
-  }
-
-  .card-actions {
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-  }
-
-  .card-action-button {
     width: 100%;
   }
 
@@ -184,6 +254,17 @@
   .card-address,
   .card-details {
     justify-content: center;
+  }
+
+  /* Buttons */
+  .cardpage-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .card-action-button {
+    width: 100%;
+    padding: 14px;
   }
 }
 

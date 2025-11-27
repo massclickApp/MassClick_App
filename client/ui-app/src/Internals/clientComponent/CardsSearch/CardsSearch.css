@@ -11,6 +11,7 @@
     z-index: 1200;
 }
 
+
 .search-header.visible {
     transform: translateY(0);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);

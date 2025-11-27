@@ -3,30 +3,29 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    padding: 32px 16px; /* Increased vertical padding */
+    padding: 12px 16px 32px;
     max-width: 1750px;
-    margin: 0 auto; /* Center the container */
-    gap: 30px; /* Increased gap */
+    margin: 0 auto; 
+    gap: 30px; 
 }
 
-/* --- Category Card (The Main Card) Improvements --- */
 .category-card {
     background-color: #ffffff;
-    border-radius: 16px; /* Slightly more rounded corners */
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* Softer, deeper shadow */
+    border-radius: 16px; 
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); 
     padding: 24px;
     width: 100%;
-    max-width: 380px; /* Increased max-width for a more substantial card */
+    max-width: 380px;
     display: flex;
     flex-direction: column;
     transition: transform 0.3s ease, box-shadow 0.3s ease, border 0.3s ease;
-    border: 1px solid transparent; /* Subtle border for focus/hover effect */
+    border: 1px solid transparent; 
 }
 
 .category-card:hover {
-    transform: translateY(-8px); /* More noticeable lift */
+    transform: translateY(-8px);
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
-    border: 1px solid #ff7a3d; /* Highlight border on hover */
+    border: 1px solid #ff7a3d;
 }
 
 /* --- Category Title Refinement --- */

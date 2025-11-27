@@ -54,7 +54,7 @@ import VocationalTraining from "../../../../assets/features/vocational-training.
 export const STATIC_CATEGORIES = [
     { icon: ACService, label: "AC Service", path: "/ac-service" },
     { icon: Astrologers, label: "Astrologer", path: "/astrologers" },
-    { icon: BodyMassage, label: "Body Massage Center", path: "/beauty/spa-massages" },
+    { icon: BodyMassage, label: "Body Massage", path: "/beauty/spa-massages" },
     { icon: BeautySpa, label: "Beauty Spa", path: "/beauty-spa" },
 
     { icon: CarHire, label: "Car Hire", path: "/car-hire" },
@@ -72,9 +72,9 @@ export const STATIC_CATEGORIES = [
     { icon: EventOrganiser, label: "Event Organizer", path: "/event-organisers" },
     { icon: RealEstate, label: "Real Estate", path: "/real-estate" },
 
-    { icon: Fabricators, label: "Fabricator", path: "/fabricators" },
+    { icon: Fabricators, label: "Fabricators", path: "/fabricators" },
     { icon: FurnitureRepair, label: "Furniture Repair Service", path: "/furniture-repair" },
-    { icon: Hospitals, label: "Hospital", path: "/hospitals" },
+    { icon: Hospitals, label: "Hospitals", path: "/hospitals" },
     { icon: HouseKeeping, label: "House keeping Service", path: "/house-keeping" },
 
     { icon: Hobbies, label: "Hobbies", path: "/hobbies" },
@@ -89,10 +89,10 @@ export const STATIC_CATEGORIES = [
 
     { icon: Printing, label: "Printing & Publishing Service", path: "/printing" },
     { icon: Placement, label: "Placement Service", path: "/placement" },
-    { icon: PestControl, label: "Pest Control Service", path: "/services/pest-control-service" },
+    { icon: PestControl, label: "Pest Control", path: "/services/pest-control-service" },
     { icon: Painting, label: "Painting Contractor", path: "/painting-contractors" },
 
-    { icon: PackersMovers, label: "Packers & Mover", path: "/packers-movers" },
+    { icon: PackersMovers, label: "Packers and Movers", path: "/packers-movers" },
     { icon: ScrapDealers, label: "Scrap Dealer", path: "/scrap-dealers" },
     { icon: ScrapBuyers, label: "Scrap Buyer", path: "/scrap-buyers" },
     { icon: Registration, label: "Registration Consultant", path: "/registration-consultants" },

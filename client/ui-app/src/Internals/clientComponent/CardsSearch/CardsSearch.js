@@ -124,7 +124,7 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
     const finalSearchTerm = searchTerm?.trim();
     const logLocation = locationName || "Global";
 
-   const filteredBusinesses = clientBusinessList.filter((business) => {
+    const filteredBusinesses = clientBusinessList.filter((business) => {
 
       if (business.businessesLive !== true) return false;
 
@@ -285,40 +285,40 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
                   <div className="trending-label">SUGGESTIONS</div>
                   <div className="options-list-container" style={{ maxHeight: "200px" }}>
                     {
-                    clientBusinessList
-                      .filter((business) => {
-                        if (business.businessesLive !== true) return false;
+                      clientBusinessList
+                        .filter((business) => {
+                          if (business.businessesLive !== true) return false;
 
-                        const value = debouncedSearch.toLowerCase();
+                          const value = debouncedSearch.toLowerCase();
 
-                        return (
-                          business.businessName?.toLowerCase().includes(value) ||
-                          business.category?.toLowerCase().includes(value)
-                        );
-                      })
-                      .slice(0, 10)
-                      .map((business, index) => (
-                        <div
-                          key={index}
-                          className="option-item"
-                          onClick={() => {
-                            setSearchTerm(business.businessName);
-                            setIsCategoryDropdownOpen(false);
-                          }}
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            padding: "4px 8px",
-                            cursor: "pointer",
-                          }}
-                        >
-                          <SearchIcon style={{ marginRight: "6px", color: "#ff7b00" }} />
-                          <span>{business.businessName}</span>
-                          <span style={{ marginLeft: "auto", color: "gray", fontSize: "12px" }}>
-                            {business.category}
-                          </span>
-                        </div>
-                      ))}
+                          return (
+                            business.businessName?.toLowerCase().includes(value) ||
+                            business.category?.toLowerCase().includes(value)
+                          );
+                        })
+                        .slice(0, 10)
+                        .map((business, index) => (
+                          <div
+                            key={index}
+                            className="option-item"
+                            onClick={() => {
+                              setSearchTerm(business.businessName);
+                              setIsCategoryDropdownOpen(false);
+                            }}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              padding: "4px 8px",
+                              cursor: "pointer",
+                            }}
+                          >
+                            <SearchIcon style={{ marginRight: "6px", color: "#ff7b00" }} />
+                            <span>{business.businessName}</span>
+                            <span style={{ marginLeft: "auto", color: "gray", fontSize: "12px" }}>
+                              {business.category}
+                            </span>
+                          </div>
+                        ))}
                   </div>
                 </div>
               )}

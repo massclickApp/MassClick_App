@@ -1,59 +1,55 @@
-/* Color Variables: Added a dark secondary color for the bottom bar */
+
 :root {
-    --color-primary: #ff6600;      /* Bright Orange */
-    --color-secondary: #0d1a2d;    /* Deep Dark Blue for Copyright */
-    --color-text-light: #ffffff;   /* White text */
-    --color-text-dimmed: #f0f0f0;  /* Slightly off-white/dimmed text */
-    --font-family-primary: 'Inter', sans-serif;
+    --brand-orange: #ff7a1a;
+    --brand-orange-dark: #e56700;
+    --footer-dark: #0f172a;
+    --footer-darker: #0b1220;
+    --footer-text: #e5e7eb;
+    --footer-text-light: #f8fafc;
+    --footer-accent: #ffd577;
+    --radius: 12px;
+    --transition: 0.3s ease;
+    --footer-max-width: 1500px;
 }
 
-/* Base Styles for the Footer */
 .footer-container {
-    /* REMOVED: position, height, border, border-radius, box-shadow, margin */
+    background: linear-gradient(135deg, var(--footer-dark), var(--footer-darker));
+    color: var(--footer-text);
     width: 100%;
-    font-family: var(--font-family-primary);
-    color: var(--color-text-light);
-    /* Ensure the footer spans the full width of the viewport */
-    background-color: var(--color-primary); /* Default to orange, but the area below handles it */
+    margin-top: 70px;
+    padding-top: 60px;
+    padding-bottom: 0;
+    font-family: 'Inter', sans-serif;
 }
 
-/* --- Main Content Area Styling (Orange Section) --- */
 .footer-content-area {
-    background-color: var(--color-primary);
-    padding: 50px 20px; /* Increased top/bottom padding for vertical space */
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 30px;
-    max-width: 1200px; /* Standardizing on a clean max width */
-    margin: 0 auto;
+    max-width: var(--footer-max-width);
+    margin: auto;
+    padding: 20px 30px;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 50px;
 }
 
 .footer-heading {
-    font-size: 1.25rem;
-    font-weight: 700; /* Bolder weight */
-    margin-bottom: 25px; /* Increased margin */
-    color: var(--color-text-light);
-    letter-spacing: 0.5px;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--footer-text-light);
+    margin-bottom: 20px;
     position: relative;
 }
 
-/* Optional: Add a subtle underline/accent to the headings for style */
 .footer-heading::after {
-    content: '';
+    content: "";
     display: block;
-    width: 40px;
+    width: 45px;
     height: 3px;
-    background-color: #ffd700; /* Gold accent color */
+    background: var(--brand-orange);
     margin-top: 10px;
+    border-radius: 50px;
 }
 
-/* Styling for Individual Sections (Mobile default: stacked) */
-.footer-section {
-    flex: 1 1 100%; 
-}
-
-/* Link List Styling */
 .footer-link-list {
     list-style: none;
     padding: 0;
@@ -61,154 +57,108 @@
 }
 
 .footer-link-item {
-    margin-bottom: 12px; /* Increased spacing */
-    display: flex; 
+    display: flex;
     align-items: center;
-}
-
-/* Style for the MUI Chevron Icon used as a bullet */
-.link-bullet-icon {
-    font-size: 1.1rem !important; 
-    margin-right: 8px; /* Increased margin */
-    color: var(--color-text-light);
-    flex-shrink: 0; 
-    opacity: 0.8; /* Slight opacity for a softer look */
+    margin-bottom: 14px;
+    padding: 4px 0;
 }
 
 .footer-link-anchor {
+    color: var(--footer-text);
     text-decoration: none;
-    color: var(--color-text-dimmed);
-    font-size: 1rem; /* Slightly larger text */
-    transition: color 0.3s ease-in-out;
+    font-size: 0.97rem;
+    transition: var(--transition);
 }
 
-.footer-link-anchor:hover,
-.footer-link-anchor:focus {
-    color: var(--color-text-light); 
-    text-decoration: none; /* Remove default underline on hover */
+.footer-link-anchor:hover {
+    color: var(--brand-orange);
+    transform: translateX(4px);
 }
 
-/* Social Icons and Logo Section */
+.link-bullet-icon {
+    color: var(--brand-orange);
+    font-size: 1.1rem !important;
+    margin-right: 8px;
+}
+
 .social-icons {
     display: flex;
-    gap: 20px; /* Increased space between icons */
-    margin-bottom: 30px;
+    gap: 18px;
+    margin-top: 10px;
 }
 
-/* Style for the MUI Social Icons */
 .social-icon {
-    font-size: 2rem !important; /* Larger, more prominent icons */
-    color: var(--color-text-light);
-    transition: color 0.3s ease-in-out, transform 0.2s;
-    border: 2px solid var(--color-text-light); /* Added a border for a cleaner look */
+    font-size: 2rem !important;
+    color: var(--footer-text-light);
+    padding: 8px;
     border-radius: 50%;
-    padding: 4px;
+    border: 2px solid var(--footer-text-light);
+    transition: var(--transition);
 }
 
-.social-icons a:hover .social-icon,
-.social-icons a:focus .social-icon {
-    color: var(--color-primary); /* Icon changes to orange */
-    background-color: var(--color-text-light); /* Background changes to white */
-    border-color: var(--color-text-light);
-    transform: scale(1.05);
+.social-icon:hover {
+    background: var(--footer-text-light);
+    color: var(--footer-dark);
+    transform: scale(1.12);
 }
 
-/* Logo Placeholder Styling */
 .logo-text {
-    font-size: 2.5rem; /* Larger logo text */
-    font-weight: 900; 
-    display: block;
-    line-height: 1;
-    margin-bottom: 5px;
+    font-size: 2.4rem;
+    font-weight: 900;
+    color: var(--footer-text-light);
 }
 
 .logo-tagline {
-    font-size: 0.95rem;
-    font-style: normal; /* Removed italic for a modern look */
-    font-weight: 300; /* Lighter weight */
-    margin: 0;
-    line-height: 1.4;
-    color: var(--color-text-dimmed);
-    letter-spacing: 0.5px;
-}
-
-/* --- Copyright Area Styling (Deep Dark Blue Section) --- */
-.footer-copyright-area {
-    background-color: var(--color-secondary); /* Deep dark blue */
-    text-align: center;
-    padding: 20px 20px; /* Increased padding */
-    font-size: 0.9rem; /* Slightly larger text */
-    border-top: 1px solid rgba(255, 255, 255, 0.1); /* Subtle white line separator */
-}
-
-.footer-copyright-area p {
-    margin: 0;
+    font-size: 1rem;
+    color: #cbd5e1;
+    margin-top: 6px;
     font-weight: 300;
 }
 
-/* ========================================================= */
-/* --- R E S P O N S I V E N E S S --- */
-/* ========================================================= */
+.footer-copyright-area {
+    background-color: #0a111f;
+    text-align: center;
+    margin-top: 30px;
+    padding: 18px;
+    color: #94a3b8;
+    font-size: 0.95rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
 
-/* Tablet (Screen width > 600px) */
-@media (min-width: 600px) {
+
+@media (max-width: 768px) {
     .footer-content-area {
-        padding: 60px 30px; /* More padding */
+        padding: 20px;
+        gap: 35px;
     }
 
-    /* Arrange sections into a 2x2 grid */
-    .footer-section {
-        flex: 1 1 calc(50% - 15px); /* Two columns */
-        min-width: 250px;
+    .footer-heading {
+        font-size: 1.25rem;
     }
 
-    /* Keep the logo section wide for better presentation */
-    .follow-us-logo {
-        flex: 1 1 100%; /* Spans full width at the bottom of the 2x2 grid */
-        order: 5;
-        text-align: center;
-        margin-top: 20px;
+    .logo-text {
+        font-size: 2rem;
     }
 
     .social-icons {
-        justify-content: center;
-    }
-    
-    .footer-heading::after {
-        margin-left: auto;
-        margin-right: auto;
+        justify-content: flex-start;
     }
 }
 
-/* Large Desktop (Screen width > 1024px) */
-@media (min-width: 1024px) {
-    .footer-content-area {
-        padding: 80px 50px; /* Maximum padding for desktop */
-        justify-content: space-around;
+@media (max-width: 480px) {
+    .footer-container {
+        padding-top: 40px;
     }
 
-    /* Four-column layout for a truly international desktop look */
-    .footer-section {
-        flex: 1 1 20%; /* Approx 25% each */
-        text-align: left;
-        min-width: 200px;
+    .footer-heading {
+        font-size: 1.15rem;
     }
 
-    /* Logo section is integrated back into the flow as the right-most column */
-    .follow-us-logo {
-        flex: 1 1 25%;
-        order: 0; 
-        text-align: left;
-        margin-top: 0;
-        min-width: 200px;
+    .footer-link-anchor {
+        font-size: 0.9rem;
     }
-    
-    .social-icons {
-        justify-content: flex-start; /* Align icons left */
-    }
-    
-    .footer-heading::after {
-        margin-left: 0; /* Align accent bar left */
-        margin-right: auto;
+
+    .social-icon {
+        font-size: 1.6rem !important;
     }
 }

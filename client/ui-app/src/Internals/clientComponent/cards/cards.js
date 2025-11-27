@@ -106,7 +106,7 @@ const Cards = ({
           </p>
 
           {/* --- Buttons --- */}
-          <div className="card-actions">
+          <div className="cardpage-actions">
             <button
               className="card-action-button phone-button"
               onClick={handlePhoneClick}

@@ -132,16 +132,37 @@ const LandingPage = () => {
                 </Box>
             ) : (
                 <>
-                    <FeaturedServices />
-                    <ServiceCardsGrid />
-                    <TrendingSearchesCarousel />
-                    <CardCarousel />
-                    <TopTourist />
-                    <MassClickBanner />
-                    {/* <RecentActivities /> */}
-                    <PopularCategories />
+                    <Box sx={{ mb: { xs: 4, sm: 5, md: 6 } }}>
+                        <FeaturedServices />
+                    </Box>
+
+                    <Box sx={{ mb: { xs: 4, sm: 5, md: 6 } }}>
+                        <ServiceCardsGrid />
+                    </Box>
+
+                    <Box sx={{ mb: { xs: 4, sm: 5, md: 6 } }}>
+                        <MassClickBanner />
+                    </Box>
+
+                    <Box sx={{ mb: { xs: 4, sm: 5, md: 6 } }}>
+                        <TrendingSearchesCarousel />
+                    </Box>
+
+                    <Box sx={{ mb: { xs: 4, sm: 5, md: 6 } }}>
+                        <CardCarousel />
+                    </Box>
+
+                    <Box sx={{ mb: { xs: 4, sm: 5, md: 6 } }}>
+                        <TopTourist />
+                    </Box>
+
+                    <Box sx={{ mb: { xs: 4, sm: 5, md: 6 } }}>
+                        <PopularCategories />
+                    </Box>
+
                     <Footer />
                 </>
+
             )}
             <OTPLoginModel open={showLoginModal} handleClose={() => setShowLoginModal(false)} />
 

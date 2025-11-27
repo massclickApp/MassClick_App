@@ -351,7 +351,6 @@ export default function LeadsPage() {
             </div>
 
             <aside className="lp-side-col">
-              {/* Insights card */}
               <div className="lp-side-card lp-insight-card">
                 <div className="lp-small-label">Snapshot</div>
                 <h4 className="lp-side-title">Leads Insights</h4>
@@ -374,7 +373,6 @@ export default function LeadsPage() {
                 </div>
               </div>
 
-              {/* Lead quality card */}
               <div className="lp-side-card lp-quality-card">
                 <div className="lp-small-label">Lead Quality</div>
                 <h4 className="lp-side-title">{qualityLabel}</h4>

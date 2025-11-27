@@ -56,8 +56,6 @@ import FeedbackIcon from "@mui/icons-material/Feedback";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { Divider } from "@mui/material";
 
-
-
 import DashboardPage from "../clientComponent/userMenu/DashboardPage/Dashboard.js";
 import AccountPage from "../clientComponent/userMenu/AccountPage/AccountPage.js";
 import BusinessListPage from "../clientComponent/userMenu/BusinessList/BusinessListPage.js";
@@ -87,7 +85,6 @@ const languages = [
     { name: "Telugu", nativeName: "తెలుగు" },
 ];
 
-
 export const userMenuItems = [
     { name: "User Dashboard", path: "/user_dashboard", icon: <DashboardIcon color="action" />, component: DashboardPage },
     { name: "User Edit Profile", path: "/user_edit-profile", icon: <EditIcon color="action" />, component: EditProfilePage },
@@ -102,8 +99,8 @@ export const userMenuItems = [
     { name: "User Policy", path: "/user_policy", icon: <PolicyIcon color="action" />, component: PolicyPage },
     { name: "User Feedback", path: "/user_feedback", icon: <FeedbackIcon color="action" />, component: FeedbackPage },
     { name: "User Help", path: "/user_help", icon: <HelpOutlineIcon color="action" />, component: HelpPage },
-    { name: "Change Language", isLanguageSwitch: true, icon: <LanguageIcon color="action" /> }, // <-- NEW: Custom item flag
-    { name: "Logout", isLogout: true, path: "/logout", icon: <ExitToAppIcon color="action" /> }, // <-- NEW: Logout item flag
+    { name: "Change Language", isLanguageSwitch: true, icon: <LanguageIcon color="action" /> }, 
+    { name: "Logout", isLogout: true, path: "/logout", icon: <ExitToAppIcon color="action" /> }, 
 ];
 
 const CategoryBar = () => {
@@ -181,17 +178,17 @@ const CategoryBar = () => {
         }
     };
     const handleCategoryClick = (name) => {
-         if (name === "Leads") {
-        const authUser = localStorage.getItem("authUser");
+        if (name === "Leads") {
+            const authUser = localStorage.getItem("authUser");
 
-        if (!authUser) {
-            setIsModalOpen(true);
+            if (!authUser) {
+                setIsModalOpen(true);
+                return;
+            }
+
+            navigate("/leads");
             return;
         }
-
-        navigate("/leads");
-        return;
-    }
         else if (name === "Advertise") {
             navigate("/advertise");
         } else if (name === "Free Listing") {
@@ -529,7 +526,6 @@ const CategoryBar = () => {
                     </IconButton>
                 </Box>
 
-                {/* Mobile Section */}
                 <Box
                     sx={{
                         display: { xs: "flex", sm: "none" },
@@ -558,12 +554,24 @@ const CategoryBar = () => {
                         </Button>
                     ) : (
                         <IconButton
-                            sx={{ color: "gray" }}
+                            onClick={handleDrawerToggle(true)}
+                            sx={{
+                                color: "gray",
+                                bgcolor: "rgba(0,0,0,0.04)",
+                                width: 48,
+                                height: 48,
+                                transition: "all 0.3s ease",
+                                "&:hover": {
+                                    color: "white",
+                                    background: "linear-gradient(45deg, #ea6d11, #ff9c3b)",
+                                    boxShadow: "0 4px 12px rgba(234,109,17,0.35)",
+                                    transform: "scale(1.1)",
+                                },
+                            }}
                         >
                             <AccountCircleIcon />
                         </IconButton>
                     )}
-
                     <IconButton
                         sx={{ color: "text.primary", display: { xs: "inline-flex", sm: "none" } }}
                         onClick={handleMenuClick}
@@ -573,7 +581,6 @@ const CategoryBar = () => {
                 </Box>
             </Box>
 
-            {/* Mobile Menu */}
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
                 <MenuItem disabled>
                     <FormControl size="small" sx={{ minWidth: 120 }}>
@@ -590,7 +597,13 @@ const CategoryBar = () => {
                     </FormControl>
                 </MenuItem>
                 {categories.map((category, index) => (
-                    <MenuItem key={index} onClick={handleMenuClose}>
+                    <MenuItem
+                        key={index}
+                        onClick={() => {
+                            handleMenuClose();
+                            handleCategoryClick(category.name);
+                        }}
+                    >
                         {category.icon}
                         <Box component="span" sx={{ ml: 1 }}>
                             {category.name}
@@ -611,13 +624,18 @@ const CategoryBar = () => {
                 </MenuItem>
             </Menu>
 
-            {/* Add Business Modal */}
             <AddBusinessModal open={isModalOpen} handleClose={handleCloseModal} />
             <SwipeableDrawer
                 anchor="right"
                 open={isDrawerOpen}
                 onClose={handleDrawerToggle(false)}
                 onOpen={handleDrawerToggle(true)}
+                ModalProps={{
+                    keepMounted: true,
+                    disablePortal: true,
+                    style: { zIndex: 999999 }
+                }}
+                sx={{ '& .MuiDrawer-paper': { zIndex: 999999 } }}
             >
                 {drawerList(location.pathname)}
             </SwipeableDrawer>
