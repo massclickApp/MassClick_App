@@ -1,691 +1,1119 @@
-import React, { useEffect, useState, useRef } from "react"; // <-- Import useRef
-import { useParams, useNavigate } from "react-router-dom"; // <-- Import useNavigate
+// BusinessDetail.jsx
+import React, { useEffect, useState, useRef } from "react";
+import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllBusinessList, getAllClientBusinessList } from "../../../redux/actions/businessListAction";
-import './cardDetails.css';
+
+import {
+  getAllClientBusinessList,
+} from "../../../redux/actions/businessListAction";
+import { getAllLocation } from "../../../redux/actions/locationAction";
+
+import "./cardDetails.css";
+
 import UserRatingWidget from "../rating/rating";
-import CardsSearch from "../../clientComponent/CardsSearch/CardsSearch.js";
+import CardsSearch from "../../clientComponent/CardsSearch/CardsSearch";
 
-// IMPORTED ICONS
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import SpaIcon from '@mui/icons-material/Spa';
-import EditIcon from '@mui/icons-material/Edit';
-import ShareIcon from '@mui/icons-material/Share';
-import PhoneIcon from '@mui/icons-material/Phone';
-import DirectionsIcon from '@mui/icons-material/Directions';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
-import EmailIcon from '@mui/icons-material/Email';
-import NoteAltIcon from '@mui/icons-material/NoteAlt';
-import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
-import StarIcon from '@mui/icons-material/Star';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import LanguageIcon from '@mui/icons-material/Language';
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
-import CloseIcon from '@mui/icons-material/Close';
-import FacebookIcon from '@mui/icons-material/Facebook';
-import InstagramIcon from '@mui/icons-material/Instagram';
-import LinkIcon from '@mui/icons-material/Link';
-import Tooltip from '@mui/material/Tooltip';
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import SpaIcon from "@mui/icons-material/Spa";
+import EditIcon from "@mui/icons-material/Edit";
+import ShareIcon from "@mui/icons-material/Share";
+import PhoneIcon from "@mui/icons-material/Phone";
+import DirectionsIcon from "@mui/icons-material/Directions";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import EmailIcon from "@mui/icons-material/Email";
+import NoteAltIcon from "@mui/icons-material/NoteAlt";
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
+import StarIcon from "@mui/icons-material/Star";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import LanguageIcon from "@mui/icons-material/Language";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import CloseIcon from "@mui/icons-material/Close";
+import FacebookIcon from "@mui/icons-material/Facebook";
+import InstagramIcon from "@mui/icons-material/Instagram";
+import LinkIcon from "@mui/icons-material/Link";
+import Tooltip from "@mui/material/Tooltip";
 
-import Footer from "../footer/footer.js";
-import { getAllLocation } from "../../../redux/actions/locationAction.js";
+import Footer from "../footer/footer";
 
 const SimpleModal = ({ children, onClose, title }) => (
-    <div className="modal-overlay" onClick={onClose}>
-        <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-                <h3 className="modal-title">{title}</h3>
-                <CloseIcon className="modal-close-btn" onClick={onClose} />
-            </div>
-            <div className="modal-body">
-                {children}
-            </div>
-        </div>
+  <div
+    className="business-CardDetails-modalOverlay"
+    onClick={onClose}
+  >
+    <div
+      className="business-CardDetails-modalContent"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="business-CardDetails-modalHeader">
+        <h3 className="business-CardDetails-modalTitle">{title}</h3>
+        <CloseIcon
+          className="business-CardDetails-modalClose"
+          onClick={onClose}
+        />
+      </div>
+      <div className="business-CardDetails-modalBody">{children}</div>
     </div>
+  </div>
 );
 
-
-
 const FullScreenGallery = ({ images, initialIndex, onClose }) => {
-    const [index, setIndex] = useState(initialIndex);
+  const [index, setIndex] = useState(initialIndex || 0);
 
-    useEffect(() => {
-        setIndex(initialIndex);
-    }, [initialIndex]);
+  useEffect(() => {
+    setIndex(initialIndex || 0);
+  }, [initialIndex]);
 
-    const currentImageSrc = images[index];
+  if (!images || images.length === 0) return null;
 
-    const nextSlide = () => {
-        setIndex((prevIndex) => (prevIndex + 1) % images.length);
-    };
+  const currentImage = images[index];
 
-    const prevSlide = () => {
-        setIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
-    };
+  const nextSlide = () =>
+    setIndex((prev) => (prev + 1) % images.length);
+  const prevSlide = () =>
+    setIndex((prev) => (prev - 1 + images.length) % images.length);
 
-    return (
-        <div className="full-gallery-overlay" onClick={onClose}>
-            <div className="full-gallery-content" onClick={e => e.stopPropagation()}>
-                <CloseIcon className="gallery-close-btn" onClick={onClose} />
-                <div className="gallery-header">
-                    <p className="slide-count">{index + 1}/{images.length}</p>
-                </div>
-
-                <div className="gallery-main-display">
-                    <button className="gallery-nav-btn prev" onClick={prevSlide}>{'<'}</button>
-                    <img
-                        src={currentImageSrc || "https://via.placeholder.com/600x400?text=Media"}
-                        alt={`Business Media ${index + 1}`}
-                        className="gallery-image"
-                    />
-                    <button className="gallery-nav-btn next" onClick={nextSlide}>{'>'}</button>
-                </div>
-            </div>
+  return (
+    <div
+      className="business-CardDetails-galleryOverlay"
+      onClick={onClose}
+    >
+      <div
+        className="business-CardDetails-galleryContent"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <CloseIcon
+          className="business-CardDetails-galleryClose"
+          onClick={onClose}
+        />
+        <div className="business-CardDetails-galleryHeader">
+          {index + 1}/{images.length}
         </div>
-    );
+
+        <div className="business-CardDetails-galleryMain">
+          <button
+            className="business-CardDetails-galleryNav business-CardDetails-galleryNav--prev"
+            onClick={prevSlide}
+          >
+            {"<"}
+          </button>
+          <img
+            src={
+              currentImage ||
+              "https://via.placeholder.com/1200x600?text=No+Image"
+            }
+            alt={`Business Media ${index + 1}`}
+            className="business-CardDetails-galleryImage"
+          />
+          <button
+            className="business-CardDetails-galleryNav business-CardDetails-galleryNav--next"
+            onClick={nextSlide}
+          >
+            {">"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
-
 const BusinessDetail = () => {
-    const { id } = useParams();
-    const dispatch = useDispatch();
-    const { clientBusinessList = [] } = useSelector((state) => state.businessListReducer || {});
-    const { location = [], loading, error } = useSelector(
-        (state) => state.locationReducer || {}
-    );
-    const [mainImage, setMainImage] = useState(null);
-    const [showFullGallery, setShowFullGallery] = useState(false);
-    const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-    const [showFullHours, setShowFullHours] = useState(false);
-    const [showShareOptions, setShowShareOptions] = useState(false);
-    const [showContactModal, setShowContactModal] = useState(false);
-    const [activeTab, setActiveTab] = useState('Overview');
-    const [reviewLimit, setReviewLimit] = useState(3);
-    const overviewRef = useRef(null);
-    const quickInfoRef = useRef(null);
-    const servicesRef = useRef(null); 
-    const photosRef = useRef(null);
-    const reviewsRef = useRef(null);
-    useEffect(() => {
-        dispatch(getAllClientBusinessList());
-        dispatch(getAllLocation())
-    }, [dispatch]);
+  const { id } = useParams();
+  const dispatch = useDispatch();
 
-    const business = clientBusinessList.find((b) => b._id === id);
+  const { clientBusinessList = [] } =
+    useSelector((state) => state.businessListReducer || {}) || {};
+  const { location = [] } =
+    useSelector((state) => state.locationReducer || {}) || {};
 
-    if (!business) {
-        return <div className="page-wrapper"><p>No business found for this ID.</p></div>;
-    }
+  const [mainImage, setMainImage] = useState(null);
+  const [showFullGallery, setShowFullGallery] = useState(false);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [showFullHours, setShowFullHours] = useState(false);
+  const [showShareOptions, setShowShareOptions] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [activeTab, setActiveTab] = useState("Overview");
+  const [reviewLimit, setReviewLimit] = useState(3);
 
-    const galleryImageSrcs = business.businessImages || [];
-    const firstImage = business.bannerImage || galleryImageSrcs[0] || null;
-    const bannerImageSrc = mainImage || firstImage;
-    const restaurantOptions = business.restaurantOptions;
-    const website = business.website
-    const fullAddress = `${business.plotNumber}, ${business.street}, ${business.location}`;
+  const overviewRef = useRef(null);
+  const quickInfoRef = useRef(null);
+  const servicesRef = useRef(null);
+  const photosRef = useRef(null);
+  const reviewsRef = useRef(null);
 
-    const displayedAverageRating = business.averageRating?.toFixed(1) || 0;
-    const totalRatings = business?.reviews?.length || 0;
+  useEffect(() => {
+    dispatch(getAllClientBusinessList());
+    dispatch(getAllLocation());
+  }, [dispatch]);
 
+  const business = clientBusinessList.find((b) => b._id === id);
 
-    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-
-    const getTodayHours = () => {
-        if (!business.openingHours || business.openingHours.length === 0) return "Open hours not available";
-        const todayIndex = new Date().getDay();
-        const todayName = daysOfWeek[todayIndex];
-        const todayHour = business.openingHours.find(hour => hour.day === todayName);
-        if (!todayHour) return "Open hours not available";
-        return todayHour.isClosed ? "Closed today" : `${todayHour.open} - ${todayHour.close}`;
-    };
-
-    const getCollapsedHoursSummary = () => {
-        if (!business.openingHours || business.openingHours.length === 0) return "Open hours not available";
-        const openDays = business.openingHours.filter(hour => !hour.isClosed && hour.open && hour.close);
-        const summary = openDays.slice(0, 2)
-            .map(h => `${h.day.substring(0, 3)}: ${h.open} - ${h.close}`)
-            .join(', ');
-        return summary.length > 0 ? summary : getTodayHours();
-    };
-
-    const getFullHoursList = () => {
-        if (!business.openingHours) return [];
-        return business.openingHours.slice()
-            .sort((a, b) => daysOfWeek.indexOf(a.day) - daysOfWeek.indexOf(b.day));
-    };
-
-    const quickFacts = [
-        fullAddress,
-        getTodayHours(),
-        `${business.experience} Years in Business`,
-        restaurantOptions
-    ];
-
-    const getMapLink = (iframeString) => {
-        if (!iframeString) return "#";
-        const match = iframeString.match(/src="([^"]+)"/);
-        return match ? match[1] : "#";
-    };
-
-    const handleCopyAddress = () => {
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(fullAddress)
-                .then(() => {
-                    alert("Address copied to clipboard!");
-                })
-                .catch(err => {
-                    console.error("Failed to copy: ", err);
-                });
-        } else {
-            const textArea = document.createElement("textarea");
-            textArea.value = fullAddress;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand("copy");
-            document.body.removeChild(textArea);
-            alert("Address copied to clipboard!");
-        }
-    };
-
-    const handleCopyLink = (e) => {
-        e.preventDefault();
-        const linkToCopy = window.location.href;
-
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(linkToCopy)
-                .then(() => {
-                    alert("Link copied to clipboard!");
-                    setShowShareOptions(false); 
-                })
-                .catch(err => {
-                    console.error("Failed to copy link: ", err);
-                });
-        } else {
-            alert("Copy failed. Browser does not support automatic copy.");
-        }
-    }
-
-    const getQuickFactIcon = (index) => {
-        switch (index) {
-            case 0: return <LocationOnIcon />;
-            case 1: return <AccessTimeIcon />;
-            case 3: return <SpaIcon />;
-            default: return null;
-        }
-    };
-
-    const getGoogleMapSrc = (iframeString) => {
-        if (!iframeString) return null;
-        const match = iframeString.match(/src="([^"]+)"/);
-        return match ? match[1] : null;
-    };
-
-    const handleShowNumberClick = (e) => {
-        e.preventDefault();
-        setShowContactModal(true);
-    };
-
-    const handleCopyContact = () => {
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(business.contact)
-                .then(() => {
-                    alert("Phone number copied to clipboard!");
-                    setShowContactModal(false);
-                })
-                .catch(err => {
-                    console.error("Failed to copy phone number: ", err);
-                    alert("Failed to copy number. Please copy it manually.");
-                });
-        } else {
-            const textArea = document.createElement("textarea");
-            textArea.value = business.contact;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand("copy");
-            document.body.removeChild(textArea);
-            alert("Phone number copied to clipboard!");
-            setShowContactModal(false);
-        }
-    }
-    const handleTabClick = (tabName) => {
-        setActiveTab(tabName);
-        const refMap = { 'Overview': overviewRef, 'Quick Info': quickInfoRef, 'Services': servicesRef, 'Photos': photosRef, 'Reviews': reviewsRef };
-        const ref = refMap[tabName];
-        if (ref?.current) ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
-    const handleRateClick = (e) => {
-        if (e) {
-            e.stopPropagation();
-        }
-        handleTabClick('Reviews');
-    };
-    const handleViewMoreReviews = () => {
-        setReviewLimit(prevLimit => prevLimit + 3);
-    };
-    const currentUrl = encodeURIComponent(window.location.href);
-    const currentTitle = encodeURIComponent(`Check out ${business.businessName}`);
-
-    const allReviews = business.reviews || [];
-    const reviewsToDisplay = allReviews.slice(0, reviewLimit);
-    const hasMoreReviews = allReviews.length > reviewLimit;
-    const OverView = business.businessDetails
-
+  if (!business) {
     return (
-        <>
-            <CardsSearch /><br /><br /><br />
-            <div className="page-wrapper">
-                <div className="image-gallery">
+      <>
+        <CardsSearch />
+        <div className="business-CardDetails-pageWrapper">
+          <p>No business found for this ID.</p>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
-                    <div className="image-gallery">
-                        {galleryImageSrcs.map((src, index) => (
-                            <img
-                                key={index}
-                                src={src || "https://via.placeholder.com/80x80?text=No+Image"}
-                                alt={`${business.businessName} ${index + 1}`}
-                                className="thumbnail-image"
-                                onClick={() => {
-                                    setMainImage(src); // Keep existing behavior: update banner image
-                                    setCurrentSlideIndex(index); // Set the starting slide
-                                    setShowFullGallery(true); // Open the full gallery
-                                }}
-                            />
-                        ))}
-                    </div>
+  const galleryImageSrcs = business.businessImages || [];
+  const fallbackImage =
+    "https://via.placeholder.com/1200x400?text=Business+Image";
+
+  const firstImage =
+    business.bannerImage || galleryImageSrcs[0] || null;
+  const bannerImageSrc = mainImage || firstImage || fallbackImage;
+
+  const bannerIndex = mainImage
+    ? Math.max(galleryImageSrcs.indexOf(mainImage), 0)
+    : 0;
+
+  const website = business.website;
+
+  const addressParts = [
+    business.plotNumber,
+    business.street,
+    business.location,
+  ].filter(Boolean);
+  const fullAddress =
+    addressParts.length > 0
+      ? addressParts.join(", ")
+      : "Address not available";
+
+  const displayedAverageRating = business.averageRating
+    ? business.averageRating.toFixed(1)
+    : "0.0";
+  const totalRatings = business?.reviews?.length || 0;
+
+  const daysOfWeek = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+
+  const getTodayHours = () => {
+    if (!business.openingHours || business.openingHours.length === 0)
+      return "Open hours not available";
+    const todayIndex = new Date().getDay();
+    const todayName = daysOfWeek[todayIndex];
+    const todayHour = business.openingHours.find(
+      (h) => h.day === todayName
+    );
+    if (!todayHour) return "Open hours not available";
+    return todayHour.isClosed
+      ? "Closed today"
+      : `${todayHour.open} - ${todayHour.close}`;
+  };
+
+  const getCollapsedHoursSummary = () => {
+    if (!business.openingHours || business.openingHours.length === 0)
+      return "Open hours not available";
+    const openDays = business.openingHours.filter(
+      (h) => !h.isClosed && h.open && h.close
+    );
+    const summary = openDays
+      .slice(0, 2)
+      .map(
+        (h) =>
+          `${h.day.substring(0, 3)}: ${h.open} - ${h.close}`
+      )
+      .join(", ");
+    return summary || getTodayHours();
+  };
+
+  const getFullHoursList = () => {
+    if (!business.openingHours) return [];
+    return business.openingHours
+      .slice()
+      .sort(
+        (a, b) => daysOfWeek.indexOf(a.day) - daysOfWeek.indexOf(b.day)
+      );
+  };
+
+  const quickFactsRaw = [
+    fullAddress,
+    getTodayHours(),
+    business.experience
+      ? `${business.experience}+ Years in Business`
+      : null,
+    business.restaurantOptions || null,
+  ];
+  const quickFacts = quickFactsRaw.filter(Boolean);
+
+  const getQuickFactIcon = (index) => {
+    switch (index) {
+      case 0:
+        return <LocationOnIcon />;
+      case 1:
+        return <AccessTimeIcon />;
+      case 3:
+        return <SpaIcon />;
+      default:
+        return null;
+    }
+  };
+
+  const getMapLink = (iframeString) => {
+    if (!iframeString) return "#";
+    const match = iframeString.match(/src="([^"]+)"/);
+    return match ? match[1] : "#";
+  };
+
+  const getGoogleMapSrc = (iframeString) => {
+    if (!iframeString) return null;
+    const match = iframeString.match(/src="([^"]+)"/);
+    return match ? match[1] : null;
+  };
+
+  const handleCopyAddress = () => {
+    if (!fullAddress) return;
+
+    if (navigator.clipboard) {
+      navigator.clipboard
+        .writeText(fullAddress)
+        .then(() => alert("Address copied to clipboard!"))
+        .catch((err) => console.error("Failed to copy:", err));
+    } else {
+      const textarea = document.createElement("textarea");
+      textarea.value = fullAddress;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      alert("Address copied to clipboard!");
+    }
+  };
+
+  const handleCopyLink = (e) => {
+    e.preventDefault();
+    const linkToCopy = window.location.href;
+
+    if (navigator.clipboard) {
+      navigator.clipboard
+        .writeText(linkToCopy)
+        .then(() => {
+          alert("Link copied!");
+          setShowShareOptions(false);
+        })
+        .catch((err) =>
+          console.error("Failed to copy link:", err)
+        );
+    } else {
+      alert("Copy failed. Browser does not support clipboard.");
+    }
+  };
+
+  const handleShowNumberClick = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    setShowContactModal(true);
+  };
+
+  const handleCopyContact = () => {
+    const contact = business.contact || "";
+    if (!contact) return;
+
+    if (navigator.clipboard) {
+      navigator.clipboard
+        .writeText(contact)
+        .then(() => {
+          alert("Phone number copied!");
+          setShowContactModal(false);
+        })
+        .catch((err) => {
+          console.error("Failed to copy:", err);
+          alert("Failed to copy. Please copy manually.");
+        });
+    } else {
+      const textarea = document.createElement("textarea");
+      textarea.value = contact;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      alert("Phone number copied!");
+      setShowContactModal(false);
+    }
+  };
+
+  const sectionRefMap = {
+    Overview: overviewRef,
+    "Quick Info": quickInfoRef,
+    Services: servicesRef,
+    Photos: photosRef,
+    Reviews: reviewsRef,
+  };
+
+  const handleTabClick = (tabName) => {
+    setActiveTab(tabName);
+    const ref = sectionRefMap[tabName];
+    if (ref?.current) {
+      ref.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
+
+  const handleRateClick = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    setActiveTab("Reviews");
+    if (reviewsRef.current) {
+      reviewsRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
+
+  const handleViewMoreReviews = () =>
+    setReviewLimit((prev) => prev + 3);
+
+  const currentUrl = encodeURIComponent(window.location.href);
+  const currentTitle = encodeURIComponent(
+    `Check out ${business.businessName}`
+  );
+
+  const allReviews = business.reviews || [];
+  const reviewsToDisplay = allReviews.slice(0, reviewLimit);
+  const hasMoreReviews = allReviews.length > reviewLimit;
+
+  const overviewHtml = business.businessDetails;
+
+  return (
+    <>
+      <CardsSearch /><br/><br/><br/>
+      <div className="business-CardDetails-pageWrapper">
+        {/* HERO SECTION */}
+        <section className="business-CardDetails-heroSection">
+          <div
+            className="business-CardDetails-mainImageContainer"
+            onClick={() => {
+              if (galleryImageSrcs.length > 0) {
+                setCurrentSlideIndex(bannerIndex);
+                setShowFullGallery(true);
+              }
+            }}
+          >
+            <img
+              src={bannerImageSrc}
+              alt={business.businessName}
+              className="business-CardDetails-bannerImage"
+            />
+            <div className="business-CardDetails-heroGradient" />
+            <div className="business-CardDetails-heroMeta">
+              <div className="business-CardDetails-heroMetaPrimary">
+                <h1 className="business-CardDetails-heroName">
+                  {business.businessName}
+                </h1>
+                <div className="business-CardDetails-heroRatingChip">
+                  <span className="business-CardDetails-heroRatingScore">
+                    {displayedAverageRating}
+                  </span>
+                  <span className="business-CardDetails-heroRatingStar">
+                    ★
+                  </span>
+                  <span className="business-CardDetails-heroRatingCount">
+                    {totalRatings} rating
+                    {totalRatings !== 1 ? "s" : ""}
+                  </span>
+                </div>
+              </div>
+              <p className="business-CardDetails-heroAddress">
+                {fullAddress}
+              </p>
+            </div>
+          </div>
+
+          {galleryImageSrcs.length > 0 && (
+            <div className="business-CardDetails-thumbnails">
+              {galleryImageSrcs.map((src, index) => (
+                <img
+                  key={index}
+                  src={
+                    src ||
+                    "https://via.placeholder.com/80x80?text=No+Image"
+                  }
+                  alt={`${business.businessName} ${index + 1}`}
+                  className={
+                    "business-CardDetails-thumbnail" +
+                    (bannerIndex === index
+                      ? " business-CardDetails-thumbnail--active"
+                      : "")
+                  }
+                  onClick={() => {
+                    setMainImage(src);
+                    setCurrentSlideIndex(index);
+                    setShowFullGallery(true);
+                  }}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* MAIN GRID */}
+        <div className="business-CardDetails-mainGrid">
+          {/* LEFT COLUMN */}
+          <div className="business-CardDetails-leftColumn">
+            {/* HEADER CARD */}
+            <div className="business-CardDetails-headerCard">
+              <h2 className="business-CardDetails-businessName">
+                {business.businessName}
+              </h2>
+
+              <div className="business-CardDetails-ratingRow">
+                <span className="business-CardDetails-ratingBadge">
+                  {displayedAverageRating} ★
+                </span>
+                <span className="business-CardDetails-ratingText">
+                  {totalRatings} ratings •{" "}
+                  <a href="#" onClick={(e) => e.preventDefault()}>
+                    Claim this business
+                  </a>
+                </span>
+              </div>
+
+              <div className="business-CardDetails-quickFactsRow">
+                {quickFacts.map((fact, index) => (
+                  <span
+                    key={index}
+                    className="business-CardDetails-quickFactItem"
+                  >
+                    {getQuickFactIcon(index)}
+                    <span>{fact}</span>
+                  </span>
+                ))}
+              </div>
+
+              <div className="business-CardDetails-actionBar">
+                <div className="business-CardDetails-actionLeft">
+                  <button
+                    onClick={handleShowNumberClick}
+                    className="business-CardDetails-btn business-CardDetails-btn--primary"
+                  >
+                    <PhoneIcon style={{ fontSize: 20 }} />
+                    Show Number
+                  </button>
+
+                  {business.whatsappNumber && (
+                    <a
+                      className="business-CardDetails-btn business-CardDetails-btn--whatsapp"
+                      href={`https://wa.me/${business.whatsappNumber}?text=${currentTitle}%20${currentUrl}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <WhatsAppIcon style={{ fontSize: 20 }} />
+                      WhatsApp
+                    </a>
+                  )}
+
+                  <span
+                    className="business-CardDetails-iconBtn"
+                    title="Edit Business"
+                  >
+                    <EditIcon style={{ fontSize: 20 }} />
+                  </span>
+
+                  <span
+                    className="business-CardDetails-iconBtn business-CardDetails-shareBtn"
+                    title="Share"
+                    onClick={() =>
+                      setShowShareOptions((prev) => !prev)
+                    }
+                  >
+                    <ShareIcon style={{ fontSize: 20 }} />
+                    {showShareOptions && (
+                      <div className="business-CardDetails-sharePopup">
+                        <a
+                          href={`https://wa.me/?text=${currentTitle}%20${currentUrl}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <WhatsAppIcon style={{ color: "#25D366" }} />
+                        </a>
+                        <a
+                          href={`https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <FacebookIcon style={{ color: "#1877F2" }} />
+                        </a>
+                        <a
+                          href="https://www.instagram.com/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <InstagramIcon style={{ color: "#E4405F" }} />
+                        </a>
+                        <button onClick={handleCopyLink}>
+                          <LinkIcon />
+                        </button>
+                      </div>
+                    )}
+                  </span>
                 </div>
 
-                <div className="main-content-grid">
-                    {/* Left Column */}
-                    <div className="left-column">
-                        <div className="business-header">
-                            <h1 className="business-name">{business.businessName}</h1>
-                            <div className="rating-row">
-                                <span className="rating-badge">{displayedAverageRating} ★</span>
-                                <span className="rating-text">{totalRatings} ratings • <a href="#">Claim this business</a></span>
-                            </div>
-                            <div className="quick-facts-row">
-                                {quickFacts.map((fact, index) => (
-                                    <span key={index} className="quick-fact-item">
-                                        {getQuickFactIcon(index)}
-                                        {fact}
-                                    </span>
-                                ))}
-                            </div>
-                            <div className="action-buttons-container">
-                                <div className="action-group-left">
-                                    <button
-                                        onClick={handleShowNumberClick}
-                                        className="btn btn-primary"
-                                    >
-                                        <PhoneIcon style={{ fontSize: '20px' }} /> Show Number
-                                    </button>
-
-                                    <a href={`https://wa.me/${business.whatsappNumber}?text=${currentTitle}%20${currentUrl}`} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp">
-                                        <WhatsAppIcon style={{ fontSize: '20px' }} /> WhatsApp
-                                    </a>
-
-                                    <span className="icon-btn" title="Edit Business Info"><EditIcon style={{ fontSize: '20px' }} /></span>
-
-                                    <span
-                                        className="icon-btn share-icon-container"
-                                        title="Share"
-                                        onClick={() => setShowShareOptions(!showShareOptions)}
-                                    >
-                                        <ShareIcon style={{ fontSize: '20px' }} />
-
-                                        {showShareOptions && (
-                                            <div className="share-options-popup">
-                                                <a
-                                                    href={`https://wa.me/?text=${currentTitle}%20${currentUrl}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    title="Share on WhatsApp"
-                                                >
-                                                    <WhatsAppIcon style={{ color: '#25D366' }} />
-                                                </a>
-                                                <a
-                                                    href={`https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    title="Share on Facebook"
-                                                >
-                                                    <FacebookIcon style={{ color: '#1877F2' }} />
-                                                </a>
-                                                <a
-                                                    href={`https://www.instagram.com/direct/inbox/?text=${currentTitle}%20${currentUrl}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    title="Share on Instagram (Note: Direct link sharing is limited)"
-                                                >
-                                                    <InstagramIcon style={{ color: '#E4405F' }} />
-                                                </a>
-                                                <button
-                                                    onClick={handleCopyLink}
-                                                    title="Copy Link"
-                                                    className="copy-link-btn"
-                                                >
-                                                    <LinkIcon style={{ color: 'var(--color-text-medium)' }} />
-                                                </button>
-                                            </div>
-                                        )}
-                                    </span>
-                                </div>
-                                <div className="rating-input-group">
-                                    <Tooltip
-                                        title="Click to rate this business"
-                                        arrow
-                                        placement="top"
-                                    >
-                                        <div>
-                                            <UserRatingWidget
-                                                businessId={business._id}
-                                                initialValue={business.averageRating || 0}
-                                                currentRatings={business.ratings || []}
-                                            />
-                                        </div>
-                                    </Tooltip>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="tabs-container-wrapper">
-                            <div className="nav-tabs">
-                                {['Overview', 'Quick Info', 'Services', 'Photos', 'Reviews'].map(tab => (
-                                    <span
-                                        key={tab}
-                                        className={`tab ${activeTab === tab ? 'active' : ''}`}
-                                        onClick={() => handleTabClick(tab)}
-                                    >
-                                        {tab}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-                        <div className="tab-content">
-                            {activeTab === 'Overview' && (
-                                <div ref={overviewRef} className="overview-content-card">
-                                    <h2>Overview Content</h2>
-                                    <div
-                                        dangerouslySetInnerHTML={{ __html: OverView }}
-                                        className="overview-text"
-                                    />
-                                </div>
-                            )}
-                            {activeTab === 'Quick Info' && (
-                                <div>
-                                    <h2>Quick Info Content</h2>
-                                    <p>Here is Quick Info content.</p>
-                                </div>
-                            )}
-                            {activeTab === 'Services' && (
-                                <div>
-                                    <h2>Services Content</h2>
-                                    <p>Here are the Services details.</p>
-                                </div>
-                            )}
-                            {activeTab === 'Photos' && (
-                                <div>
-                                    <h2>Photos Content</h2>
-                                    <p>Here are some photos.</p>
-                                </div>
-                            )}
-                            {activeTab === 'Reviews' && (
-                                <div className="reviews-section" ref={reviewsRef}>
-                                    <div className="ratings-summary-header">
-                                        <h2 className="section-title">Reviews & Ratings</h2>
-                                        <div className="average-rating-block">
-                                            <span className="avg-score">{displayedAverageRating}</span>
-                                            <span className="total-ratings">{totalRatings} Ratings</span>
-                                            <p className="rating-source">MassClick rating index based on {totalRatings} ratings across the web</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="start-review-section">
-                                        <h3 className="start-review-title">Start your Review</h3>
-                                        <UserRatingWidget
-                                            businessId={business._id}
-                                            initialValue={business.averageRating || 0}
-                                            currentRatings={business.ratings || []}
-                                        />
-                                    </div>
-
-                                    <div className="rating-trend-section">
-                                        <h3 className="rating-trend-title">Recent rating trend</h3>
-                                        <div className="rating-trend-placeholder" style={{ height: '30px', border: '1px solid #eee', borderRadius: '4px', background: '#f9f9f9', display: 'flex', justifyContent: 'space-around', alignItems: 'center', padding: '0 10px' }}>
-                                        </div>
-                                    </div>
-
-                                    <div className="user-reviews-list">
-                                        <h3 className="reviews-list-title">User Reviews</h3>
-                                        <div className="reviews-filter-tabs">
-                                            <button className="filter-tab active">Relevant</button>
-                                            <button className="filter-tab">Latest</button>
-                                            <button className="filter-tab">High to Low</button>
-                                        </div>
-
-                                        {reviewsToDisplay.length > 0 ? (
-                                            reviewsToDisplay.map((review, index) => (
-                                                <div key={review._id || index} className="review-card">
-
-                                                    <div className="review-header">
-                                                        {/* 1. User Avatar and Info - Assume a generic user since userId is null */}
-                                                        <img
-                                                            src={review.userAvatar || "https://via.placeholder.com/40"}
-                                                            alt={review.userName || 'Anonymous'}
-                                                            className="user-avatar"
-                                                        />
-                                                        <div className="user-info">
-                                                            <p className="user-name">{review.userName || 'Anonymous User'}</p>
-                                                            {/* Displaying the review ID for debugging/reference */}
-                                                        </div>
-                                                        {/* 2. Date */}
-                                                        <span className="review-date">
-                                                            {review.createdAt ? new Date(review.createdAt).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A'}
-                                                        </span>
-                                                    </div>
-
-                                                    <div className="review-star-rating">
-                                                        {Array.from({ length: 5 }).map((_, starIndex) => (
-                                                            <StarIcon
-                                                                key={starIndex}
-                                                                style={{
-                                                                    color: starIndex < review.rating ? 'orange' : 'lightgray',
-                                                                    fontSize: '18px'
-                                                                }}
-                                                            />
-                                                        ))}
-                                                    </div>
-
-                                                    <p className="review-text">
-                                                        {review.ratingExperience || 'No comment provided.'}
-                                                    </p>
-
-                                                    <div className="review-advanced-info">
-                                                        {review.ratingLove && review.ratingLove.length > 0 && (
-                                                            <p className="advanced-detail">
-                                                                **Likes:** {review.ratingLove.join(', ')}
-                                                            </p>
-                                                        )}
-                                                        {review.ratingPhotos && review.ratingPhotos.length > 0 && (
-                                                            <div className="review-photos-list">
-                                                                **Photos ({review.ratingPhotos.length}):**
-                                                                <span style={{ marginLeft: '5px', color: 'var(--color-primary)' }}>View Photos</span>
-                                                            </div>
-                                                        )}
-                                                    </div>
-
-                                                    <div className="review-actions">
-                                                        <span className="action-link"><CheckCircleIcon style={{ fontSize: '16px', marginRight: '4px' }} /> Helpful (0)</span>
-                                                        <span className="action-link"><NoteAltIcon style={{ fontSize: '16px', marginRight: '4px' }} /> Comment</span>
-                                                        <span className="action-link"><ShareIcon style={{ fontSize: '16px', marginRight: '4px' }} /> Share</span>
-                                                    </div>
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <p>Be the first to leave a review!</p>
-                                        )}
-
-                                        {hasMoreReviews && (
-                                            <div className="view-more-container">
-                                                <button onClick={handleViewMoreReviews} className="btn-view-more">
-                                                    View More Reviews ({allReviews.length - reviewLimit} remaining)
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-
-
-                        {business.googleMap && (
-                            <div className="map-container" style={{ marginTop: '20px' }}>
-                                <iframe
-                                    src={getGoogleMapSrc(business.googleMap)}
-                                    width="100%"
-                                    height="300"
-                                    style={{ border: 0, borderRadius: '12px', boxShadow: 'var(--shadow-subtle)' }}
-                                    allowFullScreen=""
-                                    loading="lazy"
-                                    referrerPolicy="no-referrer-when-downgrade"
-                                    title="Business Location"
-                                ></iframe>
-                            </div>
-                        )}
+                <div className="business-CardDetails-ratingInput">
+                  <Tooltip
+                    title="Click to rate this business"
+                    arrow
+                    placement="top"
+                  >
+                    <div>
+                      <UserRatingWidget
+                        businessId={business._id}
+                        initialValue={business.averageRating || 0}
+                        currentRatings={business.ratings || []}
+                      />
                     </div>
-
-                    {/* Right Sidebar */}
-                    <div className="right-sidebar">
-                        <div className="sidebar-contact-card">
-                            <div className="contact-section">
-                                <h3 className="sidebar-title">Contact</h3>
-                                <div className="contact-item with-icon">
-                                    <span className="icon-placeholder"><PhoneIcon style={{ color: 'var(--color-primary)' }} /></span>
-                                    <a href="#" onClick={handleShowNumberClick} className="contact-link">Show Number</a>
-                                </div>
-                            </div>
-
-                            <div className="address-section">
-                                <h3 className="sidebar-title">Address</h3>
-                                <p className="address-text">{fullAddress}</p>
-                                <div className="address-actions">
-                                    <a
-                                        href={getMapLink(business.googleMap)}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="address-action-link"
-                                    >
-                                        <DirectionsIcon style={{ fontSize: '16px' }} /> Get Directions
-                                    </a>
-                                    <a
-                                        href="#"
-                                        className="address-action-link"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            handleCopyAddress();
-                                        }}
-                                    >
-                                        <ContentCopyIcon style={{ fontSize: '16px' }} /> Copy
-                                    </a>
-                                </div>
-                            </div>
-
-                            {/* Sidebar action list */}
-                            <ul className="sidebar-action-list">
-                                <li className="list-item expandable" onClick={() => setShowFullHours(!showFullHours)} style={{ cursor: 'pointer', flexDirection: 'column', alignItems: 'flex-start' }}>
-                                    <div style={{ display: 'flex', width: '100%', alignItems: 'center' }}>
-                                        <span className="icon-placeholder"><AccessTimeIcon /></span>
-                                        <span style={{ flexGrow: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                            {getCollapsedHoursSummary()}
-                                        </span>
-                                        <span className="dropdown-arrow">
-                                            {showFullHours ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
-                                        </span>
-                                    </div>
-                                    {showFullHours && business.openingHours && (
-                                        <ul className="full-hours-dropdown" style={{ listStyle: 'none', padding: '5px 0 0 40px', margin: 0, width: '100%' }}>
-                                            {getFullHoursList().map((hour) => (
-                                                <li key={hour.day} style={{ display: 'flex', justifyContent: 'space-between', padding: '3px 0', fontSize: '14px' }}>
-                                                    <span style={{ fontWeight: '500' }}>{hour.day}:</span>
-                                                    <span style={{ color: hour.isClosed ? '#D32F2F' : '#388E3C', fontWeight: 'bold' }}>
-                                                        {hour.isClosed ? 'Closed' : `${hour.open} - ${hour.close}`}
-                                                    </span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    )}
-                                </li>
-
-                                <li className="list-item"><span className="icon-placeholder"><NoteAltIcon /></span>Suggest New Timings</li>
-                                <li className="list-item"><span className="icon-placeholder"><EmailIcon /></span>Send Enquiry by Email</li>
-                                <li className="list-item highlight"><span className="icon-placeholder"><InsertDriveFileIcon /></span>Get info via SMS/Email</li>
-                                <li className="list-item"><span className="icon-placeholder"><ShareIcon /></span>Share</li>
-                                <li
-                                    className="list-item"
-                                    onClick={handleRateClick}
-                                    style={{ cursor: 'pointer' }}
-                                >
-                                    <span className="icon-placeholder"><StarIcon /></span>
-                                    Tap to rate
-                                </li>                                <li className="list-item"><span className="icon-placeholder"><EditIcon /></span>Edit this Listing</li>
-                                <li className="list-item"><span className="icon-placeholder"><CheckCircleIcon /></span>Claim this business</li>
-                                <li className="list-item">
-                                    <span className="icon-placeholder"><LanguageIcon /></span>
-                                    <a href={website} target="_blank" rel="noopener noreferrer" className="list-link">
-                                        Website
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div className="sidebar-card tags-container-card">
-                            <h3 className="also-listed-title">Also listed in</h3>
-                            <div className="tags-container">
-                                <span className="tag">Mangalorean Restaurants</span>
-                                <span className="tag">Restaurants</span>
-                            </div>
-                        </div>
-                    </div>
+                  </Tooltip>
                 </div>
+              </div>
             </div>
 
-            {showContactModal && (
-                <SimpleModal title={`Contact for ${business.businessName}`} onClose={() => setShowContactModal(false)}>
-                    <div className="modal-actions" style={{ flexDirection: 'column', alignItems: 'center' }}>
-                        <p style={{ fontSize: '2rem', fontWeight: '800', margin: '0 0 15px 0' }}>
-                            {business.contact || 'N/A'}
-                        </p>
-                        <div style={{ display: 'flex', gap: '10px', width: '100%' }}>
-                            <a
-                                href={`tel:${business.contact}`}
-                                className="btn btn-primary"
-                                style={{ textDecoration: 'none', flexGrow: 1, justifyContent: 'center' }}
-                            >
-                                <PhoneIcon /> Call Now
-                            </a>
-                            <button
-                                onClick={handleCopyContact}
-                                className="btn btn-secondary"
-                                style={{ flexGrow: 1, justifyContent: 'center' }}
-                            >
-                                <ContentCopyIcon /> Copy
-                            </button>
-                        </div>
-                    </div>
-                </SimpleModal>
-            )}
-            {showFullGallery && (
-                <FullScreenGallery
-                    images={galleryImageSrcs}
-                    initialIndex={currentSlideIndex}
-                    onClose={() => setShowFullGallery(false)}
+            {/* TABS */}
+            <div className="business-CardDetails-tabsWrapper">
+              <div className="business-CardDetails-tabs">
+                {[
+                  "Overview",
+                  "Quick Info",
+                  "Services",
+                  "Photos",
+                  "Reviews",
+                ].map((tab) => (
+                  <span
+                    key={tab}
+                    className={
+                      "business-CardDetails-tab" +
+                      (activeTab === tab
+                        ? " business-CardDetails-tab--active"
+                        : "")
+                    }
+                    onClick={() => handleTabClick(tab)}
+                  >
+                    {tab}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* TAB CONTENT */}
+            <div className="business-CardDetails-tabContent">
+              {/* OVERVIEW */}
+              <section
+                ref={overviewRef}
+                className="business-CardDetails-overviewCard"
+              >
+                <h2>Overview</h2>
+                <div
+                  className="business-CardDetails-overviewText"
+                  dangerouslySetInnerHTML={{ __html: overviewHtml }}
                 />
+              </section>
+
+              {/* QUICK INFO */}
+              <section
+                ref={quickInfoRef}
+                className="business-CardDetails-infoBlock"
+              >
+                <h2>Quick Info</h2>
+                <div className="business-CardDetails-infoGrid">
+                  <div className="business-CardDetails-infoItem">
+                    <span className="business-CardDetails-infoLabel">
+                      Business
+                    </span>
+                    <span className="business-CardDetails-infoValue">
+                      {business.businessName}
+                    </span>
+                  </div>
+                  <div className="business-CardDetails-infoItem">
+                    <span className="business-CardDetails-infoLabel">
+                      Experience
+                    </span>
+                    <span className="business-CardDetails-infoValue">
+                      {business.experience
+                        ? `${business.experience}+ Years`
+                        : "N/A"}
+                    </span>
+                  </div>
+                  <div className="business-CardDetails-infoItem">
+                    <span className="business-CardDetails-infoLabel">
+                      Category
+                    </span>
+                    <span className="business-CardDetails-infoValue">
+                      {business.category || "N/A"}
+                    </span>
+                  </div>
+                  <div className="business-CardDetails-infoItem">
+                    <span className="business-CardDetails-infoLabel">
+                      Address
+                    </span>
+                    <span className="business-CardDetails-infoValue">
+                      {fullAddress}
+                    </span>
+                  </div>
+                </div>
+              </section>
+
+              {/* SERVICES */}
+              <section
+                ref={servicesRef}
+                className="business-CardDetails-infoBlock"
+              >
+                <h2>Services</h2>
+                {business.services && business.services.length > 0 ? (
+                  <ul className="business-CardDetails-servicesList">
+                    {business.services.map((service, idx) => (
+                      <li
+                        key={idx}
+                        className="business-CardDetails-servicePill"
+                      >
+                        {service}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>Services information is not available.</p>
+                )}
+              </section>
+
+              {/* PHOTOS */}
+              <section
+                ref={photosRef}
+                className="business-CardDetails-photosSection"
+              >
+                <h2>Photos</h2>
+                {galleryImageSrcs.length > 0 ? (
+                  <div className="business-CardDetails-photoGrid">
+                    {galleryImageSrcs.map((src, index) => (
+                      <img
+                        key={index}
+                        src={
+                          src ||
+                          "https://via.placeholder.com/300x200?text=No+Image"
+                        }
+                        alt={`${business.businessName} photo ${
+                          index + 1
+                        }`}
+                        className="business-CardDetails-photoItem"
+                        onClick={() => {
+                          setCurrentSlideIndex(index);
+                          setShowFullGallery(true);
+                        }}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <p>No photos uploaded yet.</p>
+                )}
+              </section>
+
+              {/* REVIEWS */}
+              <section
+                ref={reviewsRef}
+                className="business-CardDetails-reviewsSection"
+              >
+                <div className="business-CardDetails-ratingsSummary">
+                  <h2 className="business-CardDetails-sectionTitle">
+                    Reviews &amp; Ratings
+                  </h2>
+                  <div className="business-CardDetails-averageRating">
+                    <span className="business-CardDetails-averageScore">
+                      {displayedAverageRating}
+                    </span>
+                    <span className="business-CardDetails-averageCount">
+                      {totalRatings} Rating
+                      {totalRatings !== 1 ? "s" : ""}
+                    </span>
+                    <p className="business-CardDetails-ratingSource">
+                      MassClick rating index based on {totalRatings}{" "}
+                      ratings across the web
+                    </p>
+                  </div>
+                </div>
+
+                <div className="business-CardDetails-startReview">
+                  <h3>Start your Review</h3>
+                  <UserRatingWidget
+                    businessId={business._id}
+                    initialValue={business.averageRating || 0}
+                    currentRatings={business.ratings || []}
+                  />
+                </div>
+
+                <div className="business-CardDetails-ratingTrend">
+                  <h3>Recent rating trend</h3>
+                  <div className="business-CardDetails-ratingTrendBar" />
+                </div>
+
+                <div className="business-CardDetails-userReviews">
+                  <h3>User Reviews</h3>
+                  <div className="business-CardDetails-reviewFilters">
+                    <button className="business-CardDetails-filter business-CardDetails-filter--active">
+                      Relevant
+                    </button>
+                    <button className="business-CardDetails-filter">
+                      Latest
+                    </button>
+                    <button className="business-CardDetails-filter">
+                      High to Low
+                    </button>
+                  </div>
+
+                  {reviewsToDisplay.length > 0 ? (
+                    reviewsToDisplay.map((review, index) => (
+                      <div
+                        key={review._id || index}
+                        className="business-CardDetails-reviewCard"
+                      >
+                        <div className="business-CardDetails-reviewHeader">
+                          <img
+                            src={
+                              review.userAvatar ||
+                              "https://via.placeholder.com/40"
+                            }
+                            alt={
+                              review.userName || "Anonymous User"
+                            }
+                            className="business-CardDetails-reviewAvatar"
+                          />
+                          <div className="business-CardDetails-reviewUser">
+                            <p className="business-CardDetails-reviewName">
+                              {review.userName ||
+                                "Anonymous User"}
+                            </p>
+                          </div>
+                          <span className="business-CardDetails-reviewDate">
+                            {review.createdAt
+                              ? new Date(
+                                  review.createdAt
+                                ).toLocaleDateString("en-GB", {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                })
+                              : "N/A"}
+                          </span>
+                        </div>
+
+                        <div className="business-CardDetails-reviewStars">
+                          {Array.from({ length: 5 }).map(
+                            (_, starIndex) => (
+                              <StarIcon
+                                key={starIndex}
+                                style={{
+                                  fontSize: 20,
+                                  color:
+                                    starIndex < review.rating
+                                      ? "#ffb300"
+                                      : "#e0e0e0",
+                                }}
+                              />
+                            )
+                          )}
+                        </div>
+
+                        <p className="business-CardDetails-reviewText">
+                          {review.ratingExperience ||
+                            "No comment provided."}
+                        </p>
+
+                        <div className="business-CardDetails-reviewMeta">
+                          {review.ratingLove &&
+                            review.ratingLove.length > 0 && (
+                              <p>
+                                <strong>Likes:</strong>{" "}
+                                {review.ratingLove.join(", ")}
+                              </p>
+                            )}
+                          {review.ratingPhotos &&
+                            review.ratingPhotos.length > 0 && (
+                              <p>
+                                <strong>
+                                  Photos(
+                                  {review.ratingPhotos.length})
+                                </strong>{" "}
+                                – View Photos
+                              </p>
+                            )}
+                        </div>
+
+                        <div className="business-CardDetails-reviewActions">
+                          <span>
+                            <CheckCircleIcon
+                              style={{
+                                fontSize: 18,
+                                marginRight: 4,
+                              }}
+                            />
+                            Helpful (0)
+                          </span>
+                          <span>
+                            <NoteAltIcon
+                              style={{
+                                fontSize: 18,
+                                marginRight: 4,
+                              }}
+                            />
+                            Comment
+                          </span>
+                          <span>
+                            <ShareIcon
+                              style={{
+                                fontSize: 18,
+                                marginRight: 4,
+                              }}
+                            />
+                            Share
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p>Be the first to leave a review!</p>
+                  )}
+
+                  {hasMoreReviews && (
+                    <div className="business-CardDetails-viewMore">
+                      <button
+                        className="business-CardDetails-viewMoreBtn"
+                        onClick={handleViewMoreReviews}
+                      >
+                        View More Reviews (
+                        {allReviews.length - reviewLimit} remaining)
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </section>
+            </div>
+
+            {/* MAP */}
+            {business.googleMap && (
+              <div className="business-CardDetails-mapWrapper">
+                <iframe
+                  src={getGoogleMapSrc(business.googleMap)}
+                  width="100%"
+                  height="320"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Business Location"
+                />
+              </div>
             )}
-            <Footer />
-        </>
-    );
+          </div>
+
+          {/* RIGHT SIDEBAR */}
+          <aside className="business-CardDetails-rightSidebar">
+            <div className="business-CardDetails-sidebarCard">
+              {/* CONTACT */}
+              <h3 className="business-CardDetails-sidebarTitle">
+                Contact
+              </h3>
+              <div className="business-CardDetails-contactRow">
+                <PhoneIcon className="business-CardDetails-sidebarIcon" />
+                <button
+                  onClick={handleShowNumberClick}
+                  className="business-CardDetails-contactLink"
+                >
+                  Show Number
+                </button>
+              </div>
+
+              {/* ADDRESS */}
+              <h3 className="business-CardDetails-sidebarTitle">
+                Address
+              </h3>
+              <p className="business-CardDetails-addressText">
+                {fullAddress}
+              </p>
+
+              <div className="business-CardDetails-addressActions">
+                {business.googleMap && (
+                  <a
+                    href={getMapLink(business.googleMap)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="business-CardDetails-addressBtn"
+                  >
+                    <DirectionsIcon fontSize="small" />
+                    Get Directions
+                  </a>
+                )}
+
+                <button
+                  className="business-CardDetails-addressBtn"
+                  onClick={handleCopyAddress}
+                >
+                  <ContentCopyIcon fontSize="small" />
+                  Copy
+                </button>
+              </div>
+
+              {/* HOURS */}
+              <div
+                className="business-CardDetails-sidebarItem business-CardDetails-sidebarItem--expandable"
+                onClick={() => setShowFullHours(!showFullHours)}
+              >
+                <div className="business-CardDetails-sidebarItemRow">
+                  <AccessTimeIcon className="business-CardDetails-sidebarIcon" />
+                  <span className="business-CardDetails-hoursSummary">
+                    {getCollapsedHoursSummary()}
+                  </span>
+                  <span className="business-CardDetails-sidebarArrow">
+                    {showFullHours ? (
+                      <ArrowDropUpIcon />
+                    ) : (
+                      <ArrowDropDownIcon />
+                    )}
+                  </span>
+                </div>
+              </div>
+
+              {showFullHours && (
+                <div className="business-CardDetails-hoursList">
+                  {getFullHoursList().map((hour) => (
+                    <div
+                      key={hour.day}
+                      className="business-CardDetails-hoursRow"
+                    >
+                      <span>{hour.day}</span>
+                      <span
+                        className={
+                          hour.isClosed
+                            ? "business-CardDetails-hoursValue--closed"
+                            : "business-CardDetails-hoursValue--open"
+                        }
+                      >
+                        {hour.isClosed
+                          ? "Closed"
+                          : `${hour.open} - ${hour.close}`}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* OTHER ACTIONS */}
+              <ul className="business-CardDetails-sidebarList">
+                <li className="business-CardDetails-sidebarItem">
+                  <NoteAltIcon className="business-CardDetails-sidebarIcon" />
+                  Suggest New Timings
+                </li>
+                <li className="business-CardDetails-sidebarItem">
+                  <EmailIcon className="business-CardDetails-sidebarIcon" />
+                  Send Enquiry by Email
+                </li>
+                <li className="business-CardDetails-sidebarItem business-CardDetails-sidebarItem--highlight">
+                  <InsertDriveFileIcon className="business-CardDetails-sidebarIcon" />
+                  Get info via SMS/Email
+                </li>
+                <li className="business-CardDetails-sidebarItem">
+                  <ShareIcon className="business-CardDetails-sidebarIcon" />
+                  Share
+                </li>
+                <li
+                  className="business-CardDetails-sidebarItem"
+                  onClick={handleRateClick}
+                >
+                  <StarIcon className="business-CardDetails-sidebarIcon" />
+                  Tap to rate
+                </li>
+                <li className="business-CardDetails-sidebarItem">
+                  <EditIcon className="business-CardDetails-sidebarIcon" />
+                  Edit this Listing
+                </li>
+                <li className="business-CardDetails-sidebarItem">
+                  <CheckCircleIcon className="business-CardDetails-sidebarIcon" />
+                  Claim this business
+                </li>
+                <li className="business-CardDetails-sidebarItem">
+                  <LanguageIcon className="business-CardDetails-sidebarIcon" />
+                  {website ? (
+                    <a
+                      href={website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="business-CardDetails-websiteLink"
+                    >
+                      Website
+                    </a>
+                  ) : (
+                    <span className="business-CardDetails-websiteLink business-CardDetails-websiteLink--disabled">
+                      Website not added
+                    </span>
+                  )}
+                </li>
+              </ul>
+            </div>
+
+            <div className="business-CardDetails-sidebarCard business-CardDetails-tagsCard">
+              <h3 className="business-CardDetails-tagsTitle">
+                Also listed in
+              </h3>
+              <div className="business-CardDetails-tags">
+                <span className="business-CardDetails-tag">
+                  Mangalorean Restaurants
+                </span>
+                <span className="business-CardDetails-tag">
+                  Restaurants
+                </span>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      {showContactModal && (
+        <SimpleModal
+          title={`Contact for ${business.businessName}`}
+          onClose={() => setShowContactModal(false)}
+        >
+          <p>{business.contact || "N/A"}</p>
+          <div className="business-CardDetails-modalActions">
+            {business.contact && (
+              <a
+                href={`tel:${business.contact}`}
+                className="business-CardDetails-btn business-CardDetails-btn--primary"
+              >
+                <PhoneIcon />
+                Call Now
+              </a>
+            )}
+            <button
+              className="business-CardDetails-btn business-CardDetails-btn--secondary"
+              onClick={handleCopyContact}
+            >
+              <ContentCopyIcon />
+              Copy
+            </button>
+          </div>
+        </SimpleModal>
+      )}
+
+      {showFullGallery && (
+        <FullScreenGallery
+          images={galleryImageSrcs}
+          initialIndex={currentSlideIndex}
+          onClose={() => setShowFullGallery(false)}
+        />
+      )}
+
+      <Footer />
+    </>
+  );
 };
 
 export default BusinessDetail;

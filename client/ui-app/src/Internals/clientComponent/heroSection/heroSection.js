@@ -7,27 +7,25 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getAllClientBusinessList,
   getAllSearchLogs,
+  logSearchActivity,
 } from "../../../redux/actions/businessListAction";
 import { getAllCategory } from "../../../redux/actions/categoryAction";
 import { logUserSearch } from "../../../redux/actions/otpAction";
-import { logSearchActivity } from "../../../redux/actions/businessListAction";
 import backgroundImage from "../../../assets/background.png";
 import { useNavigate } from "react-router-dom";
 import "./hero.css";
 
-const CategoryDropdown = ({ options, setSearchTerm, closeDropdown }) => {
+
+
+const CategoryDropdown = ({ label, options, onSelect }) => {
   const MAX_HEIGHT_PX = 200;
 
-  const handleOptionClick = (value) => {
-    setSearchTerm(value);
-    closeDropdown();
-  };
-
-  if (options.length === 0) return null;
+  if (!options || options.length === 0) return null;
 
   return (
     <div className="category-custom-dropdown">
-      <div className="trending-label">RECENT SEARCHES</div>
+      <div className="trending-label">{label}</div>
+
       <div
         className="options-list-container"
         style={{ maxHeight: `${MAX_HEIGHT_PX}px` }}
@@ -36,18 +34,20 @@ const CategoryDropdown = ({ options, setSearchTerm, closeDropdown }) => {
           <div
             key={index}
             className="option-item"
-            onClick={() => handleOptionClick(option)}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              padding: "4px 8px",
-              cursor: "pointer",
-            }}
+            onClick={() => onSelect(option)}
           >
-            <HistoryToggleOffIcon
-              style={{ marginRight: "6px", color: "#ff7b00" }}
-            />
-            <span>{option}</span>
+            {label === "RECENT SEARCHES" ? (
+              <HistoryToggleOffIcon className="option-icon" />
+            ) : (
+              <SearchIcon className="option-icon" />
+            )}
+            <span className="option-text-main">
+              {typeof option === "string" ? option : option.businessName}
+            </span>
+
+            {typeof option !== "string" && option.category && (
+              <span className="option-text-sub">{option.category}</span>
+            )}
           </div>
         ))}
       </div>
@@ -55,49 +55,65 @@ const CategoryDropdown = ({ options, setSearchTerm, closeDropdown }) => {
   );
 };
 
-// Main Hero Section
+/* =========================================================
+   MAIN HERO SECTION
+========================================================= */
+
 const HeroSection = ({
   searchTerm,
   setSearchTerm,
   locationName,
   setLocationName,
   categoryName,
-  setCategoryName,
+  setCategoryName, // currently not used but kept for future needs
   setSearchResults,
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const categoryRef = useRef(null);
 
-  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
-  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm || "");
 
   const businessListState = useSelector(
     (state) => state.businessListReducer || { clientBusinessList: [] }
   );
-  const { searchLogs, clientBusinessList = [] } = businessListState;
+  const { searchLogs = [], clientBusinessList = [] } = businessListState;
 
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(searchTerm), 200);
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
-
+  /* ---------------------------------------------------------
+     1. INITIAL DATA LOAD
+  ---------------------------------------------------------- */
   useEffect(() => {
     dispatch(getAllClientBusinessList());
     dispatch(getAllCategory());
     dispatch(getAllSearchLogs());
   }, [dispatch]);
 
+  /* ---------------------------------------------------------
+     2. CLICK OUTSIDE TO CLOSE DROPDOWN
+  ---------------------------------------------------------- */
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (categoryRef.current && !categoryRef.current.contains(event.target)) {
-        setIsCategoryDropdownOpen(false);
+        setIsDropdownOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [categoryRef]);
+  }, []);
 
+  /* ---------------------------------------------------------
+     3. DEBOUNCE SEARCH TERM FOR SUGGESTIONS
+  ---------------------------------------------------------- */
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchTerm || ""), 200);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  /* ---------------------------------------------------------
+     4. HELPERS
+  ---------------------------------------------------------- */
   const capitalizeWords = (str) => {
     if (!str) return "";
     return str
@@ -107,60 +123,78 @@ const HeroSection = ({
       .join(" ");
   };
 
-  const categoryOptions = [
+  // Recent searches, derived from logs
+  const recentSearchOptions = [
     ...new Set(
-      (searchLogs || []).map((log) => capitalizeWords(log.categoryName))
+      (searchLogs || [])
+        .map((log) => capitalizeWords(log.categoryName))
+        .filter(Boolean)
     ),
-  ].filter(Boolean);
+  ];
 
+  // Live suggestions from business list
+  const suggestionOptions =
+    debouncedSearch.trim().length >= 2
+      ? clientBusinessList
+          .filter((business) => {
+            if (business.businessesLive !== true) return false;
+            const value = debouncedSearch.toLowerCase();
+            return (
+              business.businessName?.toLowerCase().includes(value) ||
+              business.category?.toLowerCase().includes(value)
+            );
+          })
+          .slice(0, 10)
+      : [];
+
+  /* ---------------------------------------------------------
+     5. HANDLE SEARCH
+  ---------------------------------------------------------- */
   const handleSearch = async (e) => {
     e.preventDefault();
 
-    const finalSearchTerm = searchTerm?.trim();
+    const finalSearchTerm = (searchTerm || "").trim();
     const logLocation = locationName || "Global";
 
-    // Filter businesses first
     const filteredBusinesses = clientBusinessList.filter((business) => {
-
       if (business.businessesLive !== true) return false;
 
+      const term = finalSearchTerm.toLowerCase();
+      const loc = (locationName || "").toLowerCase();
+      const cat = (categoryName || "").toLowerCase();
+
       const matchesSearchTerm =
-        !finalSearchTerm ||
+        !term ||
         (business.businessName &&
-          business.businessName.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
+          business.businessName.toLowerCase().includes(term)) ||
         (business.category &&
-          business.category.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
+          business.category.toLowerCase().includes(term)) ||
         (Array.isArray(business.keywords) &&
           business.keywords.some((keyword) =>
-            keyword.toLowerCase().includes(finalSearchTerm.toLowerCase())
+            keyword.toLowerCase().includes(term)
           )) ||
         (business.description &&
-          business.description.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
+          business.description.toLowerCase().includes(term)) ||
         (business.seoDescription &&
-          business.seoDescription.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
+          business.seoDescription.toLowerCase().includes(term)) ||
         (business.seoTitle &&
-          business.seoTitle.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
-        (business.title &&
-          business.title.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
-        (business.slug &&
-          business.slug.toLowerCase().includes(finalSearchTerm.toLowerCase()));
+          business.seoTitle.toLowerCase().includes(term)) ||
+        (business.title && business.title.toLowerCase().includes(term)) ||
+        (business.slug && business.slug.toLowerCase().includes(term));
 
       const matchesCategory =
-        !categoryName ||
+        !cat ||
         (business.category &&
-          business.category.toLowerCase() === categoryName.toLowerCase());
+          business.category.toLowerCase() === cat.toLowerCase());
 
       const matchesLocation =
-        !locationName ||
+        !loc ||
         [business.location, business.plotNumber, business.street, business.pincode]
           .filter(Boolean)
-          .some((field) =>
-            field.toLowerCase().includes(locationName.toLowerCase())
-          );
+          .some((field) => field.toLowerCase().includes(loc));
 
       return matchesSearchTerm && matchesCategory && matchesLocation;
     });
-
 
     const derivedCategory =
       filteredBusinesses.length > 0 && filteredBusinesses[0].category
@@ -169,38 +203,45 @@ const HeroSection = ({
 
     const logCategory = derivedCategory;
 
-    let authUser = JSON.parse(localStorage.getItem("authUser") || "{}");
-    let userId = authUser?._id;
-    let userDetails = {
+    const authUser = JSON.parse(localStorage.getItem("authUser") || "{}");
+    const userId = authUser?._id;
+    const userDetails = {
       userName: authUser?.userName,
       mobileNumber1: authUser?.mobileNumber1,
       mobileNumber2: authUser?.mobileNumber2,
-      email: authUser?.email
+      email: authUser?.email,
     };
 
     if (userId && finalSearchTerm) {
       dispatch(logUserSearch(userId, finalSearchTerm, logLocation, logCategory));
     }
+
     dispatch(logSearchActivity(logCategory, logLocation, userDetails));
 
+    if (setSearchResults) {
+      setSearchResults(filteredBusinesses);
+    }
 
-    if (setSearchResults) setSearchResults(filteredBusinesses);
+    const locSlug = (locationName || "All").replace(/\s+/g, "");
+    const termSlug = (finalSearchTerm || "All").replace(/\s+/g, "");
 
-    const loc = (locationName || "All").replace(/\s+/g, "");
-    const term = (finalSearchTerm || "All").replace(/\s+/g, "");
-    navigate(`/${loc}/${term}`, { state: { results: filteredBusinesses } });
+    navigate(`/${locSlug}/${termSlug}`, { state: { results: filteredBusinesses } });
   };
 
+  /* ---------------------------------------------------------
+     6. RENDER
+  ---------------------------------------------------------- */
 
   return (
     <div
       className="hero-section"
       style={{
-        backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${backgroundImage})`,
+        backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.55)), url(${backgroundImage})`,
       }}
     >
       <div className="hero-content">
         <h1 className="hero-title">MassClick Find Your Local Business</h1>
+
         <p className="hero-subtitle">
           MassClick is one of India's most trusted local search platforms,
           offering comprehensive business information including user reviews,
@@ -211,7 +252,7 @@ const HeroSection = ({
           MassClick.
         </p>
 
-        {/* ===== SEARCH BAR ===== */}
+        {/* ================= SEARCH BAR ================= */}
         <form className="search-bar-container" onSubmit={handleSearch}>
           {/* Location Input */}
           <div className="input-group location-group">
@@ -224,87 +265,54 @@ const HeroSection = ({
             />
           </div>
 
-          {/* Search Term Input */}
+          {/* Search Term Input + Dropdowns */}
           <div className="input-group search-group" ref={categoryRef}>
             <input
               className="custom-input"
               placeholder="Search for..."
               value={searchTerm}
               onChange={(e) => {
-                const value = e.target.value;
-                setSearchTerm(value);
-                setIsCategoryDropdownOpen(true);
+                setSearchTerm(e.target.value);
+                setIsDropdownOpen(true);
               }}
-              onFocus={() => setIsCategoryDropdownOpen(true)}
+              onFocus={() => setIsDropdownOpen(true)}
             />
 
-            {/* RECENT SEARCHES DROPDOWN */}
-            {isCategoryDropdownOpen && searchTerm.trim().length < 2 && (
+            {/* RECENT SEARCHES (when very short input) */}
+            {isDropdownOpen && searchTerm.trim().length < 2 && (
               <CategoryDropdown
-                options={categoryOptions}
-                setSearchTerm={setSearchTerm}
-                closeDropdown={() => setIsCategoryDropdownOpen(false)}
+                label="RECENT SEARCHES"
+                options={recentSearchOptions}
+                onSelect={(value) => {
+                  setSearchTerm(value);
+                  setIsDropdownOpen(false);
+                }}
               />
             )}
 
-            {isCategoryDropdownOpen && searchTerm.trim().length >= 2 && (
-              <div className="category-custom-dropdown">
-                <div className="trending-label">SUGGESTIONS</div>
-                <div
-                  className="options-list-container"
-                  style={{ maxHeight: "200px" }}
-                >
-                  {
-                    clientBusinessList
-                      .filter((business) => {
-                        if (business.businessesLive !== true) return false;
-
-                        const value = debouncedSearch.toLowerCase();
-
-                        return (
-                          business.businessName?.toLowerCase().includes(value) ||
-                          business.category?.toLowerCase().includes(value)
-                        );
-                      })
-                      .slice(0, 10)
-
-                      .map((business, index) => (
-                        <div
-                          key={index}
-                          className="option-item"
-                          onClick={() => {
-                            setSearchTerm(business.businessName);
-                            setIsCategoryDropdownOpen(false);
-                          }}
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            padding: "4px 8px",
-                            cursor: "pointer",
-                          }}
-                        >
-                          <SearchIcon
-                            style={{ marginRight: "6px", color: "#ff7b00" }}
-                          />
-                          <span>{business.businessName}</span>
-                          <span
-                            style={{
-                              marginLeft: "auto",
-                              color: "gray",
-                              fontSize: "12px",
-                            }}
-                          >
-                            {business.category}
-                          </span>
-                        </div>
-                      ))}
-                </div>
-              </div>
+            {/* SUGGESTIONS (when user types more) */}
+            {isDropdownOpen && searchTerm.trim().length >= 2 && (
+              <CategoryDropdown
+                label="SUGGESTIONS"
+                options={suggestionOptions}
+                onSelect={(business) => {
+                  if (typeof business === "string") {
+                    setSearchTerm(business);
+                  } else {
+                    setSearchTerm(business.businessName);
+                    if (business.category && setCategoryName) {
+                      setCategoryName(business.category);
+                    }
+                  }
+                  setIsDropdownOpen(false);
+                }}
+              />
             )}
 
             <MicIcon className="input-adornment end" />
           </div>
 
+          {/* Submit Button */}
           <button type="submit" className="search-button">
             <SearchIcon className="search-icon" />
           </button>

@@ -33,14 +33,12 @@ const TopTourist = () => {
   return (
     <div className="tourist-section">
 
-      {/* Header */}
       <div className="tourist-header">
         <div>
           <h2 className="tourist-title">Top Tourist Places</h2>
           <p className="tourist-subtitle">Explore India’s most visited & loved destinations</p>
         </div>
 
-        {/* Controls */}
         <div className="tourist-controls">
           <button className="tourist-arrow" onClick={scrollLeft}>
             <KeyboardDoubleArrowLeftIcon />
@@ -51,7 +49,6 @@ const TopTourist = () => {
         </div>
       </div>
 
-      {/* Carousel */}
       <div className="tourist-carousel-wrapper">
         <div className="tourist-fade-left"></div>
         <div className="tourist-fade-right"></div>

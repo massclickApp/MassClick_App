@@ -4,17 +4,21 @@
   --color-text-light: #f0f0f0;
   --color-text-dark: #333333;
   --color-glass-base: rgba(255, 255, 255, 0.9);
+
   --search-height: 60px;
   --border-radius-base: 8px;
   --transition-speed: 0.3s;
+
   --box-shadow-deep: 0 10px 40px rgba(0, 0, 0, 0.5);
   --box-shadow-default: 0 4px 15px rgba(0, 0, 0, 0.1);
+
   --spacing-gap: 15px;
 }
 
 /* ========================================================= */
 /* --- Hero Section --- */
 /* ========================================================= */
+
 .hero-section {
   position: relative;
   background-size: cover;
@@ -22,6 +26,7 @@
   background-repeat: no-repeat;
   width: 100%;
   min-height: 95vh;
+
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -34,12 +39,15 @@
   z-index: 2;
   width: 100%;
   max-width: 1200px;
+
   padding: 60px 15px;
   margin: 80px auto 0;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 25px;
+
   backdrop-filter: blur(2px);
   border-radius: 16px;
 }
@@ -55,22 +63,19 @@
 }
 
 .hero-subtitle {
-  /* Retained/Refined Properties */
   color: var(--color-text-light);
-  font-weight: 300; /* Adjusted from 400 for a lighter, modern look */
+  font-weight: 300;
   line-height: 1.6;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7); /* Softened the shadow */
-  font-size: clamp(1rem, 1.6vw, 1.25rem); /* Kept fluid sizing, but tightened the preferred value */
-  
-  
-  max-width: 1500px; 
-  
-  margin: 0 auto 30px; /* Reduced bottom margin slightly */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  max-width: 1500px;
+  margin: 0 auto 30px;
 }
 
 /* ========================================================= */
 /* --- Search Bar --- */
 /* ========================================================= */
+
 .search-bar-container {
   display: flex;
   width: 100%;
@@ -97,41 +102,25 @@
   min-width: 250px;
 }
 
-.location-group {
-  position: relative;
-}
-
-.search-group {
-  position: relative;
-}
-
 /* ========================================================= */
-/* --- Dropdowns (Location & Category) --- */
+/* --- Dropdown (Recent & Suggestions) --- */
 /* ========================================================= */
-.location-custom-dropdown,
+
 .category-custom-dropdown {
   position: absolute;
   top: 105%;
   left: 0;
   right: 0;
   z-index: 1000;
+
+  width: 100%;
   background-color: #ffffff;
   border-radius: 12px;
-  padding: 5px 0;
-  box-shadow: 0 12px 28px rgba(0,0,0,0.18);
-  transition: all 0.3s ease;
+  margin-top: 4px;
+
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
   font-size: 0.95rem;
   overflow: hidden;
-}
-
-.dropdown-header {
-  display: flex;
-  align-items: center;
-  padding: 8px 16px;
-  font-weight: 500;
-  color: var(--color-primary);
-  cursor: pointer;
-  border-bottom: 1px solid #eee;
 }
 
 .trending-label {
@@ -140,20 +129,22 @@
   color: #888;
   font-weight: bold;
   text-transform: uppercase;
+  border-bottom: 1px solid #eee;
 }
 
 .options-list-container {
-  max-height: 288px; /* Show up to 8 items, scrollable */
+  max-height: 288px;
   overflow-y: auto;
 }
 
 .option-item {
   padding: 10px 16px;
   cursor: pointer;
-  font-size: 1rem;
-  line-height: 16px;
-  white-space: nowrap;
-  text-align: left;
+  display: flex;
+  align-items: center;
+  font-size: 0.95rem;
+  color: #333;
+  transition: background-color 0.2s;
 }
 
 .option-item:hover,
@@ -161,59 +152,28 @@
   background-color: #f0f0f0;
 }
 
-/* Example CSS to be placed in your './hero.css' or similar stylesheet */
-
-/* General dropdown container styling */
-.category-custom-dropdown {
-    position: absolute;
-    top: 100%; /* Position right below the input */
-    left: 0;
-    z-index: 100;
-    width: 100%;
-    background-color: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    border-radius: 8px;
-    margin-top: 4px; /* Small space below input */
+.option-icon {
+  margin-right: 6px;
+  color: var(--color-primary);
+  flex-shrink: 0;
 }
 
-/* Header/Label for trending/recent */
-.trending-label {
-    padding: 8px 12px;
-    font-size: 0.75rem;
-    color: #888;
-    font-weight: bold;
-    text-transform: uppercase;
-    border-bottom: 1px solid #eee;
+.option-text-main {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Container for scrollable options */
-.options-list-container {
-    overflow-y: auto;
-    /* max-height is set inline in the component */
+.option-text-sub {
+  margin-left: auto;
+  color: gray;
+  font-size: 12px;
 }
 
-/* Individual option item */
-.category-custom-dropdown .option-item {
-    padding: 10px 12px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    font-size: 0.95rem;
-    color: #333;
-    transition: background-color 0.2s;
-}
-
-.category-custom-dropdown .option-item:hover {
-    background-color: #f0f0f0;
-}
-
-.category-custom-dropdown .option-item:last-child {
-    border-bottom: none;
-    border-radius: 0 0 8px 8px; /* Round the bottom corners */
-}
 /* ========================================================= */
 /* --- Inputs & Icons --- */
 /* ========================================================= */
+
 .custom-input {
   width: 100%;
   height: var(--search-height);
@@ -250,7 +210,6 @@
   transform: translateY(-50%);
   font-size: 22px;
   z-index: 1;
-  pointer-events: none;
 }
 
 .location-group .input-adornment.start,
@@ -264,28 +223,32 @@
 
 .search-group .input-adornment.end {
   right: 15px;
-  pointer-events: auto;
   cursor: pointer;
 }
 
 /* ========================================================= */
 /* --- Search Button --- */
 /* ========================================================= */
+
 .search-button {
   height: var(--search-height);
   width: var(--search-height);
+
   background-color: var(--color-primary);
-  color: white;
+  color: #ffffff;
   font-weight: 700;
+
   cursor: pointer;
   border: none;
   border-radius: var(--border-radius-base);
   box-shadow: 0 8px 25px rgba(255, 123, 0, 0.6);
-  transition: all 0.2s ease-out;
+
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+
+  transition: all 0.2s ease-out;
 }
 
 .search-button:hover {
@@ -294,13 +257,14 @@
   transform: translateY(-2px);
 }
 
-.search-button .search-icon {
+.search-icon {
   font-size: 30px;
 }
 
 /* ========================================================= */
 /* --- Responsiveness --- */
 /* ========================================================= */
+
 @media (max-width: 900px) {
   .hero-content {
     margin-top: 60px;

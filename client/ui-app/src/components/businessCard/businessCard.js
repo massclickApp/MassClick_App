@@ -137,7 +137,6 @@ export default function SelectActionCard() {
             growth: "+0%",
         },
 
-        /* ⭐ NEW CARD ⭐ */
         {
             id: 5,
             title: "Inactive Businesses",
