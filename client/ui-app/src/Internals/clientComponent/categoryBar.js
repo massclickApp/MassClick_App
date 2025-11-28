@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"; // <-- added useEffect
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { viewOtpUser } from "../../redux/actions/otpAction.js";
-
+import { useDrawer } from "./Drawer/drawerContext.js";
 import {
     Box,
     Button,
@@ -99,14 +99,15 @@ export const userMenuItems = [
     { name: "User Policy", path: "/user_policy", icon: <PolicyIcon color="action" />, component: PolicyPage },
     { name: "User Feedback", path: "/user_feedback", icon: <FeedbackIcon color="action" />, component: FeedbackPage },
     { name: "User Help", path: "/user_help", icon: <HelpOutlineIcon color="action" />, component: HelpPage },
-    { name: "Change Language", isLanguageSwitch: true, icon: <LanguageIcon color="action" /> }, 
-    { name: "Logout", isLogout: true, path: "/logout", icon: <ExitToAppIcon color="action" /> }, 
+    { name: "Change Language", isLanguageSwitch: true, icon: <LanguageIcon color="action" /> },
+    { name: "Logout", isLogout: true, path: "/logout", icon: <ExitToAppIcon color="action" /> },
 ];
 
 const CategoryBar = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const dispatch = useDispatch();
+    const { openDrawer } = useDrawer();
 
     const [selectedLanguage, setSelectedLanguage] = useState("English");
     const [anchorEl, setAnchorEl] = useState(null);
@@ -305,7 +306,6 @@ const CategoryBar = () => {
             </List>
         </Box>
     );
-
     return (
         <Box
             sx={{
@@ -488,7 +488,7 @@ const CategoryBar = () => {
                         </Button>
                     ) : (
                         <IconButton
-                            onClick={handleDrawerToggle(true)}
+                            onClick={openDrawer}
                             sx={{
                                 color: "gray",
                                 bgcolor: "rgba(0,0,0,0.04)",
@@ -554,7 +554,7 @@ const CategoryBar = () => {
                         </Button>
                     ) : (
                         <IconButton
-                            onClick={handleDrawerToggle(true)}
+                            onClick={openDrawer}
                             sx={{
                                 color: "gray",
                                 bgcolor: "rgba(0,0,0,0.04)",

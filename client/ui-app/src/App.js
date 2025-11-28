@@ -52,6 +52,7 @@ import TokenExpiredModal from './Internals/tokenModel/tokenModel.js';
 import BusinessEnquiry from './Internals/clientComponent/businessEnquiry/businessEnquiry.js';
 import CategoryDynamicPage from './Internals/clientComponent/cards/popularCategories/popularCategoryDrawer.js';
 import EnquiryPage from './Internals/enquiry-page/enquiry-page.js';
+import GlobalDrawer from "./Internals/clientComponent/Drawer/globalDrawer.js";
 
 const ComingSoon = ({ title }) => (
   <div style={{ textAlign: 'center', marginTop: '20%' }}>
@@ -130,6 +131,7 @@ function App() {
       <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} autoHideDuration={5000} preventDuplicate>
         <Router>
           <ScrollToTop />
+          <GlobalDrawer />
           <Routes>
             <Route path="/" element={<Navigate to="/home" replace />} />
             <Route path="/admin" element={<Login setIsAuthenticated={setIsAuthenticated} isAuthenticated={isAuthenticated} />} />

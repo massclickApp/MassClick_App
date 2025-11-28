@@ -391,7 +391,7 @@ const BusinessDetail = () => {
 
   return (
     <>
-      <CardsSearch /><br/><br/><br/>
+      <CardsSearch /><br/><br/><br/><br/>
       <div className="business-CardDetails-pageWrapper">
         {/* HERO SECTION */}
         <section className="business-CardDetails-heroSection">

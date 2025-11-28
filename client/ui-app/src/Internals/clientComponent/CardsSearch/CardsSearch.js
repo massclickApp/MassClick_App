@@ -24,6 +24,7 @@ import HistoryToggleOffIcon from '@mui/icons-material/HistoryToggleOff';
 import MI from "../../../assets/Mi.png";
 import AddBusinessModel from "../AddBusinessModel";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { useDrawer } from "../Drawer/drawerContext";
 
 const CategoryDropdown = ({ options, setSearchTerm, closeDropdown }) => {
   const MAX_HEIGHT_PX = 200;
@@ -60,6 +61,7 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+    const { openDrawer } = useDrawer();
 
 
   const businessListState = useSelector(
@@ -354,7 +356,7 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
               </Button>
             ) : (
               <IconButton
-                onClick={() => window.dispatchEvent(new Event("openUserDrawer"))}
+                onClick={openDrawer}
                 sx={{
                   color: "gray",
                   bgcolor: "rgba(0,0,0,0.04)",
@@ -369,7 +371,6 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
             )}
           </Box>
         </div>
-
         <AddBusinessModel open={isModalOpen} handleClose={handleCloseModal} />
       </header>
     </>
