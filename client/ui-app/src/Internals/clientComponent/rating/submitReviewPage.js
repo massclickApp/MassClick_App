@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import Rating from '@mui/material/Rating';
@@ -16,7 +16,6 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
-// Define rating labels
 const labels = {
     0.5: 'Useless', 1: 'Poor', 1.5: 'Bad', 2: 'Weak', 2.5: 'Average',
     3: 'Good', 3.5: 'Very Good', 4: 'Excellent', 4.5: 'Outstanding', 5: 'Amazing'
@@ -28,35 +27,34 @@ const WriteReviewPage = () => {
     const navigate = useNavigate();
 
     const initialRating = parseFloat(ratingValue) || 0;
-    const currentUser = useSelector(state => state.auth.user);
 
     const [rating, setRating] = useState(initialRating);
     const [reviewText, setReviewText] = useState('');
     const [selectedTags, setSelectedTags] = useState([]);
     const [ratingPhotos, setRatingPhotos] = useState([]);
-    const [showSuccessModal, setShowSuccessModal] = useState(false); // Modal state
-    const [isSubmitting, setIsSubmitting] = useState(false); // To disable button
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const storedUser = JSON.parse(localStorage.getItem("authUser") || "{}");
+
+    const business = useSelector(state =>
+        state.businessListReducer.clientBusinessList.find(b => b._id === businessId)
+    );
+
+    if (!business) return <p>Loading business details for review...</p>;
+
+    const businessNameSlug = business.businessName.toLowerCase().replace(/\s+/g, '-');
+    const locationSlug = business.location.toLowerCase().replace(/\s+/g, '-');
+
+    const handleModalClose = () => {
+        setShowSuccessModal(false);
+        navigate(`/business/${businessNameSlug}/${locationSlug}/${businessId}`);
+    };
 
     const handlePhotoUpload = (event) => {
         const files = Array.from(event.target.files);
         setRatingPhotos(files);
     };
-   
-    const business = useSelector(state =>
-        state.businessListReducer.clientBusinessList.find(b => b._id === businessId)
-    );
-
-    if (!business) {
-        return <p>Loading business details for review...</p>;
-    }
-
-    const businessNameSlug = business.businessName.toLowerCase().replace(/\s+/g, '-');
-const locationSlug = business.location.toLowerCase().replace(/\s+/g, '-');
-
-const handleModalClose = () => {
-    setShowSuccessModal(false);
-    navigate(`/business/${businessNameSlug}/${locationSlug}/${businessId}`);
-};
 
     const handleTagClick = (tag) => {
         setSelectedTags(prev =>
@@ -64,41 +62,40 @@ const handleModalClose = () => {
         );
     };
 
-
     const handleSubmitReview = async () => {
         if (!rating || reviewText.length < 5) {
             alert("Please provide a rating and at least 5 characters for your experience.");
             return;
         }
+
         setIsSubmitting(true);
 
-        const photoPromises = ratingPhotos.map(file => {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result);
-                reader.readAsDataURL(file);
-            });
-        });
-        const base64Photos = await Promise.all(photoPromises);
+        const base64Photos = await Promise.all(
+            ratingPhotos.map(file => {
+                return new Promise(resolve => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.readAsDataURL(file);
+                });
+            })
+        );
 
         const newReview = {
-            rating: rating,
+            rating,
             ratingExperience: reviewText,
             ratingLove: selectedTags,
-            userId: currentUser?._id || null,
-            username: currentUser?.username || 'Anonymous User',
+            userId: storedUser?._id || null,
+            userName: storedUser?.userName || "",
+            userProfileImage: storedUser?.profileImage || "",
+            mobileNumber1: storedUser?.mobileNumber1 || "",
+            businessName: business.businessName,
+            businessLocation: business.location,
             ratingPhotos: base64Photos,
         };
-
-        const businessUpdatePayload = {
-            reviewData: newReview
-        };
-
         try {
-            await dispatch(editBusinessList(businessId, businessUpdatePayload));
+            await dispatch(editBusinessList(businessId, { reviewData: newReview }));
             await dispatch(getAllClientBusinessList());
             setShowSuccessModal(true);
-
         } catch (error) {
             console.error("Failed to submit review:", error);
             alert(`Failed to submit review: ${error.message || 'Check console.'}`);
@@ -106,18 +103,20 @@ const handleModalClose = () => {
             setIsSubmitting(false);
         }
     };
+
     const isSubmitDisabled = isSubmitting || !rating || reviewText.length < 5;
 
     return (
         <>
-            <CardsSearch /><br/><br/><br/>
+            <CardsSearch /><br /><br /><br />
+
             <div className="write-review-container">
 
                 <h1 className="review-page-title">Write Review</h1>
 
                 <div className="review-business-header">
                     <img
-                        src={business.bannerImageKey ? business.bannerImage : 'placeholder.jpg'}
+                        src={business.bannerImage || 'placeholder.jpg'}
                         alt={business.businessName}
                     />
                     <div>
@@ -125,12 +124,11 @@ const handleModalClose = () => {
                         <p>{business.location}</p>
                     </div>
                 </div>
-
                 <div className="review-form-body">
-
                     <div className="rating-column">
                         <div className="rating-section">
                             <h3>How would you rate your experience?</h3>
+
                             <Rating
                                 value={rating}
                                 precision={0.5}
@@ -138,14 +136,16 @@ const handleModalClose = () => {
                                 emptyIcon={<StarIcon style={{ opacity: 0.2 }} fontSize="inherit" />}
                                 size="large"
                             />
+
                             <p className="rating-label">
                                 {labels[rating] || 'Select your rating...'}
-                                <span role="img" aria-label="emoji"> {rating >= 4 ? '🤩' : rating >= 2.5 ? '🙂' : '😔'}</span>
+                                <span>{rating >= 4 ? '🤩' : rating >= 2.5 ? '🙂' : '😔'}</span>
                             </p>
                         </div>
 
                         <div className="photo-upload-section">
                             <h3>Upload Photos (Optional)</h3>
+
                             <input
                                 type="file"
                                 id="photo-upload-input"
@@ -159,22 +159,18 @@ const handleModalClose = () => {
                                 <PhotoCameraIcon style={{ marginRight: '8px', fontSize: '1.2rem' }} />
                                 {ratingPhotos.length > 0
                                     ? `${ratingPhotos.length} photo(s) selected`
-                                    : 'Choose Photo Files'
-                                }
+                                    : 'Choose Photo Files'}
                             </label>
 
                             {ratingPhotos.length > 0 && (
-                                <div className="file-preview-list">
-                                    <ul className="selected-files-list">
-                                        {ratingPhotos.map((file, index) => (
-                                            <li key={index}>{file.name}</li>
-                                        ))}
-                                    </ul>
-                                </div>
+                                <ul className="selected-files-list">
+                                    {ratingPhotos.map((file, index) => (
+                                        <li key={index}>{file.name}</li>
+                                    ))}
+                                </ul>
                             )}
                         </div>
                     </div>
-
 
                     <div className="content-column">
                         <div className="tags-section">
@@ -216,37 +212,29 @@ const handleModalClose = () => {
                 </div>
             </div>
 
-            <Dialog
-                open={showSuccessModal}
-                onClose={handleModalClose}
-                aria-labelledby="success-dialog-title"
-            >
-                <DialogTitle id="success-dialog-title" style={{ textAlign: 'center', color: '#16a085', paddingTop: '20px' }}>
+            <Dialog open={showSuccessModal} onClose={handleModalClose}>
+                <DialogTitle style={{ textAlign: 'center', color: '#16a085', paddingTop: '20px' }}>
                     <CheckCircleIcon style={{ fontSize: 60, color: '#16a085' }} />
                 </DialogTitle>
 
-                <DialogContent style={{ textAlign: 'center', padding: '0 40px 10px' }}>
-                    <h2 style={{ color: '#333', fontSize: '1.8rem', margin: '10px 0' }}>Review Submitted!</h2>
-                    <p style={{ color: '#666', fontSize: '1.1rem' }}>
-                        Thank you for sharing your valuable experience at **{business.businessName}**.
-                    </p>
-                    <p style={{ color: '#666', fontSize: '0.9rem', marginTop: '15px' }}>
-                        Your review will be live shortly.
-                    </p>
+                <DialogContent style={{ textAlign: 'center' }}>
+                    <h2>Review Submitted!</h2>
+                    <p>Thank you for sharing your experience at <strong>{business.businessName}</strong>.</p>
+                    <p>Your review will be live shortly.</p>
                 </DialogContent>
 
                 <DialogActions style={{ justifyContent: 'center', paddingBottom: '20px' }}>
                     <Button
                         onClick={handleModalClose}
-                        // Use your primary brand color (Orange) for consistency
-                        style={{ backgroundColor: '#FF8C00', color: 'white', fontWeight: 'bold' }}
                         variant="contained"
+                        style={{ backgroundColor: '#FF8C00', color: 'white' }}
                         autoFocus
                     >
                         View Business Page
                     </Button>
                 </DialogActions>
             </Dialog>
+
             <Footer />
         </>
     );
