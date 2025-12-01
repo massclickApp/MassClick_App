@@ -33,8 +33,7 @@ const LeadsCardHistory = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // 👇 Comes from LeadsPage navigate(... { state: { leadsUsers } })
-  const leadsUsers = location.state?.leadsUsers || [];
+  const leadsUsers = Array.isArray(location.state?.leadsUsers) ? location.state.leadsUsers : [];
 
   const [openModal, setOpenModal] = useState(false);
   const [modalType, setModalType] = useState("");
@@ -45,9 +44,7 @@ const LeadsCardHistory = () => {
   const [sortBy, setSortBy] = useState("latest"); 
 
   const totalLeads = leadsUsers.length;
-  const phoneReadyCount = leadsUsers.filter(
-    (u) => u.mobileNumber1 || u.mobileNumber2
-  ).length;
+  const phoneReadyCount = leadsUsers.filter((u) => u.mobileNumber1 || u.mobileNumber2).length;
   const emailReadyCount = leadsUsers.filter((u) => u.email).length;
   const whatsappReadyCount = phoneReadyCount; 
 
@@ -59,11 +56,11 @@ const LeadsCardHistory = () => {
       data = data.filter((u) => {
         const name = (u.userName || "").toLowerCase();
         const email = (u.email || "").toLowerCase();
-        return name.includes(value) || email.includes(value);
+        const searched = (u.searchedUserText || "").toLowerCase();
+        return name.includes(value) || email.includes(value) || searched.includes(value);
       });
     }
 
-    // Sort
     data.sort((a, b) => {
       const ta = a.time ? new Date(a.time).getTime() : 0;
       const tb = b.time ? new Date(b.time).getTime() : 0;
@@ -72,11 +69,7 @@ const LeadsCardHistory = () => {
       if (sortBy === "oldest") return ta - tb;
 
       if (sortBy === "name") {
-        const na = (a.userName || "").toLowerCase();
-        const nb = (b.userName || "").toLowerCase();
-        if (na < nb) return -1;
-        if (na > nb) return 1;
-        return 0;
+        return (a.userName || "").localeCompare(b.userName || "");
       }
 
       return 0;
@@ -96,18 +89,20 @@ const LeadsCardHistory = () => {
     setSelectedUser(null);
     setOpenModal(false);
   };
-  const toggleIcons = (index) => {
+
+  const toggleIcons = (id) => {
     setExpandedIcons((prev) => ({
       ...prev,
-      [index]: !prev[index],
+      [id]: !prev[id],
     }));
   };
 
   const renderModalContent = () => {
     if (!selectedUser) return null;
 
-    const phone = selectedUser.mobileNumber1 || selectedUser.mobileNumber2;
-    const email = selectedUser.email;
+    const rawPhone = selectedUser.mobileNumber1 || selectedUser.mobileNumber2 || "";
+    const phone = rawPhone.replace(/\s+/g, "");
+    const email = selectedUser.email || "";
 
     switch (modalType) {
       case "phone":
@@ -163,7 +158,7 @@ const LeadsCardHistory = () => {
               <Button
                 variant="contained"
                 color="success"
-                href={`https://wa.me/${phone}`}
+                href={`https://wa.me/${phone.replace(/\D/g, "")}`}
                 target="_blank"
                 sx={{ mt: 3 }}
               >
@@ -180,7 +175,6 @@ const LeadsCardHistory = () => {
 
   return (
     <>
-      {/* HEADER */}
       <div className="lh-topbar">
         <div className="lh-topbar-inner">
           <div className="lh-brand">
@@ -201,14 +195,12 @@ const LeadsCardHistory = () => {
         </div>
       </div>
 
-      {/* MAIN */}
       <main className="lh-container">
         <div className="lh-search-shell">
           <CardsSearch />
         </div>
 
         <section className="lh-content-card">
-          {/* Header row */}
           <header className="lh-header">
             <div>
               <h2>Leads (Users who searched your category)</h2>
@@ -225,7 +217,6 @@ const LeadsCardHistory = () => {
             </div>
           </header>
 
-          {/* Summary metrics strip */}
           <div className="lh-summary-row">
             <div className="lh-summary-card primary">
               <div className="lh-summary-label">Total Leads</div>
@@ -252,7 +243,6 @@ const LeadsCardHistory = () => {
             </div>
           </div>
 
-          {/* Controls: search + sort */}
           <div className="lh-controls-row">
             <div className="lh-controls-left">
               <input
@@ -260,6 +250,7 @@ const LeadsCardHistory = () => {
                 placeholder="Search lead by name or email..."
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
+                aria-label="Search leads"
               />
             </div>
             <div className="lh-controls-right">
@@ -278,7 +269,6 @@ const LeadsCardHistory = () => {
             </div>
           </div>
 
-          {/* Content */}
           {filteredLeads.length === 0 ? (
             <div className="lh-empty">
               <p>No leads match your current filters.</p>
@@ -286,22 +276,23 @@ const LeadsCardHistory = () => {
           ) : (
             <div className="lh-grid">
               {filteredLeads.map((user, index) => {
+                const id = user.mobileNumber1 || user.email || user.userName || index;
                 const hasPhone = !!(user.mobileNumber1 || user.mobileNumber2);
                 const hasEmail = !!user.email;
-                const hasWhatsApp = hasPhone; // simple assumption
-
-                const displayPhone =
-                  user.mobileNumber1 || user.mobileNumber2 || "No phone";
+                const hasWhatsApp = hasPhone; 
+                const displayPhone = user.mobileNumber1 || user.mobileNumber2 || "No phone";
+                const formattedTime = (() => {
+                  if (!user?.time) return null;
+                  const d = new Date(user.time);
+                  return Number.isNaN(d.getTime()) ? null : d.toLocaleString();
+                })();
 
                 return (
-                  <article className="lh-card" key={index}>
+                  <article className="lh-card" key={id}>
                     <div className="lh-card-head">
                       <div className="lh-card-left">
-                        <div className="lh-avatar-pill">
-                          {(user.userName || "U")
-                            .trim()
-                            .charAt(0)
-                            .toUpperCase()}
+                        <div className="lh-avatar-pill" aria-hidden>
+                          {(user.userName || "U").trim().charAt(0).toUpperCase()}
                         </div>
 
                         <div className="lh-card-texts">
@@ -309,36 +300,35 @@ const LeadsCardHistory = () => {
                             {user.userName || "Unknown User"}
                           </div>
                           <div className="lh-card-meta">
-                            {user.time && (
-                              <span className="lh-date">
-                                {new Date(user.time).toLocaleString()}
+                            {formattedTime && (
+                              <span className="lh-date" title={user.time}>
+                                {formattedTime}
                               </span>
                             )}
                             <span className="lh-dot">•</span>
                             <span>{user.email || "No email"}</span>
-                            <span className="lh-location">
-                              — {displayPhone}
-                            </span>
+                            <span className="lh-location"> — {displayPhone}</span>
                           </div>
                         </div>
                       </div>
 
                       <div className="lh-card-icons">
-
-                        {!expandedIcons[index] && (
+                        {!expandedIcons[id] && (
                           <IconButton
                             className="icon-btn menu"
-                            onClick={() => toggleIcons(index)}
+                            onClick={() => toggleIcons(id)}
+                            aria-label="Open actions"
                           >
                             <ListIcon />
                           </IconButton>
                         )}
 
-                        {expandedIcons[index] && (
+                        {expandedIcons[id] && (
                           <>
                             <IconButton
                               className="icon-btn menu"
-                              onClick={() => toggleIcons(index)}
+                              onClick={() => toggleIcons(id)}
+                              aria-label="Close actions"
                             >
                               <ListIcon />
                             </IconButton>
@@ -346,6 +336,7 @@ const LeadsCardHistory = () => {
                             <IconButton
                               className="icon-btn call"
                               onClick={() => handleOpenModal("phone", user)}
+                              aria-label="Call user"
                             >
                               <PhoneIcon />
                             </IconButton>
@@ -353,6 +344,7 @@ const LeadsCardHistory = () => {
                             <IconButton
                               className="icon-btn whatsapp"
                               onClick={() => handleOpenModal("whatsapp", user)}
+                              aria-label="WhatsApp user"
                             >
                               <WhatsAppIcon />
                             </IconButton>
@@ -360,6 +352,7 @@ const LeadsCardHistory = () => {
                             <IconButton
                               className="icon-btn mail"
                               onClick={() => handleOpenModal("email", user)}
+                              aria-label="Email user"
                             >
                               <EmailIcon />
                             </IconButton>
@@ -369,12 +362,13 @@ const LeadsCardHistory = () => {
                               onClick={() =>
                                 navigator.share
                                   ? navigator.share({
-                                    title: user.userName || "Lead",
-                                    text: `${user.userName || ""} - ${user.email || ""}`,
-                                    url: window.location.href,
-                                  })
+                                      title: user.userName || "Lead",
+                                      text: `${user.userName || ""} - ${user.email || ""}`,
+                                      url: window.location.href,
+                                    })
                                   : alert("Sharing not supported")
                               }
+                              aria-label="Share lead"
                             >
                               <ShareIcon />
                             </IconButton>
@@ -387,41 +381,22 @@ const LeadsCardHistory = () => {
 
                     <div className="lh-card-body">
                       <p className="lh-match">
-                        This user recently searched for businesses in your
-                        category. Reach out to convert this interest into a
-                        customer.
+                        {user.searchedUserText
+                          ? `This user searched for: "${user.searchedUserText}"`
+                          : "This user recently searched for businesses in your category. Reach out to convert this interest into a customer."}
                       </p>
 
                       <div className="lh-pill-row">
-                        <span
-                          className={`lh-pill ${hasPhone ? "ok" : "muted"}`}
-                        >
-                          Phone
-                        </span>
-                        <span
-                          className={`lh-pill ${hasWhatsApp ? "ok" : "muted"
-                            }`}
-                        >
-                          WhatsApp
-                        </span>
-                        <span
-                          className={`lh-pill ${hasEmail ? "ok" : "muted"}`}
-                        >
-                          Email
-                        </span>
+                        <span className={`lh-pill ${hasPhone ? "ok" : "muted"}`}>Phone</span>
+                        <span className={`lh-pill ${hasWhatsApp ? "ok" : "muted"}`}>WhatsApp</span>
+                        <span className={`lh-pill ${hasEmail ? "ok" : "muted"}`}>Email</span>
                       </div>
                     </div>
 
                     <div className="lh-card-actions">
-                      <Button startIcon={<NoteIcon />} variant="outlined">
-                        Add Note
-                      </Button>
-                      <Button startIcon={<ReminderIcon />} variant="outlined">
-                        Reminder
-                      </Button>
-                      <Button variant="contained" startIcon={<StarIcon />}>
-                        Ask Rating
-                      </Button>
+                      <Button startIcon={<NoteIcon />} variant="outlined">Add Note</Button>
+                      <Button startIcon={<ReminderIcon />} variant="outlined">Reminder</Button>
+                      <Button variant="contained" startIcon={<StarIcon />}>Ask Rating</Button>
                     </div>
                   </article>
                 );

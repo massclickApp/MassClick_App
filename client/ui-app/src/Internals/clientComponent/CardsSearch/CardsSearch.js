@@ -177,9 +177,17 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
     let authUser = JSON.parse(localStorage.getItem("authUser") || "{}");
     let userId = authUser?._id;
 
+   const userDetails = {
+      userName: authUser?.userName,
+      mobileNumber1: authUser?.mobileNumber1,
+      mobileNumber2: authUser?.mobileNumber2,
+      email: authUser?.email,
+    };
+
     if (userId && finalSearchTerm) {
       dispatch(logUserSearch(userId, finalSearchTerm, logLocation, logCategory));
     }
+    dispatch(logSearchActivity(logCategory, logLocation, userDetails, finalSearchTerm));
 
     if (setSearchResults) setSearchResults(filteredBusinesses);
 
@@ -192,7 +200,6 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
   const handleCloseModal = () => setIsModalOpen(false);
 
   const loggedIn = categoryBarHelpers.checkLogin();
-
 
   return (
     <>

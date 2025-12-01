@@ -22,7 +22,19 @@ const reviewSchema = new mongoose.Schema({
     ref: 'User',
     default: null,
   },
-  username: {
+  userName: {
+    type: String,
+    trim: true
+  },
+  userProfileImage: {
+    type: String,
+    trim: true
+  },
+  businessName: {
+    type: String,
+    trim: true
+  },
+  businessLocation: {
     type: String,
     trim: true
   },

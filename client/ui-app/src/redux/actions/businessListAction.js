@@ -184,14 +184,14 @@ export const getTrendingSearches = (location) => async (dispatch) => {
 };
 
 
-export const logSearchActivity = (categoryName, location, userDetails) => 
+export const logSearchActivity = (categoryName, location, userDetails, searchedUserText = "") =>
   async (dispatch) => {
     try {
       const token = await dispatch(getClientToken());
 
       await axios.post(
         `${API_URL}/businesslist/log-search`,
-        { categoryName, location, userDetails }, 
+        { categoryName, location, searchedUserText, userDetails },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

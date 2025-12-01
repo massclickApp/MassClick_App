@@ -1,5 +1,5 @@
-
-import React, { useState, useEffect } from "react";
+// src/components/.../MultiStepProfileForm.jsx
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "./EditProfile.css";
 import Footer from "../../footer/footer";
@@ -7,10 +7,8 @@ import CardsSearch from "../../CardsSearch/CardsSearch";
 import { viewOtpUser, updateOtpUser } from "../../../../redux/actions/otpAction";
 import { getAllCategory } from "../../../../redux/actions/categoryAction";
 import { Alert, AlertTitle } from "@mui/material";
+import { getAllClientBusinessList } from "../../../../redux/actions/businessListAction";
 
-/* ------------------------------------------------------------------------------------
-   STEP 1: PERSONAL DETAILS (UPDATED BUSINESS CATEGORY DROPDOWN HERE)
------------------------------------------------------------------------------------- */
 const PersonalDetails = ({
   formData,
   handleChange,
@@ -27,8 +25,8 @@ const PersonalDetails = ({
       <div className="form-field form-field-row">
         <label>Title</label>
         <select value={formData.title} onChange={(e) => handleChange(e, "title")}>
-          <option>Mr</option>
-          <option>Ms</option>
+          <option value="Mr">Mr</option>
+          <option value="Ms">Ms</option>
         </select>
       </div>
 
@@ -91,21 +89,18 @@ const PersonalDetails = ({
         />
       </div>
 
-      {/* ------------------------------------------------------------------------  
-          UPDATED: BUSINESS CATEGORY DROPDOWN
-      ------------------------------------------------------------------------ */}
       <div className="form-field">
         <label>Business Category</label>
 
         <select
-          value={formData.businessCategory ? JSON.stringify(formData.businessCategory) : ""}
+          value={formData.businessCategory?._id || ""}
           onChange={handleCategorySelect}
         >
           <option value="">Select Business Category</option>
 
           {category &&
             category.map((cat) => (
-              <option key={cat._id} value={JSON.stringify(cat)}>
+              <option key={cat._id} value={cat._id}>
                 {cat.category}
               </option>
             ))}
@@ -140,7 +135,7 @@ const PersonalDetails = ({
             accept="image/*"
             id="profileImage"
             style={{ display: "none" }}
-            onChange={(e) => handleImageUpload(e)}
+            onChange={handleImageUpload}
           />
           <button
             type="button"
@@ -155,9 +150,6 @@ const PersonalDetails = ({
   </div>
 );
 
-/* ------------------------------------------------------------------------------------
-   ADDRESS DETAILS (NO CHANGE)
------------------------------------------------------------------------------------- */
 const AddressDetails = ({ formData, handleChange }) => (
   <div className="form-step-content">
     <h3>Address Details</h3>
@@ -252,9 +244,6 @@ const AddressDetails = ({ formData, handleChange }) => (
   </div>
 );
 
-/* ------------------------------------------------------------------------------------
-   FAMILY & FRIENDS (NO CHANGE)
------------------------------------------------------------------------------------- */
 const FamilyAndFriends = ({ formData, handleArrayChange }) => (
   <div className="form-step-content">
     <h3>Family and Friends</h3>
@@ -310,9 +299,6 @@ const FamilyAndFriends = ({ formData, handleArrayChange }) => (
   </div>
 );
 
-/* ------------------------------------------------------------------------------------
-   FAVORITES (NO CHANGE)
------------------------------------------------------------------------------------- */
 const Favorites = ({ formData, handleChange }) => (
   <div className="form-step-content">
     <h3>Your Favorites</h3>
@@ -368,9 +354,6 @@ const Favorites = ({ formData, handleChange }) => (
   </div>
 );
 
-/* ------------------------------------------------------------------------------------
-   COMPLETED SCREEN
------------------------------------------------------------------------------------- */
 const Completed = () => (
   <div className="form-step-content">
     <h3>Profile Completed!</h3>
@@ -378,18 +361,14 @@ const Completed = () => (
   </div>
 );
 
-/* ------------------------------------------------------------------------------------
-   MAIN COMPONENT (UPDATED FOR CATEGORY FETCH)
------------------------------------------------------------------------------------- */
 export default function MultiStepProfileForm() {
   const dispatch = useDispatch();
 
   const otpState = useSelector((state) => state.otpReducer || {});
   const { viewResponse } = otpState;
 
-  const { category = [], loading, error } = useSelector(
-    (state) => state.categoryReducer || {}
-  );
+  const { category = [], loading, error } = useSelector((state) => state.categoryReducer || {});
+  const { clientBusinessList = [] } = useSelector((state) => state.businessListReducer || {});
 
   const storedMobile = localStorage.getItem("mobileNumber") || "";
 
@@ -433,26 +412,60 @@ export default function MultiStepProfileForm() {
     favorites: { colors: [], food: [], hobbies: [] },
   });
 
+  const autoSavedRef = useRef(false); 
+
   const CurrentComponent = steps.find((s) => s.id === currentStep)?.component;
 
-  /* ---- FETCH CATEGORIES ---- */
   useEffect(() => {
     dispatch(getAllCategory());
+    dispatch(getAllClientBusinessList());
   }, [dispatch]);
 
   const handleCategorySelect = (e) => {
-    const selectedCat = JSON.parse(e.target.value);
+    const selectedId = e.target.value;
+    if (!selectedId) {
+      setFormData((prev) => ({ ...prev, businessCategory: "" }));
+      return;
+    }
+    const selectedCat = category.find((cat) => cat._id === selectedId);
+    setFormData((prev) => ({ ...prev, businessCategory: selectedCat || "" }));
+  };
+
+  useEffect(() => {
+    if (!storedMobile || autoSavedRef.current) return;
+    if (!clientBusinessList || clientBusinessList.length === 0) return;
+    if (!category || category.length === 0) return;
+
+    if (formData.businessCategory && typeof formData.businessCategory === "object" && formData.businessCategory.category) {
+      return;
+    }
+
+    const matchedBusiness = clientBusinessList.find((biz) => biz.contactList === storedMobile);
+    if (!matchedBusiness) return;
+
+    const matchedCategory = category.find((cat) => cat.category === matchedBusiness.category);
+    if (!matchedCategory) return;
 
     setFormData((prev) => ({
       ...prev,
-      businessCategory: selectedCat,
+      businessCategory: matchedCategory,
+      businessName: prev.businessName || matchedBusiness.businessName || "",
+      businessLocation: prev.businessLocation || matchedBusiness.location || "",
     }));
-  };
 
-
-
-
-  /* ---- FETCH USER ---- */
+    (async () => {
+      try {
+        const payload = { businessCategory: matchedCategory };
+        const res = await dispatch(updateOtpUser(storedMobile, payload));
+        autoSavedRef.current = true;
+        if (res && res.success) {
+        }
+      } catch (err) {
+        console.error("Auto-save category failed", err);
+        autoSavedRef.current = true;
+      }
+    })();
+  }, [storedMobile, clientBusinessList, category, formData.businessCategory, dispatch]);
   useEffect(() => {
     if (!storedMobile) return;
 
@@ -462,83 +475,70 @@ export default function MultiStepProfileForm() {
       .then((res) => {
         const user = res?.user;
         if (user) {
-          setFormData((prev) => ({
-            ...prev,
-            ...user,
-            permanentAddress: { ...prev.permanentAddress, ...user.permanentAddress },
-            officeAddress: { ...prev.officeAddress, ...user.officeAddress },
-            favorites: { ...prev.favorites, ...user.favorites },
-          }));
+          setFormData((prev) => {
+            const merged = {
+              ...prev,
+              ...user,
+              permanentAddress: { ...prev.permanentAddress, ...user.permanentAddress },
+              officeAddress: { ...prev.officeAddress, ...user.officeAddress },
+              favorites: { ...prev.favorites, ...user.favorites },
+            };
+            if (user.businessCategory && ((typeof user.businessCategory === "object" && user.businessCategory.category) || (typeof user.businessCategory === "string" && user.businessCategory.trim() !== ""))) {
+              merged.businessCategory = user.businessCategory;
+            }
+            return merged;
+          });
         }
       })
       .finally(() => setLoadingUser(false));
   }, [storedMobile, dispatch]);
 
-  /* ---- IMAGE UPLOAD ---- */
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onloadend = () => {
-      setFormData((prev) => ({
-        ...prev,
-        profileImage: reader.result,
-      }));
+      setFormData((prev) => ({ ...prev, profileImage: reader.result }));
     };
     reader.readAsDataURL(file);
   };
 
-  /* ---- INPUT CHANGE ---- */
   const handleChange = (e, field, nested = null) => {
     const val = e.target.value;
-
     if (nested) {
-      setFormData((prev) => ({
-        ...prev,
-        [nested]: {
-          ...prev[nested],
-          [field]: val,
-        },
-      }));
+      setFormData((prev) => ({ ...prev, [nested]: { ...prev[nested], [field]: val } }));
     } else {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: val,
-      }));
+      setFormData((prev) => ({ ...prev, [field]: val }));
     }
   };
 
-  /* ---- ARRAY CHANGE (Family/Friends) ---- */
   const handleArrayChange = (e, index, field) => {
     setFormData((prev) => {
-      const updated = [...prev.familyAndFriends];
-
+      const updated = Array.isArray(prev.familyAndFriends) ? [...prev.familyAndFriends] : [];
       if (field === "add") {
         updated.push({ name: "", relation: "", contactNumber: "", email: "" });
       } else {
         updated[index] = { ...updated[index], [field]: e.target.value };
       }
-
       return { ...prev, familyAndFriends: updated };
     });
   };
 
-  /* ---- STEP HANDLERS ---- */
   const handleNext = () => setCurrentStep((p) => Math.min(p + 1, steps.length));
   const handleBack = () => setCurrentStep((p) => Math.max(p - 1, 1));
 
-  /* ---- SUBMIT ---- */
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (currentStep < steps.length) {
       handleNext();
-    } else {
-      const bc = formData.businessCategory;
+      return;
+    }
+    const bc = formData.businessCategory;
 
-      const filteredCategory = bc
-        ? {
+    const filteredCategory = bc && typeof bc === "object"
+      ? {
+          _id: bc._id,
           category: bc.category,
           title: bc.title,
           keywords: bc.keywords,
@@ -547,43 +547,21 @@ export default function MultiStepProfileForm() {
           seoTitle: bc.seoTitle,
           seoDescription: bc.seoDescription,
         }
-        : "";
+      : "";
 
-      const payload = {
-        ...formData,
-        businessCategory: filteredCategory,
-      };
+    const payload = { ...formData, businessCategory: filteredCategory };
 
-      dispatch(updateOtpUser(formData.mobileNumber1, payload)).then((res) => {
-        if (res.success) {
-          setSuccessMessage("Profile updated successfully!");
-          setTimeout(() => setSuccessMessage(""), 3000);
-          setCurrentStep(1);
-        } else {
-          setSuccessMessage("Failed to update profile");
-        }
-      });
-    }
+    dispatch(updateOtpUser(formData.mobileNumber1, payload)).then((res) => {
+      if (res && res.success) {
+        setSuccessMessage("Profile updated successfully!");
+        setTimeout(() => setSuccessMessage(""), 3000);
+        setCurrentStep(1);
+      } else {
+        setSuccessMessage("Failed to update profile");
+      }
+    });
   };
-useEffect(() => {
-  if (category.length === 0 || !formData.businessCategory) return;
-
-  const match = category.find(
-    (cat) => cat.category === formData.businessCategory.category
-  );
-
-  if (match) {
-    setFormData((prev) => ({
-      ...prev,
-      businessCategory: match,
-    }));
-  }
-}, [category, loadingUser]);
-
-
-  const progressPercent = Math.round(
-    ((currentStep - 1) / (steps.length - 1)) * 100
-  );
+  const progressPercent = Math.round(((currentStep - 1) / (steps.length - 1)) * 100);
 
   return (
     <>
@@ -600,10 +578,7 @@ useEffect(() => {
               <h4>FILL PROFILE IN FEW STEPS</h4>
 
               <div className="progress-bar-container">
-                <div
-                  className="progress-bar-fill"
-                  style={{ width: `${progressPercent}%` }}
-                ></div>
+                <div className="progress-bar-fill" style={{ width: `${progressPercent}%` }}></div>
               </div>
 
               <span>Overall Progress: {progressPercent}%</span>
@@ -613,8 +588,7 @@ useEffect(() => {
               {steps.map((step) => (
                 <li
                   key={step.id}
-                  className={`step-item ${step.id === currentStep ? "active" : ""
-                    } ${step.id < currentStep ? "completed" : ""}`}
+                  className={`step-item ${step.id === currentStep ? "active" : ""} ${step.id < currentStep ? "completed" : ""}`}
                   onClick={() => setCurrentStep(step.id)}
                 >
                   {step.id < currentStep ? "✔" : step.id}
@@ -647,19 +621,13 @@ useEffect(() => {
 
               <div className="form-actions-footer">
                 {currentStep > 1 && (
-                  <button
-                    type="button"
-                    className="btn-secondary"
-                    onClick={handleBack}
-                  >
+                  <button type="button" className="btn-secondary" onClick={handleBack}>
                     Back
                   </button>
                 )}
 
                 <button type="submit" className="btn-primary">
-                  {currentStep < steps.length
-                    ? "Save & Continue"
-                    : "Update Profile"}
+                  {currentStep < steps.length ? "Save & Continue" : "Update Profile"}
                 </button>
               </div>
             </form>

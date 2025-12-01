@@ -23,7 +23,7 @@ export const uploadImageToS3 = async (fileData, uploadPath) => {
   if (typeof fileData === "string" && fileData.startsWith("data:")) {
     const matches = fileData.match(/^data:([\w/+.-]+);base64,(.+)$/);
     if (!matches) throw new Error("Invalid base64 string");
-
+    
     mimeType = matches[1]; 
     fileBuffer = Buffer.from(matches[2], "base64");
     extension = mimeType.split("/")[1] || "bin";
@@ -36,20 +36,16 @@ export const uploadImageToS3 = async (fileData, uploadPath) => {
   else {
     throw new Error("Invalid file format. Must be Base64 or Buffer.");
   }
-
   const s3Key = `${uploadPath}.${extension}`;
-
   const params = {
     Bucket: assetsBucket,
     Key: s3Key,
     Body: fileBuffer,
     ContentType: mimeType,
   };
-
   await s3.upload(params).promise();
   return { key: s3Key };
 };
-
 
 export const getSignedUrlByKey = (key, bucketName, expiryTime = 3600) => {
   if (!key) return "";

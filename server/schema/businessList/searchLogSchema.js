@@ -5,6 +5,10 @@ const searchLogSchema = new mongoose.Schema({
         type: String,
         index: true
     },
+     searchedUserText: {
+        type: String,
+        index: true
+    },
     location: {
         type: String,
         index: true

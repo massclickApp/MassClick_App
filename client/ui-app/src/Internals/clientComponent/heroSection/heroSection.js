@@ -55,9 +55,7 @@ const CategoryDropdown = ({ label, options, onSelect }) => {
   );
 };
 
-/* =========================================================
-   MAIN HERO SECTION
-========================================================= */
+
 
 const HeroSection = ({
   searchTerm,
@@ -65,7 +63,7 @@ const HeroSection = ({
   locationName,
   setLocationName,
   categoryName,
-  setCategoryName, // currently not used but kept for future needs
+  setCategoryName,
   setSearchResults,
 }) => {
   const dispatch = useDispatch();
@@ -80,18 +78,14 @@ const HeroSection = ({
   );
   const { searchLogs = [], clientBusinessList = [] } = businessListState;
 
-  /* ---------------------------------------------------------
-     1. INITIAL DATA LOAD
-  ---------------------------------------------------------- */
+
   useEffect(() => {
     dispatch(getAllClientBusinessList());
     dispatch(getAllCategory());
     dispatch(getAllSearchLogs());
   }, [dispatch]);
 
-  /* ---------------------------------------------------------
-     2. CLICK OUTSIDE TO CLOSE DROPDOWN
-  ---------------------------------------------------------- */
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (categoryRef.current && !categoryRef.current.contains(event.target)) {
@@ -216,7 +210,7 @@ const HeroSection = ({
       dispatch(logUserSearch(userId, finalSearchTerm, logLocation, logCategory));
     }
 
-    dispatch(logSearchActivity(logCategory, logLocation, userDetails));
+    dispatch(logSearchActivity(logCategory, logLocation, userDetails, finalSearchTerm));
 
     if (setSearchResults) {
       setSearchResults(filteredBusinesses);
@@ -227,10 +221,6 @@ const HeroSection = ({
 
     navigate(`/${locSlug}/${termSlug}`, { state: { results: filteredBusinesses } });
   };
-
-  /* ---------------------------------------------------------
-     6. RENDER
-  ---------------------------------------------------------- */
 
   return (
     <div
@@ -252,9 +242,7 @@ const HeroSection = ({
           MassClick.
         </p>
 
-        {/* ================= SEARCH BAR ================= */}
         <form className="search-bar-container" onSubmit={handleSearch}>
-          {/* Location Input */}
           <div className="input-group location-group">
             <LocationOnIcon className="input-adornment start" />
             <input
@@ -265,7 +253,6 @@ const HeroSection = ({
             />
           </div>
 
-          {/* Search Term Input + Dropdowns */}
           <div className="input-group search-group" ref={categoryRef}>
             <input
               className="custom-input"
@@ -278,7 +265,6 @@ const HeroSection = ({
               onFocus={() => setIsDropdownOpen(true)}
             />
 
-            {/* RECENT SEARCHES (when very short input) */}
             {isDropdownOpen && searchTerm.trim().length < 2 && (
               <CategoryDropdown
                 label="RECENT SEARCHES"
@@ -290,7 +276,6 @@ const HeroSection = ({
               />
             )}
 
-            {/* SUGGESTIONS (when user types more) */}
             {isDropdownOpen && searchTerm.trim().length >= 2 && (
               <CategoryDropdown
                 label="SUGGESTIONS"
@@ -312,7 +297,6 @@ const HeroSection = ({
             <MicIcon className="input-adornment end" />
           </div>
 
-          {/* Submit Button */}
           <button type="submit" className="search-button">
             <SearchIcon className="search-icon" />
           </button>

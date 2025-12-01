@@ -7,14 +7,13 @@ import { useNavigate } from "react-router-dom";
 import CardsSearch from "../CardsSearch/CardsSearch";
 import "./leadsPage.css";
 
-const logoUrl = "/mnt/data/30429df4-c55e-4274-a7ab-b2327308fb94.png";
-
 function StatCard({ label, value, onClick, accent, children }) {
   return (
     <button
       className={`lp-stat-card ${accent ? "lp-stat-accent" : ""}`}
       onClick={onClick}
       type="button"
+      aria-pressed={accent ? "true" : "false"}
     >
       <div className="lp-stat-left">
         <div className="lp-stat-value">{value}</div>
@@ -28,9 +27,16 @@ function StatCard({ label, value, onClick, accent, children }) {
 }
 
 function LeadRow({ user }) {
+  const formattedTime = (() => {
+    if (!user?.time) return null;
+    const d = new Date(user.time);
+    if (Number.isNaN(d.getTime())) return null;
+    return d.toLocaleString();
+  })();
+
   return (
-    <article className="lp-lead-row">
-      <div className="lp-avatar">
+    <article className="lp-lead-row" aria-label={`Lead ${user.userName || "Unknown"}`}>
+      <div className="lp-avatar" aria-hidden>
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
           <circle cx="12" cy="8" r="3.2" stroke="#2F3A8F" strokeWidth="1.2" />
           <path
@@ -46,9 +52,9 @@ function LeadRow({ user }) {
       <div className="lp-lead-body">
         <div className="lp-lead-head">
           <h4 className="lp-lead-title">{user.userName || "Unknown User"}</h4>
-          {user.time && (
-            <time className="lp-lead-time">
-              {new Date(user.time).toLocaleString()}
+          {formattedTime && (
+            <time className="lp-lead-time" dateTime={new Date(user.time).toISOString()}>
+              {formattedTime}
             </time>
           )}
         </div>
@@ -56,10 +62,10 @@ function LeadRow({ user }) {
         <p className="lp-lead-desc">
           <span className="lp-lead-label">Contact</span>
           <br />
-          📞 {user.mobileNumber1}
+          📞 {user.mobileNumber1 || "No phone"}
           {user.mobileNumber2 ? `, ${user.mobileNumber2}` : ""}
           <br />
-          ✉️ {user.email}
+          ✉️ {user.email || "No email"}
         </p>
       </div>
     </article>
@@ -70,16 +76,18 @@ export default function LeadsPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { searchLogs } = useSelector((state) => state.businessListReducer);
-  const otpState = useSelector((state) => state.otp || {});
+  // selectors
+  const { searchLogs = [] } = useSelector((state) => state.businessListReducer || {});
+  const otpState = useSelector((state) => state.otp || state.otpReducer || {});
   const allUsers = Array.isArray(otpState.viewAllResponse)
     ? otpState.viewAllResponse
+    : Array.isArray(otpState.users)
+    ? otpState.users
     : [];
 
   const mobileNumber = localStorage.getItem("mobileNumber");
 
-  const authUser =
-    allUsers.find((u) => u.mobileNumber1 === mobileNumber) || {};
+  const authUser = allUsers.find((u) => u.mobileNumber1 === mobileNumber) || {};
 
   const {
     businessName,
@@ -90,6 +98,12 @@ export default function LeadsPage() {
     userName,
   } = authUser;
 
+  const hasBusinessCategory =
+    businessCategory &&
+    typeof businessCategory === "object" &&
+    typeof businessCategory.category === "string" &&
+    businessCategory.category.trim() !== "";
+
   const [range, setRange] = useState("all");
   const [repeatOnly, setRepeatOnly] = useState(false);
 
@@ -99,55 +113,79 @@ export default function LeadsPage() {
   }, [dispatch]);
 
   const matchedUsers = useMemo(() => {
-    if (!searchLogs || !businessCategory) return [];
+    try {
+      if (!Array.isArray(searchLogs)) return [];
+      if (!hasBusinessCategory) return [];
 
-    const categoryName = businessCategory?.category?.toLowerCase() || "";
-    const titleName = businessCategory?.title?.toLowerCase() || "";
-    const seoTitleName = businessCategory?.seoTitle?.toLowerCase() || "";
-    const keywords = (businessCategory?.keywords || []).map(k =>
-      k.toLowerCase()
-    );
-
-    const filteredLogs = searchLogs.filter((log) => {
-      const logCat = log.categoryName?.toLowerCase() || "";
-
-      return (
-        logCat.includes(categoryName) ||
-        logCat.includes(titleName) ||
-        logCat.includes(seoTitleName) ||
-        keywords.some((kw) => logCat.includes(kw))
+      const categoryName = (businessCategory?.category || "").toLowerCase();
+      const titleName = (businessCategory?.title || "").toLowerCase();
+      const seoTitleName = (businessCategory?.seoTitle || "").toLowerCase();
+      const keywords = (Array.isArray(businessCategory?.keywords) ? businessCategory.keywords : []).map((k) =>
+        (k || "").toLowerCase()
       );
-    });
 
-    const users = [];
+      const filteredLogs = searchLogs.filter((log) => {
+        const logCatRaw = log.categoryName || log.category || "";
+        const logCat = String(logCatRaw).toLowerCase();
+        if (!logCat) return false;
 
-    filteredLogs.forEach((log) => {
-      if (Array.isArray(log.userDetails)) {
-        log.userDetails.forEach((u) => {
-          users.push({
-            ...u,
-            time: log.createdAt,
+        if (logCat.includes(categoryName)) return true;
+        if (titleName && logCat.includes(titleName)) return true;
+        if (seoTitleName && logCat.includes(seoTitleName)) return true;
+        if (keywords.some((kw) => kw && logCat.includes(kw))) return true;
+
+        return false;
+      });
+
+      // collect userDetails from logs and attach searchedUserText + createdAt/time
+      const users = [];
+      filteredLogs.forEach((log) => {
+        const createdAt = log.createdAt || log.created_at || log.date || null;
+
+        if (Array.isArray(log.userDetails)) {
+          log.userDetails.forEach((u) => {
+            users.push({
+              // user details (may include userName, mobileNumber1, email)
+              ...u,
+              // attach time from the log
+              time: createdAt,
+              // attach the searched text if present on the log
+              searchedUserText: typeof log.searchedUserText === "string" ? log.searchedUserText : (log.searchedUserText ? String(log.searchedUserText) : ""),
+            });
           });
-        });
-      }
-    });
+        } else if (log.userDetails && typeof log.userDetails === "object") {
+          // safety: single object userDetails
+          users.push({
+            ...log.userDetails,
+            time: createdAt,
+            searchedUserText: typeof log.searchedUserText === "string" ? log.searchedUserText : (log.searchedUserText ? String(log.searchedUserText) : ""),
+          });
+        }
+      });
 
-    return users;
-  }, [searchLogs, businessCategory]);
+      // dedupe users by phone or email (one card per unique user)
+      const unique = {};
+      const uniqueUsers = users.filter((u) => {
+        const key = (u.mobileNumber1 || u.email || u.userName || "").toString().trim();
+        if (!key) return false; // drop anonymous/no-key leads
+        if (unique[key]) return false;
+        unique[key] = true;
+        return true;
+      });
 
+      return uniqueUsers;
+    } catch (err) {
+      console.error("matchedUsers error:", err);
+      return [];
+    }
+  }, [searchLogs, businessCategory, hasBusinessCategory]);
 
-  const {
-    filteredUsers,
-    todayCount,
-    last7Count,
-    last30Count,
-    repeatCount,
-  } = useMemo(() => {
+  const { filteredUsers, todayCount, last7Count, last30Count, repeatCount } = useMemo(() => {
     const msDay = 24 * 60 * 60 * 1000;
     const now = new Date();
     const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const sevenAgo = new Date(startToday.getTime() - 6 * msDay);
-    const thirtyAgo = new Date(startToday.getTime() - 29 * msDay);
+    const sevenAgo = new Date(startToday.getTime() - 6 * msDay); // last 7 days (inclusive)
+    const thirtyAgo = new Date(startToday.getTime() - 29 * msDay); // last 30 days (inclusive)
 
     const repeatMap = {};
     let todayCount = 0;
@@ -155,10 +193,8 @@ export default function LeadsPage() {
     let last30Count = 0;
 
     matchedUsers.forEach((u) => {
-      const key = u.mobileNumber1 || u.email;
-      if (key) {
-        repeatMap[key] = (repeatMap[key] || 0) + 1;
-      }
+      const key = u.mobileNumber1 || u.email || u.userName;
+      if (key) repeatMap[key] = (repeatMap[key] || 0) + 1;
 
       if (u.time) {
         const d = new Date(u.time);
@@ -170,9 +206,7 @@ export default function LeadsPage() {
       }
     });
 
-    const repeatVisitorSet = new Set(
-      Object.keys(repeatMap).filter((k) => repeatMap[k] > 1)
-    );
+    const repeatVisitorSet = new Set(Object.keys(repeatMap).filter((k) => repeatMap[k] > 1));
     const repeatCount = repeatVisitorSet.size;
 
     const filteredUsers = matchedUsers.filter((u) => {
@@ -181,20 +215,16 @@ export default function LeadsPage() {
       if (range !== "all" && u.time) {
         const d = new Date(u.time);
         if (!Number.isNaN(d.getTime())) {
-          if (range === "today") {
-            ok = d >= startToday;
-          } else if (range === "7") {
-            ok = d >= sevenAgo;
-          } else if (range === "30") {
-            ok = d >= thirtyAgo;
-          }
+          if (range === "today") ok = d >= startToday;
+          else if (range === "7") ok = d >= sevenAgo;
+          else if (range === "30") ok = d >= thirtyAgo;
         }
       }
 
       if (!ok) return false;
 
       if (repeatOnly) {
-        const key = u.mobileNumber1 || u.email;
+        const key = u.mobileNumber1 || u.email || u.userName;
         if (!key || !repeatVisitorSet.has(key)) return false;
       }
 
@@ -206,43 +236,61 @@ export default function LeadsPage() {
 
   const leadsCount = matchedUsers.length;
 
+  if (!hasBusinessCategory) {
+    return (
+      <div className="lp-root">
+        <main className="lp-container">
+          <CardsSearch />
+          <br />
+          <br />
+          <br />
+          <br />
+          <section className="lp-card" style={{ padding: 40, textAlign: "center" }}>
+            <h2>You are not a Business Person</h2>
+            <p>Please create your Business Profile to view leads.</p>
+            <button
+              className="lp-btn lp-btn-primary"
+              onClick={() => navigate("/user/create-business")}
+            >
+              Create Business
+            </button>
+          </section>
+        </main>
+      </div>
+    );
+  }
+
   const handleTotalLeadsClick = () => {
     if (!matchedUsers.length) {
       alert("No leads found.");
       return;
     }
-
-    navigate("/user/search-history", {
-      state: {
-        leadsUsers: matchedUsers,
-      },
-    });
+    navigate("/user/search-history", { state: { leadsUsers: matchedUsers } });
   };
 
   const qualityLabel =
     leadsCount === 0
       ? "No data yet"
       : leadsCount > 20 || repeatCount > 5
-        ? "High quality"
-        : leadsCount > 5
-          ? "Moderate quality"
-          : "Low quality";
+      ? "High quality"
+      : leadsCount > 5
+      ? "Moderate quality"
+      : "Low quality";
 
   return (
     <div className="lp-root">
       <main className="lp-container">
-        <CardsSearch /><br /><br /><br /><br />
+        <CardsSearch />
+        <br />
+        <br />
+        <br />
         <section className="lp-card">
           <header className="lp-header">
             <div className="lp-business">
-              <h2 className="lp-business-name">
-                {businessName || "Your Business"}
-              </h2>
+              <h2 className="lp-business-name">{businessName || "Your Business"}</h2>
               <div className="lp-business-meta">
                 <span>{businessLocation || "Location not set"}</span>
-                <span className="lp-pill">
-                  {businessCategory?.category || "Category"}
-                </span>
+                <span className="lp-pill">{businessCategory?.category || "Category"}</span>
               </div>
               <p className="lp-business-subtitle">
                 Real-time leads from users who searched your business category.
@@ -251,12 +299,7 @@ export default function LeadsPage() {
           </header>
 
           <div className="lp-stats-grid">
-            <StatCard
-              label="Total Leads"
-              value={leadsCount}
-              accent
-              onClick={handleTotalLeadsClick}
-            >
+            <StatCard label="Total Leads" value={leadsCount} accent onClick={handleTotalLeadsClick}>
               🔥
             </StatCard>
 
@@ -278,47 +321,22 @@ export default function LeadsPage() {
               <div className="lp-filters">
                 <div className="lp-filters-left">
                   <span className="lp-filters-label">Filters:</span>
-                  <button
-                    type="button"
-                    className={`lp-filter-chip ${range === "all" ? "active" : ""
-                      }`}
-                    onClick={() => setRange("all")}
-                  >
+                  <button type="button" className={`lp-filter-chip ${range === "all" ? "active" : ""}`} onClick={() => setRange("all")}>
                     All time
                   </button>
-                  <button
-                    type="button"
-                    className={`lp-filter-chip ${range === "today" ? "active" : ""
-                      }`}
-                    onClick={() => setRange("today")}
-                  >
+                  <button type="button" className={`lp-filter-chip ${range === "today" ? "active" : ""}`} onClick={() => setRange("today")}>
                     Today
                   </button>
-                  <button
-                    type="button"
-                    className={`lp-filter-chip ${range === "7" ? "active" : ""
-                      }`}
-                    onClick={() => setRange("7")}
-                  >
+                  <button type="button" className={`lp-filter-chip ${range === "7" ? "active" : ""}`} onClick={() => setRange("7")}>
                     Last 7 days
                   </button>
-                  <button
-                    type="button"
-                    className={`lp-filter-chip ${range === "30" ? "active" : ""
-                      }`}
-                    onClick={() => setRange("30")}
-                  >
+                  <button type="button" className={`lp-filter-chip ${range === "30" ? "active" : ""}`} onClick={() => setRange("30")}>
                     Last 30 days
                   </button>
                 </div>
 
                 <div className="lp-filters-right">
-                  <button
-                    type="button"
-                    className={`lp-filter-chip lp-filter-toggle ${repeatOnly ? "active" : ""
-                      }`}
-                    onClick={() => setRepeatOnly((v) => !v)}
-                  >
+                  <button type="button" className={`lp-filter-chip lp-filter-toggle ${repeatOnly ? "active" : ""}`} onClick={() => setRepeatOnly((v) => !v)}>
                     Repeat visitors only
                   </button>
                 </div>
@@ -327,24 +345,22 @@ export default function LeadsPage() {
               {filteredUsers.length > 0 ? (
                 <>
                   <div className="lp-section-head">
-                    <h3 className="lp-section-title">
-                      Leads (Users who searched your category)
-                    </h3>
+                    <h3 className="lp-section-title">Leads (Users who searched your category)</h3>
                     <span className="lp-section-count">
                       {filteredUsers.length} shown • {leadsCount} total
                     </span>
                   </div>
                   <div className="lp-leads-list">
-                    {filteredUsers.map((u, index) => (
-                      <LeadRow key={index} user={u} />
-                    ))}
+                    {filteredUsers.map((u, index) => {
+                      const key = u.mobileNumber1 || u.email || u.userName || index;
+                      return <LeadRow key={key} user={u} />;
+                    })}
                   </div>
                 </>
               ) : (
                 <div className="lp-empty">
                   <p>
-                    No users found for the selected filters in{" "}
-                    <strong>{businessCategory?.category || "your category"}</strong>
+                    No users found for the selected filters in <strong>{businessCategory?.category || "your category"}</strong>
                   </p>
                 </div>
               )}

@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import StarIcon from '@mui/icons-material/Star';
 import { useDispatch, useSelector } from 'react-redux';
 // import { editBusinessList } from '../../../redux/actions/businessListAction';
-import { useNavigate } from 'react-router-dom'; // <-- Import useNavigate
+import { useNavigate } from 'react-router-dom'; 
 import OTPLoginModel from '../AddBusinessModel.js'
 
 const labels = {

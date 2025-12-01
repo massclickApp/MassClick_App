@@ -2,7 +2,7 @@ import { createSearchLog, getAllSearchLogs } from "../../helper/businessList/log
 
 export const logSearchAction = async (req, res) => {
     try {
-        const { categoryName, location, userDetails } = req.body;
+        const { categoryName, location,searchedUserText, userDetails } = req.body;
 
         const filteredUser = [{
             userName: userDetails?.userName || "",
@@ -14,6 +14,7 @@ export const logSearchAction = async (req, res) => {
         await createSearchLog({
             categoryName,
             location,
+            searchedUserText,
             userDetails: filteredUser
         });
 

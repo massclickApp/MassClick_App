@@ -1,23 +1,30 @@
 import mongoose from "mongoose";
 
+const businessCategoryDefault = {
+  _id: null,
+  category: "",
+  title: "",
+  keywords: [],
+  description: "",
+  slug: "",
+  seoTitle: "",
+  seoDescription: "",
+};
 const message91UsersSchema = new mongoose.Schema({
   title: { type: String, enum: ["Mr", "Ms"], default: "Ms" },
-  userName: { type: String, },
+  userName: { type: String },
   businessName: { type: String, default: "" },
-businessCategory: {
-  category: { type: String, default: "" },
-  title: { type: String, default: "" },
-  keywords: { type: [String], default: [] },
-  description: { type: String, default: "" },
-  slug: { type: String, default: "" },
-  seoTitle: { type: String, default: "" },
-  seoDescription: { type: String, default: "" }
-},
+
+  businessCategory: {
+    type: Object,
+    default: businessCategoryDefault,
+  },
+
   businessLocation: { type: String, default: "" },
   firstTimeUser: { type: Boolean, default: false },
   profileImageKey: { type: String, default: "" },
-  email: { type: String, },
-  emailVerified: { type: String, },
+  email: { type: String },
+  emailVerified: { type: String },
   mobileNumber1: { type: String, unique: true, required: true },
   currentOtp: { type: String, default: null },
   otpGeneratedAt: { type: Date, default: null },
@@ -26,9 +33,9 @@ businessCategory: {
   mobileNumber2: { type: String, default: "" },
   mobileNumber2Verified: { type: Boolean, default: false },
   permanentAddress: {
-    plotNo: { type: String, },
-    street: { type: String, },
-    pincode: { type: String, },
+    plotNo: { type: String },
+    street: { type: String },
+    pincode: { type: String },
     homeLandline: { type: String, default: "" },
     officeLandline: { type: String, default: "" },
   },
@@ -38,16 +45,14 @@ businessCategory: {
     pincode: { type: String, default: "" },
     officeLandline: { type: String, default: "" },
   },
-
   familyAndFriends: [
     {
-      name: { type: String, },
+      name: { type: String },
       relation: { type: String, default: "" },
       contactNumber: { type: String, default: "" },
       email: { type: String, default: "" },
-    }
+    },
   ],
-
   favorites: {
     colors: [String],
     food: [String],
@@ -61,11 +66,9 @@ businessCategory: {
       searchedAt: { type: Date, default: Date.now },
     },
   ],
-
-
   profileCompleted: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
+  updatedAt: { type: Date, default: Date.now },
 });
 
 export default message91UsersSchema;

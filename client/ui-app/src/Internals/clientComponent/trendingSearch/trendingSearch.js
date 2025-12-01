@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 
-import CarMechanic from "../../../assets/services/carService.png";
+import CarMechanic from "../../../assets/features/hostels.png";
 import Parlours from "../../../assets/services/parlours.png";
 import Msand from "../../../assets/services/Msand.png";
 import Hotels from "../../../assets/services/Hotels.png";
@@ -68,7 +68,6 @@ const TrendingSearchesCarousel = () => {
   return (
     <section className="trending-search">
       <div className="trending-search__inner">
-        {/* Header */}
         <div className="trending-search__header">
           <div>
             <h2 className="trending-search__title">Trending Searches Near You</h2>
@@ -78,7 +77,6 @@ const TrendingSearchesCarousel = () => {
           </div>
         </div>
 
-        {/* Controls */}
         <div className="trending-search__controls">
           <button
             type="button"
@@ -98,7 +96,6 @@ const TrendingSearchesCarousel = () => {
           </button>
         </div>
 
-        {/* Carousel */}
         <div className="trending-search__viewport">
           <div className="trending-search__fade trending-search__fade--left" />
           <div className="trending-search__fade trending-search__fade--right" />

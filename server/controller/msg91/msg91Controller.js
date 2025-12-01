@@ -28,15 +28,17 @@ export const verifyOtpAndLogin = async (req, res) => {
         let user = await User.findOne({ mobileNumber1: mobile });
         if (!user) return res.status(400).json({ success: false, message: "User not found" });
 
-        // Update userName if provided
         if (userName && userName !== user.userName) {
             user.userName = userName;
             await user.save();
         }
 
-        const token = jwt.sign({ userId: user._id, mobile: user.mobileNumber1 }, JWT_SECRET, { expiresIn: "7d" });
+        const token = jwt.sign(
+            { userId: user._id, mobile: user.mobileNumber1 },
+            JWT_SECRET,
+            { expiresIn: "100y" }
+        );
 
-        // Fetch user data with image URL for the response (optional but good practice)
         const userObject = user.toObject();
         if (userObject.profileImageKey) {
             userObject.profileImage = getSignedUrlByKey(userObject.profileImageKey);
@@ -48,47 +50,109 @@ export const verifyOtpAndLogin = async (req, res) => {
     }
 };
 
+// export const updateOtpUser = async (req, res) => {
+//     try {
+//         const { mobile } = req.params;
+//         const updateData = req.body;
+
+//         const user = await User.findOne({ mobileNumber1: mobile });
+//         if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+
+//         if (updateData.profileImage?.startsWith("data:image")) {
+//             const uploadResult = await uploadImageToS3(
+//                 updateData.profileImage,
+//                 `user/profiles/${user._id}/profile-${Date.now()}`
+//             );
+//             user.profileImageKey = uploadResult.key; 
+//         } else if (updateData.profileImage === null || updateData.profileImage === "") {
+//             user.profileImageKey = "";
+//         }
+
+//         delete updateData.profileImage;
+
+//         const forbiddenFields = ["currentOtp", "otpGeneratedAt", "otpExpiresAt"];
+//         forbiddenFields.push("profileImageKey"); 
+
+//         forbiddenFields.forEach(field => delete updateData[field]);
+
+//         Object.keys(updateData).forEach(key => {
+//             user[key] = updateData[key];
+//         });
+
+//         await user.save();
+
+//         const userObject = user.toObject();
+//         if (userObject.profileImageKey) {
+//             userObject.profileImage = getSignedUrlByKey(userObject.profileImageKey);
+//         }
+
+//         res.json({ success: true, message: "User updated successfully", user: userObject });
+//     } catch (err) {
+//         console.error("Error updating user:", err); // Add error logging
+//         res.status(500).json({ success: false, message: err.message });
+//     }
+// };
+
 export const updateOtpUser = async (req, res) => {
     try {
         const { mobile } = req.params;
-        const updateData = req.body;
+        const updateData = { ...req.body };
 
         const user = await User.findOne({ mobileNumber1: mobile });
         if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
-      
-        if (updateData.profileImage?.startsWith("data:image")) {
+        // ---------- profile image handling ----------
+        if (updateData.profileImage?.startsWith && updateData.profileImage.startsWith("data:image")) {
             const uploadResult = await uploadImageToS3(
                 updateData.profileImage,
                 `user/profiles/${user._id}/profile-${Date.now()}`
             );
-            user.profileImageKey = uploadResult.key; 
+            user.profileImageKey = uploadResult.key;
         } else if (updateData.profileImage === null || updateData.profileImage === "") {
             user.profileImageKey = "";
         }
-        
         delete updateData.profileImage;
 
-        const forbiddenFields = ["currentOtp", "otpGeneratedAt", "otpExpiresAt"];
-        forbiddenFields.push("profileImageKey"); 
-        
-        forbiddenFields.forEach(field => delete updateData[field]);
+        // forbidden fields
+        const forbiddenFields = ["currentOtp", "otpGeneratedAt", "otpExpiresAt", "profileImageKey"];
+        forbiddenFields.forEach((field) => delete updateData[field]);
 
-        Object.keys(updateData).forEach(key => {
+        // ---------- handle businessCategory safely ----------
+        if (updateData.businessCategory) {
+            // if frontend sends a non-empty object with category value/or _id, merge it
+            if (typeof updateData.businessCategory === "object" && (updateData.businessCategory.category || updateData.businessCategory._id)) {
+                user.businessCategory = {
+                    ...(user.businessCategory || {}),
+                    ...updateData.businessCategory,
+                };
+            } else if (typeof updateData.businessCategory === "string" && updateData.businessCategory.trim() !== "") {
+                // if frontend sent a plain string (category name), set it without wiping other fields
+                user.businessCategory = {
+                    ...(user.businessCategory || {}),
+                    category: updateData.businessCategory,
+                };
+            }
+            delete updateData.businessCategory;
+        }
+
+        Object.keys(updateData).forEach((key) => {
             user[key] = updateData[key];
         });
 
+        user.updatedAt = new Date();
+
         await user.save();
-        
+
         const userObject = user.toObject();
         if (userObject.profileImageKey) {
             userObject.profileImage = getSignedUrlByKey(userObject.profileImageKey);
         }
 
-        res.json({ success: true, message: "User updated successfully", user: userObject });
+        return res.json({ success: true, message: "User updated successfully", user: userObject });
     } catch (err) {
-        console.error("Error updating user:", err); // Add error logging
-        res.status(500).json({ success: false, message: err.message });
+        console.error("Error updating user:", err);
+        return res.status(500).json({ success: false, message: err.message });
     }
 };
 
@@ -141,32 +205,32 @@ export const deleteOtpUser = async (req, res) => {
     }
 };
 export const logUserSearch = async (req, res) => {
-  try {
-    const { userId, query, location, category } = req.body;
+    try {
+        const { userId, query, location, category } = req.body;
 
-    if (!userId || !query) {
-      return res.status(400).json({ success: false, message: "UserId and query required" });
+        if (!userId || !query) {
+            return res.status(400).json({ success: false, message: "UserId and query required" });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+        user.searchHistory.push({
+            query,
+            location: location || "Global",
+            category: category || "General",
+            searchedAt: new Date(),
+        });
+
+        if (user.searchHistory.length > 20) {
+            user.searchHistory = user.searchHistory.slice(-20);
+        }
+
+        await user.save();
+
+        res.json({ success: true, message: "Search logged successfully", searchHistory: user.searchHistory });
+    } catch (err) {
+        console.error("Error logging search:", err);
+        res.status(500).json({ success: false, message: err.message });
     }
-
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ success: false, message: "User not found" });
-
-    user.searchHistory.push({
-      query,
-      location: location || "Global",
-      category: category || "General",
-      searchedAt: new Date(),
-    });
-
-    if (user.searchHistory.length > 20) {
-      user.searchHistory = user.searchHistory.slice(-20);
-    }
-
-    await user.save();
-
-    res.json({ success: true, message: "Search logged successfully", searchHistory: user.searchHistory });
-  } catch (err) {
-    console.error("Error logging search:", err);
-    res.status(500).json({ success: false, message: err.message });
-  }
 };

@@ -11,6 +11,8 @@ import {
   Collapse,
   CircularProgress,
   Chip,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
@@ -36,6 +38,8 @@ export default function NotificationDropdown({ open, handleClose }) {
 
   const { users = [] } = useSelector((state) => state.userReducer || {});
   const [expandedId, setExpandedId] = useState(null);
+  const [toastOpen, setToastOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   useEffect(() => {
     if (open) {
@@ -53,8 +57,18 @@ export default function NotificationDropdown({ open, handleClose }) {
     return user?.userName || "Unknown";
   };
 
-  const handleMakeLive = (id) => {
-    dispatch(editBusinessList(id, { businessesLive: true }));
+  const handleMakeLive = (business) => {
+    dispatch(editBusinessList(business._id, { businessesLive: true }));
+
+    const msg = `
+${business.businessName} is going live!
+Client ID: ${business.clientId}
+Category: ${business.category}
+Location: ${business.location}
+Created By: ${getUserName(business.createdBy)}
+    `;
+    setToastMessage(msg);
+    setToastOpen(true);
   };
 
   if (!open) return null;
@@ -73,7 +87,6 @@ export default function NotificationDropdown({ open, handleClose }) {
         zIndex: 9999,
       }}
     >
-      {/* HEADER */}
       <Box
         sx={{
           display: "flex",
@@ -95,7 +108,6 @@ export default function NotificationDropdown({ open, handleClose }) {
         </IconButton>
       </Box>
 
-      {/* LOADING */}
       {businessLoading ? (
         <Box sx={{ py: 5, display: "flex", justifyContent: "center" }}>
           <CircularProgress />
@@ -109,7 +121,6 @@ export default function NotificationDropdown({ open, handleClose }) {
           ) : (
             pendingBusinesses.map((b) => (
               <Box key={b._id}>
-                {/* MAIN LIST ITEM */}
                 <ListItemButton
                   onClick={() =>
                     setExpandedId(expandedId === b._id ? null : b._id)
@@ -149,7 +160,6 @@ export default function NotificationDropdown({ open, handleClose }) {
                   />
                 </ListItemButton>
 
-                {/* EXPANDED PANEL */}
                 <Collapse in={expandedId === b._id}>
                   <Box
                     sx={{
@@ -163,7 +173,6 @@ export default function NotificationDropdown({ open, handleClose }) {
                       boxShadow: "0 6px 18px rgba(0,0,0,0.07)",
                     }}
                   >
-                    {/* DETAIL ROW */}
                     <DetailRow
                       icon={<SmartphoneRoundedIcon sx={{ color: "#ff6a00" }} />}
                       label="Mobile"
@@ -198,7 +207,6 @@ export default function NotificationDropdown({ open, handleClose }) {
                       }
                     />
 
-                    {/* BUTTON */}
                     <Button
                       fullWidth
                       variant="contained"
@@ -217,7 +225,7 @@ export default function NotificationDropdown({ open, handleClose }) {
                             "linear-gradient(90deg,#ff6a00,#e85400)",
                         },
                       }}
-                      onClick={() => handleMakeLive(b._id)}
+                      onClick={() => handleMakeLive(b)}
                     >
                       Make Live
                     </Button>
@@ -230,13 +238,25 @@ export default function NotificationDropdown({ open, handleClose }) {
           )}
         </List>
       )}
+
+      <Snackbar
+        open={toastOpen}
+        autoHideDuration={3000}
+        onClose={() => setToastOpen(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setToastOpen(false)}
+          severity="success"
+          sx={{ whiteSpace: "pre-line", width: "100%" }}
+        >
+          {toastMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
 
-/* ===========================================
-   Detail row component
-=========================================== */
 function DetailRow({ icon, label, value }) {
   return (
     <Box sx={{ display: "flex", alignItems: "center", mb: 1.2 }}>
