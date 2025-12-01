@@ -100,7 +100,7 @@ export const userMenuItems = [
     { name: "User Feedback", path: "/user_feedback", icon: <FeedbackIcon color="action" />, component: FeedbackPage },
     { name: "User Help", path: "/user_help", icon: <HelpOutlineIcon color="action" />, component: HelpPage },
     { name: "Change Language", isLanguageSwitch: true, icon: <LanguageIcon color="action" /> },
-    { name: "Logout", isLogout: true, path: "/logout", icon: <ExitToAppIcon color="action" /> },
+    { name: "Logout", isLogout: true, path: "/home", icon: <ExitToAppIcon color="action" /> },
 ];
 
 const CategoryBar = () => {
@@ -213,7 +213,6 @@ const CategoryBar = () => {
                 <IconButton onClick={handleDrawerToggle(false)} sx={{ color: 'text.secondary', mr: 2, p: 0 }}>
                     <CloseIcon />
                 </IconButton>
-
                 <Box sx={{ flexGrow: 1, textAlign: 'right' }}>
                     <Typography variant="subtitle1" fontWeight={700} sx={{ lineHeight: 1.2 }}>
                         {userName}

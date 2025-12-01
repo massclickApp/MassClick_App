@@ -55,6 +55,7 @@ export const getAllClientBusinessList = () => async (dispatch) => {
 
   try {
     const token = await dispatch(getClientToken());
+console.log("token",token);
 
     const response = await axios.get(`${API_URL}/businesslist/viewall`, {
       headers: { Authorization: `Bearer ${token}` },

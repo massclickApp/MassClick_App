@@ -72,7 +72,21 @@ export default function GlobalDrawer() {
   const UserDetail =
     allUsers.find((u) => u.mobileNumber1 === mobileNumber) || {};
 
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("mobileNumber");
+    localStorage.removeItem("authUser");
+
+    closeDrawer();
+    navigate("/home");
+    window.dispatchEvent(new Event("authChange"));
+  };
+
   const handleItemClick = (item) => {
+    if (item.isLogout) {
+      handleLogout();
+      return;
+    }
     closeDrawer();
     if (item.path) navigate(item.path);
   };
