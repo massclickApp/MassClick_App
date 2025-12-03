@@ -2,79 +2,88 @@ import React, { useEffect } from "react";
 import "./rentAndHiring.css";
 import CardDesign from "../cards.js";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllBusinessList, getAllClientBusinessList } from "../../../../redux/actions/businessListAction.js";
+import { getBusinessByCategory } from "../../../../redux/actions/businessListAction.js";
 import CardsSearch from "../../CardsSearch/CardsSearch.js";
-import { useNavigate } from 'react-router-dom';
-
-
+import { useNavigate } from "react-router-dom";
 
 const RentAndHiringCards = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { clientBusinessList = [] } = useSelector(
+    const { categoryBusinessList = [], loading } = useSelector(
         (state) => state.businessListReducer || {}
-    )
-
-    useEffect(() => {
-        dispatch(getAllClientBusinessList());
-    }, [dispatch]);
-
- const createSlug = (text) => {
-        if (!text) return '';
-        return text
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/(^-|-$)+/g, '');
-    };
-
-    const rentAndHiring = clientBusinessList.filter(b =>
-        b.businessesLive === true &&
-        b.category &&
-        ["rent", "hire", "hiring"].some((word) =>
-            b.category.toLowerCase().includes(word)
-        )
     );
 
-    if (rentAndHiring.length === 0) {
+    useEffect(() => {
+        dispatch(getBusinessByCategory("rent & hire"));
+    }, [dispatch]);
+
+    const createSlug = (text) => {
+        if (!text) return "";
+        return text
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/(^-|-$)+/g, "");
+    };
+
+    if (loading) {
+        return <p className="loading-text">Loading Rent & Hiring businesses...</p>;
+    }
+
+    if (!loading && categoryBusinessList.length === 0) {
         return (
             <div className="no-results-container">
-                <p className="no-results-title">No Rent or Hiring Businesses Found Yet 😔</p>
+                <p className="no-results-title">
+                    No Rent or Hiring Businesses Found Yet 😔
+                </p>
                 <p className="no-results-suggestion">
-                    It looks like we don't have any businesses matching "Rent" or "Hiring" in our data right now.
+                    It looks like we don’t have any rent or hire related businesses in
+                    our data right now.
                 </p>
                 <p className="no-results-action">
                     Please try another category or check back later!
                 </p>
-                <button className="go-home-button" onClick={() => navigate('/home')}>Go to Homepage</button>
+                <button
+                    className="go-home-button"
+                    onClick={() => navigate("/home")}
+                >
+                    Go to Homepage
+                </button>
             </div>
         );
     }
 
     return (
         <>
-            <CardsSearch /><br /><br /><br />
+            <CardsSearch />
+            <br /><br /><br />
 
             <div className="restaurants-list-wrapper">
-                {rentAndHiring.map((business) => {
+                {categoryBusinessList.map((business) => {
                     const averageRating = business.averageRating?.toFixed(1) || 0;
                     const totalRatings = business.reviews?.length || 0;
-                     const nameSlug = createSlug(business.businessName);
-                    const locationSlug = createSlug(business.locationDetails || 'unknown');
-                    const address = createSlug(business.street || 'unknown');
+
+                    const nameSlug = createSlug(business.businessName);
+                    const locationSlug = createSlug(
+                        business.location || "unknown"
+                    );
+                    const addressSlug = createSlug(business.street || "unknown");
+
                     return (
                         <CardDesign
                             key={business._id}
                             title={business.businessName}
                             phone={business.contact}
                             whatsapp={business.whatsappNumber}
-                            address={`${business.locationDetails}`}
+                            address={`${business.location}`}
                             details={`Experience: ${business.experience} | Category: ${business.category}`}
-                            imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
+                            imageSrc={
+                                business.bannerImage ||
+                                "https://via.placeholder.com/120x100?text=Logo"
+                            }
                             rating={averageRating}
                             reviews={totalRatings}
-                            to={`/${locationSlug}/${nameSlug}/${address}/${business._id}`}
-
+                            to={`/${locationSlug}/${nameSlug}/${addressSlug}/${business._id}`}
                         />
                     );
                 })}

@@ -2,102 +2,83 @@ import React, { useEffect } from "react";
 import "./trendingCard.css";
 import CardDesign from "../../clientComponent/cards/cards.js";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllBusinessList, getAllClientBusinessList } from "../../../redux/actions/businessListAction.js";
+import { getBusinessByCategory } from "../../../redux/actions/businessListAction.js";
 import CardsSearch from "../../clientComponent/CardsSearch/CardsSearch.js";
-import { useParams } from "react-router-dom";
-import { useNavigate } from 'react-router-dom';
-
+import { useParams, useNavigate } from "react-router-dom";
 
 const TrendingCards = () => {
     const { categorySlug } = useParams();
-
-    const dispatch = useDispatch();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
-    const { clientBusinessList = [] } = useSelector(
+    const { categoryBusinessList = [], loading } = useSelector(
         (state) => state.businessListReducer || {}
-    )
+    );
+
+    const readableCategory = (categorySlug || "")
+        .replace(/-/g, " ")
+        .trim();
 
     useEffect(() => {
-        dispatch(getAllClientBusinessList());
-    }, [dispatch]);
+        if (categorySlug) {
+            dispatch(getBusinessByCategory(readableCategory));
+        }
+    }, [dispatch, categorySlug]);
 
-    const normalizedSlug = categorySlug?.replace(/-/g, " ").trim().toLowerCase();
+    const createSlug = (text = "") =>
+        text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
 
-    const filteredBusinesses = clientBusinessList.filter((b) => {
-        if (!b.category) return false;
-        if (b.businessesLive !== true) return false;
+    if (loading) {
+        return <p className="loading-text">Loading Trending Services...</p>;
+    }
 
-        const category = b.category.toLowerCase();
-
-        return (
-            category.includes(normalizedSlug) ||                      // partial match
-            normalizedSlug.includes(category) ||                      // reverse match
-            new RegExp(`${normalizedSlug.slice(0, 4)}`, "i").test(category) // fuzzy match on first 4 letters
-        );
-    });
-    const createSlug = (text) => {
-        if (!text) return '';
-        return text
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/(^-|-$)+/g, '');
-    };
-
-    if (filteredBusinesses.length === 0) {
+    if (!loading && categoryBusinessList.length === 0) {
         return (
             <div className="no-results-container">
-                <p className="no-results-title">No filteredBusinesses Found Yet 😔</p>
+                <p className="no-results-title">
+                    No "{readableCategory}" Found 😔
+                </p>
                 <p className="no-results-suggestion">
-                    It looks like we don't have any businesses matching "filteredBusinesses"  in our data right now.
+                    We couldn't find any trending services matching "{readableCategory}" right now.
                 </p>
-                <p className="no-results-action">
-                    Please try another category or check back later!
-                </p>
-                <button className="go-home-button" onClick={() => navigate('/home')}>Go to Homepage</button>
+                <button className="go-home-button" onClick={() => navigate("/home")}>
+                    Go to Homepage
+                </button>
             </div>
         );
     }
 
-
-
-
-
     return (
         <>
-            <CardsSearch /><br /><br /><br />
-            <div className="restaurants-list-wrapper">
-                {filteredBusinesses.length === 0 ? (
-                    <p>No matching businesses found for "{categorySlug}".</p>
-                ) : (
-                    filteredBusinesses.map((business) => {
-                        const averageRating = business.averageRating?.toFixed(1) || 0;
-                        const totalRatings = business.reviews?.length || 0;
-                        const nameSlug = createSlug(business.businessName);
-                        const locationSlug = createSlug(business.locationDetails || 'unknown');
-                        const address = createSlug(business.street || 'unknown');
+            <CardsSearch /><br/><br/><br/>
 
-                        return (
-                            <CardDesign
-                                key={business._id}
-                                title={business.businessName}
-                                phone={business.contact}
-                                whatsapp={business.whatsappNumber}
-                                address={`${business.plotNumber ? business.plotNumber + ", " : ""}${business.street}, ${business.location}, Pincode: ${business.pincode}`}
-                                details={`Experience: ${business.experience} | Category: ${business.category}`}
-                                imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
-                                rating={averageRating}
-                                reviews={totalRatings}
-                                to={`/${locationSlug}/${nameSlug}/${address}/${business._id}`}
-                            />
-                        );
-                    })
-                )}
+            <div className="restaurants-list-wrapper">
+                {categoryBusinessList.map((business) => {
+                    const rating = business.averageRating?.toFixed(1) || 0;
+                    const reviews = business.reviews?.length || 0;
+
+                    const nameSlug = createSlug(business.businessName);
+                    const locSlug = createSlug(business.location || "unknown");
+                    const addrSlug = createSlug(business.street || "unknown");
+
+                    return (
+                        <CardDesign
+                            key={business._id}
+                            title={business.businessName}
+                            phone={business.contact}
+                            whatsapp={business.whatsappNumber}
+                            address={`${business.plotNumber ? business.plotNumber + ", " : ""}${business.street}, ${business.location}, Pincode: ${business.pincode}`}
+                            details={`Experience: ${business.experience} | Category: ${business.category}`}
+                            imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
+                            rating={rating}
+                            reviews={reviews}
+                            to={`/${locSlug}/${nameSlug}/${addrSlug}/${business._id}`}
+                        />
+                    );
+                })}
             </div>
         </>
     );
 };
-
-
 
 export default TrendingCards;

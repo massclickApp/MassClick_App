@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import "./popularCategories.css";
 import CardDesign from "../cards.js";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllClientBusinessList } from "../../../../redux/actions/businessListAction.js";
 import CardsSearch from "../../CardsSearch/CardsSearch.js";
 import { useNavigate } from "react-router-dom";
 import Drawer from "@mui/material/Drawer";
@@ -108,10 +107,6 @@ const PopularCategoriesDrawer = ({ openFromHome = false, onClose }) => {
 
     const [drawerOpen, setDrawerOpen] = useState(openFromHome);
     const [search, setSearch] = useState("");
-
-    useEffect(() => {
-        dispatch(getAllClientBusinessList());
-    }, []);
 
     useEffect(() => {
         if (openFromHome) setDrawerOpen(true);

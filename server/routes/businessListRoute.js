@@ -1,6 +1,6 @@
 import express from 'express'
 
-import { addBusinessListAction, getTrendingSearchesAction, viewBusinessListAction,getSuggestionsController,mainSearchController, viewAllBusinessListAction, updateBusinessListAction, deleteBusinessListAction, activeBusinessListAction, viewAllClientBusinessListAction } from "../controller/businessList/businessListController.js"
+import { addBusinessListAction, getTrendingSearchesAction, viewBusinessListAction,getSuggestionsController,mainSearchController, viewAllBusinessListAction, updateBusinessListAction, deleteBusinessListAction, activeBusinessListAction, viewAllClientBusinessListAction, viewBusinessByCategory } from "../controller/businessList/businessListController.js"
 import { oauthAuthentication } from '../helper/oauthHelper.js';
 import {logSearchAction, viewLogSearchAction} from "../controller/businessList/logSearchController.js"
 
@@ -18,6 +18,7 @@ router.get('/api/businesslist/trending-searches', oauthAuthentication, getTrendi
 router.get('/api/businesslist/trending-searches/viewall', oauthAuthentication, viewLogSearchAction);
 router.get('/api/businesslist/search', oauthAuthentication, mainSearchController);
 router.get('/api/businesslist/suggestions', oauthAuthentication, getSuggestionsController);
+router.get('/api/businesslist/category', oauthAuthentication, viewBusinessByCategory);
 
 
 export default router; 

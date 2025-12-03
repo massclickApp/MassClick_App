@@ -2,45 +2,41 @@ import React, { useEffect } from "react";
 import "./contractors.css";
 import CardDesign from "../cards.js";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllBusinessList, getAllClientBusinessList } from "../../../../redux/actions/businessListAction.js";
+import { getBusinessByCategory } from "../../../../redux/actions/businessListAction.js";
 import CardsSearch from "../../CardsSearch/CardsSearch.js";
 import { useNavigate } from 'react-router-dom';
-
 
 const ContractorsCards = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { clientBusinessList = [] } = useSelector(
+    const { categoryBusinessList = [], loading } = useSelector(
         (state) => state.businessListReducer || {}
-    )
+    );
 
     useEffect(() => {
-        dispatch(getAllClientBusinessList());
+        dispatch(getBusinessByCategory("contractor"));
     }, [dispatch]);
 
 
- const contractors = clientBusinessList.filter(
-    (b) =>
-        b.businessesLive === true &&      
-        b.category &&
-        /\bcontract\w*\b/i.test(b.category)
-);
-
- const createSlug = (text) => {
+    const createSlug = (text) => {
         if (!text) return '';
         return text
             .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-') 
-            .replace(/(^-|-$)+/g, '');   
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)+/g, '');
     };
 
-    if (contractors.length === 0) {
+    if (loading) {
+        return <p className="loading-text">Loading contractors...</p>;
+    }
+
+    if (!loading && categoryBusinessList.length === 0) {
         return (
             <div className="no-results-container">
                 <p className="no-results-title">No contractors Found Yet 😔</p>
                 <p className="no-results-suggestion">
-                    It looks like we don't have any businesses matching "contractors"  in our data right now.
+                    It looks like we don't have any businesses matching "Contractor" in our data right now.
                 </p>
                 <p className="no-results-action">
                     Please try another category or check back later!
@@ -55,13 +51,13 @@ const ContractorsCards = () => {
             <CardsSearch /><br /><br /><br />
 
             <div className="restaurants-list-wrapper">
-                {contractors.map((business) => {
+                {categoryBusinessList.map((business) => {
                     const averageRating = business.averageRating?.toFixed(1) || 0;
                     const totalRatings = business.reviews?.length || 0;
 
                     const nameSlug = createSlug(business.businessName);
-                     const locationSlug = createSlug(business.locationDetails || 'unknown');
-                    const address = createSlug(business.street || 'unknown');
+                    const locationSlug = createSlug(business.location || 'unknown');
+                    const addressSlug = createSlug(business.street || 'unknown');
 
                     return (
                         <CardDesign
@@ -69,13 +65,12 @@ const ContractorsCards = () => {
                             title={business.businessName}
                             phone={business.contact}
                             whatsapp={business.whatsappNumber}
-                            address={`${business.locationDetails}`}
+                            address={`${business.location}`}
                             details={`Experience: ${business.experience} | Category: ${business.category}`}
                             imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
                             rating={averageRating}
                             reviews={totalRatings}
-                            to={`/${locationSlug}/${nameSlug}/${address}/${business._id}`}
-
+                            to={`/${locationSlug}/${nameSlug}/${addressSlug}/${business._id}`}
                         />
                     );
                 })}

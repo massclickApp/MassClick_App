@@ -10,6 +10,7 @@ import {
   FETCH_VIEWBUSINESS_REQUEST, FETCH_VIEWBUSINESS_SUCCESS, FETCH_VIEWBUSINESS_FAILURE,
   SUGGESTION_BUSINESS_REQUEST, SUGGESTION_BUSINESS_SUCCESS, SUGGESTION_BUSINESS_FAILURE,
   SEARCH_BUSINESS_REQUEST, SEARCH_BUSINESS_SUCCESS, SEARCH_BUSINESS_FAILURE,
+  CATEGORY_BUSINESS_REQUEST, CATEGORY_BUSINESS_SUCCESS, CATEGORY_BUSINESS_FAILURE
 } from "../actions/userActionTypes.js";
 import { getClientToken } from "./clientAuthAction.js";
 const API_URL = process.env.REACT_APP_API_URL;
@@ -106,6 +107,31 @@ console.log("token",token);
     });
   }
 };
+
+export const getBusinessByCategory = (category) => async (dispatch) => {
+  dispatch({ type: CATEGORY_BUSINESS_REQUEST });
+
+  try {
+    const token = await dispatch(getClientToken());
+
+    const response = await axios.get(
+      `${API_URL}/businesslist/category?category=${category}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    dispatch({
+      type: CATEGORY_BUSINESS_SUCCESS,
+      payload: response.data,
+    });
+
+  } catch (error) {
+    dispatch({
+      type: CATEGORY_BUSINESS_FAILURE,
+      payload: error.response?.data || error.message,
+    });
+  }
+};
+
 
 export const createBusinessList = (businessListData) => async (dispatch) => {
   dispatch({ type: CREATE_BUSINESS_REQUEST });

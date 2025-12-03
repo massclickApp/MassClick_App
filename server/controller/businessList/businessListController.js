@@ -1,4 +1,4 @@
-import { createBusinessList, viewBusinessList, viewAllBusinessList, viewAllClientBusinessList, updateBusinessList, getTrendingSearches, deleteBusinessList, activeBusinessList } from "../../helper/businessList/businessListHelper.js";
+import { createBusinessList, viewBusinessList,findBusinessesByCategory, viewAllBusinessList, viewAllClientBusinessList, updateBusinessList, getTrendingSearches, deleteBusinessList, activeBusinessList } from "../../helper/businessList/businessListHelper.js";
 import { BAD_REQUEST } from "../../errorCodes.js";
 import businessListModel from "../../model/businessList/businessListModel.js";
 import { getSignedUrlByKey } from "../../s3Uploder.js";
@@ -63,6 +63,22 @@ export const viewAllClientBusinessListAction = async (req, res) => {
     }
 };
 
+export const viewBusinessByCategory = async (req, res) => {
+  try {
+    const { category } = req.query;
+
+    if (!category)
+      return res.status(400).send({ message: "Category is required" });
+
+    const result = await findBusinessesByCategory(category);
+
+    res.status(200).send(result);
+
+  } catch (error) {
+    console.error("Error in viewBusinessByCategory:", error);
+    res.status(BAD_REQUEST.code).send({ message: error.message });
+  }
+};
 
 export const getSuggestionsController = async (req, res) => {
   try {

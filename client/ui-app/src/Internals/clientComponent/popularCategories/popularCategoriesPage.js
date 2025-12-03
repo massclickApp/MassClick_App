@@ -1,88 +1,88 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
-import CardDesign from "../cards/cards";
+import React, { useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import "./popularCategories.css";
+import { useDispatch, useSelector } from "react-redux";
+import { getBusinessByCategory } from "../../../redux/actions/businessListAction";
 import CardsSearch from "../CardsSearch/CardsSearch";
-import { useNavigate } from 'react-router-dom';
+import CardDesign from "../cards/cards";
 
-const PopularCategoryPage = () => {
-    const { categorySlug } = useParams();
-    const navigate = useNavigate();
+const slugify = (text = "") =>
+  String(text)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
 
-    const { clientBusinessList = [] } = useSelector(state => state.businessListReducer || {});
-    const [filteredBusinesses, setFilteredBusinesses] = useState([]);
+export default function PopularCategoryPage() {
+  const { categorySlug } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-    const createSlug = (text) => {
-        if (!text) return '';
-        return text
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/(^-|-$)+/g, '');
-    };
+  const readableCategory = categorySlug.replace(/-/g, " ");
 
-    useEffect(() => {
-        if (!categorySlug) return;
+  const { categoryBusinessList = [], loading } = useSelector(
+    (s) => s.businessListReducer || {}
+  );
 
-        const categoryWords = categorySlug.toLowerCase().split('-');
+  useEffect(() => {
+    if (categorySlug) {
+      dispatch(getBusinessByCategory(readableCategory));
+    }
+  }, [dispatch, categorySlug]);
 
-        const filtered = clientBusinessList.filter(b => {
-            if (!b.businessName && !b.category) return false;
-            if (b.businessesLive !== true) return false;
+  if (loading) {
+    return <p className="loading-text">Loading results...</p>;
+  }
 
-            const categoryLower = (b.category || '').toLowerCase();
-            const nameLower = (b.businessName || '').toLowerCase();
-
-            return categoryWords.some(word =>
-                categoryLower.includes(word) || nameLower.includes(word)
-            );
-        });
-
-
-        setFilteredBusinesses(filtered);
-    }, [categorySlug, clientBusinessList]);
-
+  if (!loading && categoryBusinessList.length === 0) {
     return (
-        <>
-            <CardsSearch /><br /><br /><br />
-            <div style={{ padding: "20px" }}>
-                {filteredBusinesses.length > 0 ? (
-                    <div className="restaurants-list-wrapper">
-                        {filteredBusinesses.map(business => {
-                            const averageRating = business.averageRating?.toFixed(1) || 0;
-                            const totalRatings = business.reviews?.length || 0;
-                            const nameSlug = createSlug(business.businessName);
-                            const locationSlug = createSlug(business.locationDetails?.split(',')[0] || 'unknown');
-                            return (
-                                <CardDesign
-                                    key={business._id}
-                                    title={business.businessName}
-                                    phone={business.contact}
-                                    whatsapp={business.whatsappNumber}
-                                    address={`${business.plotNumber ? business.plotNumber + ", " : ""}${business.street}, ${business.location}, Pincode: ${business.pincode}`}
-                                    details={`Experience: ${business.experience || "N/A"} | Category: ${business.category || "N/A"}`}
-                                    imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
-                                    rating={averageRating}
-                                    reviews={totalRatings}
-                                    to={`/business/${nameSlug}/${locationSlug}/${business._id}`}
-                                />
-                            );
-                        })}
-                    </div>
-                ) : (
-                    <div className="no-results-container">
-                        <p className="no-results-title">No {categorySlug.replace(/-/g, ' ')} Found Yet 😔</p>
-                        <p className="no-results-suggestion">
-                            It looks like we don't have any businesses matching {categorySlug.replace(/-/g, ' ')}  in our data right now.
-                        </p>
-                        <p className="no-results-action">
-                            Please try another category or check back later!
-                        </p>
-                        <button className="go-home-button" onClick={() => navigate('/home')}>Go to Homepage</button>
-                    </div>
-                )}
-            </div>
-        </>
+      <div className="no-results-container">
+        <p className="no-results-title">No {readableCategory} Found Yet 😔</p>
+        <p className="no-results-suggestion">
+          It looks like we don't have any businesses matching {readableCategory} in
+          our data right now.
+        </p>
+        <button className="go-home-button" onClick={() => navigate("/home")}>
+          Go to Homepage
+        </button>
+      </div>
     );
-};
+  }
 
-export default PopularCategoryPage;
+  return (
+    <>
+      <CardsSearch />
+      <br />
+      <br />
+      <br />
+
+      <div className="restaurants-list-wrapper">
+        {categoryBusinessList.map((business) => {
+          const nameSlug = slugify(business.businessName);
+          const locationSlug = slugify(business.location || "unknown");
+          const addressSlug = slugify(business.street || "unknown");
+
+          const averageRating = business.averageRating?.toFixed(1) || 0;
+          const totalRatings = business.reviews?.length || 0;
+
+          return (
+            <CardDesign
+              key={business._id}
+              title={business.businessName}
+              phone={business.contact}
+              whatsapp={business.whatsappNumber}
+              address={`${business.location}`}
+              details={`Experience: ${business.experience} | Category: ${business.category}`}
+              imageSrc={
+                business.bannerImage ||
+                "https://via.placeholder.com/120x100?text=Logo"
+              }
+              rating={averageRating}
+              reviews={totalRatings}
+              to={`/${locationSlug}/${nameSlug}/${addressSlug}/${business._id}`}
+            />
+          );
+        })}
+      </div>
+    </>
+  );
+}

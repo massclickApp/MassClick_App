@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import "./popularCategories.css";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllClientBusinessList } from "../../../../redux/actions/businessListAction";
+import { getBusinessByCategory } from "../../../../redux/actions/businessListAction";
 import CardsSearch from "../../CardsSearch/CardsSearch";
 import CardDesign from "../cards";
-
-const normalize = (txt = "") =>
-  String(txt || "").toLowerCase().trim();
 
 const slugify = (text = "") =>
   String(text)
@@ -15,64 +12,30 @@ const slugify = (text = "") =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
 
-// Strict matching
-const matchesCategory = (business, categoryLabel, categorySlug) => {
-  const q = normalize(categoryLabel);
-  const qSlug = slugify(categoryLabel);
-  const urlSlug = normalize(categorySlug);
-
-  if (normalize(business.category) === q) return true;
-
-  if (normalize(business.slug) === qSlug) return true;
-  if (normalize(business.slug) === urlSlug) return true;
-
-  if (Array.isArray(business.keywords)) {
-    if (business.keywords.some(k => normalize(k) === q)) return true;
-  }
-
-  const textFields = [
-    business.seoTitle,
-    business.seoDescription,
-    business.title,
-    business.description
-  ];
-
-  if (textFields.some(t => normalize(t) === q)) return true;
-
-  return false;
-};
-
 export default function CategoryDynamicPage() {
   const { categorySlug } = useParams();
   const { state } = useLocation();
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const realCategoryName =
-    state?.categoryName || (categorySlug ? categorySlug.replace(/-/g, " ") : "");
+    state?.categoryName || categorySlug.replace(/-/g, " ");
 
-  const { clientBusinessList = [] } = useSelector(
+  const { categoryBusinessList = [], loading } = useSelector(
     (s) => s.businessListReducer || {}
   );
 
-  const [filteredBusinesses, setFilteredBusinesses] = useState([]);
-
   useEffect(() => {
-    dispatch(getAllClientBusinessList());
-  }, [dispatch]);
+    dispatch(getBusinessByCategory(realCategoryName));
+  }, [dispatch, realCategoryName]);
 
-  useEffect(() => {
-    if (clientBusinessList.length === 0) return;
+  const createSlug = slugify;
 
-    const result = clientBusinessList.filter((b) =>
-      matchesCategory(b, realCategoryName, categorySlug)
-    );
+  if (loading) {
+    return <p className="loading-text">Loading categories...</p>;
+  }
 
-    setFilteredBusinesses(result);
-  }, [clientBusinessList, realCategoryName, categorySlug]);
-
-  if (filteredBusinesses.length === 0) {
+  if (!loading && categoryBusinessList.length === 0) {
     return (
       <div className="no-results-container">
         <p className="no-results-title">
@@ -88,19 +51,20 @@ export default function CategoryDynamicPage() {
   return (
     <>
       <CardsSearch /><br/><br/><br/>
-      <div className="restaurants-list-wrapper">
 
-        {filteredBusinesses.map((b) => {
-          const nameSlug = slugify(b.businessName);
-          const locSlug = slugify(b.locationDetails || "unknown");
-          const addrSlug = slugify(b.street || "unknown");
+      <div className="restaurants-list-wrapper">
+        {categoryBusinessList.map((b) => {
+          const nameSlug = createSlug(b.businessName);
+          const locSlug = createSlug(b.location || "unknown");
+          const addrSlug = createSlug(b.street || "unknown");
+
           return (
             <CardDesign
               key={b._id}
               title={b.businessName}
               phone={b.contact}
               whatsapp={b.whatsappNumber}
-              address={b.locationDetails}
+              address={b.location}
               details={`Experience: ${b.experience} | Category: ${b.category}`}
               imageSrc={b.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
               rating={b.averageRating?.toFixed(1) || 0}

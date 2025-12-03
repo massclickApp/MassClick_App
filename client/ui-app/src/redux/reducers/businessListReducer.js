@@ -9,6 +9,11 @@ import {
   FETCH_VIEWBUSINESS_REQUEST, FETCH_VIEWBUSINESS_SUCCESS, FETCH_VIEWBUSINESS_FAILURE,
   SUGGESTION_BUSINESS_REQUEST, SUGGESTION_BUSINESS_SUCCESS, SUGGESTION_BUSINESS_FAILURE,
   SEARCH_BUSINESS_REQUEST, SEARCH_BUSINESS_SUCCESS, SEARCH_BUSINESS_FAILURE,
+
+  CATEGORY_BUSINESS_REQUEST,
+  CATEGORY_BUSINESS_SUCCESS,
+  CATEGORY_BUSINESS_FAILURE,
+
 } from '../actions/userActionTypes';
 
 const initialState = {
@@ -17,6 +22,7 @@ const initialState = {
   pageNo: 1,
   pageSize: 10,
   clientBusinessList: [],
+  categoryBusinessList: [],    
   loading: false,
   error: null,
 
@@ -33,6 +39,7 @@ const initialState = {
 
 export default function businessListReducer(state = initialState, action) {
   switch (action.type) {
+
     /** ------------------- BUSINESS ------------------- **/
     case FETCH_BUSINESS_REQUEST:
     case CREATE_BUSINESS_REQUEST:
@@ -51,7 +58,6 @@ export default function businessListReducer(state = initialState, action) {
         pageSize: action.payload.pageSize,
         error: null,
       };
-
 
     case CREATE_BUSINESS_SUCCESS:
       return {
@@ -87,7 +93,6 @@ export default function businessListReducer(state = initialState, action) {
     case ACTIVE_BUSINESS_FAILURE:
       return { ...state, loading: false, error: action.payload };
 
-    /** ------------------- CLIENT BUSINESS ------------------- **/
     case FETCH_VIEWBUSINESS_REQUEST:
       return { ...state, loading: true, error: null };
 
@@ -96,6 +101,25 @@ export default function businessListReducer(state = initialState, action) {
 
     case FETCH_VIEWBUSINESS_FAILURE:
       return { ...state, loading: false, clientBusinessList: [], error: action.payload };
+
+    case CATEGORY_BUSINESS_REQUEST:
+      return { ...state, loading: true, error: null };
+
+    case CATEGORY_BUSINESS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        categoryBusinessList: action.payload,  
+        error: null,
+      };
+
+    case CATEGORY_BUSINESS_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        categoryBusinessList: [],
+        error: action.payload,
+      };
 
     /** ------------------- TRENDING ------------------- **/
     case FETCH_TRENDING_REQUEST:
@@ -136,46 +160,25 @@ export default function businessListReducer(state = initialState, action) {
         searchLogs: [],
         searchLogsError: action.payload,
       };
+
     case SUGGESTION_BUSINESS_REQUEST:
-      return {
-        ...state,
-        loading: true,
-      };
+      return { ...state, loading: true };
 
     case SUGGESTION_BUSINESS_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        backendSuggestions: action.payload,
-      };
+      return { ...state, loading: false, backendSuggestions: action.payload };
 
     case SUGGESTION_BUSINESS_FAILURE:
-      return {
-        ...state,
-        loading: false,
-        backendSuggestions: [],
-      };
+      return { ...state, loading: false, backendSuggestions: [] };
 
+    /** ------------------- SEARCH ------------------- **/
     case SEARCH_BUSINESS_REQUEST:
-      return {
-        ...state,
-        loading: true,
-      };
+      return { ...state, loading: true };
 
     case SEARCH_BUSINESS_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        backendSearchResults: action.payload,
-      };
+      return { ...state, loading: false, backendSearchResults: action.payload };
 
     case SEARCH_BUSINESS_FAILURE:
-      return {
-        ...state,
-        loading: false,
-        backendSearchResults: [],
-      };
-
+      return { ...state, loading: false, backendSearchResults: [] };
 
     /** ------------------- DEFAULT ------------------- **/
     default:

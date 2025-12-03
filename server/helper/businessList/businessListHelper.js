@@ -69,6 +69,37 @@ export const viewBusinessList = async (id) => {
     return business;
 };
 
+export const findBusinessesByCategory = async (category) => {
+  const query = {
+    businessesLive: true,
+    $or: [
+      { category: { $regex: category, $options: "i" } },
+      { keywords: { $regex: category, $options: "i" } }
+    ]
+  };
+
+  const businessList = await businessListModel.find(query).lean();
+
+  if (!businessList || businessList.length === 0)
+    throw new Error("No business found");
+
+  return businessList.map((business) => {
+    if (business.bannerImageKey)
+      business.bannerImage = getSignedUrlByKey(business.bannerImageKey);
+
+    if (business.businessImagesKey?.length > 0)
+      business.businessImages = business.businessImagesKey.map((key) =>
+        getSignedUrlByKey(key)
+      );
+
+    if (business.kycDocumentsKey?.length > 0)
+      business.kycDocuments = business.kycDocumentsKey.map((key) =>
+        getSignedUrlByKey(key)
+      );
+
+    return business;
+  });
+};
 
 export const viewAllClientBusinessList = async () => {
     const businessList = await businessListModel.find().lean();
