@@ -22,13 +22,25 @@ export const viewLocationAction = async (req, res) => {
     }
 };
 export const viewAllLocationAction = async (req, res) => {
-    try {
-        const allLocation = await viewAllLocation();
-        res.send(allLocation);
-    } catch (error) {
-        console.error(error);
-        return res.status(BAD_REQUEST.code).send({ message: error.message });
-    }
+  try {
+    const pageNo = parseInt(req.query.pageNo) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+
+    const { list, total } = await viewAllLocation(pageNo, pageSize);
+
+    res.send({
+      data: list,
+      total,
+      pageNo,
+      pageSize,
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(BAD_REQUEST.code)
+      .send({ message: error.message });
+  }
 };
 export const updateLocationAction = async (req, res) => {
     try {

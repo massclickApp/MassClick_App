@@ -30,7 +30,7 @@ import { createPhonePePayment } from '../redux/actions/phonePayAction.js';
 export default function MainGrid() {
   const { enqueueSnackbar } = useSnackbar();
   const { users = [] } = useSelector((state) => state.userReducer || {});
-  const { businessList = [] } = useSelector(
+  const { businessList = [], total = 0, loading, error } = useSelector(
     (state) => state.businessListReducer || {}
   );
   const [activeStatus, setActiveStatus] = React.useState(
@@ -239,10 +239,16 @@ export default function MainGrid() {
       </Grid><br />
       <Grid elevation={3} sx={{ p: 3, borderRadius: 2 }}>
         <Box sx={{ width: "100%" }}>
-          <CustomizedTable data={rows} columns={businessListTable} />
-        </Box>
+          <CustomizedTable
+            data={rows}
+            total={total}
+            columns={businessListTable}
+            fetchData={(pageNo, pageSize) =>
+              dispatch(getAllBusinessList({ pageNo, pageSize }))
+            }
+          />      
+            </Box>
       </Grid>
-      {/* Footer */}
     </Box>
   );
 }

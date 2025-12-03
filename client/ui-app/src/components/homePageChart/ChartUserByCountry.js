@@ -18,12 +18,9 @@ import {
   Sector
 } from "recharts";
 
-import { getAllBusinessList } from "../../redux/actions/businessListAction";
+import { getAllClientBusinessList } from "../../redux/actions/businessListAction";
 import "./homeChart.css";
 
-/* ----------------------------------------------------
-   COLORS
----------------------------------------------------- */
 const chartColors = [
   "#28a745",
   "#007bff",
@@ -88,7 +85,7 @@ const renderActiveShape = (props) => {
 /* ----------------------------------------------------
    MONTHLY DATA AGGREGATION
 ---------------------------------------------------- */
-const aggregateBusinessData = (businessList) => {
+const aggregateBusinessData = (clientBusinessList) => {
   const months = [
     "Jan","Feb","Mar","Apr","May","Jun",
     "Jul","Aug","Sep","Oct","Nov","Dec"
@@ -101,7 +98,7 @@ const aggregateBusinessData = (businessList) => {
     map.set(i, { name: months[i], "New Businesses": 0 });
   }
 
-  (businessList || []).forEach((b) => {
+  (clientBusinessList || []).forEach((b) => {
     if (b.createdAt) {
       const d = new Date(b.createdAt);
       if (d.getFullYear() === year) {
@@ -122,9 +119,9 @@ const aggregateBusinessData = (businessList) => {
 /* ----------------------------------------------------
    CATEGORY AGGREGATION
 ---------------------------------------------------- */
-const aggregateBusinessCategory = (businessList) => {
+const aggregateBusinessCategory = (clientBusinessList) => {
   const map = {};
-  (businessList || []).forEach((b) => {
+  (clientBusinessList || []).forEach((b) => {
     const cat = b.category || "Uncategorized";
     map[cat] = (map[cat] || 0) + 1;
   });
@@ -146,10 +143,10 @@ export default function DashboardCharts() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getAllBusinessList());
+    dispatch(getAllClientBusinessList());
   }, [dispatch]);
 
-  const { businessList = [] } = useSelector(
+  const { clientBusinessList = [] } = useSelector(
     (state) => state.businessListReducer || {}
   );
 
@@ -157,13 +154,13 @@ export default function DashboardCharts() {
     result: chart1Data,
     max: max1,
     total: totalThisYear
-  } = useMemo(() => aggregateBusinessData(businessList), [businessList]);
+  } = useMemo(() => aggregateBusinessData(clientBusinessList), [clientBusinessList]);
 
   const yMax1 = Math.ceil(max1 / 5) * 5 || 5;
 
   const { arr: chart2Data, total: totalInCategories } = useMemo(
-    () => aggregateBusinessCategory(businessList),
-    [businessList]
+    () => aggregateBusinessCategory(clientBusinessList),
+    [clientBusinessList]
   );
 
   const bestMonthObj =

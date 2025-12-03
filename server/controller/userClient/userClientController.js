@@ -22,13 +22,23 @@ export const viewUsersClientAction = async (req, res) => {
     }
 };
 export const viewAllUsersClientAction = async (req, res) => {
-    try {
-        const allUser = await viewAllUserClients();
-        res.send(allUser);
-    } catch (error) {
-        console.error(error);
-        return res.status(BAD_REQUEST.code).send({ message: error.message });
-    }
+  try {
+    const pageNo = parseInt(req.query.pageNo) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+
+    const { list, total } = await viewAllUserClients(pageNo, pageSize);
+
+    res.send({
+      data: list,
+      total,
+      pageNo,
+      pageSize,
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(BAD_REQUEST.code).send({ message: error.message });
+  }
 };
 export const updateUsersClientAction = async (req, res) => {
     try {

@@ -7,12 +7,16 @@ import {
 
 const initialState = {
   users: [],
+  total: 0,
+  pageNo: 1,
+  pageSize: 10,
   loading: false,
   error: null,
 };
 
 export default function userReducer(state = initialState, action) {
   switch (action.type) {
+
     case FETCH_USERS_REQUEST:
     case CREATE_USER_REQUEST:
     case EDIT_USER_REQUEST:
@@ -20,10 +24,23 @@ export default function userReducer(state = initialState, action) {
       return { ...state, loading: true, error: null };
 
     case FETCH_USERS_SUCCESS:
-      return { ...state, loading: false, users: action.payload, error: null };
+      return {
+        ...state,
+        loading: false,
+        users: action.payload.data,
+        total: action.payload.total,
+        pageNo: action.payload.pageNo,
+        pageSize: action.payload.pageSize,
+        error: null
+      };
 
     case CREATE_USER_SUCCESS:
-      return { ...state, loading: false, users: [...state.users, action.payload], error: null };
+      return {
+        ...state,
+        loading: false,
+        users: [...state.users, action.payload],
+        error: null
+      };
 
     case EDIT_USER_SUCCESS:
       return {
@@ -39,9 +56,10 @@ export default function userReducer(state = initialState, action) {
       return {
         ...state,
         loading: false,
-        users: state.users.map(user =>
-          user._id === action.payload._id ? action.payload : user
-        ), error: null
+        users: state.users.filter(user =>
+          user._id !== action.payload._id
+        ),
+        error: null
       };
 
     case FETCH_USERS_FAILURE:
@@ -54,4 +72,3 @@ export default function userReducer(state = initialState, action) {
       return state;
   }
 }
-

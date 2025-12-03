@@ -40,8 +40,15 @@ export const viewCategoryAction = async (req, res) => {
  */
 export const viewAllCategoryAction = async (req, res) => {
   try {
-    const allCategory = await viewAllCategory();
-    res.send(allCategory);
+    const pageNo = parseInt(req.query.pageNo) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    const { list, total } = await viewAllCategory(pageNo, pageSize);
+    res.send({
+      data: list,
+      total,
+      pageNo,
+      pageSize
+    }); 
   } catch (error) {
     console.error(error);
     return res.status(BAD_REQUEST.code).send({ message: error.message });

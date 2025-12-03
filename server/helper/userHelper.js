@@ -76,21 +76,26 @@ export const viewUser = async (id) => {
     throw error;
   }
 };
-export const viewAllUser = async () => {
+export const viewAllUser = async (pageNo, pageSize) => {
   try {
-    const users = await userModel.find().lean();
-    if (!users || users.length === 0) {
-      throw new Error("No users found");
-    }
+    const query = {};
 
-    const usersWithSignedUrls = users.map((user) => {
+    const total = await userModel.countDocuments(query);
+
+    const users = await userModel
+      .find(query)
+      .skip((pageNo - 1) * pageSize)
+      .limit(pageSize)
+      .lean();
+
+    const list = users.map((user) => {
       if (user.userProfileKey) {
         user.userProfile = getSignedUrlByKey(user.userProfileKey);
       }
       return user;
     });
 
-    return usersWithSignedUrls;
+    return { list, total };
   } catch (error) {
     console.error("Error fetching users:", error);
     throw error;

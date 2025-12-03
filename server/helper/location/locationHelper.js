@@ -36,17 +36,23 @@ export const viewLocation = async (id) => {
         throw error;
     }
 };
-export const viewAllLocation = async () => {
-    try {
-        const location = await locationModel.find().lean();
-        if (!location) {
-            throw new Error("No location found");
-        }
-        return location;
-    } catch (error) {
-        console.error("Error fetching location:", error);
-        throw error;
-    }
+export const viewAllLocation = async (pageNo, pageSize) => {
+  try {
+    const query = {};
+
+    const total = await locationModel.countDocuments(query);
+
+    const locations = await locationModel
+      .find(query)
+      .skip((pageNo - 1) * pageSize)
+      .limit(pageSize)
+      .lean();
+
+    return { list: locations, total };
+  } catch (error) {
+    console.error("Error fetching location:", error);
+    throw error;
+  }
 };
 export const updateLocation = async (id, data) => {
     if (!ObjectId.isValid(id)) throw new Error("Invalid user ID");

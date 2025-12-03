@@ -37,17 +37,24 @@ export const viewRoles = async (id) => {
     }
 };
 
-export const viewAllRoles = async () => {
-    try {
-        const roles = await rolesModel.find().lean();
-        if (!roles) {
-            throw new Error("No roles found");
-        }
-        return roles;
-    } catch (error) {
-        console.error("Error fetching roles:", error);
-        throw error;
-    }
+export const viewAllRoles = async (pageNo, pageSize) => {
+  try {
+    const query = {};
+
+    const total = await rolesModel.countDocuments(query);
+
+    const roles = await rolesModel
+      .find(query)
+      .skip((pageNo - 1) * pageSize)
+      .limit(pageSize)
+      .lean();
+
+    return { list: roles, total };
+
+  } catch (error) {
+    console.error("Error fetching roles:", error);
+    throw error;
+  }
 };
 
 export const updateRoles = async (id, data) => {

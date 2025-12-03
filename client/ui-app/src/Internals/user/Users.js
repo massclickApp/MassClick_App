@@ -27,7 +27,7 @@ export default function User() {
   const fileInputRef = useRef();
   const [preview, setPreview] = useState(null);
 
-  const { users = [], loading, error } = useSelector((state) => state.userReducer || {});
+  const { users = [], total = 0, loading, error } = useSelector((state) => state.userReducer || {});
   const { roles = [] } = useSelector((state) => state.rolesReducer || {});
   const [isEditMode, setIsEditMode] = useState(false);
   const [editUserId, setEditUserId] = useState(null);
@@ -402,12 +402,19 @@ const userList = [
 
       </div>
 
-                <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
-          User Table
-        </Typography>
-        <Box sx={{ width: "100%" }}>
-          <CustomizedTable data={rows} columns={userList} />
-        </Box>
+      <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
+        User Table
+      </Typography>
+      <Box sx={{ width: "100%" }}>
+        <CustomizedTable
+          data={rows}
+          columns={userList}
+          total={total}
+          fetchData={(pageNo, pageSize) =>
+            dispatch(getAllUsers({ pageNo, pageSize }))
+          }
+        />
+      </Box>
 
       <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
         <DialogTitle>Confirm Delete</DialogTitle>

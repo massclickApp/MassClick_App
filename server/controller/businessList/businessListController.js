@@ -1,5 +1,7 @@
-import { createBusinessList, viewBusinessList, viewAllBusinessList,viewAllClientBusinessList, updateBusinessList,getTrendingSearches, deleteBusinessList,activeBusinessList } from "../../helper/businessList/businessListHelper.js";
+import { createBusinessList, viewBusinessList, viewAllBusinessList, viewAllClientBusinessList, updateBusinessList, getTrendingSearches, deleteBusinessList, activeBusinessList } from "../../helper/businessList/businessListHelper.js";
 import { BAD_REQUEST } from "../../errorCodes.js";
+import businessListModel from "../../model/businessList/businessListModel.js";
+import { getSignedUrlByKey } from "../../s3Uploder.js";
 
 export const addBusinessListAction = async (req, res) => {
   try {
@@ -34,9 +36,18 @@ export const viewBusinessListAction = async (req, res) => {
 export const viewAllBusinessListAction = async (req, res) => {
   try {
     const { userRole, userId } = req.authUser; 
-    
-    const allBusinessList = await viewAllBusinessList(userRole, userId);
-    res.send(allBusinessList);
+    const pageNo = parseInt(req.query.pageNo) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+
+    const { list, total } = await viewAllBusinessList(userRole, userId, pageNo, pageSize);
+
+    res.send({
+      data: list,
+      total,
+      pageNo,
+      pageSize
+    });
+
   } catch (error) {
     console.error("Error in viewAllBusinessListAction:", error);
     return res.status(BAD_REQUEST.code).send({ message: error.message });
@@ -51,6 +62,136 @@ export const viewAllClientBusinessListAction = async (req, res) => {
         return res.status(BAD_REQUEST.code).send({ message: error.message });
     }
 };
+
+
+export const getSuggestionsController = async (req, res) => {
+  try {
+    const search = req.query.search || "";
+
+    if (search.trim().length < 2) return res.send([]);
+
+    const regex = new RegExp(search.trim(), "i");
+
+    const suggestions = await businessListModel.find(
+      {
+        businessesLive: true,
+        $or: [
+          { businessName: regex },
+          { category: regex },
+          { keywords: regex },
+          { location: regex },
+          { locationDetails: regex },
+          { street: regex },
+          { plotNumber: regex },
+          { pincode: regex },
+        ],
+      },
+      {
+        businessName: 1,
+        category: 1,
+        location: 1,
+        locationDetails: 1,
+        street: 1,
+        pincode: 1,
+      }
+    ).limit(15);
+
+    res.send(suggestions);
+  } catch (err) {
+    console.error(err);
+    res.status(400).send({ message: err.message });
+  }
+};
+
+
+export const mainSearchController = async (req, res) => {
+  try {
+    const { term = "", location = "", category = "" } = req.query;
+
+    const query = {
+      businessesLive: true,
+      $and: []
+    };
+
+  
+    if (location.trim()) {
+      const loc = new RegExp(location.trim(), "i");
+
+      query.$and.push({
+        $or: [
+          { location: loc },
+          { street: loc },
+          { plotNumber: loc },
+          { pincode: loc },
+          { locationDetails: loc }
+        ]
+      });
+    }
+
+  
+    if (category.trim()) {
+      const cat = new RegExp(category.trim(), "i");
+      query.$and.push({
+        $or: [
+          { category: cat },
+          { keywords: cat },
+          { slug: cat },
+          { seoTitle: cat },
+          { seoDescription: cat },
+          { title: cat },
+          { description: cat },
+          { businessName: cat }
+        ]
+      });
+    }
+
+    if (term.trim()) {
+      const t = new RegExp(term.trim(), "i");
+      query.$and.push({
+        $or: [
+          { businessName: t },
+          { category: t },
+          { description: t },
+          { seoDescription: t },
+          { seoTitle: t },
+          { title: t },
+          { slug: t },
+          { keywords: t }
+        ]
+      });
+    }
+
+    if (query.$and.length === 0) delete query.$and;
+
+  
+    const results = await businessListModel.find(query).lean();
+
+    results.forEach((b) => {
+      if (b.bannerImageKey) {
+        b.bannerImage = getSignedUrlByKey(b.bannerImageKey);
+      }
+
+      if (b.businessImagesKey?.length > 0) {
+        b.businessImages = b.businessImagesKey.map((k) =>
+          getSignedUrlByKey(k)
+        );
+      }
+
+      if (b.kycDocumentsKey?.length > 0) {
+        b.kycDocuments = b.kycDocumentsKey.map((k) =>
+          getSignedUrlByKey(k)
+        );
+      }
+    });
+
+    res.send(results);
+
+  } catch (err) {
+    console.error(err);
+    res.status(BAD_REQUEST.code).send({ message: err.message });
+  }
+};
+
 export const updateBusinessListAction = async (req, res) => {
   try {
     const businessId = req.params.id;

@@ -23,8 +23,17 @@ export const viewUsersAction = async (req, res) => {
 };
 export const viewAllUsersAction = async (req, res) => {
   try {
-    const allUser = await viewAllUser();
-    res.send(allUser);
+    const pageNo = parseInt(req.query.pageNo) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+
+    const { list, total } = await viewAllUser(pageNo, pageSize);
+
+    res.send({
+      data: list,
+      total,
+      pageNo,
+      pageSize,
+    });
   } catch (error) {
     console.error(error);
     return res.status(BAD_REQUEST.code).send({ message: error.message });

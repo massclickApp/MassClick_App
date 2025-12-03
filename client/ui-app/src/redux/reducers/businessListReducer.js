@@ -6,18 +6,25 @@ import {
   ACTIVE_BUSINESS_REQUEST, ACTIVE_BUSINESS_SUCCESS, ACTIVE_BUSINESS_FAILURE,
   FETCH_TRENDING_REQUEST, FETCH_TRENDING_SUCCESS, FETCH_TRENDING_FAILURE,
   FETCH_SEARCH_LOGS_REQUEST, FETCH_SEARCH_LOGS_SUCCESS, FETCH_SEARCH_LOGS_FAILURE,
-  FETCH_VIEWBUSINESS_REQUEST, FETCH_VIEWBUSINESS_SUCCESS, FETCH_VIEWBUSINESS_FAILURE
+  FETCH_VIEWBUSINESS_REQUEST, FETCH_VIEWBUSINESS_SUCCESS, FETCH_VIEWBUSINESS_FAILURE,
+  SUGGESTION_BUSINESS_REQUEST, SUGGESTION_BUSINESS_SUCCESS, SUGGESTION_BUSINESS_FAILURE,
+  SEARCH_BUSINESS_REQUEST, SEARCH_BUSINESS_SUCCESS, SEARCH_BUSINESS_FAILURE,
 } from '../actions/userActionTypes';
 
 const initialState = {
   businessList: [],
-  clientBusinessList: [],  
+  total: 0,
+  pageNo: 1,
+  pageSize: 10,
+  clientBusinessList: [],
   loading: false,
   error: null,
 
   trendingList: [],
   trendingLoading: false,
   trendingError: null,
+  backendSuggestions: [],
+  backendSearchResults: [],
 
   searchLogs: [],
   searchLogsLoading: false,
@@ -35,7 +42,16 @@ export default function businessListReducer(state = initialState, action) {
       return { ...state, loading: true, error: null };
 
     case FETCH_BUSINESS_SUCCESS:
-      return { ...state, loading: false, businessList: action.payload, error: null };
+      return {
+        ...state,
+        loading: false,
+        businessList: action.payload.data,
+        total: action.payload.total,
+        pageNo: action.payload.pageNo,
+        pageSize: action.payload.pageSize,
+        error: null,
+      };
+
 
     case CREATE_BUSINESS_SUCCESS:
       return {
@@ -120,6 +136,46 @@ export default function businessListReducer(state = initialState, action) {
         searchLogs: [],
         searchLogsError: action.payload,
       };
+    case SUGGESTION_BUSINESS_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+
+    case SUGGESTION_BUSINESS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        backendSuggestions: action.payload,
+      };
+
+    case SUGGESTION_BUSINESS_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        backendSuggestions: [],
+      };
+
+    case SEARCH_BUSINESS_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+
+    case SEARCH_BUSINESS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        backendSearchResults: action.payload,
+      };
+
+    case SEARCH_BUSINESS_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        backendSearchResults: [],
+      };
+
 
     /** ------------------- DEFAULT ------------------- **/
     default:

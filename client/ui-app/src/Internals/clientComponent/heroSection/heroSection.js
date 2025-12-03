@@ -5,8 +5,9 @@ import MicIcon from "@mui/icons-material/Mic";
 import HistoryToggleOffIcon from "@mui/icons-material/HistoryToggleOff";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  getAllClientBusinessList,
   getAllSearchLogs,
+  getBackendSuggestions,
+  backendMainSearch,
   logSearchActivity,
 } from "../../../redux/actions/businessListAction";
 import { getAllCategory } from "../../../redux/actions/categoryAction";
@@ -15,47 +16,54 @@ import backgroundImage from "../../../assets/background.png";
 import { useNavigate } from "react-router-dom";
 import "./hero.css";
 
-
-
 const CategoryDropdown = ({ label, options, onSelect }) => {
-  const MAX_HEIGHT_PX = 200;
-
+  const MAX_HEIGHT_PX = 220;
   if (!options || options.length === 0) return null;
 
   return (
-    <div className="category-custom-dropdown">
+    <div className="category-custom-dropdown" style={{ zIndex: 1200 }}>
       <div className="trending-label">{label}</div>
-
       <div
         className="options-list-container"
-        style={{ maxHeight: `${MAX_HEIGHT_PX}px` }}
+        style={{
+          maxHeight: `${MAX_HEIGHT_PX}px`,
+          overflowY: "auto",
+        }}
       >
-        {options.map((option, index) => (
-          <div
-            key={index}
-            className="option-item"
-            onClick={() => onSelect(option)}
-          >
-            {label === "RECENT SEARCHES" ? (
-              <HistoryToggleOffIcon className="option-icon" />
-            ) : (
-              <SearchIcon className="option-icon" />
-            )}
-            <span className="option-text-main">
-              {typeof option === "string" ? option : option.businessName}
-            </span>
+        {options.map((option, index) => {
+          const displayText =
+            typeof option === "string"
+              ? option
+              : option.category || option.businessName || option.location || "";
 
-            {typeof option !== "string" && option.category && (
-              <span className="option-text-sub">{option.category}</span>
-            )}
-          </div>
-        ))}
+          return (
+            <div
+              key={index}
+              className="option-item"
+              onClick={() => onSelect(option)}
+            >
+              {label.toLowerCase().includes("location") ? (
+                <LocationOnIcon className="option-icon" />
+              ) : label === "RECENT SEARCHES" ? (
+                <HistoryToggleOffIcon className="option-icon" />
+              ) : (
+                <SearchIcon className="option-icon" />
+              )}
+
+              <span className="option-text-main">{displayText}</span>
+
+              {label === "RECENT SEARCHES" &&
+                typeof option !== "string" &&
+                option.category && (
+                  <span className="option-text-sub">{option.category}</span>
+                )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 };
-
-
 
 const HeroSection = ({
   searchTerm,
@@ -68,28 +76,29 @@ const HeroSection = ({
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const categoryRef = useRef(null);
+  const locationRef = useRef(null);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm || "");
+  const [showLocationDropdown, setShowLocationDropdown] = useState(false);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [debouncedLocation, setDebouncedLocation] = useState("");
 
-  const businessListState = useSelector(
-    (state) => state.businessListReducer || { clientBusinessList: [] }
-  );
-  const { searchLogs = [], clientBusinessList = [] } = businessListState;
-
+  const businessState = useSelector((state) => state.businessListReducer);
+  const { searchLogs = [], backendSuggestions = [] } = businessState;
 
   useEffect(() => {
-    dispatch(getAllClientBusinessList());
-    dispatch(getAllCategory());
     dispatch(getAllSearchLogs());
   }, [dispatch]);
 
-
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (categoryRef.current && !categoryRef.current.contains(event.target)) {
+    const handleClickOutside = (e) => {
+      if (categoryRef.current && !categoryRef.current.contains(e.target)) {
         setIsDropdownOpen(false);
+      }
+      if (locationRef.current && !locationRef.current.contains(e.target)) {
+        setShowLocationDropdown(false);
       }
     };
 
@@ -97,105 +106,128 @@ const HeroSection = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  /* ---------------------------------------------------------
-     3. DEBOUNCE SEARCH TERM FOR SUGGESTIONS
-  ---------------------------------------------------------- */
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(searchTerm || ""), 200);
-    return () => clearTimeout(timer);
+    const t = setTimeout(() => setDebouncedSearch(searchTerm || ""), 250);
+    return () => clearTimeout(t);
   }, [searchTerm]);
 
-  /* ---------------------------------------------------------
-     4. HELPERS
-  ---------------------------------------------------------- */
-  const capitalizeWords = (str) => {
-    if (!str) return "";
-    return str
-      .toLowerCase()
-      .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  };
+  useEffect(() => {
+    if (debouncedSearch.trim().length >= 2) {
+      dispatch(getBackendSuggestions(debouncedSearch));
+    }
+  }, [debouncedSearch, dispatch]);
 
-  // Recent searches, derived from logs
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedLocation(locationName || ""), 250);
+    return () => clearTimeout(t);
+  }, [locationName]);
+
+  useEffect(() => {
+    if (debouncedLocation.trim().length >= 2) {
+      dispatch(getBackendSuggestions(debouncedLocation));
+    }
+  }, [debouncedLocation, dispatch]);
+
   const recentSearchOptions = [
     ...new Set(
       (searchLogs || [])
-        .map((log) => capitalizeWords(log.categoryName))
+        .map((log) => (log.categoryName ? log.categoryName.trim() : ""))
         .filter(Boolean)
     ),
   ];
 
-  // Live suggestions from business list
-  const suggestionOptions =
-    debouncedSearch.trim().length >= 2
-      ? clientBusinessList
-          .filter((business) => {
-            if (business.businessesLive !== true) return false;
-            const value = debouncedSearch.toLowerCase();
-            return (
-              business.businessName?.toLowerCase().includes(value) ||
-              business.category?.toLowerCase().includes(value)
-            );
-          })
-          .slice(0, 10)
-      : [];
+const isLikelyCategorySearch = (text) => {
+  const lower = text.toLowerCase();
 
-  /* ---------------------------------------------------------
-     5. HANDLE SEARCH
-  ---------------------------------------------------------- */
+  return lower.length <= 4 || !lower.includes(" ");
+};
+
+
+ const suggestionCategories = (() => {
+  if (!Array.isArray(backendSuggestions) || backendSuggestions.length === 0)
+    return [];
+
+  const seen = new Set();
+  const list = [];
+
+  const userInput = searchTerm.trim().toLowerCase();
+  const categoryOnly = isLikelyCategorySearch(userInput);
+
+  backendSuggestions.forEach((item) => {
+    if (categoryOnly) {
+      const val = item.category;
+      if (!val) return;
+
+      const text = String(val).trim();
+      if (!text) return;
+
+      const key = text.toLowerCase();
+      if (!seen.has(key)) {
+        seen.add(key);
+        list.push(text);
+      }
+      return;
+    }
+
+    const val = item.businessName || item.category;
+    if (!val) return;
+
+    const text = String(val).trim();
+    if (!text) return;
+
+    const key = text.toLowerCase();
+    if (!seen.has(key)) {
+      seen.add(key);
+      list.push(text);
+    }
+  });
+
+  return list;
+})();
+
+
+  const parsedLocationSuggestions = (() => {
+    if (!Array.isArray(backendSuggestions) || backendSuggestions.length === 0)
+      return [];
+
+    const seen = new Set();
+    const list = [];
+
+    backendSuggestions.forEach((item) => {
+      const locFields = [
+        item.location,
+        item.locationDetails,
+        item.street,
+        item.plotNumber,
+        item.pincode,
+      ];
+
+      locFields.forEach((loc) => {
+        if (!loc) return;
+        const text = String(loc).trim();
+        if (!text) return;
+        const key = text.toLowerCase();
+        if (!seen.has(key)) {
+          seen.add(key);
+          list.push(text);
+        }
+      });
+    });
+
+    return list;
+  })();
+
   const handleSearch = async (e) => {
     e.preventDefault();
 
-    const finalSearchTerm = (searchTerm || "").trim();
-    const logLocation = locationName || "Global";
+    const term = searchTerm.trim();
+    const location = locationName.trim();
+    const category = categoryName.trim();
 
-    const filteredBusinesses = clientBusinessList.filter((business) => {
-      if (business.businessesLive !== true) return false;
+    const response = await dispatch(backendMainSearch(term, location, category));
+    const results = response?.payload || [];
 
-      const term = finalSearchTerm.toLowerCase();
-      const loc = (locationName || "").toLowerCase();
-      const cat = (categoryName || "").toLowerCase();
-
-      const matchesSearchTerm =
-        !term ||
-        (business.businessName &&
-          business.businessName.toLowerCase().includes(term)) ||
-        (business.category &&
-          business.category.toLowerCase().includes(term)) ||
-        (Array.isArray(business.keywords) &&
-          business.keywords.some((keyword) =>
-            keyword.toLowerCase().includes(term)
-          )) ||
-        (business.description &&
-          business.description.toLowerCase().includes(term)) ||
-        (business.seoDescription &&
-          business.seoDescription.toLowerCase().includes(term)) ||
-        (business.seoTitle &&
-          business.seoTitle.toLowerCase().includes(term)) ||
-        (business.title && business.title.toLowerCase().includes(term)) ||
-        (business.slug && business.slug.toLowerCase().includes(term));
-
-      const matchesCategory =
-        !cat ||
-        (business.category &&
-          business.category.toLowerCase() === cat.toLowerCase());
-
-      const matchesLocation =
-        !loc ||
-        [business.location, business.plotNumber, business.street, business.pincode]
-          .filter(Boolean)
-          .some((field) => field.toLowerCase().includes(loc));
-
-      return matchesSearchTerm && matchesCategory && matchesLocation;
-    });
-
-    const derivedCategory =
-      filteredBusinesses.length > 0 && filteredBusinesses[0].category
-        ? filteredBusinesses[0].category
-        : categoryName || finalSearchTerm || "All Categories";
-
-    const logCategory = derivedCategory;
+    if (setSearchResults) setSearchResults(results);
 
     const authUser = JSON.parse(localStorage.getItem("authUser") || "{}");
     const userId = authUser?._id;
@@ -206,20 +238,13 @@ const HeroSection = ({
       email: authUser?.email,
     };
 
-    if (userId && finalSearchTerm) {
-      dispatch(logUserSearch(userId, finalSearchTerm, logLocation, logCategory));
+    if (userId && term) {
+      dispatch(logUserSearch(userId, term, location || "Global", category || "All Categories"));
     }
 
-    dispatch(logSearchActivity(logCategory, logLocation, userDetails, finalSearchTerm));
+    dispatch(logSearchActivity(category || "All Categories", location || "Global", userDetails, term));
 
-    if (setSearchResults) {
-      setSearchResults(filteredBusinesses);
-    }
-
-    const locSlug = (locationName || "All").replace(/\s+/g, "");
-    const termSlug = (finalSearchTerm || "All").replace(/\s+/g, "");
-
-    navigate(`/${locSlug}/${termSlug}`, { state: { results: filteredBusinesses } });
+    navigate(`/${location || "All"}/${term || "All"}`, { state: { results } });
   };
 
   return (
@@ -243,14 +268,30 @@ const HeroSection = ({
         </p>
 
         <form className="search-bar-container" onSubmit={handleSearch}>
-          <div className="input-group location-group">
+          <div className="input-group location-group" ref={locationRef}>
             <LocationOnIcon className="input-adornment start" />
             <input
               className="custom-input"
               placeholder="Enter location manually..."
               value={locationName}
-              onChange={(e) => setLocationName(e.target.value)}
+              onChange={(e) => {
+                setLocationName(e.target.value);
+                setShowLocationDropdown(true);
+              }}
+              onFocus={() => setShowLocationDropdown(true)}
             />
+
+            {showLocationDropdown && parsedLocationSuggestions.length > 0 && (
+              <CategoryDropdown
+                label="LOCATION SUGGESTIONS"
+                options={parsedLocationSuggestions}
+                onSelect={(val) => {
+                  const chosen = typeof val === "string" ? val : String(val);
+                  setLocationName(chosen);
+                  setShowLocationDropdown(false);
+                }}
+              />
+            )}
           </div>
 
           <div className="input-group search-group" ref={categoryRef}>
@@ -269,8 +310,10 @@ const HeroSection = ({
               <CategoryDropdown
                 label="RECENT SEARCHES"
                 options={recentSearchOptions}
-                onSelect={(value) => {
-                  setSearchTerm(value);
+                onSelect={(val) => {
+                  const chosen = typeof val === "string" ? val : String(val);
+                  setSearchTerm(chosen);
+                  if (setCategoryName) setCategoryName(chosen);
                   setIsDropdownOpen(false);
                 }}
               />
@@ -279,16 +322,11 @@ const HeroSection = ({
             {isDropdownOpen && searchTerm.trim().length >= 2 && (
               <CategoryDropdown
                 label="SUGGESTIONS"
-                options={suggestionOptions}
-                onSelect={(business) => {
-                  if (typeof business === "string") {
-                    setSearchTerm(business);
-                  } else {
-                    setSearchTerm(business.businessName);
-                    if (business.category && setCategoryName) {
-                      setCategoryName(business.category);
-                    }
-                  }
+                options={suggestionCategories}
+                onSelect={(val) => {
+                  const chosen = typeof val === "string" ? val : String(val);
+                  setSearchTerm(chosen);
+                  if (setCategoryName) setCategoryName(chosen);
                   setIsDropdownOpen(false);
                 }}
               />

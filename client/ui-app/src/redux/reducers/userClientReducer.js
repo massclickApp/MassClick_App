@@ -7,20 +7,33 @@ import {
 
 const initialState = {
   userClient: [],
+  total: 0,
+  pageNo: 1,
+  pageSize: 10,
   loading: false,
   error: null,
 };
 
 export default function userClientReducer(state = initialState, action) {
   switch (action.type) {
+
     case FETCH_USERSCLIENT_REQUEST:
     case CREATE_USERCLIENT_REQUEST:
     case EDIT_USERCLIENT_REQUEST:
     case DELETE_USERCLIENT_REQUEST:
       return { ...state, loading: true, error: null };
 
+    // ⭐ ONLY ONE SUCCESS CASE
     case FETCH_USERSCLIENT_SUCCESS:
-      return { ...state, loading: false, userClient: action.payload, error: null };
+      return {
+        ...state,
+        loading: false,
+        userClient: action.payload.data,
+        total: action.payload.total,
+        pageNo: action.payload.pageNo,
+        pageSize: action.payload.pageSize,
+        error: null,
+      };
 
     case FETCH_USERSCLIENT_FAILURE:
     case CREATE_USERCLIENT_FAILURE:
@@ -29,26 +42,31 @@ export default function userClientReducer(state = initialState, action) {
       return { ...state, loading: false, error: action.payload };
 
     case CREATE_USERCLIENT_SUCCESS:
-      return { ...state, loading: false, userClient: [...state.userClient, action.payload], error: null };
-
-    case EDIT_USERCLIENT_SUCCESS:
       return {
         ...state,
         loading: false,
-        userClient: state.userClient.map((user) =>
-          user._id === action.payload._id ? action.payload : user
-        ),
-        error: null,
+        userClient: [...state.userClient, action.payload],
+        error: null
       };
 
-    case DELETE_USERCLIENT_SUCCESS:
+    case EDIT_USERCLIENT_SUCCESS:
       return {
         ...state,
         loading: false,
         userClient: state.userClient.map(user =>
           user._id === action.payload._id ? action.payload : user
         ),
-        error: null,
+        error: null
+      };
+
+    case DELETE_USERCLIENT_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        userClient: state.userClient.filter(user =>
+          user._id !== action.payload._id
+        ),
+        error: null
       };
 
     default:

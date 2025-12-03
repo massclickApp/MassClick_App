@@ -9,36 +9,42 @@ import { getClientToken } from "./clientAuthAction.js";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-export const getAllCategory = () => async (dispatch) => {
+
+const getValidToken = async (dispatch) => {
+  let token = localStorage.getItem("accessToken");
+  if (!token) token = await dispatch(getClientToken());
+  if (!token) throw new Error("No valid token found");
+  return token;
+};
+
+export const getAllCategory = ({ pageNo = 1, pageSize = 10 } = {}) => async (dispatch) => {
   dispatch({ type: FETCH_CATEGORY_REQUEST });
 
   try {
-    let token = localStorage.getItem("accessToken");
+    const token = await getValidToken(dispatch);
 
-    if (!token) {
-      token = await dispatch(getClientToken()); 
-    }
+    const response = await axios.get(
+      `${API_URL}/category/viewall?pageNo=${pageNo}&pageSize=${pageSize}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
 
-    if (!token) {
-      throw new Error("Unable to get access token.");
-    }
-
-    const response = await axios.get(`${API_URL}/category/viewall`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    let category = [];
-    if (Array.isArray(response.data)) {
-      category = response.data;
-    } else if (response.data?.data) {
-      category = response.data.data;
-    } else if (response.data?.clients) {
-      category = response.data.clients;
-    }
+    // let category = [];
+    // if (Array.isArray(response.data)) {
+    //   category = response.data;
+    // } else if (response.data?.data) {
+    //   category = response.data.data;
+    // } else if (response.data?.clients) {
+    //   category = response.data.clients;
+    // }
 
     dispatch({
       type: FETCH_CATEGORY_SUCCESS,
-      payload: category,
+      payload: {
+        data: response.data.data,
+        total: response.data.total,
+        pageNo,
+        pageSize,
+      }
     });
   } catch (error) {
     dispatch({

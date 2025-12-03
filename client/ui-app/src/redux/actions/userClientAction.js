@@ -9,25 +9,25 @@ import {
 const API_URL = process.env.REACT_APP_API_URL;
 
 
-export const getAllUsersClient = () => async (dispatch) => {
+export const getAllUsersClient = ({ pageNo = 1, pageSize = 10 } = {}) => async (dispatch) => {
   dispatch({ type: FETCH_USERSCLIENT_REQUEST });
   try {
     const token = localStorage.getItem("accessToken");
-    const response = await axios.get(`${API_URL}/userclient/viewall`, {
-      headers: { Authorization: `Bearer ${token}` },
+
+    const response = await axios.get(
+      `${API_URL}/userclient/viewall?pageNo=${pageNo}&pageSize=${pageSize}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    dispatch({
+      type: FETCH_USERSCLIENT_SUCCESS,
+      payload: {
+        data: response.data.data,
+        total: response.data.total,
+        pageNo,
+        pageSize,
+      }
     });
-
-
-    let users = [];
-    if (Array.isArray(response.data)) {
-      users = response.data;
-    } else if (response.data?.data) {
-      users = response.data.data;
-    } else if (response.data?.clients) {
-      users = response.data.clients;
-    }
-
-    dispatch({ type: FETCH_USERSCLIENT_SUCCESS, payload: users });
   } catch (error) {
     dispatch({
       type: FETCH_USERSCLIENT_FAILURE,

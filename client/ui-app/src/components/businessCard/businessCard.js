@@ -4,22 +4,22 @@ import StoreIcon from "@mui/icons-material/Store";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import WhatshotIcon from "@mui/icons-material/Whatshot";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllBusinessList } from "../../redux/actions/businessListAction";
+import { getAllClientBusinessList } from "../../redux/actions/businessListAction";
 
 import "./businessCard.css";
 
 export default function SelectActionCard() {
     const dispatch = useDispatch();
 
-    const { businessList = [] } = useSelector(
+    const { clientBusinessList = [] } = useSelector(
         (state) => state.businessListReducer || {}
     );
 
     useEffect(() => {
-        dispatch(getAllBusinessList());
+        dispatch(getAllClientBusinessList());
     }, [dispatch]);
 
-    const list = Array.isArray(businessList) ? businessList : [];
+    const list = Array.isArray(clientBusinessList) ? clientBusinessList : [];
 
     /* ------------------------------------------------------------
        1. Today's Count

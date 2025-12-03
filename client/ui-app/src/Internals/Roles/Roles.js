@@ -29,7 +29,7 @@ import CustomizedTable from "../../components/Table/CustomizedTable";
 
 export default function Roles() {
     const dispatch = useDispatch();
-    const { roles = [], loading, error } = useSelector(
+    const { roles = [], total = 0, loading, error } = useSelector(
         (state) => state.rolesReducer || {}
     );
 
@@ -215,12 +215,19 @@ export default function Roles() {
                 </p>}
             </div>
 
-            {/* 🔹 Roles Table Section */}
-                <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
+            <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
                 Roles Table
             </Typography>
             <Box sx={{ width: "100%" }}>
-                <CustomizedTable data={rows} columns={rolesList} />
+                <CustomizedTable
+                    data={rows}
+                    columns={rolesList}
+                    total={total}
+                    fetchData={(pageNo, pageSize) =>
+                        dispatch(getAllRoles({ pageNo, pageSize }))
+                    }
+                />
+
             </Box>
 
             {/* 🔹 Delete Confirmation Dialog */}

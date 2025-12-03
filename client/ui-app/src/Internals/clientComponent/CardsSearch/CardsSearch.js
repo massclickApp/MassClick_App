@@ -4,23 +4,22 @@ import { useNavigate } from "react-router-dom";
 import "./CardsSearch.css";
 
 import { getAllLocation } from "../../../redux/actions/locationAction";
-import { getAllBusinessList, getAllClientBusinessList, getAllSearchLogs, logSearchActivity } from "../../../redux/actions/businessListAction";
+import {
+  getAllSearchLogs,
+  getBackendSuggestions,
+  backendMainSearch,
+  logSearchActivity,
+} from "../../../redux/actions/businessListAction";
 import { logUserSearch } from "../../../redux/actions/otpAction";
 import { getAllCategory } from "../../../redux/actions/categoryAction";
 import Tooltip from "@mui/material/Tooltip";
 import { categoryBarHelpers } from "../categoryBar";
-import {
-  Box,
-  Typography,
-  Button,
-  IconButton,
-} from "@mui/material";
+import { Box, Typography, Button, IconButton } from "@mui/material";
 import MicIcon from "@mui/icons-material/Mic";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
-import HistoryToggleOffIcon from '@mui/icons-material/HistoryToggleOff';
+import HistoryToggleOffIcon from "@mui/icons-material/HistoryToggleOff";
 import MI from "../../../assets/Mi.png";
 import AddBusinessModel from "../AddBusinessModel";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -32,22 +31,29 @@ const CategoryDropdown = ({ options, setSearchTerm, closeDropdown }) => {
   const handleOptionClick = (value) => {
     setSearchTerm(value);
     closeDropdown();
+    document.activeElement.blur();   
   };
 
-  if (options.length === 0) return null;
+  if (!options || options.length === 0) return null;
 
   return (
     <div className="category-custom-dropdown">
       <div className="trending-label">RECENT SEARCHES</div>
+
       <div className="options-list-container" style={{ maxHeight: `${MAX_HEIGHT_PX}px` }}>
         {options.map((option, index) => (
           <div
             key={index}
             className="option-item"
             onClick={() => handleOptionClick(option)}
-            style={{ display: 'flex', alignItems: 'center', padding: '4px 8px', cursor: 'pointer' }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              padding: "4px 8px",
+              cursor: "pointer",
+            }}
           >
-            <HistoryToggleOffIcon style={{ marginRight: '6px', color: '#ff7b00' }} />
+            <HistoryToggleOffIcon style={{ marginRight: "6px", color: "#ff7b00" }} />
             <span>{option}</span>
           </div>
         ))}
@@ -57,22 +63,22 @@ const CategoryDropdown = ({ options, setSearchTerm, closeDropdown }) => {
 };
 
 
-const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetLocationName, setSearchResults }) => {
 
+const CardsSearch = ({
+  locationName: propLocationName,
+  setLocationName: propSetLocationName,
+  setSearchResults,
+}) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-    const { openDrawer } = useDrawer();
+  const { openDrawer } = useDrawer();
 
+  const businessListState = useSelector((state) => state.businessListReducer || {});
+  const categoryState = useSelector((state) => state.categoryReducer || { category: [] });
 
-  const businessListState = useSelector(
-    (state) => state.businessListReducer || { clientBusinessList: [] }
-  );
-  const categoryState = useSelector(
-    (state) => state.categoryReducer || { category: [] }
-  );
-
-  const { searchLogs, clientBusinessList = [] } = businessListState;
+  const { searchLogs = [], backendSuggestions = [] } = businessListState;
   const { category = [] } = categoryState;
+
 
   const [internalLocationName, setInternalLocationName] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -80,163 +86,238 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
   const [isVisible, setIsVisible] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const locationName = propLocationName !== undefined ? propLocationName : internalLocationName;
-  const setLocationName = propSetLocationName !== undefined ? propSetLocationName : setInternalLocationName;
-  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
-  const categoryRef = useRef(null);
+  const locationName = propLocationName ?? internalLocationName;
+  const setLocationName = propSetLocationName ?? setInternalLocationName;
 
-  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+  const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
+
+  const categoryRef = useRef(null);
+  const locationRef = useRef(null);
+
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [debouncedLocation, setDebouncedLocation] = useState("");
+
+
 
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(searchTerm), 200);
-    return () => clearTimeout(timer);
+    const t = setTimeout(() => setDebouncedSearch(searchTerm || ""), 200);
+    return () => clearTimeout(t);
   }, [searchTerm]);
 
   useEffect(() => {
-    dispatch(getAllLocation());
-    dispatch(getAllClientBusinessList());
-    dispatch(getAllCategory());
-    dispatch(getAllSearchLogs());
+    const t = setTimeout(() => setDebouncedLocation(locationName || ""), 200);
+    return () => clearTimeout(t);
+  }, [locationName]);
 
+
+  // ------------------------------
+  // INITIAL FETCH
+  // ------------------------------
+  useEffect(() => {
+    dispatch(getAllLocation());
+    dispatch(getAllSearchLogs());
+    dispatch(getAllCategory());
   }, [dispatch]);
 
+
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (categoryRef.current && !categoryRef.current.contains(event.target)) {
+    if (debouncedSearch.trim().length >= 2) {
+      dispatch(getBackendSuggestions(debouncedSearch.trim()));
+    }
+  }, [debouncedSearch, dispatch]);
+
+  useEffect(() => {
+    if (debouncedLocation.trim().length >= 2) {
+      dispatch(getBackendSuggestions(debouncedLocation.trim()));
+    }
+  }, [debouncedLocation, dispatch]);
+
+
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (categoryRef.current && !categoryRef.current.contains(e.target)) {
         setIsCategoryDropdownOpen(false);
+      }
+      if (locationRef.current && !locationRef.current.contains(e.target)) {
+        setIsLocationDropdownOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [categoryRef]);
+  }, []);
 
-  const capitalizeWords = (str) => {
-    if (!str) return '';
-    return str.toLowerCase().split(' ').map(word => {
-      return word.charAt(0).toUpperCase() + word.slice(1);
-    }).join(' ');
+
+  // ------------------------------
+  // HELPERS
+  // ------------------------------
+  const capitalizeWords = (str) =>
+    str
+      .toLowerCase()
+      .split(" ")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ");
+
+  const categoryOptions = [
+    ...new Set(
+      (searchLogs || [])
+        .map((log) => (log.categoryName ? capitalizeWords(log.categoryName) : ""))
+        .filter(Boolean)
+    ),
+  ];
+
+  const isLikelyCategorySearch = (text) => {
+    const lower = text.toLowerCase();
+    return lower.length <= 4 || !lower.includes(" ");
   };
-  const categoryOptions = [...new Set(
-    businessListState.searchLogs.map(log => capitalizeWords(log.categoryName))
-  )].filter(Boolean);
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
 
-    const finalSearchTerm = searchTerm?.trim();
-    const logLocation = locationName || "Global";
+  // ------------------------------
+  // CATEGORY SUGGESTION BUILDER
+  // ------------------------------
+  const suggestionCategories = (() => {
+    if (!backendSuggestions.length) return [];
 
-    const filteredBusinesses = clientBusinessList.filter((business) => {
+    const seen = new Set();
+    const list = [];
+    const userInput = searchTerm.trim().toLowerCase();
 
-      if (business.businessesLive !== true) return false;
+    const categoryOnly = isLikelyCategorySearch(userInput);
 
-      const matchesSearchTerm =
-        !finalSearchTerm ||
-        (business.businessName &&
-          business.businessName.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
-        (business.category &&
-          business.category.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
-        (Array.isArray(business.keywords) &&
-          business.keywords.some((keyword) =>
-            keyword.toLowerCase().includes(finalSearchTerm.toLowerCase())
-          )) ||
-        (business.description &&
-          business.description.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
-        (business.seoDescription &&
-          business.seoDescription.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
-        (business.seoTitle &&
-          business.seoTitle.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
-        (business.title &&
-          business.title.toLowerCase().includes(finalSearchTerm.toLowerCase())) ||
-        (business.slug &&
-          business.slug.toLowerCase().includes(finalSearchTerm.toLowerCase()));
+    backendSuggestions.forEach((item) => {
+      if (categoryOnly) {
+        const val = item.category;
+        if (!val) return;
 
-      const matchesCategory =
-        !categoryName ||
-        (business.category &&
-          business.category.toLowerCase() === categoryName.toLowerCase());
+        const key = val.toLowerCase();
+        if (!seen.has(key)) {
+          seen.add(key);
+          list.push(val);
+        }
+        return;
+      }
 
-      const matchesLocation =
-        !locationName ||
-        [business.location, business.plotNumber, business.street, business.pincode]
-          .filter(Boolean)
-          .some((field) =>
-            field.toLowerCase().includes(locationName.toLowerCase())
-          );
+      const val = item.businessName || item.category;
+      if (!val) return;
 
-      return matchesSearchTerm && matchesCategory && matchesLocation;
+      const key = val.toLowerCase();
+      if (!seen.has(key)) {
+        seen.add(key);
+        list.push(val);
+      }
     });
 
-    const derivedCategory =
-      filteredBusinesses.length > 0 && filteredBusinesses[0].category
-        ? filteredBusinesses[0].category
-        : categoryName || finalSearchTerm || "All Categories";
+    return list;
+  })();
 
-    const logCategory = derivedCategory;
 
-    let authUser = JSON.parse(localStorage.getItem("authUser") || "{}");
-    let userId = authUser?._id;
+  const parsedLocationSuggestions = (() => {
+    if (!backendSuggestions.length) return [];
 
-   const userDetails = {
+    const seen = new Set();
+    const list = [];
+
+    backendSuggestions.forEach((item) => {
+      const locFields = [
+        item.location,
+        item.locationDetails,
+        item.street,
+        item.plotNumber,
+        item.pincode,
+      ];
+
+      locFields.forEach((loc) => {
+        if (!loc) return;
+        const key = loc.toLowerCase();
+        if (!seen.has(key)) {
+          seen.add(key);
+          list.push(loc);
+        }
+      });
+    });
+
+    return list;
+  })();
+
+
+  // ------------------------------
+  // SEARCH HANDLER
+  // ------------------------------
+  const handleSearch = async (e) => {
+    e?.preventDefault?.();
+
+    const term = searchTerm.trim();
+    const location = locationName.trim();
+    const category = categoryName.trim();
+
+    const response = await dispatch(backendMainSearch(term, location, category));
+    const results = response?.payload || [];
+
+    setSearchResults?.(results);
+
+    const authUser = JSON.parse(localStorage.getItem("authUser") || "{}");
+    const userId = authUser?._id;
+
+    const userDetails = {
       userName: authUser?.userName,
       mobileNumber1: authUser?.mobileNumber1,
       mobileNumber2: authUser?.mobileNumber2,
       email: authUser?.email,
     };
 
-    if (userId && finalSearchTerm) {
-      dispatch(logUserSearch(userId, finalSearchTerm, logLocation, logCategory));
+    const logLocation = location || "Global";
+    const derivedCategory = category || term || "All Categories";
+
+    if (userId && term) {
+      dispatch(logUserSearch(userId, term, logLocation, derivedCategory));
     }
-    dispatch(logSearchActivity(logCategory, logLocation, userDetails, finalSearchTerm));
 
-    if (setSearchResults) setSearchResults(filteredBusinesses);
+    dispatch(logSearchActivity(derivedCategory, logLocation, userDetails, term));
 
-    const loc = (locationName || "All").replace(/\s+/g, "");
-    const term = (finalSearchTerm || "All").replace(/\s+/g, "");
-    navigate(`/${loc}/${term}`, { state: { results: filteredBusinesses } });
+    navigate(`/${location || "All"}/${term || "All"}`, { state: { results } });
   };
 
+
+  // ------------------------------
+  // MODAL HANDLERS
+  // ------------------------------
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
 
   const loggedIn = categoryBarHelpers.checkLogin();
 
+
+  // ------------------------------
+  // JSX RETURN
+  // ------------------------------
   return (
     <>
       <header
         className={`search-header ${isVisible ? "visible" : ""}`}
-        style={{ backdropFilter: isVisible ? "blur(8px)" : "none" }}
+        style={{ backdropFilter: "blur(8px)" }}
       >
         <div className="search-header-content">
+
+          {/* --------------------------- LOGO --------------------------- */}
           <div className="logo-section">
             <div className="logo-circle">
-              <Tooltip title="Go to Home Page" arrow placement="bottom">
-
-                <img src={MI} alt="Logo"
+              <Tooltip title="Go to Home Page" arrow>
+                <img
+                  src={MI}
+                  alt="Logo"
                   className="logo-image"
                   onClick={() => (window.location.href = "/home")}
-                  style={{
-                    width: "48px",
-                    height: "48px",
-                    borderRadius: "50%",
-                    objectFit: "cover",
-                    cursor: "pointer",
-                    transition: "transform 0.3s ease",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1.0)")}
                 />
               </Tooltip>
-
             </div>
+
             <Box sx={{ display: "flex", flexDirection: "column" }}>
               <Typography
                 variant="h5"
                 sx={{
                   fontWeight: 800,
-                  fontSize: { xs: "1.2rem", sm: "1.5rem", md: "1.8rem" },
-                  letterSpacing: "0.5px",
-                  lineHeight: 1.1,
                   background: "linear-gradient(45deg, #FF8C00, #FFA500)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
@@ -244,99 +325,135 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
               >
                 Mass<span>click</span>
               </Typography>
-              <Typography
-                sx={{
-                  fontSize: { xs: "0.75rem", sm: "0.9rem" },
-                  color: "text.secondary",
-                  fontWeight: 400,
-                  mt: 0.5,
-                }}
-              >
+
+              <Typography sx={{ color: "text.secondary", mt: 0.5 }}>
                 India's Leading Local Search Engine
               </Typography>
             </Box>
           </div>
 
+
+          {/* --------------------------- SEARCH AREA --------------------------- */}
           <div className="search-area">
-            <div className="input-group location-group">
+
+            {/* --------------------------- LOCATION INPUT --------------------------- */}
+            <div className="input-group location-group" ref={locationRef}>
               <LocationOnIcon className="input-adornment start" />
+
               <input
                 className="custom-input"
                 placeholder="Enter location manually..."
                 value={locationName}
-                onChange={(e) => setLocationName(e.target.value)}
+                onChange={(e) => {
+                  setLocationName(e.target.value);
+                  setIsLocationDropdownOpen(true);
+                }}
+                onFocus={() => setIsLocationDropdownOpen(true)}
               />
+
+              {isLocationDropdownOpen &&
+                parsedLocationSuggestions.length > 0 &&
+                locationName.trim().length >= 1 && (
+                  <div className="category-custom-dropdown" style={{ zIndex: 2000 }}>
+                    <div className="trending-label">LOCATION SUGGESTIONS</div>
+
+                    <div className="options-list-container">
+                      {parsedLocationSuggestions.map((loc, idx) => (
+                        <div
+                          key={idx}
+                          className="option-item"
+                          onClick={() => {
+                            setLocationName(loc);
+                            setIsLocationDropdownOpen(false);
+                            document.activeElement.blur(); // 🔥 close permanently
+                          }}
+                          style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
+                        >
+                          <LocationOnIcon style={{ marginRight: 6, color: "#ff7b00" }} />
+                          <span>{loc}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
             </div>
 
+
+            {/* --------------------------- SEARCH INPUT --------------------------- */}
             <div className="input-group search-group" ref={categoryRef}>
               <input
                 className="custom-input"
                 placeholder="Search for..."
                 value={searchTerm}
                 onChange={(e) => {
-                  const value = e.target.value;
-                  setSearchTerm(value);
+                  setSearchTerm(e.target.value);
                   setIsCategoryDropdownOpen(true);
                 }}
                 onFocus={() => setIsCategoryDropdownOpen(true)}
               />
 
+              {/* Recent Searches */}
               {isCategoryDropdownOpen && searchTerm.trim().length < 2 && (
                 <CategoryDropdown
                   options={categoryOptions}
-                  setSearchTerm={setSearchTerm}
-                  closeDropdown={() => setIsCategoryDropdownOpen(false)}
+                  setSearchTerm={(val) => {
+                    setSearchTerm(val);
+                    setCategoryName(val);
+                    setIsCategoryDropdownOpen(false);
+                    document.activeElement.blur(); // 🔥 fix
+                  }}
+                  closeDropdown={() => {
+                    setIsCategoryDropdownOpen(false);
+                    document.activeElement.blur();
+                  }}
                 />
               )}
 
+              {/* SUGGESTIONS */}
               {isCategoryDropdownOpen && searchTerm.trim().length >= 2 && (
-                <div className="category-custom-dropdown">
+                <div className="category-custom-dropdown" style={{ zIndex: 2000 }}>
                   <div className="trending-label">SUGGESTIONS</div>
-                  <div className="options-list-container" style={{ maxHeight: "200px" }}>
-                    {
-                      clientBusinessList
-                        .filter((business) => {
-                          if (business.businessesLive !== true) return false;
 
-                          const value = debouncedSearch.toLowerCase();
+                  <div className="options-list-container">
+                    {suggestionCategories.slice(0, 10).map((suggestion, idx) => (
+                      <div
+                        key={idx}
+                        className="option-item"
+                        onClick={() => {
+                          setSearchTerm(suggestion);
+                          setCategoryName(suggestion);
+                          setIsCategoryDropdownOpen(false);
 
-                          return (
-                            business.businessName?.toLowerCase().includes(value) ||
-                            business.category?.toLowerCase().includes(value)
-                          );
-                        })
-                        .slice(0, 10)
-                        .map((business, index) => (
-                          <div
-                            key={index}
-                            className="option-item"
-                            onClick={() => {
-                              setSearchTerm(business.businessName);
-                              setIsCategoryDropdownOpen(false);
-                            }}
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              padding: "4px 8px",
-                              cursor: "pointer",
-                            }}
-                          >
-                            <SearchIcon style={{ marginRight: "6px", color: "#ff7b00" }} />
-                            <span>{business.businessName}</span>
-                            <span style={{ marginLeft: "auto", color: "gray", fontSize: "12px" }}>
-                              {business.category}
-                            </span>
-                          </div>
-                        ))}
+                          document.activeElement.blur(); 
+                        }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          padding: "4px 8px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <SearchIcon style={{ marginRight: 6, color: "#ff7b00" }} />
+                        <span>{suggestion}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
+
               <MicIcon className="input-adornment end" />
             </div>
+
+
+            {/* --------------------------- SEARCH BUTTON --------------------------- */}
             <button className="search-btn" onClick={handleSearch}>
-              <span>Search</span> <i className="fa-solid fa-magnifying-glass"></i>
+              <span>Search</span>
+              <i className="fa-solid fa-magnifying-glass"></i>
             </button>
           </div>
+
+
+          {/* --------------------------- RIGHT SIDE BUTTONS --------------------------- */}
           <Box sx={{ display: "flex", alignItems: "center" }}>
             {!loggedIn ? (
               <Button
@@ -346,38 +463,18 @@ const CardsSearch = ({ locationName: propLocationName, setLocationName: propSetL
                 sx={{
                   background: "linear-gradient(45deg, #FF6F00, #F7941D)",
                   color: "white",
-                  textTransform: "none",
-                  fontSize: { xs: "0.9rem", sm: "1rem" },
-                  borderRadius: "30px",
-                  px: { xs: 2.5, sm: 3.5 },
-                  py: { xs: 1, sm: 1.2 },
-                  whiteSpace: "nowrap",
-                  transition: "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
-                  "&:hover": {
-                    background: "linear-gradient(45deg, #cc5a0f, #ff8a2d)",
-                    boxShadow: "0 15px 40px rgba(255, 123, 0, 0.5)",
-                  },
                 }}
               >
                 Business
               </Button>
             ) : (
-              <IconButton
-                onClick={openDrawer}
-                sx={{
-                  color: "gray",
-                  bgcolor: "rgba(0,0,0,0.04)",
-                  "&:hover": {
-                    background: "linear-gradient(45deg, #ea6d11, #ff9c3b)",
-                    color: "white",
-                  },
-                }}
-              >
+              <IconButton onClick={openDrawer}>
                 <AccountCircleIcon sx={{ fontSize: 28 }} />
               </IconButton>
             )}
           </Box>
         </div>
+
         <AddBusinessModel open={isModalOpen} handleClose={handleCloseModal} />
       </header>
     </>

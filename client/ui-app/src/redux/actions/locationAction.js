@@ -4,34 +4,53 @@ import {
   CREATE_LOCATION_REQUEST, CREATE_LOCATION_SUCCESS, CREATE_LOCATION_FAILURE,
   EDIT_LOCATION_REQUEST, EDIT_LOCATION_SUCCESS, EDIT_LOCATION_FAILURE,
   DELETE_LOCATION_REQUEST, DELETE_LOCATION_SUCCESS, DELETE_LOCATION_FAILURE,
-   FETCH_IP_LOCATION_REQUEST,FETCH_IP_LOCATION_SUCCESS,FETCH_IP_LOCATION_FAILURE,
+  FETCH_IP_LOCATION_REQUEST, FETCH_IP_LOCATION_SUCCESS, FETCH_IP_LOCATION_FAILURE,
 } from "../actions/userActionTypes.js";
+import { getClientToken } from "./clientAuthAction.js";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-export const getAllLocation = () => async (dispatch) => {
+const getValidToken = async (dispatch) => {
+  let token = localStorage.getItem("accessToken");
+  if (!token) token = await dispatch(getClientToken());
+  if (!token) throw new Error("No valid token found");
+  return token;
+};
+
+
+export const getAllLocation = ({ pageNo = 1, pageSize = 10 } = {}) => async (dispatch) => {
   dispatch({ type: FETCH_LOCATION_REQUEST });
   try {
-        const token = localStorage.getItem("accessToken");
+    const token = await getValidToken(dispatch);
 
 
     if (!token) {
       throw new Error("No valid access token found");
-    } const response = await axios.get(`${API_URL}/location/viewall`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-
-    let location = [];
-    if (Array.isArray(response.data)) {
-      location = response.data;
-    } else if (response.data?.data) {
-      location = response.data.data;
-    } else if (response.data?.clients) {
-      location = response.data.clients;
     }
+    const response = await axios.get(
+      `${API_URL}/location/viewall?pageNo=${pageNo}&pageSize=${pageSize}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
 
-    dispatch({ type: FETCH_LOCATION_SUCCESS, payload: location });
+
+    // let location = [];
+    // if (Array.isArray(response.data)) {
+    //   location = response.data;
+    // } else if (response.data?.data) {
+    //   location = response.data.data;
+    // } else if (response.data?.clients) {
+    //   location = response.data.clients;
+    // }
+
+    dispatch({
+      type: FETCH_LOCATION_SUCCESS,
+      payload: {
+        data: response.data.data,
+        total: response.data.total,
+        pageNo,
+        pageSize,
+      }
+    });
   } catch (error) {
     dispatch({
       type: FETCH_LOCATION_FAILURE,

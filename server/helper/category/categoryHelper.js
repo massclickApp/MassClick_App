@@ -61,20 +61,27 @@ export const viewCategory = async (id) => {
 /**
  * VIEW ALL CATEGORIES
  */
-export const viewAllCategory = async () => {
+export const viewAllCategory = async (pageNo, pageSize) => {
   try {
-    const categories = await categoryModel.find({ isActive: true }).lean();
+    const query = { isActive: true };
 
-    if (!categories || categories.length === 0) {
-      throw new Error("No categories found");
-    }
+    const total = await categoryModel.countDocuments(query);
 
-    return categories.map((category) => {
+    const categories = await categoryModel
+      .find(query)
+      .skip((pageNo - 1) * pageSize)
+      .limit(pageSize)
+      .lean();
+
+    const list = categories.map((category) => {
       if (category.categoryImageKey) {
         category.categoryImage = getSignedUrlByKey(category.categoryImageKey);
       }
       return category;
     });
+
+    return { list, total };
+
   } catch (error) {
     console.error("Error fetching all categories:", error);
     throw error;

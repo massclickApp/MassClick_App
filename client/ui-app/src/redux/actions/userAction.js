@@ -5,17 +5,37 @@ import {
   EDIT_USER_REQUEST, EDIT_USER_SUCCESS, EDIT_USER_FAILURE,
   DELETE_USER_REQUEST, DELETE_USER_SUCCESS, DELETE_USER_FAILURE
 } from "./userActionTypes";
+import { getClientToken } from "./clientAuthAction.js";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-export const getAllUsers = () => async (dispatch) => {
+const getValidToken = async (dispatch) => {
+  let token = localStorage.getItem("accessToken");
+  if (!token) token = await dispatch(getClientToken());
+  if (!token) throw new Error("No valid token found");
+  return token;
+};
+
+export const getAllUsers = ({ pageNo = 1, pageSize = 10 } = {}) => async (dispatch) => {
   dispatch({ type: FETCH_USERS_REQUEST });
+
   try {
-    const token = localStorage.getItem("accessToken");
-    const response = await axios.get(`${API_URL}/user/viewall`, {
-      headers: { Authorization: `Bearer ${token}` },
+    const token = await getValidToken(dispatch);
+
+    const response = await axios.get(
+      `${API_URL}/user/viewall?pageNo=${pageNo}&pageSize=${pageSize}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    dispatch({
+      type: FETCH_USERS_SUCCESS,
+      payload: {
+        data: response.data.data,
+        total: response.data.total,
+        pageNo,
+        pageSize,
+      }
     });
-    dispatch({ type: FETCH_USERS_SUCCESS, payload: response.data });
   } catch (error) {
     dispatch({
       type: FETCH_USERS_FAILURE,

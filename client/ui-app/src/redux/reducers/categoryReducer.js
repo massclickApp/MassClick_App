@@ -7,6 +7,9 @@ import {
 
 const initialState = {
   category: [],
+  total: 0,
+  pageNo: 1,
+  pageSize: 10,
   loading: false,
   error: null,
 };
@@ -20,10 +23,23 @@ export default function categoryReducer(state = initialState, action) {
       return { ...state, loading: true, error: null };
 
     case FETCH_CATEGORY_SUCCESS:
-      return { ...state, loading: false, category: action.payload, error: null };
+      return {
+        ...state,
+        loading: false,
+        category: action.payload.data, 
+        total: action.payload.total,
+        pageNo: action.payload.pageNo,
+        pageSize: action.payload.pageSize,
+        error: null
+      };
 
     case CREATE_CATEGORY_SUCCESS:
-      return { ...state, loading: false, category: [...state.category, action.payload], error: null };
+      return {
+        ...state,
+        loading: false,
+        category: [...state.category, action.payload],
+        error: null,
+      };
 
     case EDIT_CATEGORY_SUCCESS:
       return {
@@ -39,9 +55,10 @@ export default function categoryReducer(state = initialState, action) {
       return {
         ...state,
         loading: false,
-        category: state.category.map(cat =>
-          cat._id === action.payload._id ? action.payload : cat
-        ), error: null,
+        category: state.category.filter(cat =>
+          cat._id !== action.payload._id
+        ),
+        error: null,
       };
 
     case FETCH_CATEGORY_FAILURE:

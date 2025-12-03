@@ -23,7 +23,16 @@ export default function locationReducer(state = initialState, action) {
       return { ...state, loading: true, error: null };
 
     case FETCH_LOCATION_SUCCESS:
-      return { ...state, loading: false, location: action.payload };
+      return {
+        ...state,
+        loading: false,
+        location: action.payload.data,
+        total: action.payload.total,
+        pageNo: action.payload.pageNo,
+        pageSize: action.payload.pageSize,
+        error: null
+      };
+
 
     case CREATE_LOCATION_SUCCESS:
       return { ...state, loading: false, location: [...state.location, action.payload] };

@@ -21,14 +21,25 @@ export const viewRolesAction = async (req, res) => {
         return res.status(BAD_REQUEST.code).send({ message: error.message });
     }
 };
+
 export const viewAllRolesAction = async (req, res) => {
-    try {
-        const allRoles = await viewAllRoles();
-        res.send(allRoles);
-    } catch (error) {
-        console.error(error);
-        return res.status(BAD_REQUEST.code).send({ message: error.message });
-    }
+  try {
+    const pageNo = parseInt(req.query.pageNo) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+
+    const { list, total } = await viewAllRoles(pageNo, pageSize);
+
+    res.send({
+      data: list,
+      total,
+      pageNo,
+      pageSize
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(BAD_REQUEST.code).send({ message: error.message });
+  }
 };
 export const updateRolesAction = async (req, res) => {
     try {

@@ -7,6 +7,9 @@ import {
 
 const initialState = {
   roles: [],
+  total: 0,
+  pageNo: 1,
+  pageSize: 10,
   loading: false,
   error: null,
 };
@@ -20,15 +23,21 @@ export default function rolesReducer(state = initialState, action) {
       return { ...state, loading: true, error: null };
 
     case FETCH_ROLES_SUCCESS:
-      return { ...state, loading: false, roles: action.payload, error: null };
+      return {
+        ...state,
+        loading: false,
+        roles: action.payload.data,
+        total: action.payload.total,
+        pageNo: action.payload.pageNo,
+        pageSize: action.payload.pageSize,
+        error: null
+      };
 
     case CREATE_ROLES_SUCCESS:
       return {
         ...state,
         loading: false,
-        roles: Array.isArray(action.payload)
-          ? [...state.roles, ...action.payload]
-          : [...state.roles, action.payload],
+        roles: [...state.roles, action.payload],
         error: null,
       };
 
@@ -46,11 +55,12 @@ export default function rolesReducer(state = initialState, action) {
       return {
         ...state,
         loading: false,
-        roles: state.roles.filter((rol) => rol._id !== action.payload._id),
+        roles: state.roles.filter((rol) =>
+          rol._id !== action.payload._id
+        ),
         error: null,
       };
 
-    // Failure states
     case FETCH_ROLES_FAILURE:
     case CREATE_ROLES_FAILURE:
     case EDIT_ROLES_FAILURE:

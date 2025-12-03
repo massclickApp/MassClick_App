@@ -140,7 +140,7 @@ const steps = [
 export default function BusinessList() {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
-  const { businessList = [], loading, error } = useSelector(
+  const { businessList = [], total = 0, loading, error } = useSelector(
     (state) => state.businessListReducer || {}
   );
   const { userClient = [], } = useSelector(
@@ -423,30 +423,30 @@ export default function BusinessList() {
     dispatch(checkPhonePeStatus());
   }, [dispatch]);
 
-const handleChange = (e) => {
-  const { name, value } = e.target;
+  const handleChange = (e) => {
+    const { name, value } = e.target;
 
-  if (name === "category") {
-    const selected = category.find((cat) => cat.category === value);
+    if (name === "category") {
+      const selected = category.find((cat) => cat.category === value);
 
-    setFormData((prev) => ({
-      ...prev,
-      category: value,
+      setFormData((prev) => ({
+        ...prev,
+        category: value,
 
-      keywords: selected?.keywords || [],
+        keywords: selected?.keywords || [],
 
-      slug: selected?.slug || "",
-      seoTitle: selected?.seoTitle || "",
-      seoDescription: selected?.seoDescription || "",
-      title: selected?.title || "",
-      description: selected?.description || "",
-    }));
+        slug: selected?.slug || "",
+        seoTitle: selected?.seoTitle || "",
+        seoDescription: selected?.seoDescription || "",
+        title: selected?.title || "",
+        description: selected?.description || "",
+      }));
 
-    return; 
-  }
+      return;
+    }
 
-  setFormData((prev) => ({ ...prev, [name]: value }));
-};
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
 
   const handleEdit = (row) => {
@@ -566,15 +566,15 @@ const handleChange = (e) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
- if (!validateForm()) {
-    enqueueSnackbar("Please fill all required required fields before proceeding.", {
-      variant: "error",
-      autoHideDuration: 3000,
-    });
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    return;
-  }
+
+    if (!validateForm()) {
+      enqueueSnackbar("Please fill all required required fields before proceeding.", {
+        variant: "error",
+        autoHideDuration: 3000,
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
     const kycBase64 = await Promise.all(
       kycFiles.map(
         (file) =>
@@ -1500,7 +1500,15 @@ const handleChange = (e) => {
         BusinessList Table
       </Typography>
       <Box sx={{ width: "100%" }}>
-        <CustomizedTable data={rows} columns={businessListTable} />
+        <CustomizedTable
+          data={rows}
+          total={total}
+          columns={businessListTable}
+          fetchData={(pageNo, pageSize) =>
+            dispatch(getAllBusinessList({ pageNo, pageSize }))
+          }
+
+        />
       </Box>
 
       <Dialog open={deleteDialog.open} onClose={() => setDeleteDialog({ open: false, id: null, name: "" })}>

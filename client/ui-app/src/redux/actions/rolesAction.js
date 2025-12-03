@@ -6,30 +6,44 @@ import {
     DELETE_ROLES_REQUEST, DELETE_ROLES_SUCCESS, DELETE_ROLES_FAILURE
 } from "../actions/userActionTypes.js";
 
+import { getClientToken } from "./clientAuthAction.js";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-export const getAllRoles = () => async (dispatch) => {
+const getValidToken = async (dispatch) => {
+  let token = localStorage.getItem("accessToken");
+  if (!token) token = await dispatch(getClientToken());
+  if (!token) throw new Error("No valid token found");
+  return token;
+};
+
+export const getAllRoles = ({ pageNo = 1, pageSize = 10 } = {}) => async (dispatch) => {
   dispatch({ type: FETCH_ROLES_REQUEST });
   try {
-    const token = localStorage.getItem("accessToken");
-   
-    const response = await axios.get(`${API_URL}/roles/viewall`, {
-      headers: { Authorization: `Bearer ${token}` },
+    const token = await getValidToken(dispatch);
+
+    const response = await axios.get(
+      `${API_URL}/roles/viewall?pageNo=${pageNo}&pageSize=${pageSize}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    dispatch({
+      type: FETCH_ROLES_SUCCESS,
+      payload: {
+        data: response.data.data,
+        total: response.data.total,
+        pageNo,
+        pageSize,
+      }
     });
 
-    const roles = response.data;
-    dispatch({ type: FETCH_ROLES_SUCCESS, payload: roles });
   } catch (error) {
-    console.error("Error fetching roles:", error);
     dispatch({
       type: FETCH_ROLES_FAILURE,
       payload: error.response?.data || error.message,
     });
   }
 };
-
-
 
 
 export const createRoles = (rolesData) => async (dispatch) => {debugger

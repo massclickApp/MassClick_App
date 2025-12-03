@@ -81,10 +81,10 @@ export const viewAllClientBusinessList = async () => {
         }
         if (business.kycDocumentsKey?.length > 0)
             business.kycDocuments = business.kycDocumentsKey.map((key) => getSignedUrlByKey(key));
-
         return business;
     });
 };
+
 // export const viewAllBusinessList = async (role, userId) => {
 //   let query = {};
 
@@ -140,7 +140,7 @@ export const viewAllClientBusinessList = async () => {
 
 //   return businessListWithDetails;
 // };
-export const viewAllBusinessList = async (role, userId) => {
+export const viewAllBusinessList = async (role, userId, pageNo, pageSize) => {
     let query = {};
 
     if (role === "SuperAdmin") {
@@ -163,9 +163,13 @@ export const viewAllBusinessList = async (role, userId) => {
         throw new Error("Unauthorized role");
     }
 
-    const businessList = await businessListModel.find(query).lean();
-    if (!businessList || businessList.length === 0)
-        throw new Error("No business found");
+    const total = await businessListModel.countDocuments(query);
+
+    const businessList = await businessListModel
+        .find(query)
+        .skip((pageNo - 1) * pageSize)
+        .limit(pageSize)
+        .lean();
 
     const businessListWithDetails = await Promise.all(
         businessList.map(async (business) => {
@@ -176,8 +180,11 @@ export const viewAllBusinessList = async (role, userId) => {
                 business.businessImages = business.businessImagesKey.map((key) =>
                     getSignedUrlByKey(key)
                 );
+
             if (business.kycDocumentsKey?.length > 0)
-                business.kycDocuments = business.kycDocumentsKey.map((key) => getSignedUrlByKey(key));
+                business.kycDocuments = business.kycDocumentsKey.map((key) =>
+                    getSignedUrlByKey(key)
+                );
 
             let locationDetailsArray = [];
             if (
@@ -186,10 +193,7 @@ export const viewAllBusinessList = async (role, userId) => {
             ) {
                 const location = await locationModel.findById(business.location).lean();
                 if (location) {
-                    locationDetailsArray = [
-                        location.city || "",
-                        location.state || "",
-                    ];
+                    locationDetailsArray = [location.city || "", location.state || ""];
                 }
             } else if (business.location) {
                 locationDetailsArray = [business.location];
@@ -200,7 +204,7 @@ export const viewAllBusinessList = async (role, userId) => {
         })
     );
 
-    return businessListWithDetails;
+    return { list: businessListWithDetails, total };
 };
 
 

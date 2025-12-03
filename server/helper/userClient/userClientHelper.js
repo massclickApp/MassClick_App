@@ -48,18 +48,26 @@ export const viewUserClients = async (id) => {
         throw error;
     }
 };
-export const viewAllUserClients = async () => {
-    try {
-        const usersClient = await userClientModel.find().lean();
-        if (!usersClient) {
-            throw new Error("No usersClient found");
-        }
-        return usersClient;
-    } catch (error) {
-        console.error("Error fetching usersClient:", error);
-        throw error;
-    }
+export const viewAllUserClients = async (pageNo, pageSize) => {
+  try {
+    const query = {};
+
+    const total = await userClientModel.countDocuments(query);
+
+    const usersClient = await userClientModel
+      .find(query)
+      .skip((pageNo - 1) * pageSize)
+      .limit(pageSize)
+      .lean();
+
+    return { list: usersClient, total };
+
+  } catch (error) {
+    console.error("Error fetching usersClient:", error);
+    throw error;
+  }
 };
+
 export const updateUserClients = async (id, data) => {
     if (!ObjectId.isValid(id)) throw new Error("Invalid user ID");
 

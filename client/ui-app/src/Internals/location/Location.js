@@ -29,7 +29,7 @@ import CustomizedTable from "../../components/Table/CustomizedTable.js";
 
 export default function Location() {
     const dispatch = useDispatch();
-    const { location = [], loading, error } = useSelector(
+    const { location = [], total = 0, loading, error } = useSelector(
         (state) => state.locationReducer || {}
     );
     const [errors, setErrors] = useState({});
@@ -277,7 +277,14 @@ export default function Location() {
                 </Typography>
 
                 <Box sx={{ width: "100%" }}>
-                    <CustomizedTable data={rows} columns={locationList} />
+                    <CustomizedTable
+                        data={rows}
+                        columns={locationList}
+                        total={total}
+                        fetchData={(pageNo, pageSize) =>
+                            dispatch(getAllLocation({ pageNo, pageSize }))
+                        }
+                    />
                 </Box>
 
                 <Dialog open={deleteDialogOpen} onClose={cancelDelete}>

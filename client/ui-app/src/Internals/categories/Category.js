@@ -34,7 +34,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 export default function Category() {
   const dispatch = useDispatch();
-  const { category = [], loading, error } = useSelector(
+  const { category = [], total = 0, loading, error } = useSelector(
     (state) => state.categoryReducer || {}
   );
   const fileInputRef = useRef();
@@ -516,7 +516,13 @@ export default function Category() {
         Category Table
       </Typography>
       <Box sx={{ width: "100%" }}>
-        <CustomizedTable data={rows} columns={categoryList} />
+        <CustomizedTable data={rows}
+          columns={categoryList}
+          total={total}
+          fetchData={(pageNo, pageSize) =>
+            dispatch(getAllCategory({ pageNo, pageSize }))
+          }
+        />
       </Box>
 
       <Dialog

@@ -29,7 +29,7 @@ import CustomizedTable from "../../components/Table/CustomizedTable.js";
 
 export default function UserClients() {
   const dispatch = useDispatch();
-  const { userClient = [], loading, error } = useSelector(
+  const { userClient = [], total = 0, loading, error } = useSelector(
     (state) => state.userClientReducer || {}
   );
 
@@ -263,12 +263,18 @@ export default function UserClients() {
     )}
   </div>
 
-                <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
-          Client Table
-        </Typography>
-        <Box sx={{ width: "100%" }}>
-          <CustomizedTable data={rows} columns={clientList} />
-        </Box>
+      <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
+        Client Table
+      </Typography>
+      <Box sx={{ width: "100%" }}>
+        <CustomizedTable
+          data={rows}
+          columns={clientList}
+          total={total}
+          fetchData={(pageNo, pageSize) =>
+            dispatch(getAllUsersClient({ pageNo, pageSize }))
+          } />
+      </Box>
 
   {/* Delete Confirmation Dialog */}
   <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
