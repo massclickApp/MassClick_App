@@ -40,7 +40,7 @@ import {
 import MI from "../../assets/Mi.png";
 import AddBusinessModal from "./AddBusinessModel.js";
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
-
+import LoginIcon from '@mui/icons-material/Login';
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
@@ -464,7 +464,7 @@ const CategoryBar = () => {
                     {!isLoggedIn ? (
                         <Button
                             variant="contained"
-                            startIcon={<AddIcon />}
+                            startIcon={<LoginIcon />}
                             onClick={handleOpenModal}
                             sx={{
                                 background: "linear-gradient(45deg, #FF6F00, #F7941D)",
@@ -483,7 +483,7 @@ const CategoryBar = () => {
                                 },
                             }}
                         >
-                            Add Your Business
+                            Login / Sign Up
                         </Button>
                     ) : (
                         <IconButton

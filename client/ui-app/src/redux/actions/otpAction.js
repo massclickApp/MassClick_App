@@ -6,7 +6,8 @@ import {
   UPDATE_OTP_USER_REQUEST, UPDATE_OTP_USER_SUCCESS, UPDATE_OTP_USER_FAILURE,
   VIEW_OTP_USER_REQUEST, VIEW_OTP_USER_SUCCESS, VIEW_OTP_USER_FAILURE,
   VIEWALL_OTP_USER_REQUEST, VIEWALL_OTP_USER_SUCCESS, VIEWALL_OTP_USER_FAILURE,
-   LOG_USER_SEARCH_REQUEST, LOG_USER_SEARCH_SUCCESS,LOG_USER_SEARCH_FAILURE
+   LOG_USER_SEARCH_REQUEST, LOG_USER_SEARCH_SUCCESS,LOG_USER_SEARCH_FAILURE,
+   
 } from "../actions/userActionTypes";
 
 const API_URL = process.env.REACT_APP_API_URL;
@@ -39,6 +40,7 @@ export const verifyOtp = (mobile, otp, userName = "") => async (dispatch) => {
 
     const token = response.data.token;
     const user = response.data.user;
+
     if (token) {
       localStorage.setItem("authToken", token);
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -74,12 +76,19 @@ export const viewOtpUser = (mobile) => async (dispatch) => {
   dispatch({ type: VIEW_OTP_USER_REQUEST });
   try {
     const response = await axios.get(`${API_URL}/otp_user/${mobile}`);
-    dispatch({ type: VIEW_OTP_USER_SUCCESS, payload: response.data });
-    return response.data;
+
+    dispatch({
+      type: VIEW_OTP_USER_SUCCESS,
+      payload: response.data.user,   
+    });
+
+    return response.data.user;
+
   } catch (error) {
-    const errPayload = error.response?.data || error.message;
-    dispatch({ type: VIEW_OTP_USER_FAILURE, payload: errPayload });
-    throw error;
+    dispatch({
+      type: VIEW_OTP_USER_FAILURE,
+      payload: error.response?.data || error.message,
+    });
   }
 };
 

@@ -1,4 +1,4 @@
-import { createBusinessList, viewBusinessList,findBusinessesByCategory, viewAllBusinessList, viewAllClientBusinessList, updateBusinessList, getTrendingSearches, deleteBusinessList, activeBusinessList } from "../../helper/businessList/businessListHelper.js";
+import { createBusinessList, viewBusinessList,findBusinessesByCategory,findBusinessByMobile, viewAllBusinessList, viewAllClientBusinessList, updateBusinessList, getTrendingSearches, deleteBusinessList, activeBusinessList } from "../../helper/businessList/businessListHelper.js";
 import { BAD_REQUEST } from "../../errorCodes.js";
 import businessListModel from "../../model/businessList/businessListModel.js";
 import { getSignedUrlByKey } from "../../s3Uploder.js";
@@ -262,3 +262,23 @@ export const getTrendingSearchesAction = async (req, res) => {
     }
 };
 
+export const findBusinessByMobileAction = async (req, res) => {
+  try {
+    const mobile = req.params.mobile;
+
+    if (!mobile) {
+      return res.status(400).send({ message: "Mobile number is required" });
+    }
+
+    const business = await findBusinessByMobile(mobile);
+
+    return res.send({
+      success: true,
+      business: business || null
+    });
+
+  } catch (error) {
+    console.error("Error in findBusinessByMobileAction:", error);
+    return res.status(BAD_REQUEST.code).send({ message: error.message });
+  }
+};

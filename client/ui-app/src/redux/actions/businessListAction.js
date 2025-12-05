@@ -10,7 +10,9 @@ import {
   FETCH_VIEWBUSINESS_REQUEST, FETCH_VIEWBUSINESS_SUCCESS, FETCH_VIEWBUSINESS_FAILURE,
   SUGGESTION_BUSINESS_REQUEST, SUGGESTION_BUSINESS_SUCCESS, SUGGESTION_BUSINESS_FAILURE,
   SEARCH_BUSINESS_REQUEST, SEARCH_BUSINESS_SUCCESS, SEARCH_BUSINESS_FAILURE,
-  CATEGORY_BUSINESS_REQUEST, CATEGORY_BUSINESS_SUCCESS, CATEGORY_BUSINESS_FAILURE
+  CATEGORY_BUSINESS_REQUEST, CATEGORY_BUSINESS_SUCCESS, CATEGORY_BUSINESS_FAILURE,
+  FETCH_LOGS_REQUEST, FETCH_LOGS_SUCCESS, FETCH_LOGS_FAILURE, SET_LEADS_HISTORY_USERS,
+  FIND_BUSINESS_BY_MOBILE_REQUEST, FIND_BUSINESS_BY_MOBILE_SUCCESS, FIND_BUSINESS_BY_MOBILE_FAILURE
 } from "../actions/userActionTypes.js";
 import { getClientToken } from "./clientAuthAction.js";
 const API_URL = process.env.REACT_APP_API_URL;
@@ -87,7 +89,6 @@ export const getAllClientBusinessList = () => async (dispatch) => {
 
   try {
     const token = await dispatch(getClientToken());
-console.log("token",token);
 
     const response = await axios.get(`${API_URL}/businesslist/clientview`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -335,5 +336,65 @@ export const backendMainSearch = (term, location, category) => async (dispatch) 
       payload: error.response?.data || error.message,
     });
     return { payload: [] };
+  }
+};
+
+export const viewSearchLogs = (category, keywords) => async (dispatch) => {
+  dispatch({ type: FETCH_LOGS_REQUEST });
+
+  try {
+    const token = await dispatch(getClientToken());
+
+    const response = await axios.post(
+      `${API_URL}/businesslist/trending-searches/view`,
+      { category, keywords },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    dispatch({
+      type: FETCH_LOGS_SUCCESS,
+      payload: Array.isArray(response.data) ? response.data : [],
+    });
+
+  } catch (error) {
+    dispatch({
+      type: FETCH_LOGS_FAILURE,
+      payload: error.response?.data || error.message,
+    });
+  }
+};
+
+export const setLeadsHistoryUsers = (users) => ({
+  type: SET_LEADS_HISTORY_USERS,
+  payload: users,
+});
+
+export const findBusinessByMobile = (mobile) => async (dispatch) => {
+  dispatch({ type: FIND_BUSINESS_BY_MOBILE_REQUEST });
+
+  try {
+    const token = await getValidToken(dispatch);
+
+    const response = await axios.get(
+      `${API_URL}/businesslist/findByMobile/${mobile}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    dispatch({
+      type: FIND_BUSINESS_BY_MOBILE_SUCCESS,
+      payload: response.data.business || null,
+    });
+
+    return response.data.business;
+
+  } catch (error) {
+    dispatch({
+      type: FIND_BUSINESS_BY_MOBILE_FAILURE,
+      payload: error.response?.data?.message || error.message,
+    });
+
+    return null;
   }
 };

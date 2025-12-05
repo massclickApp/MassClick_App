@@ -1,8 +1,8 @@
 // LeadsPage.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { viewAllOtpUsers } from "../../../redux/actions/otpAction";
-import { getAllSearchLogs } from "../../../redux/actions/businessListAction";
+import { viewOtpUser } from "../../../redux/actions/otpAction";
+import { getAllSearchLogs  } from "../../../redux/actions/businessListAction";
 import { useNavigate } from "react-router-dom";
 import CardsSearch from "../CardsSearch/CardsSearch";
 import "./leadsPage.css";
@@ -75,19 +75,11 @@ function LeadRow({ user }) {
 export default function LeadsPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  // selectors
-  const { searchLogs = [] } = useSelector((state) => state.businessListReducer || {});
-  const otpState = useSelector((state) => state.otp || state.otpReducer || {});
-  const allUsers = Array.isArray(otpState.viewAllResponse)
-    ? otpState.viewAllResponse
-    : Array.isArray(otpState.users)
-    ? otpState.users
-    : [];
-
   const mobileNumber = localStorage.getItem("mobileNumber");
 
-  const authUser = allUsers.find((u) => u.mobileNumber1 === mobileNumber) || {};
+  const { searchLogs = [] } = useSelector((state) => state.businessListReducer || {});
+  
+  const authUser = useSelector((state) => state.otp.viewResponse) || {};
 
   const {
     businessName,
@@ -107,85 +99,234 @@ export default function LeadsPage() {
   const [range, setRange] = useState("all");
   const [repeatOnly, setRepeatOnly] = useState(false);
 
-  useEffect(() => {
-    dispatch(viewAllOtpUsers());
-    dispatch(getAllSearchLogs());
-  }, [dispatch]);
+useEffect(() => {
+  if (mobileNumber) {
+    dispatch(viewOtpUser(mobileNumber));
+  }
+  dispatch(getAllSearchLogs());
+}, [dispatch, mobileNumber]);
 
-  const matchedUsers = useMemo(() => {
-    try {
-      if (!Array.isArray(searchLogs)) return [];
-      if (!hasBusinessCategory) return [];
+function normalizeText(str = "") {
+  return String(str || "")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")      
+    .replace(/[_\-\.,\/#!$%\^&\*;:{}=\+~()@\[\]"'<>?|`\\]/g, " ") 
+    .replace(/[^0-9a-zA-Z\u00C0-\u024F\s]/g, " ") 
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
-      const categoryName = (businessCategory?.category || "").toLowerCase();
-      const titleName = (businessCategory?.title || "").toLowerCase();
-      const seoTitleName = (businessCategory?.seoTitle || "").toLowerCase();
-      const keywords = (Array.isArray(businessCategory?.keywords) ? businessCategory.keywords : []).map((k) =>
-        (k || "").toLowerCase()
-      );
+function tokenize(str = "") {
+  const s = normalizeText(str);
+  return s ? s.split(" ").filter(Boolean) : [];
+}
 
-      const filteredLogs = searchLogs.filter((log) => {
-        const logCatRaw = log.categoryName || log.category || "";
-        const logCat = String(logCatRaw).toLowerCase();
-        if (!logCat) return false;
+function levenshtein(a = "", b = "") {
+  if (a === b) return 0;
+  const al = a.length, bl = b.length;
+  if (al === 0) return bl;
+  if (bl === 0) return al;
+  const v0 = new Array(bl + 1).fill(0);
+  const v1 = new Array(bl + 1).fill(0);
+  for (let j = 0; j <= bl; j++) v0[j] = j;
+  for (let i = 0; i < al; i++) {
+    v1[0] = i + 1;
+    for (let j = 0; j < bl; j++) {
+      const cost = a[i] === b[j] ? 0 : 1;
+      v1[j + 1] = Math.min(v1[j] + 1, v0[j + 1] + 1, v0[j] + cost);
+    }
+    for (let j = 0; j <= bl; j++) v0[j] = v1[j];
+  }
+  return v1[bl];
+}
 
-        if (logCat.includes(categoryName)) return true;
-        if (titleName && logCat.includes(titleName)) return true;
-        if (seoTitleName && logCat.includes(seoTitleName)) return true;
-        if (keywords.some((kw) => kw && logCat.includes(kw))) return true;
+const DEBUG_MATCH = false; 
+const FUZZY_THRESHOLD = 2; 
 
-        return false;
-      });
+const matchedUsers = useMemo(() => {
+  try {
+    if (!Array.isArray(searchLogs)) return [];
+    if (!hasBusinessCategory) return [];
 
-      // collect userDetails from logs and attach searchedUserText + createdAt/time
-      const users = [];
-      filteredLogs.forEach((log) => {
-        const createdAt = log.createdAt || log.created_at || log.date || null;
+    const categoryName = normalizeText(businessCategory?.category);
+    const titleName = normalizeText(businessCategory?.title);
+    const seoTitleName = normalizeText(businessCategory?.seoTitle);
 
-        if (Array.isArray(log.userDetails)) {
-          log.userDetails.forEach((u) => {
-            users.push({
-              // user details (may include userName, mobileNumber1, email)
-              ...u,
-              // attach time from the log
-              time: createdAt,
-              // attach the searched text if present on the log
-              searchedUserText: typeof log.searchedUserText === "string" ? log.searchedUserText : (log.searchedUserText ? String(log.searchedUserText) : ""),
-            });
-          });
-        } else if (log.userDetails && typeof log.userDetails === "object") {
-          // safety: single object userDetails
-          users.push({
-            ...log.userDetails,
-            time: createdAt,
-            searchedUserText: typeof log.searchedUserText === "string" ? log.searchedUserText : (log.searchedUserText ? String(log.searchedUserText) : ""),
-          });
-        }
-      });
+    const keywords = (Array.isArray(businessCategory?.keywords) ? businessCategory.keywords : [])
+      .map(k => normalizeText(k))
+      .filter(Boolean);
 
-      // dedupe users by phone or email (one card per unique user)
-      const unique = {};
-      const uniqueUsers = users.filter((u) => {
-        const key = (u.mobileNumber1 || u.email || u.userName || "").toString().trim();
-        if (!key) return false; // drop anonymous/no-key leads
-        if (unique[key]) return false;
-        unique[key] = true;
-        return true;
-      });
-
-      return uniqueUsers;
-    } catch (err) {
-      console.error("matchedUsers error:", err);
+    const searchTerms = [categoryName, titleName, seoTitleName, ...keywords].filter(Boolean);
+    if (searchTerms.length === 0) {
+      if (DEBUG_MATCH) console.warn("matcher: no search terms for businessCategory", businessCategory);
       return [];
     }
-  }, [searchLogs, businessCategory, hasBusinessCategory]);
+
+    const normalizeLogFields = (log) => {
+      const rawCandidates = [
+        log.categoryName,
+        log.category,
+        log.searchCategory,
+        log.searchedUserText,
+        log.title,
+        log.description,
+        log.meta,
+        log.note,
+        log.searchText,
+      ].filter(Boolean);
+
+      const joined = rawCandidates.join(" ");
+      const normJoined = normalizeText(joined);
+      const normFields = rawCandidates.map(normalizeText).filter(Boolean);
+      return { rawCandidates, joined, normJoined, normFields };
+    };
+
+    const matchedLogs = [];
+    const nonMatchedLogsDebug = [];
+
+    for (const log of searchLogs) {
+      const { rawCandidates, joined, normJoined, normFields } = normalizeLogFields(log);
+
+      let matched = false;
+      let matchReason = "";
+
+      for (const term of searchTerms) {
+        if (!term) continue;
+        if (normJoined.includes(term)) {
+          matched = true;
+          matchReason = `joined-contains:${term}`;
+          break;
+        }
+      }
+      if (matched) {
+        matchedLogs.push({ log, matchReason, normJoined, rawCandidates });
+        continue;
+      }
+
+      for (const term of searchTerms) {
+        const termTokens = tokenize(term);
+        for (const tkn of termTokens) {
+          for (const field of normFields) {
+            const fieldTokens = field.split(" ").filter(Boolean);
+            if (fieldTokens.includes(tkn) || field.includes(tkn)) {
+              matched = true;
+              matchReason = `token-overlap:${tkn}`;
+              break;
+            }
+          }
+          if (matched) break;
+        }
+        if (matched) break;
+      }
+      if (matched) {
+        matchedLogs.push({ log, matchReason, normJoined, rawCandidates });
+        continue;
+      }
+
+      for (const field of normFields) {
+        for (const term of searchTerms) {
+          if (field === term) {
+            matched = true;
+            matchReason = `field-eq:${term}`;
+            break;
+          }
+        }
+        if (matched) break;
+      }
+      if (matched) {
+        matchedLogs.push({ log, matchReason, normJoined, rawCandidates });
+        continue;
+      }
+
+      for (const term of searchTerms) {
+        const candidatesToCheck = [normJoined, ...normFields];
+        for (const candidate of candidatesToCheck) {
+          if (!candidate) continue;
+          const len = Math.max(candidate.length, term.length);
+          const allowed = Math.max(1, Math.min(FUZZY_THRESHOLD, Math.floor(len * 0.25)));
+          const dist = levenshtein(candidate, term);
+          if (dist <= allowed) {
+            matched = true;
+            matchReason = `fuzzy:${term}:dist=${dist}`;
+            break;
+          }
+        }
+        if (matched) break;
+      }
+
+      if (matched) {
+        matchedLogs.push({ log, matchReason, normJoined, rawCandidates });
+      } else {
+        nonMatchedLogsDebug.push({ log, normJoined, rawCandidates });
+      }
+    }
+
+    if (DEBUG_MATCH) {
+      console.groupCollapsed(`matcher debug: matched ${matchedLogs.length} / ${searchLogs.length}`);
+      matchedLogs.slice(0, 50).forEach(m => {
+        console.log("MATCHED:", m.matchReason, m.normJoined, m.rawCandidates);
+      });
+      console.groupEnd();
+
+      console.groupCollapsed("matcher debug: non-matches sample");
+      nonMatchedLogsDebug.slice(0, 50).forEach(nm => {
+        console.log("NO MATCH:", nm.normJoined, nm.rawCandidates);
+      });
+      console.groupEnd();
+    }
+
+    const users = [];
+    matchedLogs.forEach(({ log }) => {
+      const createdAt = log.createdAt || log.created_at || log.date || null;
+      const searchedText = typeof log.searchedUserText === "string"
+        ? log.searchedUserText
+        : (log.searchedUserText ? String(log.searchedUserText) : "");
+
+      if (Array.isArray(log.userDetails)) {
+        log.userDetails.forEach((u) => {
+          users.push({ ...u, time: createdAt, searchedUserText: searchedText });
+        });
+      } else if (log.userDetails && typeof log.userDetails === "object") {
+        users.push({ ...log.userDetails, time: createdAt, searchedUserText: searchedText });
+      }
+    });
+
+    // -------------- DEDUPE USERS (IMPROVED) --------------
+    const unique = {};
+    const normalizeLeadKey = (u) => {
+      if (u.mobileNumber1) {
+        const phone = String(u.mobileNumber1).replace(/\D/g, "");
+        if (phone) return `p:${phone}`;
+      }
+      if (u.email) return `e:${String(u.email).trim().toLowerCase()}`;
+      if (u.userName) return `n:${String(u.userName).trim().toLowerCase()}`;
+      return null;
+    };
+
+    const uniqueUsers = users.filter((u) => {
+      const key = normalizeLeadKey(u);
+      if (!key) return false;
+      if (unique[key]) return false;
+      unique[key] = true;
+      return true;
+    });
+
+    return uniqueUsers;
+
+  } catch (err) {
+    console.error("matchedUsers error:", err);
+    return [];
+  }
+}, [searchLogs, businessCategory, hasBusinessCategory]);
+
 
   const { filteredUsers, todayCount, last7Count, last30Count, repeatCount } = useMemo(() => {
     const msDay = 24 * 60 * 60 * 1000;
     const now = new Date();
     const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const sevenAgo = new Date(startToday.getTime() - 6 * msDay); // last 7 days (inclusive)
-    const thirtyAgo = new Date(startToday.getTime() - 29 * msDay); // last 30 days (inclusive)
+    const sevenAgo = new Date(startToday.getTime() - 6 * msDay); 
+    const thirtyAgo = new Date(startToday.getTime() - 29 * msDay); 
 
     const repeatMap = {};
     let todayCount = 0;
@@ -415,7 +556,6 @@ export default function LeadsPage() {
                 </div>
               </div>
 
-              {/* Activity timeline */}
               <div className="lp-side-card lp-timeline-card">
                 <div className="lp-small-label">Activity Timeline</div>
                 <ul className="lp-timeline-list">

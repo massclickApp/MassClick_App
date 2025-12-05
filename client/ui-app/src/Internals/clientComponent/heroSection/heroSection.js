@@ -10,7 +10,6 @@ import {
   backendMainSearch,
   logSearchActivity,
 } from "../../../redux/actions/businessListAction";
-import { getAllCategory } from "../../../redux/actions/categoryAction";
 import { logUserSearch } from "../../../redux/actions/otpAction";
 import backgroundImage from "../../../assets/background.png";
 import { useNavigate } from "react-router-dom";

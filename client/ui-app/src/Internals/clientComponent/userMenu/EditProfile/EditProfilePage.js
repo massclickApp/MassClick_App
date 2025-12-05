@@ -5,18 +5,12 @@ import "./EditProfile.css";
 import Footer from "../../footer/footer";
 import CardsSearch from "../../CardsSearch/CardsSearch";
 import { viewOtpUser, updateOtpUser } from "../../../../redux/actions/otpAction";
-import { getAllCategory } from "../../../../redux/actions/categoryAction";
 import { Alert, AlertTitle } from "@mui/material";
-import { getAllClientBusinessList } from "../../../../redux/actions/businessListAction";
 
 const PersonalDetails = ({
   formData,
   handleChange,
   handleImageUpload,
-  category,
-  loading,
-  error,
-  handleCategorySelect,
 }) => (
   <div className="form-step-content">
     <h3>Your Profile Details</h3>
@@ -48,7 +42,6 @@ const PersonalDetails = ({
             type="email"
             value={formData.email || ""}
             placeholder="Enter Email ID"
-            required
             onChange={(e) => handleChange(e, "email")}
           />
         </div>
@@ -88,28 +81,15 @@ const PersonalDetails = ({
           onChange={(e) => handleChange(e, "businessName")}
         />
       </div>
-
       <div className="form-field">
         <label>Business Category</label>
-
-        <select
-          value={formData.businessCategory?._id || ""}
-          onChange={handleCategorySelect}
-        >
-          <option value="">Select Business Category</option>
-
-          {category &&
-            category.map((cat) => (
-              <option key={cat._id} value={cat._id}>
-                {cat.category}
-              </option>
-            ))}
-        </select>
-
-        {loading && <p>Loading categories…</p>}
-        {error && <p style={{ color: "red" }}>Failed to load categories</p>}
+        <input
+          type="text"
+          value={formData.businessCategory?.category || ""}
+          placeholder="Enter your Business Category"
+          onChange={(e) => handleChange(e, "businessCategory")}
+        />
       </div>
-
       <div className="form-field">
         <label>Business Location</label>
         <input
@@ -364,12 +344,6 @@ const Completed = () => (
 export default function MultiStepProfileForm() {
   const dispatch = useDispatch();
 
-  const otpState = useSelector((state) => state.otpReducer || {});
-  const { viewResponse } = otpState;
-
-  const { category = [], loading, error } = useSelector((state) => state.categoryReducer || {});
-  const { clientBusinessList = [] } = useSelector((state) => state.businessListReducer || {});
-
   const storedMobile = localStorage.getItem("mobileNumber") || "";
 
   const steps = [
@@ -412,86 +386,51 @@ export default function MultiStepProfileForm() {
     favorites: { colors: [], food: [], hobbies: [] },
   });
 
-  const autoSavedRef = useRef(false); 
 
   const CurrentComponent = steps.find((s) => s.id === currentStep)?.component;
 
-  useEffect(() => {
-    dispatch(getAllCategory());
-    dispatch(getAllClientBusinessList());
-  }, [dispatch]);
 
-  const handleCategorySelect = (e) => {
-    const selectedId = e.target.value;
-    if (!selectedId) {
-      setFormData((prev) => ({ ...prev, businessCategory: "" }));
-      return;
-    }
-    const selectedCat = category.find((cat) => cat._id === selectedId);
-    setFormData((prev) => ({ ...prev, businessCategory: selectedCat || "" }));
-  };
 
-  useEffect(() => {
-    if (!storedMobile || autoSavedRef.current) return;
-    if (!clientBusinessList || clientBusinessList.length === 0) return;
-    if (!category || category.length === 0) return;
+ useEffect(() => {
+  if (!storedMobile) return;
 
-    if (formData.businessCategory && typeof formData.businessCategory === "object" && formData.businessCategory.category) {
-      return;
-    }
+  setLoadingUser(true);
 
-    const matchedBusiness = clientBusinessList.find((biz) => biz.contactList === storedMobile);
-    if (!matchedBusiness) return;
+  dispatch(viewOtpUser(storedMobile))
+    .then((user) => {     
+      console.log("Loaded User:", user);
 
-    const matchedCategory = category.find((cat) => cat.category === matchedBusiness.category);
-    if (!matchedCategory) return;
+      if (user) {
+        setFormData((prev) => ({
+          ...prev,
+          ...user,
 
-    setFormData((prev) => ({
-      ...prev,
-      businessCategory: matchedCategory,
-      businessName: prev.businessName || matchedBusiness.businessName || "",
-      businessLocation: prev.businessLocation || matchedBusiness.location || "",
-    }));
+          permanentAddress: {
+            ...prev.permanentAddress,
+            ...(user.permanentAddress || {})
+          },
 
-    (async () => {
-      try {
-        const payload = { businessCategory: matchedCategory };
-        const res = await dispatch(updateOtpUser(storedMobile, payload));
-        autoSavedRef.current = true;
-        if (res && res.success) {
-        }
-      } catch (err) {
-        console.error("Auto-save category failed", err);
-        autoSavedRef.current = true;
+          officeAddress: {
+            ...prev.officeAddress,
+            ...(user.officeAddress || {})
+          },
+
+          favorites: {
+            ...prev.favorites,
+            ...(user.favorites || {})
+          },
+
+          businessCategory:
+            typeof user.businessCategory === "object"
+              ? user.businessCategory
+              : { category: user.businessCategory || "" }
+        }));
       }
-    })();
-  }, [storedMobile, clientBusinessList, category, formData.businessCategory, dispatch]);
-  useEffect(() => {
-    if (!storedMobile) return;
+    })
+    .finally(() => setLoadingUser(false));
+}, [storedMobile, dispatch]);
 
-    setLoadingUser(true);
 
-    dispatch(viewOtpUser(storedMobile))
-      .then((res) => {
-        const user = res?.user;
-        if (user) {
-          setFormData((prev) => {
-            const merged = {
-              ...prev,
-              ...user,
-              permanentAddress: { ...prev.permanentAddress, ...user.permanentAddress },
-              officeAddress: { ...prev.officeAddress, ...user.officeAddress },
-              favorites: { ...prev.favorites, ...user.favorites },
-            };
-            if (user.businessCategory && ((typeof user.businessCategory === "object" && user.businessCategory.category) || (typeof user.businessCategory === "string" && user.businessCategory.trim() !== ""))) {
-              merged.businessCategory = user.businessCategory;
-            }
-            return merged;
-          });
-        }
-      })
-      .finally(() => setLoadingUser(false));
-  }, [storedMobile, dispatch]);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -534,22 +473,7 @@ export default function MultiStepProfileForm() {
       handleNext();
       return;
     }
-    const bc = formData.businessCategory;
-
-    const filteredCategory = bc && typeof bc === "object"
-      ? {
-          _id: bc._id,
-          category: bc.category,
-          title: bc.title,
-          keywords: bc.keywords,
-          description: bc.description,
-          slug: bc.slug,
-          seoTitle: bc.seoTitle,
-          seoDescription: bc.seoDescription,
-        }
-      : "";
-
-    const payload = { ...formData, businessCategory: filteredCategory };
+    const payload = { ...formData };
 
     dispatch(updateOtpUser(formData.mobileNumber1, payload)).then((res) => {
       if (res && res.success) {
@@ -613,10 +537,6 @@ export default function MultiStepProfileForm() {
                 handleChange={handleChange}
                 handleArrayChange={handleArrayChange}
                 handleImageUpload={handleImageUpload}
-                category={category}
-                loading={loading}
-                error={error}
-                handleCategorySelect={handleCategorySelect}
               />
 
               <div className="form-actions-footer">

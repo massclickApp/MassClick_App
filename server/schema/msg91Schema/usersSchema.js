@@ -1,31 +1,25 @@
 import mongoose from "mongoose";
 
-const businessCategoryDefault = {
-  _id: null,
-  category: "",
-  title: "",
-  keywords: [],
-  description: "",
-  slug: "",
-  seoTitle: "",
-  seoDescription: "",
-};
 const message91UsersSchema = new mongoose.Schema({
-  title: { type: String, enum: ["Mr", "Ms"], default: "Ms" },
+  title: { type: String, enum: ["Mr", "Ms"], default: "Mr" },
   userName: { type: String },
+  businessPeople: { type: Boolean, default: false },
   businessName: { type: String, default: "" },
-
-  businessCategory: {
-    type: Object,
-    default: businessCategoryDefault,
-  },
-
   businessLocation: { type: String, default: "" },
   firstTimeUser: { type: Boolean, default: false },
   profileImageKey: { type: String, default: "" },
   email: { type: String },
   emailVerified: { type: String },
   mobileNumber1: { type: String, unique: true, required: true },
+  businessCategory: {
+    category: { type: String, default: "" },
+    keywords: [String],
+    slug: { type: String, default: "" },
+    seoTitle: { type: String, default: "" },
+    seoDescription: { type: String, default: "" },
+    title: { type: String, default: "" },
+    description: { type: String, default: "" }
+  },
   currentOtp: { type: String, default: null },
   otpGeneratedAt: { type: Date, default: null },
   otpExpiresAt: { type: Date, default: null },

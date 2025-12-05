@@ -9,11 +9,11 @@ import {
   FETCH_VIEWBUSINESS_REQUEST, FETCH_VIEWBUSINESS_SUCCESS, FETCH_VIEWBUSINESS_FAILURE,
   SUGGESTION_BUSINESS_REQUEST, SUGGESTION_BUSINESS_SUCCESS, SUGGESTION_BUSINESS_FAILURE,
   SEARCH_BUSINESS_REQUEST, SEARCH_BUSINESS_SUCCESS, SEARCH_BUSINESS_FAILURE,
-
+  FETCH_LOGS_REQUEST, FETCH_LOGS_SUCCESS, FETCH_LOGS_FAILURE, SET_LEADS_HISTORY_USERS,
   CATEGORY_BUSINESS_REQUEST,
   CATEGORY_BUSINESS_SUCCESS,
   CATEGORY_BUSINESS_FAILURE,
-
+  FIND_BUSINESS_BY_MOBILE_REQUEST, FIND_BUSINESS_BY_MOBILE_SUCCESS, FIND_BUSINESS_BY_MOBILE_FAILURE
 } from '../actions/userActionTypes';
 
 const initialState = {
@@ -22,7 +22,7 @@ const initialState = {
   pageNo: 1,
   pageSize: 10,
   clientBusinessList: [],
-  categoryBusinessList: [],    
+  categoryBusinessList: [],
   loading: false,
   error: null,
 
@@ -35,6 +35,18 @@ const initialState = {
   searchLogs: [],
   searchLogsLoading: false,
   searchLogsError: null,
+
+  matchedLogs: [],
+  matchedLogsLoading: false,
+  matchedLogsError: null,
+
+  leadsHistoryUsers: [],
+
+  matchedBusiness: null,
+  matchedBusinessLoading: false,
+  matchedBusinessError: null,
+
+
 };
 
 export default function businessListReducer(state = initialState, action) {
@@ -109,7 +121,7 @@ export default function businessListReducer(state = initialState, action) {
       return {
         ...state,
         loading: false,
-        categoryBusinessList: action.payload,  
+        categoryBusinessList: action.payload,
         error: null,
       };
 
@@ -141,6 +153,29 @@ export default function businessListReducer(state = initialState, action) {
         trendingError: action.payload,
       };
 
+    case FIND_BUSINESS_BY_MOBILE_REQUEST:
+      return {
+        ...state,
+        matchedBusinessLoading: true,
+        matchedBusinessError: null,
+      };
+
+    case FIND_BUSINESS_BY_MOBILE_SUCCESS:
+      return {
+        ...state,
+        matchedBusinessLoading: false,
+        matchedBusiness: action.payload,
+        matchedBusinessError: null,
+      };
+
+    case FIND_BUSINESS_BY_MOBILE_FAILURE:
+      return {
+        ...state,
+        matchedBusinessLoading: false,
+        matchedBusiness: null,
+        matchedBusinessError: action.payload,
+      };
+
     /** ------------------- SEARCH LOGS ------------------- **/
     case FETCH_SEARCH_LOGS_REQUEST:
       return { ...state, searchLogsLoading: true, searchLogsError: null };
@@ -160,6 +195,35 @@ export default function businessListReducer(state = initialState, action) {
         searchLogs: [],
         searchLogsError: action.payload,
       };
+
+    case FETCH_LOGS_REQUEST:
+      return {
+        ...state,
+        matchedLogsLoading: true,
+        matchedLogsError: null,
+      };
+
+    case FETCH_LOGS_SUCCESS:
+      return {
+        ...state,
+        matchedLogsLoading: false,
+        matchedLogs: action.payload,
+        matchedLogsError: null,
+      };
+
+    case FETCH_LOGS_FAILURE:
+      return {
+        ...state,
+        matchedLogsLoading: false,
+        matchedLogs: [],
+        matchedLogsError: action.payload,
+      };
+    case SET_LEADS_HISTORY_USERS:
+      return {
+        ...state,
+        leadsHistoryUsers: action.payload
+      };
+
 
     case SUGGESTION_BUSINESS_REQUEST:
       return { ...state, loading: true };

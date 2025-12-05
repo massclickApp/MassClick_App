@@ -1,0 +1,94 @@
+/* Notification container */
+.ln-root {
+  max-width: 700px;
+  margin: 30px auto;
+  padding: 20px;
+  font-family: "Inter", sans-serif;
+}
+
+/* Header */
+.ln-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.ln-back-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* List */
+.ln-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Notification item (similar to FB) */
+.ln-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.ln-item:hover {
+  background: #f3f4f6;
+}
+
+/* Avatar circle */
+.ln-avatar {
+  width: 45px;
+  height: 45px;
+  background: #5565ff;
+  color: white;
+  font-size: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Notification text */
+.ln-body {
+  flex: 1;
+}
+
+.ln-text {
+  font-size: 15px;
+  color: #111;
+}
+
+.ln-meta {
+  font-size: 13px;
+  color: #666;
+  margin-top: 3px;
+}
+
+.ln-time {
+  margin-left: 5px;
+  color: #888;
+}
+
+/* Blue unread dot */
+.ln-dot {
+  width: 10px;
+  height: 10px;
+  background: #1877f2;
+  border-radius: 50%;
+}
+  
+/* Empty state */
+.ln-empty {
+  text-align: center;
+  font-size: 18px;
+  padding: 50px 0;
+  color: #777;
+}

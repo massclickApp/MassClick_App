@@ -1,7 +1,5 @@
 import React, { useEffect } from "react";
 import './popularCategories.css';
-import { useDispatch } from "react-redux";
-import { getAllClientBusinessList } from "../../../redux/actions/businessListAction";
 import { useNavigate } from "react-router-dom"; 
 
 const popularSearches = [
@@ -20,12 +18,9 @@ const popularSearches = [
 ];
 
 const PopularCategories = () => {
-    const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        dispatch(getAllClientBusinessList());
-    }, [dispatch]);
+ 
 
     const handleCategoryClick = (category) => {
         navigate(`/category/${category.toLowerCase().replace(/ /g, '-')}`);

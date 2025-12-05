@@ -517,3 +517,35 @@ export const getTrendingSearches = async (limit = 4) => {
     return await SearchLogModel.aggregate(pipeline);
 };
 
+export const findBusinessByMobile = async (mobile) => {
+  try {
+    if (!mobile) throw new Error("Mobile number is required");
+
+    const business = await businessListModel.findOne({
+      contactList: mobile
+    }).lean();
+
+    if (!business) return null;
+
+    if (business.bannerImageKey) {
+      business.bannerImage = getSignedUrlByKey(business.bannerImageKey);
+    }
+
+    if (business.businessImagesKey?.length > 0) {
+      business.businessImages = business.businessImagesKey.map((key) =>
+        getSignedUrlByKey(key)
+      );
+    }
+
+    if (business.kycDocumentsKey?.length > 0) {
+      business.kycDocuments = business.kycDocumentsKey.map((key) =>
+        getSignedUrlByKey(key)
+      );
+    }
+
+    return business;
+  } catch (err) {
+    console.error("Error in findBusinessByMobile:", err);
+    throw err;
+  }
+};

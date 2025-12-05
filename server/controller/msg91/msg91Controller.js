@@ -159,10 +159,15 @@ export const updateOtpUser = async (req, res) => {
 export const viewOtpUser = async (req, res) => {
     try {
         const { mobile } = req.params;
-        const user = await User.findOne({ mobileNumber1: mobile }).lean(); // Use .lean() for faster read
-        if (!user) return res.status(404).json({ success: false, message: "User not found" });
-        
-    
+
+        const user = await User.findOne({ mobileNumber1: mobile }).lean();
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
         if (user.profileImageKey) {
             user.profileImage = getSignedUrlByKey(user.profileImageKey);
         }
@@ -231,6 +236,16 @@ export const logUserSearch = async (req, res) => {
         res.json({ success: true, message: "Search logged successfully", searchHistory: user.searchHistory });
     } catch (err) {
         console.error("Error logging search:", err);
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+export const matchLeads = async (req, res) => {
+    try {
+        const result = await matchLeadsService(req.body);
+        res.json({ success: true, ...result });
+    } catch (err) {
+        console.error("matchLeads error:", err);
         res.status(500).json({ success: false, message: err.message });
     }
 };

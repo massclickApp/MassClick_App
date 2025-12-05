@@ -1,8 +1,8 @@
 import express from 'express'
 
-import { addBusinessListAction, getTrendingSearchesAction, viewBusinessListAction,getSuggestionsController,mainSearchController, viewAllBusinessListAction, updateBusinessListAction, deleteBusinessListAction, activeBusinessListAction, viewAllClientBusinessListAction, viewBusinessByCategory } from "../controller/businessList/businessListController.js"
+import { addBusinessListAction, getTrendingSearchesAction, viewBusinessListAction, getSuggestionsController, mainSearchController, viewAllBusinessListAction, updateBusinessListAction, deleteBusinessListAction, activeBusinessListAction, viewAllClientBusinessListAction, viewBusinessByCategory, findBusinessByMobileAction } from "../controller/businessList/businessListController.js"
 import { oauthAuthentication } from '../helper/oauthHelper.js';
-import {logSearchAction, viewLogSearchAction} from "../controller/businessList/logSearchController.js"
+import { logSearchAction, viewLogSearchAction, viewSearchAction } from "../controller/businessList/logSearchController.js"
 
 const router = express.Router();
 
@@ -16,9 +16,11 @@ router.put('/api/businesslist/activate/:id', oauthAuthentication, activeBusiness
 router.post('/api/businesslist/log-search', oauthAuthentication, logSearchAction);
 router.get('/api/businesslist/trending-searches', oauthAuthentication, getTrendingSearchesAction);
 router.get('/api/businesslist/trending-searches/viewall', oauthAuthentication, viewLogSearchAction);
+router.post('/api/businesslist/trending-searches/view', oauthAuthentication, viewSearchAction);
 router.get('/api/businesslist/search', oauthAuthentication, mainSearchController);
 router.get('/api/businesslist/suggestions', oauthAuthentication, getSuggestionsController);
 router.get('/api/businesslist/category', oauthAuthentication, viewBusinessByCategory);
+router.get("/api/businesslist/findByMobile/:mobile", findBusinessByMobileAction);
 
 
 export default router; 

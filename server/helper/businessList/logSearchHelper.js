@@ -22,3 +22,32 @@ export const getAllSearchLogs = async () => {
         return [];
     }
 };
+
+export const getMatchedSearchLogs = async (category, keywords) => {
+  try {
+    const regexCategory = new RegExp(category, "i");
+    const regexKeywords = keywords.map(k => new RegExp(k, "i"));
+
+    const logs = await searchLogModel.find({
+      $or: [
+        { category: regexCategory },
+        { categoryName: regexCategory },
+        { searchCategory: regexCategory },
+
+        { searchedUserText: { $in: regexKeywords } },
+        { title: { $in: regexKeywords } },
+        { description: { $in: regexKeywords } },
+        { meta: { $in: regexKeywords } },
+        { note: { $in: regexKeywords } },
+      ]
+    })
+    .sort({ createdAt: -1 })
+    .limit(5000);  
+
+    return logs;
+
+  } catch (error) {
+    console.error("Error fetching Search Logs:", error);
+    return [];
+  }
+};

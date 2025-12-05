@@ -8,7 +8,6 @@ import EnquiryImage from '../../../../assets/enquiry.png';
 import CardsSearch from '../../CardsSearch/CardsSearch';
 import Footer from '../footer';
 import { useDispatch, useSelector } from "react-redux";
-import { getAllBusinessList, getAllClientBusinessList } from "../../../../redux/actions/businessListAction";
 import { createEnquiry } from "../../../../redux/actions/enquiryAction";
 
 
@@ -27,7 +26,7 @@ const EnquiryNow = () => {
         contactNumber: '',
         email: '',
         // Renamed 'address' to 'message' for clarity with the large field
-        message: '', 
+        message: '',
     });
 
     const [category, setCategory] = useState('');
@@ -37,25 +36,6 @@ const EnquiryNow = () => {
     const [submitMessage, setSubmitMessage] = useState({ text: '', type: '' });
 
 
-    const { clientBusinessList = [] } = useSelector(
-        (state) => state.businessListReducer || {}
-    );
-
-    const uniqueCategories = useMemo(() => {
-        if (!clientBusinessList || clientBusinessList.length === 0) {
-            return [];
-        }
-        const categories = clientBusinessList
-            .map(business => business.category)
-            .filter(category => category);
-        return [...new Set(categories)];
-    }, [clientBusinessList]);
-
-    useEffect(() => {
-        dispatch(getAllClientBusinessList());
-    }, [dispatch]);
-
-    // Handler for all standard inputs (Name, Business Name, Contact, Email, Message)
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
         setSubmitMessage({ text: '', type: '' });
@@ -108,7 +88,7 @@ const EnquiryNow = () => {
 
     return (
         <>
-            <CardsSearch /><br/><br/><br/>
+            <CardsSearch /><br /><br /><br />
 
             <section
                 className="enquiry-hero-banner"
@@ -172,19 +152,15 @@ const EnquiryNow = () => {
                             />
                         </div>
 
-                        {/* 3. Business Category (Select) */}
                         <div className="form-group">
-                            <select
+                            <input
+                                type="text"
                                 name="category"
                                 value={category}
                                 onChange={handleCategoryChange}
+                                placeholder="Business Category *"
                                 required
-                            >
-                                <option value="" disabled hidden>Business Category *</option>
-                                {uniqueCategories.map((cat) => (
-                                    <option key={cat} value={cat}>{cat}</option>
-                                ))}
-                            </select>
+                            />
                         </div>
 
                         {/* 4. Contact Number */}
@@ -234,7 +210,7 @@ const EnquiryNow = () => {
                                 placeholder="Briefly describe your project or address..."
                                 rows="4"
                             />
-                             <span className="helper-text">Project Details / Message (Required: Minimum 20 characters)</span>
+                            <span className="helper-text">Project Details / Message (Required: Minimum 20 characters)</span>
                         </div>
 
                         {/* SUBMIT BUTTON */}
