@@ -549,3 +549,73 @@ export const findBusinessByMobile = async (mobile) => {
     throw err;
   }
 };
+
+export const getDashboardSummaryHelper = async () => {
+
+  const today = new Date();
+  const startOfToday = new Date(today.setHours(0, 0, 0, 0));
+
+  const todayCount = await businessListModel.countDocuments({
+    createdAt: { $gte: startOfToday }
+  });
+
+  const totalCount = await businessListModel.countDocuments();
+
+  const activeCount = await businessListModel.countDocuments({
+    activeBusinesses: true
+  });
+
+  const inactiveCount = totalCount - activeCount;
+
+  const hotCategoryAgg = await businessListModel.aggregate([
+    { $match: { activeBusinesses: true } },
+    { $group: { _id: "$category", count: { $sum: 1 } } },
+    { $sort: { count: -1 } },
+    { $limit: 1 }
+  ]);
+
+  const hotCategory = hotCategoryAgg.length > 0 ? hotCategoryAgg[0]._id : "No Category";
+
+  return {
+    todayCount,
+    totalCount,
+    activeCount,
+    inactiveCount,
+    hotCategory
+  };
+};
+
+export const getDashboardChartsHelper = async () => {
+  const year = new Date().getFullYear();
+
+  const monthly = await businessListModel.aggregate([
+    {
+      $match: {
+        createdAt: {
+          $gte: new Date(`${year}-01-01`),
+          $lte: new Date(`${year}-12-31`)
+        }
+      }
+    },
+    {
+      $group: {
+        _id: { month: { $month: "$createdAt" } },
+        count: { $sum: 1 }
+      }
+    },
+    { $sort: { "_id.month": 1 } }
+  ]);
+
+  const categories = await businessListModel.aggregate([
+    {
+      $group: {
+        _id: "$category",
+        count: { $sum: 1 }
+      }
+    },
+    { $sort: { count: -1 } }
+  ]);
+
+  return { monthly, categories };
+};
+

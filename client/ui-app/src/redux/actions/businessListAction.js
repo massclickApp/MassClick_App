@@ -12,7 +12,10 @@ import {
   SEARCH_BUSINESS_REQUEST, SEARCH_BUSINESS_SUCCESS, SEARCH_BUSINESS_FAILURE,
   CATEGORY_BUSINESS_REQUEST, CATEGORY_BUSINESS_SUCCESS, CATEGORY_BUSINESS_FAILURE,
   FETCH_LOGS_REQUEST, FETCH_LOGS_SUCCESS, FETCH_LOGS_FAILURE, SET_LEADS_HISTORY_USERS,
-  FIND_BUSINESS_BY_MOBILE_REQUEST, FIND_BUSINESS_BY_MOBILE_SUCCESS, FIND_BUSINESS_BY_MOBILE_FAILURE
+  FIND_BUSINESS_BY_MOBILE_REQUEST, FIND_BUSINESS_BY_MOBILE_SUCCESS, FIND_BUSINESS_BY_MOBILE_FAILURE,
+  FETCH_VIEWBUSINESSDETAILS_REQUEST, FETCH_VIEWBUSINESSDETAILS_SUCCESS, FETCH_VIEWBUSINESSDETAILS_FAILURE,
+  FETCH_DASHBOARDCARD_REQUEST, FETCH_DASHBOARDCARD_SUCCESS, FETCH_DASHBOARDCARD_FAILURE,
+  FETCH_DASHBOARDCHART_REQUEST, FETCH_DASHBOARDCHART_SUCCESS, FETCH_DASHBOARDCHART_FAILURE
 } from "../actions/userActionTypes.js";
 import { getClientToken } from "./clientAuthAction.js";
 const API_URL = process.env.REACT_APP_API_URL;
@@ -53,6 +56,34 @@ const getValidToken = async (dispatch) => {
 //     });
 //   }
 // };
+export const getBusinessDetailsById = (id) => async (dispatch) => {
+  dispatch({ type: FETCH_VIEWBUSINESSDETAILS_REQUEST });
+
+  try {
+    const token = await dispatch(getClientToken());
+
+    const response = await axios.get(
+      `${API_URL}/businesslist/view/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    dispatch({
+      type: FETCH_VIEWBUSINESSDETAILS_SUCCESS,
+      payload: response.data,
+    });
+
+    return response.data;
+  } catch (error) {
+    dispatch({
+      type: FETCH_VIEWBUSINESSDETAILS_FAILURE,
+      payload: error.response?.data?.message || error.message,
+    });
+
+    return null;
+  }
+};
 
 
 export const getAllBusinessList = ({ pageNo = 1, pageSize = 10 } = {}) => async (dispatch) => {
@@ -396,5 +427,55 @@ export const findBusinessByMobile = (mobile) => async (dispatch) => {
     });
 
     return null;
+  }
+};
+
+export const getDashboardSummary = () => async (dispatch) => {
+  dispatch({ type: FETCH_DASHBOARDCARD_REQUEST });
+
+  try {
+    const token = await getValidToken(dispatch);
+
+    const response = await axios.get(
+      `${API_URL}/businesslist/dashboard-summary`,
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    );
+
+    dispatch({
+      type: FETCH_DASHBOARDCARD_SUCCESS,
+      payload: response.data,
+    });
+
+  } catch (error) {
+    dispatch({
+      type: FETCH_DASHBOARDCARD_FAILURE,
+      payload: error.response?.data?.message || error.message,
+    });
+  }
+};
+
+export const getDashboardCharts = () => async (dispatch) => {
+  dispatch({ type: FETCH_DASHBOARDCHART_REQUEST });
+
+  try {
+    const token = await getValidToken(dispatch);
+
+    const response = await axios.get(
+      `${API_URL}/businesslist/dashboard-charts`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    dispatch({
+      type: FETCH_DASHBOARDCHART_SUCCESS,
+      payload: response.data,
+    });
+
+  } catch (error) {
+    dispatch({
+      type: FETCH_DASHBOARDCHART_FAILURE,
+      payload: error.message,
+    });
   }
 };

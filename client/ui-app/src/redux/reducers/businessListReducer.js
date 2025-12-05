@@ -13,7 +13,16 @@ import {
   CATEGORY_BUSINESS_REQUEST,
   CATEGORY_BUSINESS_SUCCESS,
   CATEGORY_BUSINESS_FAILURE,
-  FIND_BUSINESS_BY_MOBILE_REQUEST, FIND_BUSINESS_BY_MOBILE_SUCCESS, FIND_BUSINESS_BY_MOBILE_FAILURE
+  FIND_BUSINESS_BY_MOBILE_REQUEST, FIND_BUSINESS_BY_MOBILE_SUCCESS, FIND_BUSINESS_BY_MOBILE_FAILURE,
+  FETCH_VIEWBUSINESSDETAILS_REQUEST,
+  FETCH_VIEWBUSINESSDETAILS_SUCCESS,
+  FETCH_VIEWBUSINESSDETAILS_FAILURE,
+  FETCH_DASHBOARDCARD_REQUEST,
+  FETCH_DASHBOARDCARD_SUCCESS,
+  FETCH_DASHBOARDCARD_FAILURE,
+  FETCH_DASHBOARDCHART_REQUEST,
+  FETCH_DASHBOARDCHART_SUCCESS,
+  FETCH_DASHBOARDCHART_FAILURE
 } from '../actions/userActionTypes';
 
 const initialState = {
@@ -45,6 +54,18 @@ const initialState = {
   matchedBusiness: null,
   matchedBusinessLoading: false,
   matchedBusinessError: null,
+
+  businessDetails: null,
+  businessDetailsLoading: false,
+  businessDetailsError: null,
+
+  dashboardSummary: null,
+  dashboardSummaryLoading: false,
+  dashboardSummaryError: null,
+
+  chartData: null,
+  chartLoading: false,
+  chartError: null,
 
 
 };
@@ -113,6 +134,58 @@ export default function businessListReducer(state = initialState, action) {
 
     case FETCH_VIEWBUSINESS_FAILURE:
       return { ...state, loading: false, clientBusinessList: [], error: action.payload };
+    case FETCH_VIEWBUSINESSDETAILS_REQUEST:
+      return {
+        ...state,
+        businessDetailsLoading: true,
+        businessDetailsError: null,
+      };
+
+    case FETCH_VIEWBUSINESSDETAILS_SUCCESS:
+      return {
+        ...state,
+        businessDetailsLoading: false,
+        businessDetails: action.payload,
+        businessDetailsError: null,
+      };
+
+    case FETCH_VIEWBUSINESSDETAILS_FAILURE:
+      return {
+        ...state,
+        businessDetailsLoading: false,
+        businessDetails: null,
+        businessDetailsError: action.payload,
+      };
+    case FETCH_DASHBOARDCARD_REQUEST:
+      return {
+        ...state,
+        dashboardSummaryLoading: true,
+        dashboardSummaryError: null,
+      };
+
+    case FETCH_DASHBOARDCARD_SUCCESS:
+      return {
+        ...state,
+        dashboardSummaryLoading: false,
+        dashboardSummary: action.payload,
+        dashboardSummaryError: null,
+      };
+
+    case FETCH_DASHBOARDCARD_FAILURE:
+      return {
+        ...state,
+        dashboardSummaryLoading: false,
+        dashboardSummary: null,
+        dashboardSummaryError: action.payload,
+      };
+    case FETCH_DASHBOARDCHART_REQUEST:
+      return { ...state, chartLoading: true, chartError: null };
+
+    case FETCH_DASHBOARDCHART_SUCCESS:
+      return { ...state, chartLoading: false, chartData: action.payload };
+
+    case FETCH_DASHBOARDCHART_FAILURE:
+      return { ...state, chartLoading: false, chartError: action.payload };
 
     case CATEGORY_BUSINESS_REQUEST:
       return { ...state, loading: true, error: null };

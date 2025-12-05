@@ -62,7 +62,6 @@ export const verifyOtpAction = async (req, res) => {
       ]
     }).lean();
 
-    console.log("Matched Business:", matchedBusiness);
 
     // 4️⃣ Auto-fill business details into user
     if (matchedBusiness) {

@@ -1,4 +1,4 @@
-import { createBusinessList, viewBusinessList,findBusinessesByCategory,findBusinessByMobile, viewAllBusinessList, viewAllClientBusinessList, updateBusinessList, getTrendingSearches, deleteBusinessList, activeBusinessList } from "../../helper/businessList/businessListHelper.js";
+import { createBusinessList, viewBusinessList,getDashboardChartsHelper,findBusinessesByCategory,getDashboardSummaryHelper,findBusinessByMobile, viewAllBusinessList, viewAllClientBusinessList, updateBusinessList, getTrendingSearches, deleteBusinessList, activeBusinessList } from "../../helper/businessList/businessListHelper.js";
 import { BAD_REQUEST } from "../../errorCodes.js";
 import businessListModel from "../../model/businessList/businessListModel.js";
 import { getSignedUrlByKey } from "../../s3Uploder.js";
@@ -280,5 +280,30 @@ export const findBusinessByMobileAction = async (req, res) => {
   } catch (error) {
     console.error("Error in findBusinessByMobileAction:", error);
     return res.status(BAD_REQUEST.code).send({ message: error.message });
+  }
+};
+
+export const dashboardSummaryAction = async (req, res) => {
+  try {
+    const summary = await getDashboardSummaryHelper();  
+    
+    return res.send({
+      success: true,
+      ...summary
+    });
+
+  } catch (error) {
+    console.error("Dashboard Summary Error:", error);
+    return res.status(500).send({ message: error.message });
+  }
+};
+
+export const dashboardChartsAction = async (req, res) => {
+  try {
+    const data = await getDashboardChartsHelper();
+    res.send({ success: true, ...data });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Chart data fetch failed" });
   }
 };

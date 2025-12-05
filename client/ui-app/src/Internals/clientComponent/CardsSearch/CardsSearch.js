@@ -15,7 +15,6 @@ import Tooltip from "@mui/material/Tooltip";
 import { categoryBarHelpers } from "../categoryBar";
 import { Box, Typography, Button, IconButton } from "@mui/material";
 import MicIcon from "@mui/icons-material/Mic";
-import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import HistoryToggleOffIcon from "@mui/icons-material/HistoryToggleOff";

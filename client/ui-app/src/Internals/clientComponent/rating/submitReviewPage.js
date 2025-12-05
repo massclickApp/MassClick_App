@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import Rating from '@mui/material/Rating';
 import StarIcon from '@mui/icons-material/Star';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
-import { editBusinessList, getAllClientBusinessList } from '../../../redux/actions/businessListAction';
+import { editBusinessList, getBusinessDetailsById } from '../../../redux/actions/businessListAction';
 import './submitReview.css';
 import CardsSearch from '../CardsSearch/CardsSearch';
 import Footer from '../footer/footer';
@@ -22,222 +22,259 @@ const labels = {
 };
 
 const WriteReviewPage = () => {
-    const { businessId, ratingValue } = useParams();
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+  const { businessId, ratingValue } = useParams();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-    const initialRating = parseFloat(ratingValue) || 0;
+  const initialRating = parseFloat(ratingValue) || 0;
 
-    const [rating, setRating] = useState(initialRating);
-    const [reviewText, setReviewText] = useState('');
-    const [selectedTags, setSelectedTags] = useState([]);
-    const [ratingPhotos, setRatingPhotos] = useState([]);
-    const [showSuccessModal, setShowSuccessModal] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+  const {
+    businessDetails,
+    businessDetailsLoading,
+    businessDetailsError
+  } = useSelector(state => state.businessListReducer);
 
-    const storedUser = JSON.parse(localStorage.getItem("authUser") || "{}");
+  const [rating, setRating] = useState(initialRating);
+  const [reviewText, setReviewText] = useState('');
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [ratingPhotos, setRatingPhotos] = useState([]);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const business = useSelector(state =>
-        state.businessListReducer.clientBusinessList.find(b => b._id === businessId)
+  const storedUser = JSON.parse(localStorage.getItem("authUser") || "{}");
+
+  useEffect(() => {
+    dispatch(getBusinessDetailsById(businessId));
+  }, [dispatch, businessId]);
+
+  if (businessDetailsLoading) {
+    return <>
+      <CardsSearch />
+      <p style={{ textAlign: "center", marginTop: "50px" }}>Loading...</p>
+      <Footer />
+    </>;
+  }
+
+  if (businessDetailsError) {
+    return <>
+      <CardsSearch />
+      <p style={{ textAlign: "center", marginTop: "50px", color: "red" }}>
+        {businessDetailsError}
+      </p>
+      <Footer />
+    </>;
+  }
+
+  const business = businessDetails;
+  if (!business) {
+    return <>
+      <CardsSearch />
+      <p style={{ textAlign: "center", marginTop: "50px" }}>Business not found.</p>
+      <Footer />
+    </>;
+  }
+
+  const businessNameSlug = business.businessName.toLowerCase().replace(/\s+/g, '-');
+  const locationSlug = business.location.toLowerCase().replace(/\s+/g, '-');
+
+  const handleModalClose = () => {
+    setShowSuccessModal(false);
+    navigate(`/business/${businessNameSlug}/${locationSlug}/${businessId}`);
+  };
+
+  const handlePhotoUpload = (event) => {
+    const files = Array.from(event.target.files);
+    setRatingPhotos(files);
+  };
+
+  const handleTagClick = (tag) => {
+    setSelectedTags(prev =>
+      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+    );
+  };
+
+  const handleSubmitReview = async () => {
+    if (!rating || reviewText.length < 5) {
+      alert("Please provide a rating and at least 5 characters for your experience.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const base64Photos = await Promise.all(
+      ratingPhotos.map(file => {
+        return new Promise(resolve => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.readAsDataURL(file);
+        });
+      })
     );
 
-    if (!business) return <p>Loading business details for review...</p>;
-
-    const businessNameSlug = business.businessName.toLowerCase().replace(/\s+/g, '-');
-    const locationSlug = business.location.toLowerCase().replace(/\s+/g, '-');
-
-    const handleModalClose = () => {
-        setShowSuccessModal(false);
-        navigate(`/business/${businessNameSlug}/${locationSlug}/${businessId}`);
+    const newReview = {
+      rating,
+      ratingExperience: reviewText,
+      ratingLove: selectedTags,
+      userId: storedUser?._id || null,
+      userName: storedUser?.userName || "",
+      userProfileImage: storedUser?.profileImage || "",
+      mobileNumber1: storedUser?.mobileNumber1 || "",
+      businessName: business.businessName,
+      businessLocation: business.location,
+      ratingPhotos: base64Photos,
     };
 
-    const handlePhotoUpload = (event) => {
-        const files = Array.from(event.target.files);
-        setRatingPhotos(files);
-    };
+    try {
+      await dispatch(editBusinessList(businessId, { reviewData: newReview }));
+      setShowSuccessModal(true);
+    } catch (error) {
+      console.error("Failed to submit review:", error);
+      alert(`Failed to submit review: ${error.message || 'Check console.'}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-    const handleTagClick = (tag) => {
-        setSelectedTags(prev =>
-            prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
-        );
-    };
+  const isSubmitDisabled = isSubmitting || !rating || reviewText.length < 5;
 
-    const handleSubmitReview = async () => {
-        if (!rating || reviewText.length < 5) {
-            alert("Please provide a rating and at least 5 characters for your experience.");
-            return;
-        }
+  return (
+    <>
+      <CardsSearch /><br /><br /><br />
 
-        setIsSubmitting(true);
+      <div className="write-review-container">
 
-        const base64Photos = await Promise.all(
-            ratingPhotos.map(file => {
-                return new Promise(resolve => {
-                    const reader = new FileReader();
-                    reader.onloadend = () => resolve(reader.result);
-                    reader.readAsDataURL(file);
-                });
-            })
-        );
+        <h1 className="review-page-title">Write Review</h1>
 
-        const newReview = {
-            rating,
-            ratingExperience: reviewText,
-            ratingLove: selectedTags,
-            userId: storedUser?._id || null,
-            userName: storedUser?.userName || "",
-            userProfileImage: storedUser?.profileImage || "",
-            mobileNumber1: storedUser?.mobileNumber1 || "",
-            businessName: business.businessName,
-            businessLocation: business.location,
-            ratingPhotos: base64Photos,
-        };
-        try {
-            await dispatch(editBusinessList(businessId, { reviewData: newReview }));
-            await dispatch(getAllClientBusinessList());
-            setShowSuccessModal(true);
-        } catch (error) {
-            console.error("Failed to submit review:", error);
-            alert(`Failed to submit review: ${error.message || 'Check console.'}`);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
+        <div className="review-business-header">
+          <img
+            src={business.bannerImage || 'placeholder.jpg'}
+            alt={business.businessName}
+          />
+          <div>
+            <h2>{business.businessName}</h2>
+            <p>{business.location}</p>
+          </div>
+        </div>
 
-    const isSubmitDisabled = isSubmitting || !rating || reviewText.length < 5;
+        <div className="review-form-body">
+          {/* LEFT */}
+          <div className="rating-column">
+            <div className="rating-section">
+              <h3>How would you rate your experience?</h3>
 
-    return (
-        <>
-            <CardsSearch /><br /><br /><br />
+              <Rating
+                value={rating}
+                precision={0.5}
+                onChange={(e, newValue) => setRating(newValue || 0)}
+                emptyIcon={<StarIcon style={{ opacity: 0.2 }} fontSize="inherit" />}
+                size="large"
+              />
 
-            <div className="write-review-container">
-
-                <h1 className="review-page-title">Write Review</h1>
-
-                <div className="review-business-header">
-                    <img
-                        src={business.bannerImage || 'placeholder.jpg'}
-                        alt={business.businessName}
-                    />
-                    <div>
-                        <h2>{business.businessName}</h2>
-                        <p>{business.location}</p>
-                    </div>
-                </div>
-                <div className="review-form-body">
-                    <div className="rating-column">
-                        <div className="rating-section">
-                            <h3>How would you rate your experience?</h3>
-
-                            <Rating
-                                value={rating}
-                                precision={0.5}
-                                onChange={(e, newValue) => setRating(newValue || 0)}
-                                emptyIcon={<StarIcon style={{ opacity: 0.2 }} fontSize="inherit" />}
-                                size="large"
-                            />
-
-                            <p className="rating-label">
-                                {labels[rating] || 'Select your rating...'}
-                                <span>{rating >= 4 ? '🤩' : rating >= 2.5 ? '🙂' : '😔'}</span>
-                            </p>
-                        </div>
-
-                        <div className="photo-upload-section">
-                            <h3>Upload Photos (Optional)</h3>
-
-                            <input
-                                type="file"
-                                id="photo-upload-input"
-                                multiple
-                                accept="image/*"
-                                onChange={handlePhotoUpload}
-                                style={{ display: 'none' }}
-                            />
-
-                            <label htmlFor="photo-upload-input" className="custom-upload-btn">
-                                <PhotoCameraIcon style={{ marginRight: '8px', fontSize: '1.2rem' }} />
-                                {ratingPhotos.length > 0
-                                    ? `${ratingPhotos.length} photo(s) selected`
-                                    : 'Choose Photo Files'}
-                            </label>
-
-                            {ratingPhotos.length > 0 && (
-                                <ul className="selected-files-list">
-                                    {ratingPhotos.map((file, index) => (
-                                        <li key={index}>{file.name}</li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="content-column">
-                        <div className="tags-section">
-                            <h3>What did you like or dislike?</h3>
-                            <div className="tag-list">
-                                {['Quick service', 'Great service', 'Impolite staff', 'Worth the money', 'Long wait time', 'Reasonably priced'].map(tag => (
-                                    <span
-                                        key={tag}
-                                        className={`review-tag ${selectedTags.includes(tag) ? 'selected' : ''}`}
-                                        onClick={() => handleTagClick(tag)}
-                                    >
-                                        {tag}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="text-section">
-                            <h3>Tell us about your experience</h3>
-                            <textarea
-                                value={reviewText}
-                                onChange={(e) => setReviewText(e.target.value)}
-                                placeholder="Please say a little something about (Minimum 5 characters)"
-                                rows="5"
-                            ></textarea>
-                        </div>
-                    </div>
-
-                </div>
-
-                <div className="submit-action-container">
-                    <button
-                        className="submit-review-btn"
-                        onClick={handleSubmitReview}
-                        disabled={isSubmitDisabled}
-                    >
-                        {isSubmitting ? 'Submitting...' : 'Submit Review'}
-                    </button>
-                </div>
+              <p className="rating-label">
+                {labels[rating] || 'Select your rating...'}
+                <span>{rating >= 4 ? '🤩' : rating >= 2.5 ? '🙂' : '😔'}</span>
+              </p>
             </div>
 
-            <Dialog open={showSuccessModal} onClose={handleModalClose}>
-                <DialogTitle style={{ textAlign: 'center', color: '#16a085', paddingTop: '20px' }}>
-                    <CheckCircleIcon style={{ fontSize: 60, color: '#16a085' }} />
-                </DialogTitle>
+            <div className="photo-upload-section">
+              <h3>Upload Photos (Optional)</h3>
 
-                <DialogContent style={{ textAlign: 'center' }}>
-                    <h2>Review Submitted!</h2>
-                    <p>Thank you for sharing your experience at <strong>{business.businessName}</strong>.</p>
-                    <p>Your review will be live shortly.</p>
-                </DialogContent>
+              <input
+                type="file"
+                id="photo-upload-input"
+                multiple
+                accept="image/*"
+                onChange={handlePhotoUpload}
+                style={{ display: 'none' }}
+              />
 
-                <DialogActions style={{ justifyContent: 'center', paddingBottom: '20px' }}>
-                    <Button
-                        onClick={handleModalClose}
-                        variant="contained"
-                        style={{ backgroundColor: '#FF8C00', color: 'white' }}
-                        autoFocus
-                    >
-                        View Business Page
-                    </Button>
-                </DialogActions>
-            </Dialog>
+              <label htmlFor="photo-upload-input" className="custom-upload-btn">
+                <PhotoCameraIcon style={{ marginRight: '8px', fontSize: '1.2rem' }} />
+                {ratingPhotos.length > 0
+                  ? `${ratingPhotos.length} photo(s) selected`
+                  : 'Choose Photo Files'}
+              </label>
 
-            <Footer />
-        </>
-    );
+              {ratingPhotos.length > 0 && (
+                <ul className="selected-files-list">
+                  {ratingPhotos.map((file, index) => (
+                    <li key={index}>{file.name}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+
+          {/* RIGHT */}
+          <div className="content-column">
+            <div className="tags-section">
+              <h3>What did you like or dislike?</h3>
+              <div className="tag-list">
+                {['Quick service', 'Great service', 'Impolite staff',
+                  'Worth the money', 'Long wait time', 'Reasonably priced'
+                ].map(tag => (
+                  <span
+                    key={tag}
+                    className={`review-tag ${selectedTags.includes(tag) ? 'selected' : ''}`}
+                    onClick={() => handleTagClick(tag)}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="text-section">
+              <h3>Tell us about your experience</h3>
+              <textarea
+                value={reviewText}
+                onChange={(e) => setReviewText(e.target.value)}
+                placeholder="Please say a little something about (Minimum 5 characters)"
+                rows="5"
+              ></textarea>
+            </div>
+          </div>
+
+        </div>
+
+        <div className="submit-action-container">
+          <button
+            className="submit-review-btn"
+            onClick={handleSubmitReview}
+            disabled={isSubmitDisabled}
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit Review'}
+          </button>
+        </div>
+      </div>
+
+      {/* SUCCESS MODAL */}
+      <Dialog open={showSuccessModal} onClose={handleModalClose}>
+        <DialogTitle style={{ textAlign: 'center', color: '#16a085', paddingTop: '20px' }}>
+          <CheckCircleIcon style={{ fontSize: 60, color: '#16a085' }} />
+        </DialogTitle>
+
+        <DialogContent style={{ textAlign: 'center' }}>
+          <h2>Review Submitted!</h2>
+          <p>Thank you for sharing your experience at <strong>{business.businessName}</strong>.</p>
+          <p>Your review will be live shortly.</p>
+        </DialogContent>
+
+        <DialogActions style={{ justifyContent: 'center', paddingBottom: '20px' }}>
+          <Button
+            onClick={handleModalClose}
+            variant="contained"
+            style={{ backgroundColor: '#FF8C00', color: 'white' }}
+            autoFocus
+          >
+            View Business Page
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Footer />
+    </>
+  );
 };
 
 export default WriteReviewPage;

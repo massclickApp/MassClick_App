@@ -22,10 +22,10 @@ const searchLogSchema = new mongoose.Schema({
         }
     ],
 
-    createdAt: {
+   createdAt: {
         type: Date,
         default: Date.now,
-        expires: '7d'
+        expires: 604800 
     }
 });
 

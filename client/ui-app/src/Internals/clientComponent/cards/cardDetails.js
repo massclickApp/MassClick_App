@@ -4,9 +4,8 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
-  getAllClientBusinessList,
+  getBusinessDetailsById,
 } from "../../../redux/actions/businessListAction";
-import { getAllLocation } from "../../../redux/actions/locationAction";
 
 import "./cardDetails.css";
 
@@ -123,10 +122,8 @@ const BusinessDetail = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
 
-  const { clientBusinessList = [] } =
-    useSelector((state) => state.businessListReducer || {}) || {};
-  const { location = [] } =
-    useSelector((state) => state.locationReducer || {}) || {};
+  const { businessDetails, businessDetailsLoading, businessDetailsError } =
+    useSelector(state => state.businessListReducer);
 
   const [mainImage, setMainImage] = useState(null);
   const [showFullGallery, setShowFullGallery] = useState(false);
@@ -144,11 +141,35 @@ const BusinessDetail = () => {
   const reviewsRef = useRef(null);
 
   useEffect(() => {
-    dispatch(getAllClientBusinessList());
-    dispatch(getAllLocation());
-  }, [dispatch]);
+    dispatch(getBusinessDetailsById(id));
+  }, [dispatch, id]);
 
-  const business = clientBusinessList.find((b) => b._id === id);
+
+  if (businessDetailsLoading) {
+    return (
+      <>
+        <CardsSearch />
+        <div className="business-CardDetails-pageWrapper">
+          <p>Loading...</p>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  if (businessDetailsError) {
+    return (
+      <>
+        <CardsSearch />
+        <div className="business-CardDetails-pageWrapper">
+          <p style={{ color: "red" }}>{businessDetailsError}</p>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  const business = businessDetails;
 
   if (!business) {
     return (
@@ -391,7 +412,7 @@ const BusinessDetail = () => {
 
   return (
     <>
-      <CardsSearch /><br/><br/><br/><br/>
+      <CardsSearch /><br /><br /><br /><br />
       <div className="business-CardDetails-pageWrapper">
         {/* HERO SECTION */}
         <section className="business-CardDetails-heroSection">
@@ -702,9 +723,8 @@ const BusinessDetail = () => {
                           src ||
                           "https://via.placeholder.com/300x200?text=No+Image"
                         }
-                        alt={`${business.businessName} photo ${
-                          index + 1
-                        }`}
+                        alt={`${business.businessName} photo ${index + 1
+                          }`}
                         className="business-CardDetails-photoItem"
                         onClick={() => {
                           setCurrentSlideIndex(index);
@@ -796,12 +816,12 @@ const BusinessDetail = () => {
                           <span className="business-CardDetails-reviewDate">
                             {review.createdAt
                               ? new Date(
-                                  review.createdAt
-                                ).toLocaleDateString("en-GB", {
-                                  year: "numeric",
-                                  month: "short",
-                                  day: "numeric",
-                                })
+                                review.createdAt
+                              ).toLocaleDateString("en-GB", {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              })
                               : "N/A"}
                           </span>
                         </div>

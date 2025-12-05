@@ -4,125 +4,69 @@ import StoreIcon from "@mui/icons-material/Store";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import WhatshotIcon from "@mui/icons-material/Whatshot";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllClientBusinessList } from "../../redux/actions/businessListAction";
+import { getDashboardSummary } from "../../redux/actions/businessListAction";
 
 import "./businessCard.css";
 
 export default function SelectActionCard() {
+
     const dispatch = useDispatch();
 
-    const { clientBusinessList = [] } = useSelector(
-        (state) => state.businessListReducer || {}
-    );
+    const {
+        dashboardSummary,
+        dashboardSummaryLoading,
+        dashboardSummaryError
+    } = useSelector((state) => state.businessListReducer);
 
     useEffect(() => {
-        dispatch(getAllClientBusinessList());
+        dispatch(getDashboardSummary());
     }, [dispatch]);
 
-    const list = Array.isArray(clientBusinessList) ? clientBusinessList : [];
+    if (dashboardSummaryLoading) {
+        return <p style={{ textAlign: "center" }}>Loading Dashboard...</p>;
+    }
 
-    /* ------------------------------------------------------------
-       1. Today's Count
-    ------------------------------------------------------------- */
-    const todayCount = list.filter((b) => {
-        const created = new Date(b.createdAt);
-        const today = new Date();
-
+    if (dashboardSummaryError) {
         return (
-            created.getDate() === today.getDate() &&
-            created.getMonth() === today.getMonth() &&
-            created.getFullYear() === today.getFullYear()
-        );
-    }).length;
-
-    /* ------------------------------------------------------------
-       2. Total Count
-    ------------------------------------------------------------- */
-    const totalCount = list.length;
-
-    /* ------------------------------------------------------------
-       3. Active Count
-    ------------------------------------------------------------- */
-    const activeCount = list.filter((b) => b.activeBusinesses === true).length;
-
-    /* ------------------------------------------------------------
-       4. Inactive Count (NEW CARD)
-    ------------------------------------------------------------- */
-    const inactiveCount = totalCount - activeCount;
-
-
-    const calculateGrowth = (current, previous) => {
-        if (previous === 0) return "+0%";
-        const percentage = ((current - previous) / previous) * 100;
-        return (percentage >= 0 ? "+" : "") + percentage.toFixed(1) + "%";
-    };
-
-    const today = new Date();
-
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(today.getDate() - 7);
-
-    const twoWeeksAgo = new Date();
-    twoWeeksAgo.setDate(today.getDate() - 14);
-
-    const currentWeekCount = list.filter((b) => {
-        const date = new Date(b.createdAt);
-        return date >= oneWeekAgo && date <= today;
-    }).length;
-
-    const previousWeekCount = list.filter((b) => {
-        const date = new Date(b.createdAt);
-        return date >= twoWeeksAgo && date < oneWeekAgo;
-    }).length;
-
-    const businessGrowth = calculateGrowth(currentWeekCount, previousWeekCount);
-
-    /* ------------------------------------------------------------
-       6. HOT CATEGORY
-    ------------------------------------------------------------- */
-    const activeBusinessesOnly = list.filter((b) => b.activeBusinesses === true);
-
-    const categoryCount = {};
-    activeBusinessesOnly.forEach((b) => {
-        if (b.category) {
-            categoryCount[b.category] = (categoryCount[b.category] || 0) + 1;
-        }
-    });
-
-    let hotCategory = "No Category";
-    if (Object.keys(categoryCount).length > 0) {
-        hotCategory = Object.keys(categoryCount).reduce((a, b) =>
-            categoryCount[a] > categoryCount[b] ? a : b
+            <p style={{ textAlign: "center", color: "red" }}>
+                Error: {dashboardSummaryError}
+            </p>
         );
     }
 
-    /* ------------------------------------------------------------
-       7. All Cards (5 Cards Now)
-    ------------------------------------------------------------- */
+    if (!dashboardSummary) {
+        return <p style={{ textAlign: "center" }}>No Dashboard Data Found</p>;
+    }
+
+    const {
+        todayCount = 0,
+        totalCount = 0,
+        activeCount = 0,
+        inactiveCount = 0,
+        hotCategory = "No Category"
+    } = dashboardSummary;
+
     const cards = [
         {
             id: 1,
             title: "Today's Business",
             value: todayCount,
             icon: <BusinessCenterIcon />,
-            color: "#ff7043",
-            growth: calculateGrowth(todayCount, previousWeekCount),
+            color: "#ff7043"
         },
         {
             id: 2,
             title: "Total Businesses",
             value: totalCount,
             icon: <StoreIcon />,
-            color: "#42a5f5",
-            growth: businessGrowth,
+            color: "#42a5f5"
         },
         {
             id: 3,
             title: "Active Businesses",
             value: activeCount,
             icon: <ShoppingCartIcon />,
-            color: "#66bb6a",
-            growth: calculateGrowth(activeCount, previousWeekCount),
+            color: "#66bb6a"
         },
         {
             id: 4,
@@ -133,37 +77,34 @@ export default function SelectActionCard() {
             ),
             value: hotCategory,
             icon: <WhatshotIcon />,
-            color: "#ff3d00",
-            growth: "+0%",
+            color: "#ff3d00"
         },
-
         {
             id: 5,
             title: "Inactive Businesses",
             value: inactiveCount,
             icon: <ShoppingCartIcon />,
-            color: "#d32f2f",
-            growth: calculateGrowth(inactiveCount, previousWeekCount),
-        },
+            color: "#d32f2f"
+        }
     ];
 
     return (
         <div className="card-grid">
             {cards.map((card) => (
                 <div className="stat-card" key={card.id}>
+
                     <h4 className="card-title">{card.title}</h4>
 
-                    <h2 className={`card-value ${card.id === 4 ? "hot-category-text" : ""}`}>
+                    <h2
+                        className={`card-value ${card.id === 4 ? "hot-category-text" : ""}`}
+                    >
                         {card.value}
                     </h2>
 
-                    <p
-                        className={`card-growth ${card.growth.startsWith("-") ? "down" : "up"}`}
+                    <div
+                        className="card-icon"
+                        style={{ backgroundColor: card.color }}
                     >
-                        {card.growth} from last week
-                    </p>
-
-                    <div className="card-icon" style={{ backgroundColor: card.color }}>
                         {card.icon}
                     </div>
                 </div>
