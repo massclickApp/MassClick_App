@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -25,32 +25,28 @@ import NotificationsActiveRoundedIcon from "@mui/icons-material/NotificationsAct
 
 import { useDispatch, useSelector } from "react-redux";
 import {
-  getAllBusinessList,
-  editBusinessList,
+  getPendingBusinessList,
+  editBusinessList
 } from "../redux/actions/businessListAction";
 
 export default function NotificationDropdown({ open, handleClose }) {
   const dispatch = useDispatch();
 
-  const { businessList = [], loading: businessLoading } = useSelector(
-    (state) => state.businessListReducer || {}
-  );
+  const {
+    pendingBusinessList = [],
+    pendingBusinessLoading
+  } = useSelector((state) => state.businessListReducer);
 
-  const { users = [] } = useSelector((state) => state.userReducer || {});
+  const { users = [] } = useSelector((state) => state.userReducer);
   const [expandedId, setExpandedId] = useState(null);
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
   useEffect(() => {
     if (open) {
-      dispatch(getAllBusinessList());
+      dispatch(getPendingBusinessList());
     }
   }, [open, dispatch]);
-
-  const pendingBusinesses = useMemo(
-    () => businessList.filter((b) => b.businessesLive === false),
-    [businessList]
-  );
 
   const getUserName = (id) => {
     const user = users.find((u) => u._id === id);
@@ -58,17 +54,24 @@ export default function NotificationDropdown({ open, handleClose }) {
   };
 
   const handleMakeLive = (business) => {
-    dispatch(editBusinessList(business._id, { businessesLive: true }));
+    dispatch(editBusinessList(business._id, { businessesLive: true }))
+      .then(() => {
 
-    const msg = `
-${business.businessName} is going live!
+        const msg = `
+${business.businessName} is now LIVE!
 Client ID: ${business.clientId}
 Category: ${business.category}
 Location: ${business.location}
 Created By: ${getUserName(business.createdBy)}
-    `;
-    setToastMessage(msg);
-    setToastOpen(true);
+      `;
+
+        setToastMessage(msg);
+        setToastOpen(true);
+
+        setTimeout(() => {
+          handleClose();
+        }, 300);
+      });
   };
 
   if (!open) return null;
@@ -108,18 +111,18 @@ Created By: ${getUserName(business.createdBy)}
         </IconButton>
       </Box>
 
-      {businessLoading ? (
+      {pendingBusinessLoading ? (
         <Box sx={{ py: 5, display: "flex", justifyContent: "center" }}>
           <CircularProgress />
         </Box>
       ) : (
         <List sx={{ maxHeight: "65vh", overflowY: "auto" }}>
-          {pendingBusinesses.length === 0 ? (
+          {pendingBusinessList.length === 0 ? (
             <Typography sx={{ textAlign: "center", py: 3, color: "#666" }}>
               No pending businesses
             </Typography>
           ) : (
-            pendingBusinesses.map((b) => (
+            pendingBusinessList.map((b) => (
               <Box key={b._id}>
                 <ListItemButton
                   onClick={() =>
@@ -138,11 +141,7 @@ Created By: ${getUserName(business.createdBy)}
                   }}
                 >
                   <ListItemText
-                    primary={
-                      <Typography sx={{ fontWeight: 700 }}>
-                        {b.businessName}
-                      </Typography>
-                    }
+                    primary={<Typography sx={{ fontWeight: 700 }}>{b.businessName}</Typography>}
                     secondary={
                       <Typography sx={{ fontSize: "0.8rem", color: "#777" }}>
                         Client ID: <b>{b.clientId}</b>
@@ -173,38 +172,14 @@ Created By: ${getUserName(business.createdBy)}
                       boxShadow: "0 6px 18px rgba(0,0,0,0.07)",
                     }}
                   >
-                    <DetailRow
-                      icon={<SmartphoneRoundedIcon sx={{ color: "#ff6a00" }} />}
-                      label="Mobile"
-                      value={b.contact}
-                    />
-
-                    <DetailRow
-                      icon={<FolderRoundedIcon sx={{ color: "#ff6a00" }} />}
-                      label="Category"
-                      value={b.category}
-                    />
-
-                    <DetailRow
-                      icon={<PlaceRoundedIcon sx={{ color: "#ff6a00" }} />}
-                      label="Location"
-                      value={b.location}
-                    />
-
-                    <DetailRow
-                      icon={<PersonRoundedIcon sx={{ color: "#ff6a00" }} />}
-                      label="Created By"
-                      value={getUserName(b.createdBy)}
-                    />
-
+                    <DetailRow icon={<SmartphoneRoundedIcon sx={{ color: "#ff6a00" }} />} label="Mobile" value={b.contact} />
+                    <DetailRow icon={<FolderRoundedIcon sx={{ color: "#ff6a00" }} />} label="Category" value={b.category} />
+                    <DetailRow icon={<PlaceRoundedIcon sx={{ color: "#ff6a00" }} />} label="Location" value={b.location} />
+                    <DetailRow icon={<PersonRoundedIcon sx={{ color: "#ff6a00" }} />} label="Created By" value={getUserName(b.createdBy)} />
                     <DetailRow
                       icon={<AccessTimeRoundedIcon sx={{ color: "#ff6a00" }} />}
                       label="Created At"
-                      value={
-                        b.createdAt
-                          ? new Date(b.createdAt).toLocaleString()
-                          : "N/A"
-                      }
+                      value={b.createdAt ? new Date(b.createdAt).toLocaleString() : "N/A"}
                     />
 
                     <Button
@@ -217,12 +192,10 @@ Created By: ${getUserName(business.createdBy)}
                         textTransform: "none",
                         fontWeight: 700,
                         fontSize: "0.9rem",
-                        background:
-                          "linear-gradient(90deg,#ff8a3c,#ff5a1f)",
+                        background: "linear-gradient(90deg,#ff8a3c,#ff5a1f)",
                         boxShadow: "0 6px 18px rgba(255,120,40,0.3)",
                         "&:hover": {
-                          background:
-                            "linear-gradient(90deg,#ff6a00,#e85400)",
+                          background: "linear-gradient(90deg,#ff6a00,#e85400)",
                         },
                       }}
                       onClick={() => handleMakeLive(b)}
@@ -245,11 +218,7 @@ Created By: ${getUserName(business.createdBy)}
         onClose={() => setToastOpen(false)}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Alert
-          onClose={() => setToastOpen(false)}
-          severity="success"
-          sx={{ whiteSpace: "pre-line", width: "100%" }}
-        >
+        <Alert onClose={() => setToastOpen(false)} severity="success" sx={{ whiteSpace: "pre-line", width: "100%" }}>
           {toastMessage}
         </Alert>
       </Snackbar>

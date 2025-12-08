@@ -1,4 +1,4 @@
-import { createUsersClients, viewUserClients, viewAllUserClients, updateUserClients, deleteUserClients } from "../../helper/userClient/userClientHelper.js";
+import { createUsersClients, viewUserClients, viewAllUserClients,searchUsersClient, updateUserClients, deleteUserClients } from "../../helper/userClient/userClientHelper.js";
 import { BAD_REQUEST } from "../../errorCodes.js";
 
 export const addUsersClientAction = async (req, res) => {
@@ -61,4 +61,22 @@ export const deleteUsersClientAction = async (req, res) => {
         console.error(error);
         return res.status(400).send({ message: error.message });
     }
+};
+
+export const searchUsersClientAction = async (req, res) => {
+  try {
+    const query = req.query.query?.trim() || "";
+
+    if (!query) {
+      return res.send([]);
+    }
+
+    const result = await searchUsersClient(query);
+
+    res.send(result);
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({ message: error.message });
+  }
 };

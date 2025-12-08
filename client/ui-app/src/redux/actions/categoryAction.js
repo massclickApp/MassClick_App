@@ -3,7 +3,8 @@ import {
   FETCH_CATEGORY_REQUEST, FETCH_CATEGORY_SUCCESS, FETCH_CATEGORY_FAILURE,
   CREATE_CATEGORY_REQUEST, CREATE_CATEGORY_SUCCESS, CREATE_CATEGORY_FAILURE,
   EDIT_CATEGORY_REQUEST, EDIT_CATEGORY_SUCCESS, EDIT_CATEGORY_FAILURE,
-  DELETE_CATEGORY_REQUEST, DELETE_CATEGORY_SUCCESS, DELETE_CATEGORY_FAILURE
+  DELETE_CATEGORY_REQUEST, DELETE_CATEGORY_SUCCESS, DELETE_CATEGORY_FAILURE,
+  BUSINESS_CATEGORYSEARCH_REQUEST, BUSINESS_CATEGORYSEARCH_SUCCESS, BUSINESS_CATEGORYSEARCH_FAILURE
 } from "../actions/userActionTypes.js";
 import { getClientToken } from "./clientAuthAction.js";
 
@@ -103,5 +104,31 @@ export const deleteCategory = (id) => async (dispatch) => {
   } catch (error) {
     dispatch({ type: DELETE_CATEGORY_FAILURE, payload: error.response?.data || error.message });
     throw error;
+  }
+};
+
+export const businessCategorySearch = (query) => async (dispatch) => {
+  try {
+    dispatch({ type: BUSINESS_CATEGORYSEARCH_REQUEST });
+
+    const token = await getValidToken(dispatch);
+
+    const response = await axios.get(
+      `${API_URL}/category/businesscategorysearch?query=${query}`,
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    );
+
+    dispatch({
+      type: BUSINESS_CATEGORYSEARCH_SUCCESS,
+      payload: response.data,
+    });
+
+  } catch (error) {
+    dispatch({
+      type: BUSINESS_CATEGORYSEARCH_FAILURE,
+      payload: error.response?.data || error.message,
+    });
   }
 };

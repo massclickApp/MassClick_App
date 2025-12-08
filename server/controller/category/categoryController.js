@@ -4,6 +4,7 @@ import {
   viewAllCategory,
   updateCategory,
   deleteCategory,
+  businessSearchCategory
 } from "../../helper/category/categoryHelper.js";
 import { BAD_REQUEST } from "../../errorCodes.js";
 
@@ -78,6 +79,25 @@ export const deleteCategoryAction = async (req, res) => {
     const categoryId = req.params.id;
     const category = await deleteCategory(categoryId);
     res.send({ message: "Category deleted successfully", category });
+  } catch (error) {
+    console.error(error);
+    return res.status(BAD_REQUEST.code).send({ message: error.message });
+  }
+};
+
+
+export const businessSearchCategoryAction = async (req, res) => {
+  try {
+    const query = req.query.query || "";
+    const limit = parseInt(req.query.limit) || 20; 
+
+    if (!query || query.length < 2) {
+      return res.send([]);  
+    }
+
+    const categories = await businessSearchCategory(query, limit);
+    res.send(categories);
+
   } catch (error) {
     console.error(error);
     return res.status(BAD_REQUEST.code).send({ message: error.message });

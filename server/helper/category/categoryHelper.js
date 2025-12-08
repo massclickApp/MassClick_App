@@ -154,3 +154,40 @@ export const deleteCategory = async (id) => {
     throw error;
   }
 };
+
+export const businessSearchCategory = async (query, limit) => {
+  try {
+    const regex = new RegExp(query, "i");
+
+    const results = await categoryModel
+      .find(
+        {
+          isActive: true,
+          category: { $regex: regex } 
+        },
+        {
+          category: 1,
+          keywords: 1,
+          slug: 1,
+          seoTitle: 1,
+          seoDescription: 1,
+          title: 1,
+          description: 1,
+          categoryImageKey: 1
+        }
+      )
+      .limit(limit)
+      .lean();
+
+    return results.map((cat) => {
+      if (cat.categoryImageKey) {
+        cat.categoryImage = getSignedUrlByKey(cat.categoryImageKey);
+      }
+      return cat;
+    });
+
+  } catch (error) {
+    console.error("Error searching categories:", error);
+    throw error;
+  }
+};

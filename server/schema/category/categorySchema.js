@@ -20,7 +20,7 @@ const categorySchema = new mongoose.Schema(
       default: null,
     },
 
-    title: { type: String, required: true, trim: true },
+    title: { type: String, trim: true },
 
     keywords: {
       type: [String],
@@ -32,7 +32,7 @@ const categorySchema = new mongoose.Schema(
       },
     },
 
-    description: { type: String, required: true, trim: true },
+    description: { type: String, trim: true },
 
     slug: { type: String, unique: true, lowercase: true, trim: true },
 

@@ -89,3 +89,24 @@ export const deleteUserClients = async (id) => {
 
   return user;
 };
+
+export const searchUsersClient = async (query) => {
+  try {
+    return await userClientModel
+      .find(
+        {
+          $or: [
+            { clientId: { $regex: query, $options: "i" } },
+            { name: { $regex: query, $options: "i" } }
+          ],
+          isActive: true
+        },
+        { clientId: 1, name: 1 }
+      )
+      .limit(20)
+      .lean();
+  } catch (error) {
+    console.error("Error searching userClient:", error);
+    throw error;
+  }
+};

@@ -22,7 +22,10 @@ import {
   FETCH_DASHBOARDCARD_FAILURE,
   FETCH_DASHBOARDCHART_REQUEST,
   FETCH_DASHBOARDCHART_SUCCESS,
-  FETCH_DASHBOARDCHART_FAILURE
+  FETCH_DASHBOARDCHART_FAILURE,
+  FETCH_PENDINGBUSINESS_REQUEST,
+  FETCH_PENDINGBUSINESS_SUCCESS,
+  FETCH_PENDINGBUSINESS_FAILURE
 } from '../actions/userActionTypes';
 
 const initialState = {
@@ -66,6 +69,10 @@ const initialState = {
   chartData: null,
   chartLoading: false,
   chartError: null,
+
+  pendingBusinessList: [],
+  pendingBusinessLoading: false,
+  pendingBusinessError: null,
 
 
 };
@@ -247,6 +254,28 @@ export default function businessListReducer(state = initialState, action) {
         matchedBusinessLoading: false,
         matchedBusiness: null,
         matchedBusinessError: action.payload,
+      };
+
+    case FETCH_PENDINGBUSINESS_REQUEST:
+      return {
+        ...state,
+        pendingBusinessLoading: true,
+        pendingBusinessError: null,
+      };
+
+    case FETCH_PENDINGBUSINESS_SUCCESS:
+      return {
+        ...state,
+        pendingBusinessLoading: false,
+        pendingBusinessList: action.payload,
+      };
+
+    case FETCH_PENDINGBUSINESS_FAILURE:
+      return {
+        ...state,
+        pendingBusinessLoading: false,
+        pendingBusinessList: [],
+        pendingBusinessError: action.payload,
       };
 
     /** ------------------- SEARCH LOGS ------------------- **/

@@ -1,4 +1,4 @@
-import { createBusinessList, viewBusinessList,getDashboardChartsHelper,findBusinessesByCategory,getDashboardSummaryHelper,findBusinessByMobile, viewAllBusinessList, viewAllClientBusinessList, updateBusinessList, getTrendingSearches, deleteBusinessList, activeBusinessList } from "../../helper/businessList/businessListHelper.js";
+import { createBusinessList, viewBusinessList,getDashboardChartsHelper,getPendingBusinessList, findBusinessesByCategory,getDashboardSummaryHelper,findBusinessByMobile, viewAllBusinessList, viewAllClientBusinessList, updateBusinessList, getTrendingSearches, deleteBusinessList, activeBusinessList } from "../../helper/businessList/businessListHelper.js";
 import { BAD_REQUEST } from "../../errorCodes.js";
 import businessListModel from "../../model/businessList/businessListModel.js";
 import { getSignedUrlByKey } from "../../s3Uploder.js";
@@ -305,5 +305,19 @@ export const dashboardChartsAction = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Chart data fetch failed" });
+  }
+};
+export const getPendingBusinessAction = async (req, res) => {
+  try {
+    const result = await getPendingBusinessList();
+
+    res.status(200).send({
+      success: true,
+      data: result,   
+    });
+
+  } catch (error) {
+    console.error("Pending business error:", error);
+    return res.status(400).send({ message: error.message });
   }
 };

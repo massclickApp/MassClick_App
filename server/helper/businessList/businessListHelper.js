@@ -619,3 +619,18 @@ export const getDashboardChartsHelper = async () => {
   return { monthly, categories };
 };
 
+export const getPendingBusinessList = async () => {
+  return await businessListModel.find(
+    { businessesLive: false },
+    {
+      businessName: 1,
+      clientId: 1,
+      category: 1,
+      location: 1,
+      contact: 1,
+      createdAt: 1,
+      createdBy: 1,
+      businessesLive: 1,
+    }
+  ).lean();
+};

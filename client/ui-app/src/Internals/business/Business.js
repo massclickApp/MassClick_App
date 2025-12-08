@@ -2,8 +2,8 @@ import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllBusinessList, createBusinessList, editBusinessList, deleteBusinessList } from "../../redux/actions/businessListAction";
 import { getAllLocation } from "../../redux/actions/locationAction";
-import { getAllCategory } from "../../redux/actions/categoryAction";
-import { getAllUsersClient } from "../../redux/actions/userClientAction.js";
+import { createCategory, getAllCategory, businessCategorySearch } from "../../redux/actions/categoryAction";
+import { getAllUsersClient, getUserClientSuggestion } from "../../redux/actions/userClientAction.js";
 import { getAllUsers } from "../../redux/actions/userAction.js";
 import CustomizedDataGrid from "../../components/CustomizedDataGrid";
 import ReactQuill from 'react-quill';
@@ -36,6 +36,9 @@ import {
   Step,
   StepLabel,
 } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
+import TextField from "@mui/material/TextField";
+
 import {
   FormControl,
   InputLabel,
@@ -143,13 +146,16 @@ export default function BusinessList() {
   const { businessList = [], total = 0, loading, error } = useSelector(
     (state) => state.businessListReducer || {}
   );
-  const { userClient = [], } = useSelector(
+  const { searchSuggestion = [] } = useSelector(
     (state) => state.userClientReducer || {}
   );
+  const [showCategorySuggest, setShowCategorySuggest] = useState(false);
+  const { searchCategory } = useSelector((state) => state.categoryReducer);
+  const [categorySelected, setCategorySelected] = useState(false);
 
   const { users = [] } = useSelector((state) => state.userReducer || {});
 
-  const { location = [] } = useSelector((state) => state.locationReducer || {});
+  // const { location = [] } = useSelector((state) => state.locationReducer || {});
   const { category = [] } = useSelector((state) => state.categoryReducer || {});
   const fileInputRef = useRef();
 
@@ -164,6 +170,7 @@ export default function BusinessList() {
     open: false,
     data: null,
   });
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const handlePayNow = (row) => {
     const amount = 1;
@@ -417,7 +424,7 @@ export default function BusinessList() {
   useEffect(() => {
     dispatch(getAllBusinessList());
     dispatch(getAllLocation());
-    dispatch(getAllCategory())
+    dispatch(businessCategorySearch())
     dispatch(getAllUsersClient())
     dispatch(getAllUsers())
     dispatch(checkPhonePeStatus());
@@ -778,23 +785,78 @@ export default function BusinessList() {
       case 0:
         return (
           <>
-            <div className="form-input-group">
+            <div className="form-input-group" style={{ position: "relative" }}>
               <label htmlFor="clientId" className="input-label">Client ID</label>
-              <select
+
+              <input
+                type="text"
                 id="clientId"
                 name="clientId"
-                className={`select-input ${errors.clientId ? "error" : ""}`}
+                className={`text-input ${errors.clientId ? "error" : ""}`}
                 value={formData.clientId}
-                onChange={handleChange}
-              >
-                <option value="">-- Select Client --</option>
-                {userClient.map((user) => (
-                  <option key={user._id} value={user.clientId}>
-                    {user.clientId} - {user.name}
-                  </option>
-                ))}
-              </select>
+                placeholder="Type client ID or name..."
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setFormData((prev) => ({ ...prev, clientId: value }));
+
+                  if (value.length >= 2) {
+                    dispatch(getUserClientSuggestion(value));
+                    setShowSuggestions(true);   // 🔥 SHOW DROPDOWN
+                  } else {
+                    setShowSuggestions(false);  // HIDE DROPDOWN
+                  }
+                }}
+                onBlur={() => {
+                  setTimeout(() => setShowSuggestions(false), 200);
+                }}
+                onFocus={() => {
+                  if (formData.clientId.length >= 2) {
+                    setShowSuggestions(true);
+                  }
+                }}
+              />
+
               {errors.clientId && <p className="error-text">{errors.clientId}</p>}
+
+              {showSuggestions && searchSuggestion?.length > 0 && (
+                <ul
+                  style={{
+                    position: "absolute",
+                    top: "70px",
+                    left: 0,
+                    width: "100%",
+                    background: "#fff",
+                    border: "1px solid #ccc",
+                    borderRadius: "6px",
+                    maxHeight: "200px",
+                    overflowY: "auto",
+                    padding: 0,
+                    margin: 0,
+                    zIndex: 2000,
+                    listStyle: "none",
+                  }}
+                >
+                  {searchSuggestion.map((client) => (
+                    <li
+                      key={client._id}
+                      onClick={() => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          clientId: client.clientId,
+                        }));
+                        setShowSuggestions(false);
+                      }}
+                      style={{
+                        padding: "10px",
+                        cursor: "pointer",
+                        borderBottom: "1px solid #eee",
+                      }}
+                    >
+                      <strong>{client.clientId}</strong> — {client.name}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
             <div className="form-input-group">
               <label htmlFor="businessName" className="input-label">Business Name</label>
@@ -847,20 +909,14 @@ export default function BusinessList() {
             </div>
             <div className="form-input-group">
               <label htmlFor="location" className="input-label">Location</label>
-              <select
+              <input
+                type="text"
                 id="location"
                 name="location"
-                className={`select-input ${errors.location ? "error" : ""}`}
+                className={`text-input ${errors.location ? "error" : ""}`}
                 value={formData.location}
                 onChange={handleChange}
-              >
-                <option value="">-- Select Location --</option>
-                {location.map((loc) => (
-                  <option key={loc._id} value={`${loc.city}, ${loc.state}`}>
-                    {`${loc.city}, ${loc.state}`}
-                  </option>
-                ))}
-              </select>
+              />
               {errors.location && <p className="error-text">{errors.location}</p>}
             </div>
             <div className="form-input-group">
@@ -1060,7 +1116,6 @@ export default function BusinessList() {
                       />
                     </div>
 
-                    {/* 3. Status Select */}
                     <div style={{ justifySelf: "end" }}>
                       <select
                         value={
@@ -1098,29 +1153,88 @@ export default function BusinessList() {
       case 1:
         return (
           <>
-            <div className="form-input-group">
-              <label htmlFor="category" className="input-label">Category</label>
-              <select
-                id="category"
-                name="category"
-                className={`select-input ${errors.category ? "error" : ""}`}
+            <div className="form-input-group" style={{ position: "relative" }}>
+              <label className="input-label">Category</label>
+
+              <input
+                type="text"
+                className={`text-input ${errors.category ? "error" : ""}`}
+                placeholder="Search category..."
                 value={formData.category}
-                onChange={handleChange}
-              >
-                <option value="">-- Select Category --</option>
-                {category.map((cat) => (
-                  <option key={cat._id} value={cat.category}>{cat.category}</option>
-                ))}
-              </select>
-              {errors.category && <p className="error-text">{errors.category}</p>}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setFormData({ ...formData, category: value });
+
+                  setCategorySelected(false);
+
+                  if (value.length >= 2) {
+                    dispatch(businessCategorySearch(value));
+                    setShowCategorySuggest(true);
+                  } else {
+                    setShowCategorySuggest(false);
+                  }
+                }}
+                onFocus={() => {
+                  if (formData.category.length >= 2) {
+                    setShowCategorySuggest(true);
+                  }
+                }}
+                onBlur={() => setTimeout(() => setShowCategorySuggest(false), 200)}
+              />
+
+              {showCategorySuggest && searchCategory?.length > 0 && (
+                <ul
+                  style={{
+                    position: "absolute",
+                    top: "70px",
+                    width: "100%",
+                    background: "#fff",
+                    border: "1px solid #ccc",
+                    borderRadius: "6px",
+                    maxHeight: "240px",
+                    overflowY: "auto",
+                    padding: 0,
+                    margin: 0,
+                    zIndex: 2000,
+                    listStyle: "none",
+                  }}
+                >
+                  {searchCategory.map((cat) => (
+                    <li
+                      key={cat._id}
+                      onClick={() => {
+                        setFormData({
+                          ...formData,
+                          category: cat.category,
+                          keywords: cat.keywords || [],
+                          slug: cat.slug || "",
+                          seoTitle: cat.seoTitle || "",
+                          seoDescription: cat.seoDescription || "",
+                          title: cat.title || "",
+                          description: cat.description || "",
+                        });
+
+                        setCategorySelected(true);
+                        setShowCategorySuggest(false);
+                      }}
+                      style={{
+                        padding: "10px",
+                        cursor: "pointer",
+                        borderBottom: "1px solid #eee",
+                      }}
+                    >
+                      {cat.category}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
             {["restaurants", "hotels"].includes(formData.category?.toLowerCase()) && (
               <div className="form-input-group">
-                <label htmlFor="restaurantOptions" className="input-label">Restaurant Options</label>
+                <label className="input-label">Restaurant Options</label>
                 <select
-                  id="restaurantOptions"
+                  className="select-input"
                   name="restaurantOptions"
-                  className={`select-input ${errors.restaurantOptions ? "error" : ""}`}
                   value={formData.restaurantOptions || ""}
                   onChange={handleChange}
                 >
@@ -1129,129 +1243,96 @@ export default function BusinessList() {
                   <option value="Non-Veg">Non-Veg</option>
                   <option value="Both">Both</option>
                 </select>
-                {errors.restaurantOptions && <p className="error-text">{errors.restaurantOptions}</p>}
               </div>
             )}
-            {formData.category && (
-              <div className="form-input-group">
-                <FormControl fullWidth sx={{ mt: 4 }}>
-                  <InputLabel id="keywords-label">Select Keywords</InputLabel>
-                  <Select
-                    labelId="keywords-label"
-                    id="keywords"
-                    multiple
-                    name="keywords"
-                    value={formData.keywords || []}
-                    onChange={(event) =>
-                      setFormData({
-                        ...formData,
-                        keywords:
-                          typeof event.target.value === "string"
-                            ? event.target.value.split(",")
-                            : event.target.value,
-                      })
-                    }
-                    input={<OutlinedInput label="Select Keywords" className="tall-select" />}
-                    renderValue={(selected) => selected.join(", ")}
-                    MenuProps={{
-                      PaperProps: {
-                        style: {
-                          maxHeight: 48 * 4.5 + 8,
-                          width: 250,
-                        },
-                      },
-                    }}
-                  >
-                    {category
-                      .find((cat) => cat.category === formData.category)
-                      ?.keywords?.map((kw, index) => (
-                        <MenuItem key={index} value={kw}>
-                          <Checkbox checked={formData.keywords?.includes(kw)} />
-                          <ListItemText primary={kw} />
-                        </MenuItem>
-                      ))}
-                  </Select>
-                  {errors.keywords && (
-                    <p className="error-text" style={{ color: "red", marginTop: 4 }}>
-                      {errors.keywords}
-                    </p>
+
+            {/* KEYWORDS */}
+            <div className="form-input-group" style={{ marginTop: "25px" }}>
+              <FormControl fullWidth>
+                <Autocomplete
+                  multiple
+                  freeSolo
+                  id="keywords"
+                  options={Array.isArray(formData.keywords) ? formData.keywords : []}
+                  value={Array.isArray(formData.keywords) ? formData.keywords : []}
+                  onChange={(event, newValue) => {
+                    setFormData({
+                      ...formData,
+                      keywords: newValue,
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Select Keywords" placeholder="Type keywords and press Enter" />
                   )}
-                </FormControl>
-              </div>
-            )}
+                />
+              </FormControl>
+
+            </div>
+
+            {/* SLUG */}
             <div className="form-input-group">
-              <label htmlFor="slug" className="input-label">Slug</label>
+              <label className="input-label">Slug</label>
               <input
                 type="text"
-                id="slug"
                 name="slug"
-                className={`text-input ${errors.slug ? "error" : ""}`}
-                value={formData.slug || ""}
+                className="text-input"
+                value={formData.slug}
                 onChange={handleChange}
-                placeholder="Enter slug (e.g. gym, hotels, restaurants)"
               />
-              {errors.slug && <p className="error-text">{errors.slug}</p>}
             </div>
 
+            {/* SEO TITLE */}
             <div className="form-input-group">
-              <label htmlFor="seoTitle" className="input-label">SEO Title</label>
+              <label className="input-label">SEO Title</label>
               <input
                 type="text"
-                id="seoTitle"
                 name="seoTitle"
-                className={`text-input ${errors.seoTitle ? "error" : ""}`}
-                value={formData.seoTitle || ""}
+                className="text-input"
+                value={formData.seoTitle}
                 onChange={handleChange}
-                placeholder="Enter SEO Title"
               />
-              {errors.seoTitle && <p className="error-text">{errors.seoTitle}</p>}
             </div>
 
+            {/* SEO DESCRIPTION */}
             <div className="form-input-group">
-              <label htmlFor="seoDescription" className="input-label">SEO Description</label>
+              <label className="input-label">SEO Description</label>
               <textarea
-                id="seoDescription"
                 name="seoDescription"
-                className={`textarea-input ${errors.seoDescription ? "error" : ""}`}
-                value={formData.seoDescription || ""}
-                onChange={handleChange}
-                placeholder="Write SEO description here..."
+                className="textarea-input"
+                value={formData.seoDescription}
                 rows={3}
+                onChange={handleChange}
               />
-              {errors.seoDescription && <p className="error-text">{errors.seoDescription}</p>}
             </div>
 
+            {/* TITLE */}
             <div className="form-input-group">
-              <label htmlFor="title" className="input-label">Title</label>
+              <label className="input-label">Title</label>
               <input
                 type="text"
-                id="title"
                 name="title"
-                className={`text-input ${errors.title ? "error" : ""}`}
-                value={formData.title || ""}
+                className="text-input"
+                value={formData.title}
                 onChange={handleChange}
-                placeholder="Enter category title"
               />
-              {errors.title && <p className="error-text">{errors.title}</p>}
             </div>
 
+            {/* DESCRIPTION */}
             <div className="form-input-group">
-              <label htmlFor="description" className="input-label">Description</label>
+              <label className="input-label">Description</label>
               <textarea
-                id="description"
                 name="description"
-                className={`textarea-input ${errors.description ? "error" : ""}`}
-                value={formData.description || ""}
-                onChange={handleChange}
-                placeholder="Enter category description"
+                className="textarea-input"
+                value={formData.description}
                 rows={4}
+                onChange={handleChange}
               />
-              {errors.description && <p className="error-text">{errors.description}</p>}
             </div>
-
-
           </>
         );
+
+
+
 
       case 2:
         return (
@@ -1467,6 +1548,12 @@ export default function BusinessList() {
                   type="button"
                   className="submit-button"
                   onClick={handleNext}
+                  style={{
+                    marginLeft: "auto",
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    marginTop: "28px",
+                  }}
                 >
                   <SkipNextIcon />
                 </button>
@@ -1480,7 +1567,7 @@ export default function BusinessList() {
                   marginLeft: "auto",
                   display: "flex",
                   justifyContent: "flex-end",
-                  marginTop: "10px",
+                  marginTop: "28px",
                 }}
               >
                 {loading ? (
