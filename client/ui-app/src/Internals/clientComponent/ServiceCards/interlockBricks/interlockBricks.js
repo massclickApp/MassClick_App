@@ -19,11 +19,13 @@ const InterlockBricksCards = () => {
     }, [dispatch]);
 
     const createSlug = (text) => {
-        if (!text) return "";
-        return text
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, "-")
-            .replace(/(^-|-$)+/g, "");
+        if (!text) return "unknown";
+        return (
+            text
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/(^-|-$)+/g, "") || "unknown"
+        );
     };
 
     if (loading) {
@@ -35,16 +37,9 @@ const InterlockBricksCards = () => {
             <div className="no-results-container">
                 <p className="no-results-title">No Interlock Bricks Found Yet 😔</p>
                 <p className="no-results-suggestion">
-                    It looks like we don't have any businesses matching "Interlock Bricks"
-                    in our data right now.
+                    It looks like we don’t have any businesses matching “Interlock Bricks”.
                 </p>
-                <p className="no-results-action">
-                    Please try another category or check back later!
-                </p>
-                <button
-                    className="go-home-button"
-                    onClick={() => navigate("/home")}
-                >
+                <button className="go-home-button" onClick={() => navigate("/home")}>
                     Go to Homepage
                 </button>
             </div>
@@ -54,18 +49,19 @@ const InterlockBricksCards = () => {
     return (
         <>
             <CardsSearch />
-            <br />
-            <br />
-            <br />
+            <br /><br /><br />
 
             <div className="restaurants-list-wrapper">
                 {categoryBusinessList.map((business) => {
-                    const averageRating = business.averageRating?.toFixed(1) || 0;
+                    const avgRating = business.averageRating?.toFixed(1) || 0;
                     const totalRatings = business.reviews?.length || 0;
 
                     const nameSlug = createSlug(business.businessName);
-                    const locationSlug = createSlug(business.location || "unknown");
                     const addressSlug = createSlug(business.street || "unknown");
+                    const locationSlug = createSlug(business.location || "unknown");
+
+                    const slug = `${nameSlug}-${addressSlug}-${locationSlug}`;
+                    const businessUrl = `/business/${slug}`;
 
                     return (
                         <CardDesign
@@ -79,9 +75,10 @@ const InterlockBricksCards = () => {
                                 business.bannerImage ||
                                 "https://via.placeholder.com/120x100?text=Logo"
                             }
-                            rating={averageRating}
+                            rating={avgRating}
                             reviews={totalRatings}
-                            to={`/${locationSlug}/${nameSlug}/${addressSlug}/${business._id}`}
+                            to={businessUrl}               
+                            state={{ id: business._id }}   
                         />
                     );
                 })}

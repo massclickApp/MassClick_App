@@ -54,14 +54,18 @@ const HotelCards = () => {
         <>
             <CardsSearch />
             <br /><br /><br />
+
             <div className="restaurants-list-wrapper">
                 {categoryBusinessList.map((business) => {
                     const averageRating = business.averageRating?.toFixed(1) || 0;
                     const totalRatings = business.reviews?.length || 0;
 
                     const nameSlug = createSlug(business.businessName);
-                    const locationSlug = createSlug(business.location || "unknown");
                     const addressSlug = createSlug(business.street || "unknown");
+                    const locationSlug = createSlug(business.location || "unknown");
+
+                    const slug = `${nameSlug}-${addressSlug}-${locationSlug}`;
+                    const businessUrl = `/business/${slug}`;
 
                     return (
                         <CardDesign
@@ -69,7 +73,7 @@ const HotelCards = () => {
                             title={business.businessName}
                             phone={business.contact}
                             whatsapp={business.whatsappNumber}
-                            address={`${business.location}`}
+                            address={business.location}
                             details={`Experience: ${business.experience} | Category: ${business.category}`}
                             imageSrc={
                                 business.bannerImage ||
@@ -77,7 +81,8 @@ const HotelCards = () => {
                             }
                             rating={averageRating}
                             reviews={totalRatings}
-                            to={`/${locationSlug}/${nameSlug}/${addressSlug}/${business._id}`}
+                            to={businessUrl}
+                            state={{ id: business._id }} 
                         />
                     );
                 })}

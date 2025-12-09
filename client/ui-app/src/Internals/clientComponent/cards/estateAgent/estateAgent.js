@@ -50,9 +50,7 @@ const EstateAgentCards = () => {
     return (
         <>
             <CardsSearch />
-            <br />
-            <br />
-            <br />
+            <br /><br /><br />
 
             <div className="restaurants-list-wrapper">
                 {categoryBusinessList.map((business) => {
@@ -63,13 +61,16 @@ const EstateAgentCards = () => {
                     const locationSlug = createSlug(business.location || "unknown");
                     const addressSlug = createSlug(business.street || "unknown");
 
+                    const slug = `${nameSlug}-${addressSlug}-${locationSlug}`;
+                    const businessUrl = `/business/${slug}`;
+
                     return (
                         <CardDesign
                             key={business._id}
                             title={business.businessName}
                             phone={business.contact}
                             whatsapp={business.whatsappNumber}
-                            address={`${business.location}`}
+                            address={business.location}
                             details={`Experience: ${business.experience} | Category: ${business.category}`}
                             imageSrc={
                                 business.bannerImage ||
@@ -77,7 +78,8 @@ const EstateAgentCards = () => {
                             }
                             rating={averageRating}
                             reviews={totalRatings}
-                            to={`/${locationSlug}/${nameSlug}/${addressSlug}/${business._id}`}
+                            to={businessUrl}
+                            state={{ id: business._id }}
                         />
                     );
                 })}

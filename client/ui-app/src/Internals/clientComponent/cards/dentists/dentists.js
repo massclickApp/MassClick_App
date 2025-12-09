@@ -35,10 +35,10 @@ const DentistsCards = () => {
             <div className="no-results-container">
                 <p className="no-results-title">No Dentists Found Yet 😔</p>
                 <p className="no-results-suggestion">
-                    It looks like we don't have any dental clinics or dentist businesses in our data right now.
+                    No dental clinics or dentist businesses found right now.
                 </p>
                 <p className="no-results-action">
-                    Please try another category or check back later!
+                    Try another category or check back later!
                 </p>
                 <button
                     className="go-home-button"
@@ -53,9 +53,7 @@ const DentistsCards = () => {
     return (
         <>
             <CardsSearch />
-            <br />
-            <br />
-            <br />
+            <br /><br /><br />
 
             <div className="restaurants-list-wrapper">
                 {categoryBusinessList.map((business) => {
@@ -66,13 +64,16 @@ const DentistsCards = () => {
                     const locationSlug = createSlug(business.location || "unknown");
                     const addressSlug = createSlug(business.street || "unknown");
 
+                    const slug = `${nameSlug}-${addressSlug}-${locationSlug}`;
+                    const businessUrl = `/business/${slug}`;
+
                     return (
                         <CardDesign
                             key={business._id}
                             title={business.businessName}
                             phone={business.contact}
                             whatsapp={business.whatsappNumber}
-                            address={`${business.location}`}
+                            address={business.location}
                             details={`Experience: ${business.experience} | Category: ${business.category}`}
                             imageSrc={
                                 business.bannerImage ||
@@ -80,7 +81,8 @@ const DentistsCards = () => {
                             }
                             rating={averageRating}
                             reviews={totalRatings}
-                            to={`/${locationSlug}/${nameSlug}/${addressSlug}/${business._id}`}
+                            to={businessUrl}
+                            state={{ id: business._id }}  
                         />
                     );
                 })}

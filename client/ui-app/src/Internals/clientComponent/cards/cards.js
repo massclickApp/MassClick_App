@@ -56,7 +56,7 @@ const Cards = ({
       : reviews || 0;
 
   return (
-    <Link to={to} className="card-link">
+    <Link to={to} state={props.state} className="card-link">
       <div className="base-card" {...props}>
         <div className="card-image-container">
           <LazyLoadImage

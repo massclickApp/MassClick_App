@@ -65,11 +65,9 @@ const RestaurantsCards = () => {
                     const totalRatings = business.reviews?.length || 0;
 
                     const slug = createSlug(
-                        `${business.businessName}-${business.location}`
+                        `${business.businessName}-${business.street}-${business.location}`
                     );
-
-                    const businessUrl = `/business/${business._id}/${slug}`;
-
+                    const businessUrl = `/business/${slug}`;
                     return (
                         <CardDesign
                             key={business._id}
@@ -85,6 +83,7 @@ const RestaurantsCards = () => {
                             rating={averageRating}
                             reviews={totalRatings}
                             to={businessUrl}
+                            state={{ id: business._id }}
                         />
                     );
                 })}

@@ -18,13 +18,12 @@ const ContractorsCards = () => {
         dispatch(getBusinessByCategory("contractor"));
     }, [dispatch]);
 
-
     const createSlug = (text) => {
-        if (!text) return '';
+        if (!text) return "";
         return text
             .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/(^-|-$)+/g, '');
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/(^-|-$)+/g, "");
     };
 
     if (loading) {
@@ -34,14 +33,16 @@ const ContractorsCards = () => {
     if (!loading && categoryBusinessList.length === 0) {
         return (
             <div className="no-results-container">
-                <p className="no-results-title">No contractors Found Yet 😔</p>
+                <p className="no-results-title">No Contractors Found Yet 😔</p>
                 <p className="no-results-suggestion">
-                    It looks like we don't have any businesses matching "Contractor" in our data right now.
+                    We don't have any contractor businesses in our data right now.
                 </p>
                 <p className="no-results-action">
-                    Please try another category or check back later!
+                    Try another category or check back later!
                 </p>
-                <button className="go-home-button" onClick={() => navigate('/home')}>Go to Homepage</button>
+                <button className="go-home-button" onClick={() => navigate("/home")}>
+                    Go to Homepage
+                </button>
             </div>
         );
     }
@@ -56,8 +57,11 @@ const ContractorsCards = () => {
                     const totalRatings = business.reviews?.length || 0;
 
                     const nameSlug = createSlug(business.businessName);
-                    const locationSlug = createSlug(business.location || 'unknown');
-                    const addressSlug = createSlug(business.street || 'unknown');
+                    const locationSlug = createSlug(business.location || "unknown");
+                    const addressSlug = createSlug(business.street || "unknown");
+
+                    const slug = `${nameSlug}-${addressSlug}-${locationSlug}`;
+                    const businessUrl = `/business/${slug}`;
 
                     return (
                         <CardDesign
@@ -67,10 +71,14 @@ const ContractorsCards = () => {
                             whatsapp={business.whatsappNumber}
                             address={`${business.location}`}
                             details={`Experience: ${business.experience} | Category: ${business.category}`}
-                            imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
+                            imageSrc={
+                                business.bannerImage ||
+                                "https://via.placeholder.com/120x100?text=Logo"
+                            }
                             rating={averageRating}
                             reviews={totalRatings}
-                            to={`/${locationSlug}/${nameSlug}/${addressSlug}/${business._id}`}
+                            to={businessUrl}
+                            state={{ id: business._id }}   
                         />
                     );
                 })}

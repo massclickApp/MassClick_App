@@ -19,11 +19,13 @@ const RealEstateCards = () => {
     }, [dispatch]);
 
     const createSlug = (text) => {
-        if (!text) return "";
-        return text
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, "-")
-            .replace(/(^-|-$)+/g, "");
+        if (!text || typeof text !== "string") return "unknown";
+        return (
+            text
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/(^-|-$)+/g, "") || "unknown"
+        );
     };
 
     if (loading) {
@@ -35,10 +37,7 @@ const RealEstateCards = () => {
             <div className="no-results-container">
                 <p className="no-results-title">No Real Estate Found Yet 😔</p>
                 <p className="no-results-suggestion">
-                    It looks like we don't have any businesses matching "Real Estate" in our data right now.
-                </p>
-                <p className="no-results-action">
-                    Please try another category or check back later!
+                    It looks like we don't have any businesses matching "Real Estate".
                 </p>
                 <button className="go-home-button" onClick={() => navigate("/home")}>
                     Go to Homepage
@@ -58,8 +57,11 @@ const RealEstateCards = () => {
                     const totalRatings = business.reviews?.length || 0;
 
                     const nameSlug = createSlug(business.businessName);
-                    const locationSlug = createSlug(business.location || "unknown");
                     const addressSlug = createSlug(business.street || "unknown");
+                    const locationSlug = createSlug(business.location || "unknown");
+
+                    const slug = `${nameSlug}-${addressSlug}-${locationSlug}`;
+                    const businessUrl = `/business/${slug}`;
 
                     return (
                         <CardDesign
@@ -75,7 +77,8 @@ const RealEstateCards = () => {
                             }
                             rating={averageRating}
                             reviews={totalRatings}
-                            to={`/${locationSlug}/${nameSlug}/${addressSlug}/${business._id}`}
+                            to={businessUrl}              
+                            state={{ id: business._id }}  
                         />
                     );
                 })}

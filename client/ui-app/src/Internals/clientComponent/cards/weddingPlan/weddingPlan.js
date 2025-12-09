@@ -35,8 +35,7 @@ const WeddingPlanCards = () => {
             <div className="no-results-container">
                 <p className="no-results-title">No Wedding Planners Found Yet 😔</p>
                 <p className="no-results-suggestion">
-                    It looks like we don’t have any businesses matching “Wedding
-                    Planning” in our data right now.
+                    It looks like we don’t have any businesses matching “Wedding Planning” in our data right now.
                 </p>
                 <p className="no-results-action">
                     Please try another category or check back later!
@@ -54,9 +53,7 @@ const WeddingPlanCards = () => {
     return (
         <>
             <CardsSearch />
-            <br />
-            <br />
-            <br />
+            <br /><br /><br />
 
             <div className="restaurants-list-wrapper">
                 {categoryBusinessList.map((business) => {
@@ -64,10 +61,11 @@ const WeddingPlanCards = () => {
                     const totalRatings = business.reviews?.length || 0;
 
                     const nameSlug = createSlug(business.businessName);
-                    const locationSlug = createSlug(
-                        business.location || "unknown"
-                    );
                     const addressSlug = createSlug(business.street || "unknown");
+                    const locationSlug = createSlug(business.location || "unknown");
+
+                    const slug = `${nameSlug}-${addressSlug}-${locationSlug}`;
+                    const businessUrl = `/business/${slug}`;
 
                     return (
                         <CardDesign
@@ -75,7 +73,7 @@ const WeddingPlanCards = () => {
                             title={business.businessName}
                             phone={business.contact}
                             whatsapp={business.whatsappNumber}
-                            address={`${business.location}`}
+                            address={business.location}
                             details={`Experience: ${business.experience} | Category: ${business.category}`}
                             imageSrc={
                                 business.bannerImage ||
@@ -83,7 +81,8 @@ const WeddingPlanCards = () => {
                             }
                             rating={averageRating}
                             reviews={totalRatings}
-                            to={`/${locationSlug}/${nameSlug}/${addressSlug}/${business._id}`}
+                            to={businessUrl}
+                            state={{ id: business._id }} 
                         />
                     );
                 })}

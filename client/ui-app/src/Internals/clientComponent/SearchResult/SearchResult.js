@@ -37,11 +37,11 @@ const SearchResults = () => {
   }, [valueText, locationText, dispatch, resultsFromState.length]);
 
   const createSlug = (text) => {
-    if (!text) return "";
+    if (!text) return "unknown";
     return text
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "");
+      .replace(/(^-|-$)+/g, "") || "unknown";
   };
 
   return (
@@ -51,10 +51,6 @@ const SearchResults = () => {
 
       <Box sx={{ minHeight: "100vh", bgcolor: "#f8f9fb", pt: 4, pb: 6 }}>
         <Box sx={{ maxWidth: "1200px", margin: "auto", p: 2 }}>
-          {/* <Typography variant="h5" sx={{ mb: 2 }}>
-            Showing results for <strong>{valueText || "All"}</strong> in{" "}
-            <strong>{locationText || "All locations"}</strong>
-          </Typography> */}
 
           {loading ? (
             <Card sx={{ p: 4, textAlign: "center" }}>
@@ -67,13 +63,11 @@ const SearchResults = () => {
           ) : (
             <div className="restaurants-list-wrapper">
               {results.map((business) => {
-                const nameSlug = createSlug(business.businessName);
-                const locationSlug = createSlug(
-                  business.locationDetails || business.location || locParam
+                const slug = createSlug(
+                  `${business.businessName}-${business.street}-${business.location}`
                 );
-                const addressSlug = createSlug(
-                  business.street || business.plotNumber || "address"
-                );
+
+                const finalUrl = `/business/${slug}`;
 
                 return (
                   <CardDesign
@@ -82,14 +76,17 @@ const SearchResults = () => {
                     phone={business.contact}
                     whatsapp={business.whatsappNumber}
                     address={business.locationDetails || business.location}
-                    details={`Experience: ${business.experience || "N/A"} | Category: ${business.category}`}
+                    details={`Experience: ${business.experience || "N/A"
+                      } | Category: ${business.category}`}
                     imageSrc={
                       business.bannerImage ||
                       "https://via.placeholder.com/120x100?text=Logo"
                     }
                     rating={business.averageRating || 0}
                     reviews={business.reviews?.length || 0}
-                    to={`/${locationSlug}/${nameSlug}/${addressSlug}/${business._id}`}
+                    to={finalUrl}
+                    state={{ id: business._id }}
+
                   />
                 );
               })}

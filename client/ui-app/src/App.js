@@ -150,7 +150,7 @@ function App() {
               const Component = service.component || (() => <ComingSoon title={service.name} />);
               return <Route key={service.path} path={service.path} element={<Component />} />;
             })}
-            <Route path="/business/:id/:slug?" element={<BusinessDetails />} />
+            <Route path="/business/:slug" element={<BusinessDetails />} />
             <Route path="/payment-status/:transactionId" element={<PaymentStatus />} />
             <Route path="/write-review/:businessId/:ratingValue" element={<WriteReviewPage />} />
             <Route path="/leads" element={<LeadsPage />} />

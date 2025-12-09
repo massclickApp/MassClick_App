@@ -29,8 +29,6 @@ export default function CategoryDynamicPage() {
     dispatch(getBusinessByCategory(realCategoryName));
   }, [dispatch, realCategoryName]);
 
-  const createSlug = slugify;
-
   if (loading) {
     return <p className="loading-text">Loading categories...</p>;
   }
@@ -50,13 +48,16 @@ export default function CategoryDynamicPage() {
 
   return (
     <>
-      <CardsSearch /><br/><br/><br/>
+      <CardsSearch /><br /><br /><br />
 
       <div className="restaurants-list-wrapper">
         {categoryBusinessList.map((b) => {
-          const nameSlug = createSlug(b.businessName);
-          const locSlug = createSlug(b.location || "unknown");
-          const addrSlug = createSlug(b.street || "unknown");
+          const nameSlug = slugify(b.businessName);
+          const addressSlug = slugify(b.street || "unknown");
+          const locationSlug = slugify(b.location || "unknown");
+
+          const slug = `${nameSlug}-${addressSlug}-${locationSlug}`;
+          const businessUrl = `/business/${slug}`;
 
           return (
             <CardDesign
@@ -69,7 +70,8 @@ export default function CategoryDynamicPage() {
               imageSrc={b.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
               rating={b.averageRating?.toFixed(1) || 0}
               reviews={b.reviews?.length || 0}
-              to={`/${locSlug}/${nameSlug}/${addrSlug}/${b._id}`}
+              to={businessUrl}
+              state={{ id: b._id }} 
             />
           );
         })}

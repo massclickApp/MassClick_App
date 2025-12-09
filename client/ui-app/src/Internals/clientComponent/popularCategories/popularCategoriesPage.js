@@ -10,7 +10,7 @@ const slugify = (text = "") =>
   String(text)
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)+/g, "");
+    .replace(/(^-|-$)+/g, "") || "unknown";
 
 export default function PopularCategoryPage() {
   const { categorySlug } = useParams();
@@ -51,15 +51,16 @@ export default function PopularCategoryPage() {
   return (
     <>
       <CardsSearch />
-      <br />
-      <br />
-      <br />
+      <br /><br /><br />
 
       <div className="restaurants-list-wrapper">
         {categoryBusinessList.map((business) => {
           const nameSlug = slugify(business.businessName);
-          const locationSlug = slugify(business.location || "unknown");
           const addressSlug = slugify(business.street || "unknown");
+          const locationSlug = slugify(business.location || "unknown");
+
+          const slug = `${nameSlug}-${addressSlug}-${locationSlug}`;
+          const businessUrl = `/business/${slug}`;
 
           const averageRating = business.averageRating?.toFixed(1) || 0;
           const totalRatings = business.reviews?.length || 0;
@@ -78,7 +79,8 @@ export default function PopularCategoryPage() {
               }
               rating={averageRating}
               reviews={totalRatings}
-              to={`/${locationSlug}/${nameSlug}/${addressSlug}/${business._id}`}
+              to={businessUrl}          
+              state={{ id: business._id }} 
             />
           );
         })}

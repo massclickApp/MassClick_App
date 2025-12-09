@@ -37,8 +37,7 @@ const RentAndHiringCards = () => {
                     No Rent or Hiring Businesses Found Yet 😔
                 </p>
                 <p className="no-results-suggestion">
-                    It looks like we don’t have any rent or hire related businesses in
-                    our data right now.
+                    It looks like we don’t have any rent or hire related businesses in our data right now.
                 </p>
                 <p className="no-results-action">
                     Please try another category or check back later!
@@ -64,10 +63,11 @@ const RentAndHiringCards = () => {
                     const totalRatings = business.reviews?.length || 0;
 
                     const nameSlug = createSlug(business.businessName);
-                    const locationSlug = createSlug(
-                        business.location || "unknown"
-                    );
                     const addressSlug = createSlug(business.street || "unknown");
+                    const locationSlug = createSlug(business.location || "unknown");
+
+                    const slug = `${nameSlug}-${addressSlug}-${locationSlug}`;
+                    const businessUrl = `/business/${slug}`;
 
                     return (
                         <CardDesign
@@ -75,7 +75,7 @@ const RentAndHiringCards = () => {
                             title={business.businessName}
                             phone={business.contact}
                             whatsapp={business.whatsappNumber}
-                            address={`${business.location}`}
+                            address={business.location}
                             details={`Experience: ${business.experience} | Category: ${business.category}`}
                             imageSrc={
                                 business.bannerImage ||
@@ -83,7 +83,8 @@ const RentAndHiringCards = () => {
                             }
                             rating={averageRating}
                             reviews={totalRatings}
-                            to={`/${locationSlug}/${nameSlug}/${addressSlug}/${business._id}`}
+                            to={businessUrl}
+                            state={{ id: business._id }} 
                         />
                     );
                 })}

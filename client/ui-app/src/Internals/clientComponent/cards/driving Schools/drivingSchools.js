@@ -53,9 +53,7 @@ const DrivingSchoolsCards = () => {
     return (
         <>
             <CardsSearch />
-            <br />
-            <br />
-            <br />
+            <br /><br /><br />
 
             <div className="restaurants-list-wrapper">
                 {categoryBusinessList.map((business) => {
@@ -65,6 +63,9 @@ const DrivingSchoolsCards = () => {
                     const nameSlug = createSlug(business.businessName);
                     const locationSlug = createSlug(business.location || "unknown");
                     const addressSlug = createSlug(business.street || "unknown");
+
+                    const slug = `${nameSlug}-${addressSlug}-${locationSlug}`;
+                    const businessUrl = `/business/${slug}`;
 
                     return (
                         <CardDesign
@@ -80,7 +81,8 @@ const DrivingSchoolsCards = () => {
                             }
                             rating={averageRating}
                             reviews={totalRatings}
-                            to={`/${locationSlug}/${nameSlug}/${addressSlug}/${business._id}`}
+                            to={businessUrl}
+                            state={{ id: business._id }}  
                         />
                     );
                 })}

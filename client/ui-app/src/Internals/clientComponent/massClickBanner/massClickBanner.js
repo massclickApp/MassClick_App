@@ -50,7 +50,7 @@ const MassClickBanner = () => {
 
             <div className="mc-price-row">
               <span className="mc-price-currency">₹</span>
-              <span className="mc-price-main">2500</span>
+              <span className="mc-price-main"></span>
               <span className="mc-price-sub">/ listing</span>
             </div>
 

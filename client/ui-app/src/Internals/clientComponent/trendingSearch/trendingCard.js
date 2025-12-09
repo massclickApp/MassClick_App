@@ -15,9 +15,7 @@ const TrendingCards = () => {
         (state) => state.businessListReducer || {}
     );
 
-    const readableCategory = (categorySlug || "")
-        .replace(/-/g, " ")
-        .trim();
+    const readableCategory = (categorySlug || "").replace(/-/g, " ").trim();
 
     useEffect(() => {
         if (categorySlug) {
@@ -26,7 +24,10 @@ const TrendingCards = () => {
     }, [dispatch, categorySlug]);
 
     const createSlug = (text = "") =>
-        text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
+        text
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/(^-|-$)+/g, "") || "unknown";
 
     if (loading) {
         return <p className="loading-text">Loading Trending Services...</p>;
@@ -50,7 +51,7 @@ const TrendingCards = () => {
 
     return (
         <>
-            <CardsSearch /><br/><br/><br/>
+            <CardsSearch /><br /><br /><br />
 
             <div className="restaurants-list-wrapper">
                 {categoryBusinessList.map((business) => {
@@ -58,8 +59,11 @@ const TrendingCards = () => {
                     const reviews = business.reviews?.length || 0;
 
                     const nameSlug = createSlug(business.businessName);
-                    const locSlug = createSlug(business.location || "unknown");
-                    const addrSlug = createSlug(business.street || "unknown");
+                    const addressSlug = createSlug(business.street || "unknown");
+                    const locationSlug = createSlug(business.location || "unknown");
+
+                    const slug = `${nameSlug}-${addressSlug}-${locationSlug}`;
+                    const businessUrl = `/business/${slug}`;
 
                     return (
                         <CardDesign
@@ -69,10 +73,14 @@ const TrendingCards = () => {
                             whatsapp={business.whatsappNumber}
                             address={`${business.plotNumber ? business.plotNumber + ", " : ""}${business.street}, ${business.location}, Pincode: ${business.pincode}`}
                             details={`Experience: ${business.experience} | Category: ${business.category}`}
-                            imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
+                            imageSrc={
+                                business.bannerImage ||
+                                "https://via.placeholder.com/120x100?text=Logo"
+                            }
                             rating={rating}
                             reviews={reviews}
-                            to={`/${locSlug}/${nameSlug}/${addrSlug}/${business._id}`}
+                            to={businessUrl}            
+                            state={{ id: business._id }} 
                         />
                     );
                 })}

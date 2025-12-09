@@ -17,8 +17,8 @@ import Button from '@mui/material/Button';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 const labels = {
-    0.5: 'Useless', 1: 'Poor', 1.5: 'Bad', 2: 'Weak', 2.5: 'Average',
-    3: 'Good', 3.5: 'Very Good', 4: 'Excellent', 4.5: 'Outstanding', 5: 'Amazing'
+  0.5: 'Useless', 1: 'Poor', 1.5: 'Bad', 2: 'Weak', 2.5: 'Average',
+  3: 'Good', 3.5: 'Very Good', 4: 'Excellent', 4.5: 'Outstanding', 5: 'Amazing'
 };
 
 const WriteReviewPage = () => {
@@ -74,13 +74,34 @@ const WriteReviewPage = () => {
     </>;
   }
 
-  const businessNameSlug = business.businessName.toLowerCase().replace(/\s+/g, '-');
-  const locationSlug = business.location.toLowerCase().replace(/\s+/g, '-');
+  // const businessNameSlug = business.businessName.toLowerCase().replace(/\s+/g, '-');
+  // const locationSlug = business.location.toLowerCase().replace(/\s+/g, '-');
 
-  const handleModalClose = () => {
-    setShowSuccessModal(false);
-    navigate(`/business/${businessNameSlug}/${locationSlug}/${businessId}`);
-  };
+ const handleModalClose = () => {
+  const businessNameSlug = business.businessName
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
+
+  const addressSlug = business.street
+    ?.toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "") || "unknown";
+
+  const locationSlug = business.location
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
+
+  const slug = `${businessNameSlug}-${addressSlug}-${locationSlug}`;
+
+  setShowSuccessModal(false);
+
+  navigate(`/business/${slug}`, { state: { id: businessId } });
+};
+
+
+
 
   const handlePhotoUpload = (event) => {
     const files = Array.from(event.target.files);

@@ -1,6 +1,6 @@
 // BusinessDetail.jsx
 import React, { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -119,7 +119,10 @@ const FullScreenGallery = ({ images, initialIndex, onClose }) => {
 };
 
 const BusinessDetail = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
+  const { state } = useLocation();
+  const businessID = state?.id;
+
   const dispatch = useDispatch();
 
   const { businessDetails, businessDetailsLoading, businessDetailsError } =
@@ -141,8 +144,8 @@ const BusinessDetail = () => {
   const reviewsRef = useRef(null);
 
   useEffect(() => {
-    dispatch(getBusinessDetailsById(id));
-  }, [dispatch, id]);
+    dispatch(getBusinessDetailsById(businessID));
+  }, [dispatch, businessID]);
 
 
   if (businessDetailsLoading) {

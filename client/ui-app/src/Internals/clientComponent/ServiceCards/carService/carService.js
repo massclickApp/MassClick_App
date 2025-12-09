@@ -19,11 +19,11 @@ const CarServiceCards = () => {
     }, [dispatch]);
 
     const createSlug = (text) => {
-        if (!text) return "";
+        if (!text) return "unknown";
         return text
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, "-")
-            .replace(/(^-|-$)+/g, "");
+            .replace(/(^-|-$)+/g, "") || "unknown";
     };
 
     if (loading) {
@@ -35,9 +35,8 @@ const CarServiceCards = () => {
             <div className="no-results-container">
                 <p className="no-results-title">No Car Services Found Yet 😔</p>
                 <p className="no-results-suggestion">
-                    It looks like we don’t have any businesses matching “Car Service” in our data right now.
+                    It looks like we don’t have any businesses matching “Car Service” right now.
                 </p>
-                <p className="no-results-action">Please try another category or check back later!</p>
                 <button className="go-home-button" onClick={() => navigate("/home")}>
                     Go to Homepage
                 </button>
@@ -56,8 +55,11 @@ const CarServiceCards = () => {
                     const totalRatings = business.reviews?.length || 0;
 
                     const nameSlug = createSlug(business.businessName);
-                    const locSlug = createSlug(business.location || "unknown");
-                    const addrSlug = createSlug(business.street || "unknown");
+                    const addressSlug = createSlug(business.street || "unknown");
+                    const locationSlug = createSlug(business.location || "unknown");
+
+                    const slug = `${nameSlug}-${addressSlug}-${locationSlug}`;
+                    const businessUrl = `/business/${slug}`;
 
                     return (
                         <CardDesign
@@ -67,10 +69,14 @@ const CarServiceCards = () => {
                             whatsapp={business.whatsappNumber}
                             address={business.location}
                             details={`Experience: ${business.experience} | Category: ${business.category}`}
-                            imageSrc={business.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
+                            imageSrc={
+                                business.bannerImage ||
+                                "https://via.placeholder.com/120x100?text=Logo"
+                            }
                             rating={avgRating}
                             reviews={totalRatings}
-                            to={`/${locSlug}/${nameSlug}/${addrSlug}/${business._id}`}
+                            to={businessUrl}
+                            state={{ id: business._id }}  
                         />
                     );
                 })}

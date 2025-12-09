@@ -15,7 +15,7 @@ const BeautySpaCards = () => {
     );
 
     useEffect(() => {
-        dispatch(getBusinessByCategory("beauty spa"));  
+        dispatch(getBusinessByCategory("beauty spa"));
     }, [dispatch]);
 
     const createSlug = (text) => {
@@ -35,10 +35,10 @@ const BeautySpaCards = () => {
             <div className="no-results-container">
                 <p className="no-results-title">No Beauty/Spas Found Yet 😔</p>
                 <p className="no-results-suggestion">
-                    It looks like we don't have any beauty or spa businesses in our data right now.
+                    We don't have any beauty or spa businesses right now.
                 </p>
                 <p className="no-results-action">
-                    Please try another category or check back later!
+                    Try another category or check back later!
                 </p>
                 <button
                     className="go-home-button"
@@ -53,9 +53,7 @@ const BeautySpaCards = () => {
     return (
         <>
             <CardsSearch />
-            <br />
-            <br />
-            <br />
+            <br /><br /><br />
 
             <div className="restaurants-list-wrapper">
                 {categoryBusinessList.map((business) => {
@@ -65,6 +63,9 @@ const BeautySpaCards = () => {
                     const nameSlug = createSlug(business.businessName);
                     const locationSlug = createSlug(business.location || "unknown");
                     const addressSlug = createSlug(business.street || "unknown");
+
+                    const slug = `${nameSlug}-${addressSlug}-${locationSlug}`;
+                    const businessUrl = `/business/${slug}`;
 
                     return (
                         <CardDesign
@@ -80,7 +81,8 @@ const BeautySpaCards = () => {
                             }
                             rating={averageRating}
                             reviews={totalRatings}
-                            to={`/${locationSlug}/${nameSlug}/${addressSlug}/${business._id}`}
+                            to={businessUrl}
+                            state={{ id: business._id }}
                         />
                     );
                 })}

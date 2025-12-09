@@ -22,7 +22,7 @@ const TvServiceCards = () => {
         text
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, "-")
-            .replace(/(^-|-$)+/g, "");
+            .replace(/(^-|-$)+/g, "") || "unknown";
 
     if (loading) {
         return <p className="loading-text">Loading TV Service Providers...</p>;
@@ -35,13 +35,7 @@ const TvServiceCards = () => {
                 <p className="no-results-suggestion">
                     It looks like we don't have any businesses matching "TV Service" right now.
                 </p>
-                <p className="no-results-action">
-                    Please try another category or check back later!
-                </p>
-                <button
-                    className="go-home-button"
-                    onClick={() => navigate("/home")}
-                >
+                <button className="go-home-button" onClick={() => navigate("/home")}>
                     Go to Homepage
                 </button>
             </div>
@@ -51,9 +45,7 @@ const TvServiceCards = () => {
     return (
         <>
             <CardsSearch />
-            <br />
-            <br />
-            <br />
+            <br /><br /><br />
 
             <div className="restaurants-list-wrapper">
                 {categoryBusinessList.map((business) => {
@@ -61,8 +53,11 @@ const TvServiceCards = () => {
                     const reviews = business.reviews?.length || 0;
 
                     const nameSlug = createSlug(business.businessName);
-                    const locSlug = createSlug(business.location || "unknown");
-                    const streetSlug = createSlug(business.street || "unknown");
+                    const addressSlug = createSlug(business.street || "unknown");
+                    const locationSlug = createSlug(business.location || "unknown");
+
+                    const slug = `${nameSlug}-${addressSlug}-${locationSlug}`;
+                    const businessUrl = `/business/${slug}`;
 
                     return (
                         <CardDesign
@@ -78,7 +73,8 @@ const TvServiceCards = () => {
                             }
                             rating={rating}
                             reviews={reviews}
-                            to={`/${locSlug}/${nameSlug}/${streetSlug}/${business._id}`}
+                            to={businessUrl}            
+                            state={{ id: business._id }}  
                         />
                     );
                 })}
