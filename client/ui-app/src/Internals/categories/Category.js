@@ -6,7 +6,6 @@ import {
   editCategory,
   deleteCategory,
 } from "../../redux/actions/categoryAction";
-import CustomizedDataGrid from "../../components/CustomizedDataGrid";
 import "./categories.css";
 import {
   Box,
@@ -85,7 +84,6 @@ export default function Category() {
     dispatch(getAllCategory());
   }, [dispatch]);
 
-  // 🔹 Auto-generate slug from category
   useEffect(() => {
     if (formData.category) {
       const slug = formData.category
@@ -353,8 +351,8 @@ export default function Category() {
             </div>
           )}
 
-          <div className="category-form-input-group"> {/* UPDATED CLASS NAME */}
-            <label className="category-input-label">Title</label> {/* UPDATED CLASS NAME */}
+          <div className="category-form-input-group"> 
+            <label className="category-input-label">Title</label> 
             <input
               type="text"
               name="title"
@@ -362,7 +360,7 @@ export default function Category() {
               value={formData.title}
               onChange={handleChange}
             />
-            {errors.title && <p className="category-error-text">{errors.title}</p>} {/* UPDATED CLASS NAME */}
+            {errors.title && <p className="category-error-text">{errors.title}</p>} 
           </div>
 
           <div className="category-form-input-group">
@@ -419,8 +417,8 @@ export default function Category() {
               )}
             />
           </div>
-          <div className="category-form-input-group"> {/* UPDATED CLASS NAME */}
-            <label className="category-input-label">SEO Description</label> {/* UPDATED CLASS NAME */}
+          <div className="category-form-input-group"> 
+            <label className="category-input-label">SEO Description</label> 
             <input
               type="text"
               name="seoDescription"
@@ -429,8 +427,8 @@ export default function Category() {
               onChange={handleChange}
             />
           </div>
-          <div className="category-form-input-group category-col-span-2"> {/* UPDATED CLASS NAME */}
-            <label className="category-input-label">Description</label> {/* UPDATED CLASS NAME */}
+          <div className="category-form-input-group category-col-span-2"> 
+            <label className="category-input-label">Description</label> 
             <textarea
               name="description"
               className={`category-text-input category-text-area ${errors.description ? "category-error" : ""
@@ -444,8 +442,8 @@ export default function Category() {
             )}
           </div>
 
-          <div className="category-form-input-group"> {/* UPDATED CLASS NAME */}
-            <label className="category-input-label">SEO Title</label> {/* UPDATED CLASS NAME */}
+          <div className="category-form-input-group"> 
+            <label className="category-input-label">SEO Title</label> 
             <input
               type="text"
               name="seoTitle"
@@ -455,10 +453,8 @@ export default function Category() {
             />
           </div>
 
-
-
-          <div className="category-form-input-group category-col-span-all category-upload-section"> {/* UPDATED CLASS NAMES */}
-            <div className="category-upload-content"> {/* UPDATED CLASS NAME */}
+          <div className="category-form-input-group category-col-span-all category-upload-section"> 
+            <div className="category-upload-content"> 
               <Button
                 variant="contained"
                 startIcon={<CloudUploadIcon />}

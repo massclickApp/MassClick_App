@@ -5,15 +5,45 @@ import { uploadImageToS3, getSignedUrlByKey } from "../../s3Uploder.js";
 
 export const createCategory = async (reqBody = {}) => {
   try {
-    if (reqBody.parentCategoryId === "" || reqBody.parentCategoryId === undefined) {
-      reqBody.parentCategoryId = null;
-    }
+    const categoryName = reqBody.category?.trim().toLowerCase();
+    if (!categoryName) throw new Error("Category is required");
 
-    if (typeof reqBody.keywords === "string") {
-      reqBody.keywords = reqBody.keywords
-        .split(",")
-        .map((kw) => kw.trim())
-        .filter(Boolean);
+    let existing = await categoryModel.findOne({
+      category: { $regex: `^${categoryName}$`, $options: "i" }
+    });
+
+    if (existing) {
+      const updates = {};
+
+      if (reqBody.keywords?.length) {
+        const newKeywords = reqBody.keywords
+          .map((k) => k.trim().toLowerCase())
+          .filter((k) => !existing.keywords.map((e) => e.trim().toLowerCase()).includes(k));
+
+        if (newKeywords.length > 0) {
+          updates.keywords = [...existing.keywords, ...newKeywords];
+        }
+      }
+
+      ["slug", "seoTitle", "seoDescription", "title", "description"].forEach((field) => {
+        if (reqBody[field] && reqBody[field] !== existing[field]) {
+          updates[field] = reqBody[field];
+        }
+      });
+
+      if (reqBody.categoryImage) {
+        const uploadResult = await uploadImageToS3(
+          reqBody.categoryImage,
+          `category/images/category-${Date.now()}`
+        );
+        updates.categoryImageKey = uploadResult.key;
+      }
+
+      await categoryModel.findByIdAndUpdate(existing._id, updates);
+      return {
+        message: "Category updated",
+        category: await categoryModel.findById(existing._id).lean(),
+      };
     }
 
     if (reqBody.categoryImage) {
@@ -25,6 +55,8 @@ export const createCategory = async (reqBody = {}) => {
       reqBody.categoryImageKey = uploadResult.key;
     }
 
+    reqBody.category = categoryName;
+
     const categoryDocument = new categoryModel(reqBody);
     const result = await categoryDocument.save();
 
@@ -32,7 +64,8 @@ export const createCategory = async (reqBody = {}) => {
       result.categoryImage = getSignedUrlByKey(result.categoryImageKey);
     }
 
-    return result;
+    return { message: "Category created", category: result };
+
   } catch (error) {
     console.error("Error saving category:", error);
     throw error;
@@ -58,9 +91,7 @@ export const viewCategory = async (id) => {
   }
 };
 
-/**
- * VIEW ALL CATEGORIES
- */
+
 export const viewAllCategory = async (pageNo, pageSize) => {
   try {
     const query = { isActive: true };
@@ -88,9 +119,7 @@ export const viewAllCategory = async (pageNo, pageSize) => {
   }
 };
 
-/**
- * UPDATE CATEGORY
- */
+
 export const updateCategory = async (id, data) => {
   try {
     if (!ObjectId.isValid(id)) throw new Error("Invalid category ID");
@@ -134,7 +163,6 @@ export const updateCategory = async (id, data) => {
     throw error;
   }
 };
-
 
 
 export const deleteCategory = async (id) => {

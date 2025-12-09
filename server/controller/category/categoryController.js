@@ -71,9 +71,6 @@ export const updateCategoryAction = async (req, res) => {
   }
 };
 
-/**
- * DELETE CATEGORY (Soft Delete)
- */
 export const deleteCategoryAction = async (req, res) => {
   try {
     const categoryId = req.params.id;
@@ -84,7 +81,6 @@ export const deleteCategoryAction = async (req, res) => {
     return res.status(BAD_REQUEST.code).send({ message: error.message });
   }
 };
-
 
 export const businessSearchCategoryAction = async (req, res) => {
   try {

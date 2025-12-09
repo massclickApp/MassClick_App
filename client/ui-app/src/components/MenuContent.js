@@ -26,9 +26,8 @@ export default function SideMenu({ onItemClick }) {
   const location = useLocation();
   const theme = useTheme();
 
-  // breakpoints for responsiveness
-  const isTabletDown = useMediaQuery(theme.breakpoints.down("md")); 
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); 
+  const isTabletDown = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const userRole = localStorage.getItem("userRole") || "Guest";
 
@@ -39,6 +38,16 @@ export default function SideMenu({ onItemClick }) {
       path: "/dashboard",
     },
     {
+      text: "Clients",
+      icon: SupportAgentIcon,
+      path: "/dashboard/clients",
+    },
+    {
+      text: "Business",
+      icon: BusinessIcon,
+      path: "/dashboard/business",
+    },
+    {
       text: "Category",
       icon: CategoryIcon,
       path: "/dashboard/category",
@@ -47,16 +56,6 @@ export default function SideMenu({ onItemClick }) {
       text: "Location",
       icon: LocationOnIcon,
       path: "/dashboard/location",
-    },
-    {
-      text: "Business",
-      icon: BusinessIcon,
-      path: "/dashboard/business",
-    },
-    {
-      text: "Clients",
-      icon: SupportAgentIcon,
-      path: "/dashboard/clients",
     },
     {
       text: "Users",
@@ -83,8 +82,8 @@ export default function SideMenu({ onItemClick }) {
     return item.roles.includes(userRole);
   });
 
-const iconSize = isMobile ? 30 : isTabletDown ? 34 : 38;
-const fontSize = isMobile ? "1rem" : "1.15rem"; 
+  const iconSize = isMobile ? 30 : isTabletDown ? 34 : 38;
+  const fontSize = isMobile ? "1rem" : "1.15rem";
 
   return (
     <Stack

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllBusinessList, createBusinessList, editBusinessList, deleteBusinessList } from "../../redux/actions/businessListAction";
 import { getAllLocation } from "../../redux/actions/locationAction";
-import { createCategory, getAllCategory, businessCategorySearch } from "../../redux/actions/categoryAction";
+import { createCategory, editCategory, getAllCategory, businessCategorySearch } from "../../redux/actions/categoryAction";
 import { getAllUsersClient, getUserClientSuggestion } from "../../redux/actions/userClientAction.js";
 import { getAllUsers } from "../../redux/actions/userAction.js";
 import CustomizedDataGrid from "../../components/CustomizedDataGrid";
@@ -35,18 +35,15 @@ import {
   Stepper,
   Step,
   StepLabel,
+  InputAdornment,
+  Chip,
 } from "@mui/material";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 
 import {
   FormControl,
-  InputLabel,
-  Select,
-
-  Checkbox,
-  ListItemText,
-  OutlinedInput
 } from "@mui/material";
 import { useSnackbar } from 'notistack';
 
@@ -171,6 +168,7 @@ export default function BusinessList() {
     data: null,
   });
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [inputKeyword, setInputKeyword] = useState("");
 
   const handlePayNow = (row) => {
     const amount = 1;
@@ -266,6 +264,39 @@ export default function BusinessList() {
     } catch (err) {
       console.error("Upload failed:", err);
     }
+  };
+
+
+  const fieldsToCheck = [
+    "keywords",
+    "slug",
+    "seoTitle",
+    "seoDescription",
+    "title",
+    "description",
+  ];
+
+  const getUpdatedCategoryFields = (existing, current) => {
+    const updates = {};
+
+    fieldsToCheck.forEach((field) => {
+      if (Array.isArray(current[field])) {
+        const newValues = current[field]
+          .map(k => k.trim().toLowerCase())
+          .filter(k => !existing[field]?.map(e => e.trim().toLowerCase()).includes(k));
+
+
+        if (newValues.length > 0) {
+          updates[field] = [...existing[field], ...newValues];
+        }
+      } else {
+        if (current[field] && current[field] !== existing[field]) {
+          updates[field] = current[field];
+        }
+      }
+    });
+
+    return updates;
   };
 
 
@@ -593,6 +624,33 @@ export default function BusinessList() {
           })
       )
     );
+
+    const existingCategory = category.find(
+      (cat) =>
+        cat.category.toLowerCase() === formData.category.toLowerCase()
+    );
+
+    if (existingCategory) {
+      const updates = getUpdatedCategoryFields(existingCategory, formData);
+
+      if (Object.keys(updates).length > 0) {
+        await dispatch(
+          editCategory(existingCategory._id, updates)
+        );
+      }
+    } else {
+      await dispatch(
+        createCategory({
+          category: formData.category,
+          keywords: formData.keywords || [],
+          slug: formData.slug || "",
+          seoTitle: formData.seoTitle || "",
+          seoDescription: formData.seoDescription || "",
+          title: formData.title || "",
+          description: formData.description || "",
+        })
+      );
+    }
 
     const payload = {
       ...formData,
@@ -1152,6 +1210,83 @@ export default function BusinessList() {
 
       case 1:
         return (
+          <div className="form-input-group">
+            <label className="input-label">Upload KYC Documents</label>
+
+            <Button
+              variant="contained"
+              component="label"
+              startIcon={<CloudUploadIcon />}
+              className="upload-button"
+            >
+              Upload Files
+              <input
+                type="file"
+                multiple
+                hidden
+                onChange={handleKycUpload}
+                accept=".pdf,.png,.jpg,.jpeg"
+              />
+            </Button>
+
+            <div className="kyc-file-list">
+              {kycFiles.map((file, index) => (
+                <div key={index} className="kyc-file-item">
+                  <Typography variant="body2">
+                    {file.name || `Document ${index + 1}`}
+                  </Typography>
+                  <IconButton color="error" onClick={() => handleRemoveFile(index)}>
+                    <DeleteOutlineRoundedIcon fontSize="small" />
+                  </IconButton>
+
+                  <div style={{ marginTop: "5px" }}>
+                    {file.type?.includes("image") ? (
+                      <img
+                        src={file.preview}
+                        alt={file.name}
+                        style={{
+                          width: "100px",
+                          height: "100px",
+                          borderRadius: "8px",
+                          objectFit: "cover",
+                        }}
+                      />
+                    ) : file.type?.includes("pdf") ? (
+                      <iframe
+                        src={file.preview}
+                        title={file.name}
+                        width="100%"
+                        height="150px"
+                        style={{
+                          border: "1px solid #ccc",
+                          borderRadius: "8px",
+                        }}
+                      />
+                    ) : null}
+
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        onClick={() => window.open(file.preview, "_blank")}
+                      >
+                        View Full
+                      </Button>
+                      <IconButton color="error" onClick={() => handleRemoveFile(index)}>
+                        <DeleteOutlineRoundedIcon fontSize="small" />
+                      </IconButton>
+                    </div>
+                  </div>
+
+
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 2:
+        return (
           <>
             <div className="form-input-group" style={{ position: "relative" }}>
               <label className="input-label">Category</label>
@@ -1229,55 +1364,79 @@ export default function BusinessList() {
                 </ul>
               )}
             </div>
-            {["restaurants", "hotels"].includes(formData.category?.toLowerCase()) && (
-              <div className="form-input-group">
-                <label className="input-label">Restaurant Options</label>
-                <select
-                  className="select-input"
-                  name="restaurantOptions"
-                  value={formData.restaurantOptions || ""}
-                  onChange={handleChange}
-                >
-                  <option value="">-- Select Option --</option>
-                  <option value="Veg">Veg</option>
-                  <option value="Non-Veg">Non-Veg</option>
-                  <option value="Both">Both</option>
-                </select>
-              </div>
-            )}
 
-            {/* KEYWORDS */}
-            <div className="form-input-group" style={{ marginTop: "25px" }}>
-              <FormControl fullWidth>
-                <Autocomplete
-                  multiple
-                  freeSolo
-                  id="keywords"
-                  options={Array.isArray(formData.keywords) ? formData.keywords : []}
-                  value={Array.isArray(formData.keywords) ? formData.keywords : []}
-                  onChange={(event, newValue) => {
-                    setFormData({
-                      ...formData,
-                      keywords: newValue,
-                    });
-                  }}
-                  renderInput={(params) => (
-                    <TextField {...params} label="Select Keywords" placeholder="Type keywords and press Enter" />
-                  )}
-                />
-              </FormControl>
 
-            </div>
+            <div className="category-form-input-group" style={{ marginTop: "25px" }}>
+              <label className="category-input-label">Keywords</label>
 
-            {/* SLUG */}
-            <div className="form-input-group">
-              <label className="input-label">Slug</label>
-              <input
-                type="text"
-                name="slug"
-                className="text-input"
-                value={formData.slug}
-                onChange={handleChange}
+              <Autocomplete
+                multiple
+                freeSolo
+                options={[]}   // empty because user enters freely
+                value={Array.isArray(formData.keywords) ? formData.keywords : []}
+                onChange={(event, newValue) => {
+                  setFormData({
+                    ...formData,
+                    keywords: newValue,
+                  });
+                }}
+                renderTags={(value, getTagProps) =>
+                  value.map((option, index) => (
+                    <Chip
+                      key={index}
+                      label={option}
+                      {...getTagProps({ index })}
+                      onDelete={() => {
+                        // delete chip
+                        setFormData((prev) => ({
+                          ...prev,
+                          keywords: prev.keywords.filter((k) => k !== option),
+                        }));
+                      }}
+                      sx={{
+                        backgroundColor: "#ff8c00",
+                        color: "white",
+                        fontWeight: 500,
+                        "& .MuiChip-deleteIcon": { color: "white" },
+                      }}
+                    />
+                  ))
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    placeholder="Add keywords"
+                    value={inputKeyword}
+                    onChange={(e) => setInputKeyword(e.target.value)}
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => {
+                              if (!inputKeyword.trim()) return;
+
+                              // Add keyword
+                              setFormData((prev) => ({
+                                ...prev,
+                                keywords: [...prev.keywords, inputKeyword.trim()],
+                              }));
+
+                              setInputKeyword("");
+                            }}
+                            sx={{
+                              color: "var(--color-primary-orange)",
+                              "&:hover": { color: "var(--color-primary-hover)" },
+                            }}
+                          >
+                            <AddCircleOutlineIcon />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                )}
               />
             </div>
 
@@ -1305,7 +1464,6 @@ export default function BusinessList() {
               />
             </div>
 
-            {/* TITLE */}
             <div className="form-input-group">
               <label className="input-label">Title</label>
               <input
@@ -1317,7 +1475,6 @@ export default function BusinessList() {
               />
             </div>
 
-            {/* DESCRIPTION */}
             <div className="form-input-group">
               <label className="input-label">Description</label>
               <textarea
@@ -1328,87 +1485,33 @@ export default function BusinessList() {
                 onChange={handleChange}
               />
             </div>
-          </>
-        );
-
-
-
-
-      case 2:
-        return (
-          <div className="form-input-group">
-            <label className="input-label">Upload KYC Documents</label>
-
-            <Button
-              variant="contained"
-              component="label"
-              startIcon={<CloudUploadIcon />}
-              className="upload-button"
-            >
-              Upload Files
+            {["restaurants", "hotels"].includes(formData.category?.toLowerCase()) && (
+              <div className="form-input-group">
+                <label className="input-label">Restaurant Options</label>
+                <select
+                  className="select-input"
+                  name="restaurantOptions"
+                  value={formData.restaurantOptions || ""}
+                  onChange={handleChange}
+                >
+                  <option value="">-- Select Option --</option>
+                  <option value="Veg">Veg</option>
+                  <option value="Non-Veg">Non-Veg</option>
+                  <option value="Both">Both</option>
+                </select>
+              </div>
+            )}
+            <div className="form-input-group">
+              <label className="input-label">Slug</label>
               <input
-                type="file"
-                multiple
-                hidden
-                onChange={handleKycUpload}
-                accept=".pdf,.png,.jpg,.jpeg"
+                type="text"
+                name="slug"
+                className="text-input"
+                value={formData.slug}
+                onChange={handleChange}
               />
-            </Button>
-
-            <div className="kyc-file-list">
-              {kycFiles.map((file, index) => (
-                <div key={index} className="kyc-file-item">
-                  <Typography variant="body2">
-                    {file.name || `Document ${index + 1}`}
-                  </Typography>
-                  <IconButton color="error" onClick={() => handleRemoveFile(index)}>
-                    <DeleteOutlineRoundedIcon fontSize="small" />
-                  </IconButton>
-
-                  <div style={{ marginTop: "5px" }}>
-                    {file.type?.includes("image") ? (
-                      <img
-                        src={file.preview}
-                        alt={file.name}
-                        style={{
-                          width: "100px",
-                          height: "100px",
-                          borderRadius: "8px",
-                          objectFit: "cover",
-                        }}
-                      />
-                    ) : file.type?.includes("pdf") ? (
-                      <iframe
-                        src={file.preview}
-                        title={file.name}
-                        width="100%"
-                        height="150px"
-                        style={{
-                          border: "1px solid #ccc",
-                          borderRadius: "8px",
-                        }}
-                      />
-                    ) : null}
-
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <Button
-                        size="small"
-                        variant="outlined"
-                        onClick={() => window.open(file.preview, "_blank")}
-                      >
-                        View Full
-                      </Button>
-                      <IconButton color="error" onClick={() => handleRemoveFile(index)}>
-                        <DeleteOutlineRoundedIcon fontSize="small" />
-                      </IconButton>
-                    </div>
-                  </div>
-
-
-                </div>
-              ))}
             </div>
-          </div>
+          </>
         );
 
       case 3:

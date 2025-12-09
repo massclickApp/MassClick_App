@@ -19,12 +19,16 @@ const RestaurantsCards = () => {
     }, [dispatch]);
 
     const createSlug = (text) => {
-        if (!text) return "";
+        if (!text || text.trim() === "") return "unknown";
+
         return text
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, "-")
             .replace(/(^-|-$)+/g, "");
     };
+
+   
+    const normalizeUrl = (url) => url.replace(/\/+/g, "/");
 
     if (loading) {
         return <p className="loading-text">Loading restaurants...</p>;
@@ -62,10 +66,12 @@ const RestaurantsCards = () => {
                     const totalRatings = business.reviews?.length || 0;
 
                     const nameSlug = createSlug(business.businessName);
-                    const locationSlug = createSlug(
-                        business.location || "unknown"
+                    const locationSlug = createSlug(business.location);
+                    const addressSlug = createSlug(business.street);
+
+                    const businessUrl = normalizeUrl(
+                        `/${locationSlug}/${nameSlug}/${addressSlug}/${business._id}`
                     );
-                    const addressSlug = createSlug(business.street || "unknown");
 
                     return (
                         <CardDesign
@@ -81,7 +87,7 @@ const RestaurantsCards = () => {
                             }
                             rating={averageRating}
                             reviews={totalRatings}
-                            to={`/${locationSlug}/${nameSlug}/${addressSlug}/${business._id}`}
+                            to={businessUrl} 
                         />
                     );
                 })}
