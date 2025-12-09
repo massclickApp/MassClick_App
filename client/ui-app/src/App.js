@@ -61,25 +61,25 @@ const ComingSoon = ({ title }) => (
 );
 
 const FooterRoutes = [
-    { path: 'aboutus', title: 'About Us', element: <AboutUsPage /> }, 
-    { path: 'testimonials', title: 'Testimonials', element: <Testimonials /> },
-    { path: 'feedbacks', title: 'Feedbacks', element: <FeedbackComponent /> },
-    { path: 'customercare', title: 'Customer Care', element: <CustomerCareComponent /> },
-    { path: 'portfolio', title: 'Portfolio', element: <Portfolio />  },
-    { path: 'terms', title: 'Terms and Conditions', element: <TermsAndConditions />  },
-    { path: 'privacy', title: 'Privacy Policy' , element: <PrivacyPolicy />},
-    { path: 'refund', title: 'Refund Policy' , element: <RefundPolicy /> }, 
-    { path: 'enquiry', title: 'Enquiry Now', element: <EnquiryNow /> },
-    { path: 'services/web', title: 'Web Design & Development' , element: <WebDevSection />},
-    { path: 'services/digital', title: 'Digital Marketing' , element: <DigitalMarketing />},
-    { path: 'services/graphic', title: 'Graphic Design', element: <GraphicDesign /> },
-    { path: 'services/seo', title: 'SEO', element: <Seo /> },
+  { path: 'aboutus', title: 'About Us', element: <AboutUsPage /> },
+  { path: 'testimonials', title: 'Testimonials', element: <Testimonials /> },
+  { path: 'feedbacks', title: 'Feedbacks', element: <FeedbackComponent /> },
+  { path: 'customercare', title: 'Customer Care', element: <CustomerCareComponent /> },
+  { path: 'portfolio', title: 'Portfolio', element: <Portfolio /> },
+  { path: 'terms', title: 'Terms and Conditions', element: <TermsAndConditions /> },
+  { path: 'privacy', title: 'Privacy Policy', element: <PrivacyPolicy /> },
+  { path: 'refund', title: 'Refund Policy', element: <RefundPolicy /> },
+  { path: 'enquiry', title: 'Enquiry Now', element: <EnquiryNow /> },
+  { path: 'services/web', title: 'Web Design & Development', element: <WebDevSection /> },
+  { path: 'services/digital', title: 'Digital Marketing', element: <DigitalMarketing /> },
+  { path: 'services/graphic', title: 'Graphic Design', element: <GraphicDesign /> },
+  { path: 'services/seo', title: 'SEO', element: <Seo /> },
 ];
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
-    const [showTokenExpired, setShowTokenExpired] = useState(false);
+  const [showTokenExpired, setShowTokenExpired] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -150,7 +150,7 @@ function App() {
               const Component = service.component || (() => <ComingSoon title={service.name} />);
               return <Route key={service.path} path={service.path} element={<Component />} />;
             })}
-            <Route path="/:locationSlug/:businessName/:address/:id" element={<BusinessDetails />} />
+            <Route path="/business/:id/:slug?" element={<BusinessDetails />} />
             <Route path="/payment-status/:transactionId" element={<PaymentStatus />} />
             <Route path="/write-review/:businessId/:ratingValue" element={<WriteReviewPage />} />
             <Route path="/leads" element={<LeadsPage />} />
