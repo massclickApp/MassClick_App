@@ -24,6 +24,7 @@ import {
     ListItemIcon,
 
 } from "@mui/material";
+import Badge from "@mui/material/Badge";
 import {
     ListAlt as ListAltIcon,
     Notifications as NotificationsIcon,
@@ -511,28 +512,49 @@ const CategoryBar = () => {
                         </IconButton>
                     )}
 
-                    <IconButton
-                        sx={{
-                            color: "gray",
-                            bgcolor: "rgba(0,0,0,0.04)",
-                            width: 48,
-                            height: 48,
-                            transition: "all 0.3s ease",
-                            "&:hover": {
-                                color: "white",
-                                background: "linear-gradient(45deg, #ea6d11, #ff9c3b)",
-                                boxShadow: "0 4px 12px rgba(234,109,17,0.35)",
-                                transform: "scale(1.1)",
-                            },
-                        }}
-                        onClick={() => {
-                            setIsNotificationModalOpen(true);
-                        }}
-                    >
-                        <NotificationsIcon sx={{ fontSize: 26 }} />
-                    </IconButton>
+                    {isLoggedIn && (
+                        <IconButton
+                            sx={{
+                                color: "gray",
+                                bgcolor: "rgba(0,0,0,0.04)",
+                                width: 48,
+                                height: 48,
+                                transition: "all 0.3s ease",
+                                "&:hover": {
+                                    color: "white",
+                                    background: "linear-gradient(45deg, #ea6d11, #ff9c3b)",
+                                    boxShadow: "0 4px 12px rgba(234,109,17,0.35)",
+                                    transform: "scale(1.1)",
+                                },
+                            }}
+                            onClick={() => {
+                                setIsNotificationModalOpen(true);
+                            }}
+                            aria-label="notifications"
+                        >
+                            <Badge
+                                badgeContent={leadsData?.length || 0}
+                                color="error"
+                                max={99}
+                                overlap="circular"
+                                anchorOrigin={{
+                                    vertical: "top",
+                                    horizontal: "right",
+                                }}
+                                sx={{
+                                    "& .MuiBadge-badge": {
+                                        fontSize: "0.7rem",
+                                        height: "18px",
+                                        minWidth: "18px",
+                                        borderRadius: "50%",
+                                    },
+                                }}
+                            >
+                                <NotificationsIcon sx={{ fontSize: 26 }} />
+                            </Badge>
+                        </IconButton>
+                    )}
                 </Box>
-
                 <Box
                     sx={{
                         display: { xs: "flex", sm: "none" },
@@ -557,7 +579,7 @@ const CategoryBar = () => {
                                 "&:hover": { background: "linear-gradient(45deg, #cc5a0f, #ff8a2d)" },
                             }}
                         >
-                            Add Your Business
+                            Login / Signup
                         </Button>
                     ) : (
                         <IconButton
@@ -630,7 +652,6 @@ const CategoryBar = () => {
                     </Box>
                 </MenuItem>
             </Menu>
-
             <AddBusinessModal open={isModalOpen} handleClose={handleCloseModal} />
             <LeadsNotificationModal
                 open={isNotificationModalOpen}

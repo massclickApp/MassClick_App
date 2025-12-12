@@ -623,7 +623,7 @@ export default function BusinessList() {
 
     const existingCategory = category.find(
       (cat) =>
-        cat.category.toLowerCase() === formData.category.toLowerCase()
+        String(cat.category || "").toLowerCase() === String(formData.category || "").toLowerCase()
     );
 
     if (existingCategory) {

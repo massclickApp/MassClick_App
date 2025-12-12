@@ -1,7 +1,9 @@
-// Header.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Stack from "@mui/material/Stack";
 import NotificationsRoundedIcon from "@mui/icons-material/NotificationsRounded";
+import Badge from "@mui/material/Badge";
+import { useSelector, useDispatch } from "react-redux";
+import { getPendingBusinessList } from "../redux/actions/businessListAction";
 import CustomDatePicker from "../components/customDatePicker";
 import NavbarBreadcrumbs from "./NavbarBreadCrump.js";
 import MenuButton from "./MenuButton";
@@ -9,8 +11,23 @@ import OptionsMenu from "./OptionsMenu.js";
 import NotificationModal from "./notificationModel.js";
 
 export default function Header() {
+  const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
-  // const userRole = localStorage.getItem("userRole");
+
+useEffect(() => {
+  dispatch(getPendingBusinessList());
+
+  const interval = setInterval(() => {
+    dispatch(getPendingBusinessList());
+  }, 5000);
+
+  return () => clearInterval(interval);
+}, [dispatch]);
+
+
+  const pendingCount = useSelector(
+    (state) => state.businessListReducer.pendingBusinessList?.length || 0
+  );
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -33,13 +50,18 @@ export default function Header() {
 
         <Stack direction="row" sx={{ gap: 1 }}>
           <CustomDatePicker />
-            <MenuButton
-              showBadge
-              aria-label="Open notifications"
-              onClick={handleOpen}
+
+          <MenuButton aria-label="Open notifications" onClick={handleOpen}>
+            <Badge
+              badgeContent={pendingCount}
+              color="error"
+              max={99}
+              overlap="circular"
             >
               <NotificationsRoundedIcon />
-            </MenuButton>
+            </Badge>
+          </MenuButton>
+
           <OptionsMenu />
         </Stack>
       </Stack>
