@@ -109,3 +109,70 @@ export const verifyOtpAction = async (req, res) => {
     });
   }
 };
+
+// export const sendWhatsApp = async (req, res) => {
+//   try {
+//     const { mobile, userName, customMessage } = req.body;
+
+//     if (!mobile)
+//       return res.status(400).json({ success: false, message: "Mobile required" });
+
+//     const vars = {
+//       name: userName || "Customer",
+//       message: customMessage || "Thank you for showing interest!"
+//     };
+
+//     const response = await sendWhatsAppMessage(mobile, vars);
+
+//     res.json({
+//       success: true,
+//       message: "WhatsApp sent successfully",
+//       data: response
+//     });
+
+//   } catch (err) {
+//     res.status(500).json({
+//       success: false,
+//       message: err.message
+//     });
+//   }
+// };
+
+
+// export const sendWhatsAppToAll = async (req, res) => {
+//   try {
+//     const { users, customMessage } = req.body;
+
+//     if (!Array.isArray(users) || !users.length) {
+//       return res.status(400).json({ success: false, message: "Users array required" });
+//     }
+
+//     const results = [];
+
+//     for (const user of users) {
+//       const mobile = user.mobileNumber1 || user.mobileNumber2;
+//       if (!mobile) continue;
+
+//       const vars = {
+//         name: user.userName || "Customer",
+//         message: customMessage || "Thank you for your interest!"
+//       };
+
+//       try {
+//         const res = await sendWhatsAppMessage(mobile, vars);
+//         results.push({ mobile, status: "sent", res });
+//       } catch (err) {
+//         results.push({ mobile, status: "failed", error: err.message });
+//       }
+//     }
+
+//     res.json({
+//       success: true,
+//       message: "Bulk WhatsApp process completed",
+//       results
+//     });
+
+//   } catch (err) {
+//     res.status(500).json({ success: false, message: err.message });
+//   }
+// };

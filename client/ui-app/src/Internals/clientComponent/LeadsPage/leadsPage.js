@@ -2,9 +2,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { viewOtpUser } from "../../../redux/actions/otpAction";
-import { getAllSearchLogs  } from "../../../redux/actions/businessListAction";
+import { getAllSearchLogs } from "../../../redux/actions/businessListAction";
 import { useNavigate } from "react-router-dom";
 import CardsSearch from "../CardsSearch/CardsSearch";
+// import { sendWhatsAppToAll } from "../../../redux/actions/otpAction";
 import "./leadsPage.css";
 
 function StatCard({ label, value, onClick, accent, children }) {
@@ -76,6 +77,7 @@ export default function LeadsPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const mobileNumber = localStorage.getItem("mobileNumber");
+  // const [alreadySent, setAlreadySent] = useState(false);
 
   const { searchLogs = [] } = useSelector((state) => state.businessListReducer || {});
   
@@ -292,7 +294,6 @@ const matchedUsers = useMemo(() => {
       }
     });
 
-    // -------------- DEDUPE USERS (IMPROVED) --------------
     const unique = {};
     const normalizeLeadKey = (u) => {
       if (u.mobileNumber1) {
@@ -376,6 +377,30 @@ const matchedUsers = useMemo(() => {
   }, [matchedUsers, range, repeatOnly]);
 
   const leadsCount = matchedUsers.length;
+
+  // const todayUsers = useMemo(() => {
+  //   const now = new Date();
+  //   const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  //   return matchedUsers.filter((u) => {
+  //     if (!u.time) return false;
+  //     const d = new Date(u.time);
+  //     if (Number.isNaN(d.getTime())) return false;
+  //     return d >= startToday;
+  //   });
+  // }, [matchedUsers]);
+
+  // useEffect(() => {
+  //   if (todayUsers.length > 0 && !alreadySent) {
+  //     const message = "Hello! You searched our category today. How may we assist you? 😊";
+
+  //     dispatch(sendWhatsAppToAll(todayUsers, message));
+
+  //     setAlreadySent(true);
+  //   }
+  // }, [todayUsers, alreadySent, dispatch]);
+
+
 
   if (!hasBusinessCategory) {
     return (

@@ -11,7 +11,8 @@ import {
   logSearchActivity,
 } from "../../../redux/actions/businessListAction";
 import { logUserSearch } from "../../../redux/actions/otpAction";
-import backgroundImage from "../../../assets/background.png";
+// import backgroundImage from "../../../assets/background9.jpg";
+// import backgroundImage from "../../../assets/background.png";
 import { useNavigate } from "react-router-dom";
 import "./hero.css";
 
@@ -135,26 +136,40 @@ const HeroSection = ({
     ),
   ];
 
-const isLikelyCategorySearch = (text) => {
-  const lower = text.toLowerCase();
+  const isLikelyCategorySearch = (text) => {
+    const lower = text.toLowerCase();
 
-  return lower.length <= 4 || !lower.includes(" ");
-};
+    return lower.length <= 4 || !lower.includes(" ");
+  };
 
 
- const suggestionCategories = (() => {
-  if (!Array.isArray(backendSuggestions) || backendSuggestions.length === 0)
-    return [];
+  const suggestionCategories = (() => {
+    if (!Array.isArray(backendSuggestions) || backendSuggestions.length === 0)
+      return [];
 
-  const seen = new Set();
-  const list = [];
+    const seen = new Set();
+    const list = [];
 
-  const userInput = searchTerm.trim().toLowerCase();
-  const categoryOnly = isLikelyCategorySearch(userInput);
+    const userInput = searchTerm.trim().toLowerCase();
+    const categoryOnly = isLikelyCategorySearch(userInput);
 
-  backendSuggestions.forEach((item) => {
-    if (categoryOnly) {
-      const val = item.category;
+    backendSuggestions.forEach((item) => {
+      if (categoryOnly) {
+        const val = item.category;
+        if (!val) return;
+
+        const text = String(val).trim();
+        if (!text) return;
+
+        const key = text.toLowerCase();
+        if (!seen.has(key)) {
+          seen.add(key);
+          list.push(text);
+        }
+        return;
+      }
+
+      const val = item.businessName || item.category;
       if (!val) return;
 
       const text = String(val).trim();
@@ -165,24 +180,10 @@ const isLikelyCategorySearch = (text) => {
         seen.add(key);
         list.push(text);
       }
-      return;
-    }
+    });
 
-    const val = item.businessName || item.category;
-    if (!val) return;
-
-    const text = String(val).trim();
-    if (!text) return;
-
-    const key = text.toLowerCase();
-    if (!seen.has(key)) {
-      seen.add(key);
-      list.push(text);
-    }
-  });
-
-  return list;
-})();
+    return list;
+  })();
 
 
   const parsedLocationSuggestions = (() => {
@@ -249,22 +250,23 @@ const isLikelyCategorySearch = (text) => {
   return (
     <div
       className="hero-section"
-      style={{
-        backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.55)), url(${backgroundImage})`,
-      }}
+    //   style={{
+    //     backgroundImage: `
+    //   linear-gradient(
+    //     to bottom,
+    //     rgba(0,0,0,0.20) 0%,
+    //     rgba(0,0,0,0.35) 40%,
+    //     rgba(0,0,0,0.45) 100%
+    //   ),
+    //   url(${backgroundImage})
+    // `,
+    //     backgroundSize: "cover",
+    //     backgroundPosition: "center",
+    //     backgroundRepeat: "no-repeat",
+    //   }}
     >
-      <div className="hero-content">
-        <h1 className="hero-title">MassClick Find Your Local Business</h1>
 
-        <p className="hero-subtitle">
-          MassClick is one of India's most trusted local search platforms,
-          offering comprehensive business information including user reviews,
-          ratings, contact details, and directions.
-          <br />
-          Discover a wide variety of businesses, from restaurants and retail
-          stores to service providers and more — all at your fingertips with
-          MassClick.
-        </p>
+      <div className="hero-content hero-minimal">
 
         <form className="search-bar-container" onSubmit={handleSearch}>
           <div className="input-group location-group" ref={locationRef}>
@@ -333,9 +335,8 @@ const isLikelyCategorySearch = (text) => {
 
             <MicIcon className="input-adornment end" />
           </div>
-
           <button type="submit" className="search-button">
-            <SearchIcon className="search-icon" />
+            <SearchIcon className="search-icon" style={{ color: "#fff" }} />
           </button>
         </form>
       </div>

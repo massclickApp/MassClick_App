@@ -17,33 +17,44 @@ const getValidToken = async (dispatch) => {
   return token;
 };
 
-export const getAllRoles = ({ pageNo = 1, pageSize = 10 } = {}) => async (dispatch) => {
-  dispatch({ type: FETCH_ROLES_REQUEST });
-  try {
-    const token = await getValidToken(dispatch);
+export const getAllRoles =
+  ({ pageNo = 1, pageSize = 10, options = {} } = {}) =>
+  async (dispatch) => {
+    dispatch({ type: FETCH_ROLES_REQUEST });
 
-    const response = await axios.get(
-      `${API_URL}/roles/viewall?pageNo=${pageNo}&pageSize=${pageSize}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+    try {
+      const token = await getValidToken(dispatch);
 
-    dispatch({
-      type: FETCH_ROLES_SUCCESS,
-      payload: {
-        data: response.data.data,
-        total: response.data.total,
-        pageNo,
-        pageSize,
-      }
-    });
+      const {
+        search = "",
+        status = "all",
+        sortBy = "",
+        sortOrder = ""
+      } = options;
 
-  } catch (error) {
-    dispatch({
-      type: FETCH_ROLES_FAILURE,
-      payload: error.response?.data || error.message,
-    });
-  }
-};
+      const response = await axios.get(
+        `${API_URL}/roles/viewall?pageNo=${pageNo}&pageSize=${pageSize}&search=${search}&status=${status}&sortBy=${sortBy}&sortOrder=${sortOrder}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      dispatch({
+        type: FETCH_ROLES_SUCCESS,
+        payload: {
+          data: response.data.data,
+          total: response.data.total,
+          pageNo,
+          pageSize
+        }
+      });
+
+    } catch (error) {
+      dispatch({
+        type: FETCH_ROLES_FAILURE,
+        payload: error.response?.data || error.message,
+      });
+    }
+  };
+
 
 
 export const createRoles = (rolesData) => async (dispatch) => {debugger

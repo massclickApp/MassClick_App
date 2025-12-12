@@ -16,33 +16,44 @@ const getValidToken = async (dispatch) => {
   return token;
 };
 
-export const getAllUsers = ({ pageNo = 1, pageSize = 10 } = {}) => async (dispatch) => {
-  dispatch({ type: FETCH_USERS_REQUEST });
+export const getAllUsers =
+  ({ pageNo = 1, pageSize = 10, options = {} } = {}) =>
+  async (dispatch) => {
+    dispatch({ type: FETCH_USERS_REQUEST });
 
-  try {
-    const token = await getValidToken(dispatch);
+    try {
+      const token = await getValidToken(dispatch);
 
-    const response = await axios.get(
-      `${API_URL}/user/viewall?pageNo=${pageNo}&pageSize=${pageSize}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+      const {
+        search = "",
+        status = "all",
+        sortBy = "",
+        sortOrder = ""
+      } = options;
 
-    dispatch({
-      type: FETCH_USERS_SUCCESS,
-      payload: {
-        data: response.data.data,
-        total: response.data.total,
-        pageNo,
-        pageSize,
-      }
-    });
-  } catch (error) {
-    dispatch({
-      type: FETCH_USERS_FAILURE,
-      payload: error.response?.data || error.message,
-    });
-  }
-};
+      const response = await axios.get(
+        `${API_URL}/user/viewall?pageNo=${pageNo}&pageSize=${pageSize}&search=${search}&status=${status}&sortBy=${sortBy}&sortOrder=${sortOrder}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      dispatch({
+        type: FETCH_USERS_SUCCESS,
+        payload: {
+          data: response.data.data,
+          total: response.data.total,
+          pageNo,
+          pageSize,
+        }
+      });
+
+    } catch (error) {
+      dispatch({
+        type: FETCH_USERS_FAILURE,
+        payload: error.response?.data || error.message,
+      });
+    }
+  };
+
 
 export const createUser = (userData) => async (dispatch) => {
   dispatch({ type: CREATE_USER_REQUEST });

@@ -52,6 +52,18 @@ const message91UsersSchema = new mongoose.Schema({
     food: [String],
     hobbies: [String],
   },
+  leadsData: [
+    {
+      email: { type: String },
+      mobileNumber1: { type: String, default: "" },
+      mobileNumber2: { type: String, default: "" },
+      searchedUserText: { type: String, default: "" },
+      time: { type: String, default: "" },
+      userName: { type: String, default: "" },
+      isWhatsappSend: { type: Boolean, default: false },
+      isReaded: { type: Boolean, default: false },
+    },
+  ],
   searchHistory: [
     {
       query: { type: String, required: true },

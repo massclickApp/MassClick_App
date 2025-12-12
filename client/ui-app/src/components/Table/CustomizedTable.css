@@ -13,14 +13,12 @@
   --color-hover: rgba(255, 122, 0, 0.06);
 }
 
-/* 🌐 Typography */
 body {
   font-family: "Inter", "Roboto", sans-serif;
   background: var(--color-bg-alt);
   color: var(--color-text-dark);
 }
 
-/* ================== Container ================== */
 .custom-table-container {
   width: 100%;
   border-radius: 14px;
@@ -36,7 +34,6 @@ body {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
 
-/* Floating header shadow when scrolled */
 .table-wrapper {
   max-height: 60vh;
   overflow: auto;
@@ -47,7 +44,6 @@ body {
   transition: box-shadow 0.2s ease;
 }
 
-/* ================== Toolbar ================== */
 .table-toolbar {
   display: flex;
   justify-content: space-between;

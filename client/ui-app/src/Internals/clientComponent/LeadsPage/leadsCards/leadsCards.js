@@ -1,7 +1,9 @@
 // LeadsCardHistory.jsx
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./leadsCards.css";
+import { useDispatch, useSelector } from "react-redux";
+import { viewOtpUser } from "../../../../redux/actions/otpAction.js";
 
 import {
   Phone as PhoneIcon,
@@ -26,12 +28,14 @@ import {
 } from "@mui/material";
 
 import CardsSearch from "../../CardsSearch/CardsSearch";
+import { updateOtpUser } from "../../../../redux/actions/otpAction.js";
 
 const logoUrl = "/mnt/data/30429df4-c55e-4274-a7ab-b2327308fb94.png";
 
 const LeadsCardHistory = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const leadsUsers = Array.isArray(location.state?.leadsUsers) ? location.state.leadsUsers : [];
 
@@ -41,12 +45,18 @@ const LeadsCardHistory = () => {
   const [expandedIcons, setExpandedIcons] = useState({});
 
   const [searchText, setSearchText] = useState("");
-  const [sortBy, setSortBy] = useState("latest"); 
+  const [sortBy, setSortBy] = useState("latest");
+  const [syncingLeads, setSyncingLeads] = useState(false);
+  const hasSyncedRef = useRef(false);
 
   const totalLeads = leadsUsers.length;
   const phoneReadyCount = leadsUsers.filter((u) => u.mobileNumber1 || u.mobileNumber2).length;
   const emailReadyCount = leadsUsers.filter((u) => u.email).length;
-  const whatsappReadyCount = phoneReadyCount; 
+  const whatsappReadyCount = phoneReadyCount;
+
+    const authUser = useSelector((state) => state.otp.viewResponse) || {};
+    const leadsData = authUser?.leadsData || [];
+
 
   const filteredLeads = useMemo(() => {
     let data = [...leadsUsers];
@@ -77,6 +87,53 @@ const LeadsCardHistory = () => {
 
     return data;
   }, [leadsUsers, searchText, sortBy]);
+
+   useEffect(() => {
+    const businessMobile = localStorage.getItem("mobileNumber");
+
+    if (!businessMobile) return;
+    if (!leadsUsers.length) return;
+
+    if (hasSyncedRef.current) return;
+    hasSyncedRef.current = true;
+
+    const syncLeads = async () => {
+      try {
+        setSyncingLeads(true);
+
+        for (const lead of leadsUsers) {
+          const payload = {
+            leadsData: {  
+              userName: lead.userName || "",
+              mobileNumber1: lead.mobileNumber1 || "",
+              mobileNumber2: lead.mobileNumber2 || "",
+              email: lead.email || "",
+              searchedUserText: lead.searchedUserText || "",
+              time: lead.time || "",
+            },
+          };
+
+          try {
+            await dispatch(updateOtpUser(businessMobile, payload));
+          } catch (err) {
+            console.error("Error saving single lead:", lead, err);
+          }
+        }
+      } finally {
+        setSyncingLeads(false);
+      }
+    };
+
+    syncLeads();
+  }, [leadsUsers, dispatch]);
+
+
+ useEffect(() => {
+        const mobile = localStorage.getItem("mobileNumber");
+        if (mobile) {
+            dispatch(viewOtpUser(mobile));
+        }
+    }, [dispatch]);
 
   const handleOpenModal = (type, user) => {
     setModalType(type);

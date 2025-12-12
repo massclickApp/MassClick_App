@@ -69,6 +69,7 @@ import InvestorRelationsPage from "../clientComponent/userMenu/InvesterRelation/
 import PolicyPage from "../clientComponent/userMenu/PolicyPage/PolicyPage.js";
 import FeedbackPage from "../clientComponent/userMenu/FeedbackPage/FeedBackPage.js";
 import HelpPage from "../clientComponent/userMenu/HelpPage/HelpPage.js";
+import LeadsNotificationModal from "./leadsNotification/leadsNotification.js";
 
 const categories = [
     { name: "Leads", icon: <MailIcon /> },
@@ -125,6 +126,10 @@ const CategoryBar = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
+    const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
+
+    const authUser = useSelector((state) => state.otp?.viewResponse) || {};
+    const leadsData = authUser?.leadsData || [];
 
     const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
     const handleMenuClose = () => setAnchorEl(null);
@@ -520,6 +525,9 @@ const CategoryBar = () => {
                                 transform: "scale(1.1)",
                             },
                         }}
+                        onClick={() => {
+                            setIsNotificationModalOpen(true);
+                        }}
                     >
                         <NotificationsIcon sx={{ fontSize: 26 }} />
                     </IconButton>
@@ -624,6 +632,12 @@ const CategoryBar = () => {
             </Menu>
 
             <AddBusinessModal open={isModalOpen} handleClose={handleCloseModal} />
+            <LeadsNotificationModal
+                open={isNotificationModalOpen}
+                onClose={() => setIsNotificationModalOpen(false)}
+                notifications={leadsData}
+            />
+
             <SwipeableDrawer
                 anchor="right"
                 open={isDrawerOpen}

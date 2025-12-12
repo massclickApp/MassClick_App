@@ -92,29 +92,48 @@ export const viewCategory = async (id) => {
 };
 
 
-export const viewAllCategory = async (pageNo, pageSize) => {
+export const viewAllCategory = async ({
+  pageNo,
+  pageSize,
+  search,
+  status,
+  sortBy,
+  sortOrder
+}) => {
   try {
-    const query = { isActive: true };
+    let query = {};
+
+    if (status === "active") query.isActive = true;
+    if (status === "inactive") query.isActive = false;
+
+    if (search && search.trim() !== "") {
+      query.category = { $regex: search.trim(), $options: "i" };
+    }
+
+    let sortQuery = {};
+    if (sortBy) {
+      sortQuery[sortBy] = sortOrder;
+    }
 
     const total = await categoryModel.countDocuments(query);
 
     const categories = await categoryModel
       .find(query)
+      .sort(sortQuery)
       .skip((pageNo - 1) * pageSize)
       .limit(pageSize)
       .lean();
 
-    const list = categories.map((category) => {
-      if (category.categoryImageKey) {
-        category.categoryImage = getSignedUrlByKey(category.categoryImageKey);
+    const list = categories.map((c) => {
+      if (c.categoryImageKey) {
+        c.categoryImage = getSignedUrlByKey(c.categoryImageKey);
       }
-      return category;
+      return c;
     });
 
     return { list, total };
-
   } catch (error) {
-    console.error("Error fetching all categories:", error);
+    console.error("Error fetching categories:", error);
     throw error;
   }
 };

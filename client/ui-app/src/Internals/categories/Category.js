@@ -136,6 +136,7 @@ export default function Category() {
         .finally(() => setDeleteConfirm({ open: false, id: null }));
     }
   };
+
   const handleAddKeyword = () => {
     const trimmed = inputKeyword.trim();
     if (trimmed && !formData.keywords.includes(trimmed)) {
@@ -153,6 +154,7 @@ export default function Category() {
       keywords: prev.keywords.filter((k) => k !== keywordToDelete),
     }));
   };
+
   const validateForm = () => {
     let newErrors = {};
 
@@ -245,37 +247,38 @@ export default function Category() {
       isActive: cat.isActive,
     }));
 
- const categoryList = [
-  {
-    id: "categoryImage",
-    label: "Image",
-    renderCell: (value) =>
-      value ? <Avatar src={value} alt="Category" /> : "-",
-  },
-  { id: "category", label: "Category" },
-  { id: "categoryType", label: "Type" },
-  { id: "subCategoryType", label: "Sub Type" },
-  { id: "title", label: "Title" },
-  { id: "keywords", label: "Keywords" },
-  { id: "description", label: "Description" },
-  { id: "seoTitle", label: "SEO Title" },
-  { id: "seoDescription", label: "SEO Description" },
-  { id: "slug", label: "Slug" },
-  {
-    id: "action",
-    label: "Action",
-    renderCell: (_, row) => (
-      <div style={{ display: "flex", gap: "8px" }}>
-        <IconButton color="primary" size="small" onClick={() => handleEdit(row)}>
-          <EditRoundedIcon fontSize="small" />
-        </IconButton>
-        <IconButton color="error" size="small" onClick={() => handleDelete(row)}>
-          <DeleteOutlineRoundedIcon fontSize="small" />
-        </IconButton>
-      </div>
-    ),
-  },
-];
+
+  const categoryList = [
+    {
+      id: "categoryImage",
+      label: "Image",
+      renderCell: (value) =>
+        value ? <Avatar src={value} alt="Category" /> : "-",
+    },
+    { id: "category", label: "Category" },
+    { id: "categoryType", label: "Type" },
+    { id: "subCategoryType", label: "Sub Type" },
+    { id: "title", label: "Title" },
+    { id: "keywords", label: "Keywords" },
+    { id: "description", label: "Description" },
+    { id: "seoTitle", label: "SEO Title" },
+    { id: "seoDescription", label: "SEO Description" },
+    { id: "slug", label: "Slug" },
+    {
+      id: "action",
+      label: "Action",
+      renderCell: (_, row) => (
+        <div style={{ display: "flex", gap: "8px" }}>
+          <IconButton color="primary" size="small" onClick={() => handleEdit(row)}>
+            <EditRoundedIcon fontSize="small" />
+          </IconButton>
+          <IconButton color="error" size="small" onClick={() => handleDelete(row)}>
+            <DeleteOutlineRoundedIcon fontSize="small" />
+          </IconButton>
+        </div>
+      ),
+    },
+  ];
 
 
   return (
@@ -300,8 +303,8 @@ export default function Category() {
             )}
           </div>
 
-          <div className="category-form-input-group"> {/* UPDATED CLASS NAME */}
-            <label className="category-input-label">Slug (Auto)</label> {/* UPDATED CLASS NAME */}
+          <div className="category-form-input-group">
+            <label className="category-input-label">Slug (Auto)</label>
             <input
               type="text"
               name="slug"
@@ -351,8 +354,8 @@ export default function Category() {
             </div>
           )}
 
-          <div className="category-form-input-group"> 
-            <label className="category-input-label">Title</label> 
+          <div className="category-form-input-group">
+            <label className="category-input-label">Title</label>
             <input
               type="text"
               name="title"
@@ -360,7 +363,7 @@ export default function Category() {
               value={formData.title}
               onChange={handleChange}
             />
-            {errors.title && <p className="category-error-text">{errors.title}</p>} 
+            {errors.title && <p className="category-error-text">{errors.title}</p>}
           </div>
 
           <div className="category-form-input-group">
@@ -417,8 +420,8 @@ export default function Category() {
               )}
             />
           </div>
-          <div className="category-form-input-group"> 
-            <label className="category-input-label">SEO Description</label> 
+          <div className="category-form-input-group">
+            <label className="category-input-label">SEO Description</label>
             <input
               type="text"
               name="seoDescription"
@@ -427,8 +430,8 @@ export default function Category() {
               onChange={handleChange}
             />
           </div>
-          <div className="category-form-input-group category-col-span-2"> 
-            <label className="category-input-label">Description</label> 
+          <div className="category-form-input-group category-col-span-2">
+            <label className="category-input-label">Description</label>
             <textarea
               name="description"
               className={`category-text-input category-text-area ${errors.description ? "category-error" : ""
@@ -442,8 +445,8 @@ export default function Category() {
             )}
           </div>
 
-          <div className="category-form-input-group"> 
-            <label className="category-input-label">SEO Title</label> 
+          <div className="category-form-input-group">
+            <label className="category-input-label">SEO Title</label>
             <input
               type="text"
               name="seoTitle"
@@ -453,8 +456,8 @@ export default function Category() {
             />
           </div>
 
-          <div className="category-form-input-group category-col-span-all category-upload-section"> 
-            <div className="category-upload-content"> 
+          <div className="category-form-input-group category-col-span-all category-upload-section">
+            <div className="category-upload-content">
               <Button
                 variant="contained"
                 startIcon={<CloudUploadIcon />}
@@ -495,6 +498,7 @@ export default function Category() {
             </div>
           </div>
         </form>
+
         {error && (
           <p className="category-error-text" style={{ marginTop: "16px" }}>
             {" "}
@@ -515,8 +519,8 @@ export default function Category() {
         <CustomizedTable data={rows}
           columns={categoryList}
           total={total}
-          fetchData={(pageNo, pageSize) =>
-            dispatch(getAllCategory({ pageNo, pageSize }))
+          fetchData={(pageNo, pageSize, options) =>
+            dispatch(getAllCategory({ pageNo, pageSize, options }))
           }
         />
       </Box>

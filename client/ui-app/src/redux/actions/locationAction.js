@@ -18,46 +18,43 @@ const getValidToken = async (dispatch) => {
 };
 
 
-export const getAllLocation = ({ pageNo = 1, pageSize = 10 } = {}) => async (dispatch) => {
-  dispatch({ type: FETCH_LOCATION_REQUEST });
-  try {
-    const token = await getValidToken(dispatch);
+export const getAllLocation =
+  ({ pageNo = 1, pageSize = 10, options = {} } = {}) =>
+  async (dispatch) => {
+    dispatch({ type: FETCH_LOCATION_REQUEST });
 
+    try {
+      const token = await getValidToken(dispatch);
 
-    if (!token) {
-      throw new Error("No valid access token found");
+      const {
+        search = "",
+        status = "all",
+        sortBy = "",
+        sortOrder = ""
+      } = options;
+
+      const response = await axios.get(
+        `${API_URL}/location/viewall?pageNo=${pageNo}&pageSize=${pageSize}&search=${search}&status=${status}&sortBy=${sortBy}&sortOrder=${sortOrder}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      dispatch({
+        type: FETCH_LOCATION_SUCCESS,
+        payload: {
+          data: response.data.data,
+          total: response.data.total,
+          pageNo,
+          pageSize
+        }
+      });
+    } catch (error) {
+      dispatch({
+        type: FETCH_LOCATION_FAILURE,
+        payload: error.response?.data || error.message
+      });
     }
-    const response = await axios.get(
-      `${API_URL}/location/viewall?pageNo=${pageNo}&pageSize=${pageSize}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+  };
 
-
-    // let location = [];
-    // if (Array.isArray(response.data)) {
-    //   location = response.data;
-    // } else if (response.data?.data) {
-    //   location = response.data.data;
-    // } else if (response.data?.clients) {
-    //   location = response.data.clients;
-    // }
-
-    dispatch({
-      type: FETCH_LOCATION_SUCCESS,
-      payload: {
-        data: response.data.data,
-        total: response.data.total,
-        pageNo,
-        pageSize,
-      }
-    });
-  } catch (error) {
-    dispatch({
-      type: FETCH_LOCATION_FAILURE,
-      payload: error.response?.data || error.message,
-    });
-  }
-};
 
 
 export const createLocation = (userData) => async (dispatch) => {

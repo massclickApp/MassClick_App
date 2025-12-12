@@ -17,32 +17,43 @@ const getValidToken = async (dispatch) => {
   return token;
 };
 
-export const getAllUsersClient = ({ pageNo = 1, pageSize = 10 } = {}) => async (dispatch) => {
-  dispatch({ type: FETCH_USERSCLIENT_REQUEST });
-  try {
-    const token = await getValidToken(dispatch);
+export const getAllUsersClient =
+  ({ pageNo = 1, pageSize = 10, options = {} } = {}) =>
+  async (dispatch) => {
+    dispatch({ type: FETCH_USERSCLIENT_REQUEST });
 
-    const response = await axios.get(
-      `${API_URL}/userclient/viewall?pageNo=${pageNo}&pageSize=${pageSize}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+    try {
+      const token = await getValidToken(dispatch);
 
-    dispatch({
-      type: FETCH_USERSCLIENT_SUCCESS,
-      payload: {
-        data: response.data.data,
-        total: response.data.total,
-        pageNo,
-        pageSize,
-      }
-    });
-  } catch (error) {
-    dispatch({
-      type: FETCH_USERSCLIENT_FAILURE,
-      payload: error.response?.data || error.message,
-    });
-  }
-};
+      const {
+        search = "",
+        status = "all",
+        sortBy = "",
+        sortOrder = ""
+      } = options;
+
+      const response = await axios.get(
+        `${API_URL}/userclient/viewall?pageNo=${pageNo}&pageSize=${pageSize}&search=${search}&status=${status}&sortBy=${sortBy}&sortOrder=${sortOrder}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      dispatch({
+        type: FETCH_USERSCLIENT_SUCCESS,
+        payload: {
+          data: response.data.data,
+          total: response.data.total,
+          pageNo,
+          pageSize,
+        }
+      });
+
+    } catch (error) {
+      dispatch({
+        type: FETCH_USERSCLIENT_FAILURE,
+        payload: error.response?.data || error.message,
+      });
+    }
+  };
 
 
 export const createUserClient = (userData) => async (dispatch) => {

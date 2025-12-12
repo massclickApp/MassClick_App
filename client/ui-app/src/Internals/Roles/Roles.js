@@ -223,8 +223,8 @@ export default function Roles() {
                     data={rows}
                     columns={rolesList}
                     total={total}
-                    fetchData={(pageNo, pageSize) =>
-                        dispatch(getAllRoles({ pageNo, pageSize }))
+                    fetchData={(pageNo, pageSize, options) =>
+                        dispatch(getAllRoles({ pageNo, pageSize, options }))
                     }
                 />
 

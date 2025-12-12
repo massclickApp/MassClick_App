@@ -87,25 +87,39 @@ export const getBusinessDetailsById = (id) => async (dispatch) => {
 };
 
 
-export const getAllBusinessList = ({ pageNo = 1, pageSize = 10 } = {}) => async (dispatch) => {
+export const getAllBusinessList = ({
+  pageNo = 1,
+  pageSize = 10,
+  search = "",
+  status = "all",
+  sortBy = null,
+  sortOrder = "asc",
+} = {}) => async (dispatch) => {
   dispatch({ type: FETCH_BUSINESS_REQUEST });
 
   try {
     const token = await getValidToken(dispatch);
 
-    const response = await axios.get(
-      `${API_URL}/businesslist/viewall?pageNo=${pageNo}&pageSize=${pageSize}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+    const params = new URLSearchParams();
+    params.append("pageNo", pageNo);
+    params.append("pageSize", pageSize);
+    if (search) params.append("search", search);
+    if (status && status !== "all") params.append("status", status);
+    if (sortBy) params.append("sortBy", sortBy);
+    if (sortOrder) params.append("sortOrder", sortOrder);
+
+    const response = await axios.get(`${API_URL}/businesslist/viewall?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     dispatch({
       type: FETCH_BUSINESS_SUCCESS,
       payload: {
         data: response.data.data,
         total: response.data.total,
-        pageNo,
-        pageSize,
-      }
+        pageNo: response.data.pageNo,
+        pageSize: response.data.pageSize,
+      },
     });
   } catch (error) {
     console.error("getAllBusinessList error:", error);
@@ -234,7 +248,7 @@ export const editBusinessList = (id, businessData) => async (dispatch) => {
 export const deleteBusinessList = (id) => async (dispatch) => {
   dispatch({ type: DELETE_BUSINESS_REQUEST });
   try {
-       const token = localStorage.getItem("accessToken");
+    const token = localStorage.getItem("accessToken");
 
 
     if (!token) {
@@ -249,30 +263,30 @@ export const deleteBusinessList = (id) => async (dispatch) => {
   }
 };
 
-export const getTrendingSearches = (location) => async (dispatch) => {
-  dispatch({ type: FETCH_TRENDING_REQUEST });
-  try {
-   const token = await dispatch(getClientToken());
+// export const getTrendingSearches = (location) => async (dispatch) => {
+//   dispatch({ type: FETCH_TRENDING_REQUEST });
+//   try {
+//    const token = await dispatch(getClientToken());
 
-    if (!token) {
-      throw new Error("No valid access token found");
-    }
-    const url = location
-      ? `${API_URL}/businesslist/trending-searches?location=${location}`
-      : `${API_URL}/businesslist/trending-searches`;
+//     if (!token) {
+//       throw new Error("No valid access token found");
+//     }
+//     const url = location
+//       ? `${API_URL}/businesslist/trending-searches?location=${location}`
+//       : `${API_URL}/businesslist/trending-searches`;
 
-    const response = await axios.get(url, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    dispatch({ type: FETCH_TRENDING_SUCCESS, payload: response.data });
-  } catch (error) {
-    console.error("Error fetching trending searches:", error);
-    dispatch({
-      type: FETCH_TRENDING_FAILURE,
-      payload: error.response?.data || error.message,
-    });
-  }
-};
+//     const response = await axios.get(url, {
+//       headers: { Authorization: `Bearer ${token}` },
+//     });
+//     dispatch({ type: FETCH_TRENDING_SUCCESS, payload: response.data });
+//   } catch (error) {
+//     console.error("Error fetching trending searches:", error);
+//     dispatch({
+//       type: FETCH_TRENDING_FAILURE,
+//       payload: error.response?.data || error.message,
+//     });
+//   }
+// };
 
 
 export const logSearchActivity = (categoryName, location, userDetails, searchedUserText = "") =>
@@ -289,14 +303,14 @@ export const logSearchActivity = (categoryName, location, userDetails, searchedU
     } catch (error) {
       console.warn("Failed to log search activity:", error.message);
     }
-};
+  };
 
 
 export const getAllSearchLogs = () => async (dispatch) => {
   dispatch({ type: FETCH_SEARCH_LOGS_REQUEST });
 
   try {
-   const token = await dispatch(getClientToken());
+    const token = await dispatch(getClientToken());
 
     if (!token) {
       throw new Error("No valid access token found");
@@ -494,7 +508,7 @@ export const getPendingBusinessList = () => async (dispatch) => {
 
     dispatch({
       type: FETCH_PENDINGBUSINESS_SUCCESS,
-      payload: response.data.data, 
+      payload: response.data.data,
     });
 
   } catch (error) {

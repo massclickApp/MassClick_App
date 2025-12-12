@@ -1,5 +1,5 @@
 import express from 'express';
-import { requestOtp, verifyOtpAndLogin, updateOtpUser, viewOtpUser, viewAllOtpUsers, deleteOtpUser, logUserSearch, matchLeads  } from '../controller/msg91/msg91Controller.js';
+import { requestOtp, verifyOtpAndLogin, updateOtpUser, viewOtpUser, viewAllOtpUsers, deleteOtpUser, logUserSearch  } from '../controller/msg91/msg91Controller.js';
 import { sendOtpAction, verifyOtpAction } from '../controller/msg91/smsGatewayController.js';
 const router = express.Router();
 
@@ -14,6 +14,7 @@ router.get("/api/otp_user/:mobile", viewOtpUser);
 router.get('/api/otp_users', viewAllOtpUsers);
 router.delete('/api/otp_user/:mobile', deleteOtpUser);
 router.post('/api/otp_user/log-search', logUserSearch);
-router.post("/api/match/leadspage", matchLeads);
+// router.post("/api/leadssend/whatsapp", sendWhatsApp);               
+// router.post("/api/leadssend/whatsappall", sendWhatsAppToAll);  
 
 export default router;

@@ -18,42 +18,38 @@ const getValidToken = async (dispatch) => {
   return token;
 };
 
-export const getAllCategory = ({ pageNo = 1, pageSize = 10 } = {}) => async (dispatch) => {
-  dispatch({ type: FETCH_CATEGORY_REQUEST });
+export const getAllCategory =
+  ({ pageNo = 1, pageSize = 10, options = {} } = {}) =>
+  async (dispatch) => {
+    dispatch({ type: FETCH_CATEGORY_REQUEST });
 
-  try {
-    const token = await getValidToken(dispatch);
+    try {
+      const token = await getValidToken(dispatch);
 
-    const response = await axios.get(
-      `${API_URL}/category/viewall?pageNo=${pageNo}&pageSize=${pageSize}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+      const { search = "", status = "all", sortBy = "", sortOrder = "" } = options;
 
-    // let category = [];
-    // if (Array.isArray(response.data)) {
-    //   category = response.data;
-    // } else if (response.data?.data) {
-    //   category = response.data.data;
-    // } else if (response.data?.clients) {
-    //   category = response.data.clients;
-    // }
+      const response = await axios.get(
+        `${API_URL}/category/viewall?pageNo=${pageNo}&pageSize=${pageSize}&search=${search}&status=${status}&sortBy=${sortBy}&sortOrder=${sortOrder}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-    dispatch({
-      type: FETCH_CATEGORY_SUCCESS,
-      payload: {
-        data: response.data.data,
-        total: response.data.total,
-        pageNo,
-        pageSize,
-      }
-    });
-  } catch (error) {
-    dispatch({
-      type: FETCH_CATEGORY_FAILURE,
-      payload: error.response?.data || error.message,
-    });
-  }
-};
+      dispatch({
+        type: FETCH_CATEGORY_SUCCESS,
+        payload: {
+          data: response.data.data,
+          total: response.data.total,
+          pageNo,
+          pageSize,
+        },
+      });
+    } catch (error) {
+      dispatch({
+        type: FETCH_CATEGORY_FAILURE,
+        payload: error.response?.data || error.message,
+      });
+    }
+  };
+
 
 
 export const createCategory = (categoryData) => async (dispatch) => {

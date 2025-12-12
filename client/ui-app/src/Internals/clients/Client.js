@@ -166,27 +166,27 @@ export default function UserClients() {
     }));
 
   const clientList = [
-  { id: "clientId", label: "Client ID" },
-  { id: "name", label: "Name" },
-  { id: "emailId", label: "Email" },
-  { id: "contact", label: "Contact" },
-  { id: "businessName", label: "Business Name" },
-  { id: "businessAddress", label: "Business Address" },
-  {
-    id: "action",
-    label: "Action",
-    renderCell: (_, row) => (
-      <div style={{ display: "flex", gap: "8px" }}>
-        <IconButton color="primary" size="small" onClick={() => handleEdit(row)}>
-          <EditRoundedIcon fontSize="small" />
-        </IconButton>
-        <IconButton color="error" size="small" onClick={() => handleDeleteClick(row)}>
-          <DeleteOutlineRoundedIcon fontSize="small" />
-        </IconButton>
-      </div>
-    ),
-  },
-];
+    { id: "clientId", label: "Client ID" },
+    { id: "name", label: "Name" },
+    { id: "emailId", label: "Email" },
+    { id: "contact", label: "Contact" },
+    { id: "businessName", label: "Business Name" },
+    { id: "businessAddress", label: "Business Address" },
+    {
+      id: "action",
+      label: "Action",
+      renderCell: (_, row) => (
+        <div style={{ display: "flex", gap: "8px" }}>
+          <IconButton color="primary" size="small" onClick={() => handleEdit(row)}>
+            <EditRoundedIcon fontSize="small" />
+          </IconButton>
+          <IconButton color="error" size="small" onClick={() => handleDeleteClick(row)}>
+            <DeleteOutlineRoundedIcon fontSize="small" />
+          </IconButton>
+        </div>
+      ),
+    },
+  ];
 
 
   const fields = [
@@ -198,70 +198,70 @@ export default function UserClients() {
   ];
 
   return (
-  <div className="client-page">
-  <div className="client-card form-section">
-    <h2 className="client-card-title">
-      {isEditMode ? "Edit Client" : "Add New Client"}
-    </h2>
+    <div className="client-page">
+      <div className="client-card form-section">
+        <h2 className="client-card-title">
+          {isEditMode ? "Edit Client" : "Add New Client"}
+        </h2>
 
-    <form onSubmit={handleSubmit} className="client-form-grid">
-      {fields.map((field, i) => (
-        <div key={i} className="client-form-input-group">
-          <label htmlFor={field.name} className="client-input-label">
-            {field.label}
-          </label>
-          <input
-            type={field.type}
-            id={field.name}
-            name={field.name}
-            className={`client-text-input ${errors[field.name] ? "error" : ""}`}
-            value={formData[field.name]}
-            onChange={handleChange}
-          />
-          {errors[field.name] && (
-            <p className="client-error-text">{errors[field.name]}</p>
-          )}
-        </div>
-      ))}
+        <form onSubmit={handleSubmit} className="client-form-grid">
+          {fields.map((field, i) => (
+            <div key={i} className="client-form-input-group">
+              <label htmlFor={field.name} className="client-input-label">
+                {field.label}
+              </label>
+              <input
+                type={field.type}
+                id={field.name}
+                name={field.name}
+                className={`client-text-input ${errors[field.name] ? "error" : ""}`}
+                value={formData[field.name]}
+                onChange={handleChange}
+              />
+              {errors[field.name] && (
+                <p className="client-error-text">{errors[field.name]}</p>
+              )}
+            </div>
+          ))}
 
-      <div className="client-button-group col-span-all">
-        <button
-          type="submit"
-          className="client-submit-button"
-          disabled={loading}
-        >
-          {loading ? (
-            <CircularProgress size={24} color="inherit" />
-          ) : isEditMode ? (
-            "Update Client"
-          ) : (
-            "Create Client"
-          )}
-        </button>
+          <div className="client-button-group col-span-all">
+            <button
+              type="submit"
+              className="client-submit-button"
+              disabled={loading}
+            >
+              {loading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : isEditMode ? (
+                "Update Client"
+              ) : (
+                "Create Client"
+              )}
+            </button>
 
-        {isEditMode && (
-          <button
-            type="button"
-            className="client-cancel-button"
-            onClick={resetForm}
-          >
-            Cancel
-          </button>
+            {isEditMode && (
+              <button
+                type="button"
+                className="client-cancel-button"
+                onClick={resetForm}
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+        </form>
+
+        {error && (
+          <p className="client-error-text" style={{ marginTop: "16px" }}>
+            {(() => {
+              if (typeof error === "string") return error;
+              if (error instanceof Error) return error.message;
+              if (typeof error === "object") return JSON.stringify(error, null, 2);
+              return String(error);
+            })()}
+          </p>
         )}
       </div>
-    </form>
-
-    {error && (
-      <p className="client-error-text" style={{ marginTop: "16px" }}>
-          {(() => {
-      if (typeof error === "string") return error;
-      if (error instanceof Error) return error.message;
-      if (typeof error === "object") return JSON.stringify(error, null, 2);
-      return String(error);
-    })()}
-      </p>
-    )}
-  </div>
 
       <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
         Client Table
@@ -271,30 +271,31 @@ export default function UserClients() {
           data={rows}
           columns={clientList}
           total={total}
-          fetchData={(pageNo, pageSize) =>
-            dispatch(getAllUsersClient({ pageNo, pageSize }))
-          } />
+          fetchData={(pageNo, pageSize, options) =>
+            dispatch(getAllUsersClient({ pageNo, pageSize, options }))
+          }
+        />
       </Box>
 
-  {/* Delete Confirmation Dialog */}
-  <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
-    <DialogTitle className="client-dialog-title">
-      Confirm Delete
-    </DialogTitle>
-    <DialogContent className="client-dialog-content">
-      Are you sure you want to delete{" "}
-      <strong>{selectedUser?.name || "this client"}</strong>?
-    </DialogContent>
-    <DialogActions>
-      <Button onClick={cancelDelete} color="secondary">
-        Cancel
-      </Button>
-      <Button onClick={confirmDelete} color="error" variant="contained">
-        Delete
-      </Button>
-    </DialogActions>
-  </Dialog>
-</div>
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
+        <DialogTitle className="client-dialog-title">
+          Confirm Delete
+        </DialogTitle>
+        <DialogContent className="client-dialog-content">
+          Are you sure you want to delete{" "}
+          <strong>{selectedUser?.name || "this client"}</strong>?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelDelete} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={confirmDelete} color="error" variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
 
   );
 }

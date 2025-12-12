@@ -225,6 +225,17 @@ export default function MainGrid() {
   ];
 
 
+  const fetchData = (pageNumber = 1, pageSizeParam = 10, options = {}) => {
+    dispatch(getAllBusinessList({
+      pageNo: pageNumber,
+      pageSize: pageSizeParam,
+      search: options.search || "",
+      status: options.status || "all",
+      sortBy: options.sortBy || "createdAt",
+      sortOrder: options.sortOrder || "desc",
+    }));
+  };
+
   return (
     <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
       <Grid container spacing={2} columns={12} sx={{ mb: 2 }}>
@@ -239,14 +250,13 @@ export default function MainGrid() {
       </Grid><br />
       <Grid elevation={3} sx={{ p: 3, borderRadius: 2 }}>
         <Box sx={{ width: "100%" }}>
-          <CustomizedTable
+           <CustomizedTable
             data={rows}
             total={total}
             columns={businessListTable}
-            fetchData={(pageNo, pageSize) =>
-              dispatch(getAllBusinessList({ pageNo, pageSize }))
-            }
-          />      
+            fetchData={fetchData}
+            onSelectRows={(ids) => console.log("selected ids:", ids)}
+          />     
             </Box>
       </Grid>
     </Box>

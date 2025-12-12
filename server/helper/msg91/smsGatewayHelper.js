@@ -2,6 +2,10 @@ import axios from "axios";
 import dotenv from "dotenv";
 dotenv.config();
 
+// const MSG91_AUTHKEY = process.env.MSG91_AUTHKEY;
+// const MSG91_FLOW_ID = process.env.MSG91_WHATSAPP_FLOW_ID; 
+// const MSG91_SENDER = process.env.MSG91_WHATSAPP_SENDER; 
+
 // Send OTP
 export const sendOtp = async (number) => {
   try {
@@ -90,3 +94,36 @@ export const verifyOtp = async (number, otp) => {
     throw error;
   }
 };
+
+// export const sendWhatsAppMessage = async (mobile, variables = {}) => {
+//   try {
+//     if (!mobile) throw new Error("Mobile number required");
+
+//     const formattedMobile = mobile.toString().replace(/\D/g, "");
+//     const mobileWithCountry = "91" + formattedMobile;
+
+//     const payload = {
+//       flow_id: MSG91_FLOW_ID,
+//       sender: MSG91_SENDER,
+//       mobiles: mobileWithCountry,
+//       var: variables
+//     };
+
+//     const headers = {
+//       authkey: MSG91_AUTHKEY,
+//       "Content-Type": "application/json",
+//     };
+
+//     const response = await axios.post(
+//       "https://api.msg91.com/api/v5/whatsapp/flow/",
+//       payload,
+//       { headers }
+//     );
+
+//     return response.data;
+
+//   } catch (err) {
+//     console.error("MSG91 WhatsApp error:", err?.response?.data || err.message);
+//     throw new Error(err?.response?.data?.message || "WhatsApp sending failed");
+//   }
+// };

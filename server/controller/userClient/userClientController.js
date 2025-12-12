@@ -26,13 +26,25 @@ export const viewAllUsersClientAction = async (req, res) => {
     const pageNo = parseInt(req.query.pageNo) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
 
-    const { list, total } = await viewAllUserClients(pageNo, pageSize);
+    const search = req.query.search || "";
+    const status = req.query.status || "all";
+    const sortBy = req.query.sortBy || null;
+    const sortOrder = req.query.sortOrder === "desc" ? -1 : 1;
+
+    const { list, total } = await viewAllUserClients({
+      pageNo,
+      pageSize,
+      search,
+      status,
+      sortBy,
+      sortOrder
+    });
 
     res.send({
       data: list,
       total,
       pageNo,
-      pageSize,
+      pageSize
     });
 
   } catch (error) {

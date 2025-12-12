@@ -26,7 +26,19 @@ export const viewAllUsersAction = async (req, res) => {
     const pageNo = parseInt(req.query.pageNo) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
 
-    const { list, total } = await viewAllUser(pageNo, pageSize);
+    const search = req.query.search || "";
+    const status = req.query.status || "all";
+    const sortBy = req.query.sortBy || null;
+    const sortOrder = req.query.sortOrder === "desc" ? -1 : 1;
+
+    const { list, total } = await viewAllUser({
+      pageNo,
+      pageSize,
+      search,
+      status,
+      sortBy,
+      sortOrder
+    });
 
     res.send({
       data: list,
@@ -34,11 +46,13 @@ export const viewAllUsersAction = async (req, res) => {
       pageNo,
       pageSize,
     });
+
   } catch (error) {
     console.error(error);
     return res.status(BAD_REQUEST.code).send({ message: error.message });
   }
 };
+
 export const updateUsersAction = async (req, res) => {
   try {
     const userId = req.params.id;

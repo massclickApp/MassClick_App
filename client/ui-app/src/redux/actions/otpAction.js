@@ -7,7 +7,8 @@ import {
   VIEW_OTP_USER_REQUEST, VIEW_OTP_USER_SUCCESS, VIEW_OTP_USER_FAILURE,
   VIEWALL_OTP_USER_REQUEST, VIEWALL_OTP_USER_SUCCESS, VIEWALL_OTP_USER_FAILURE,
    LOG_USER_SEARCH_REQUEST, LOG_USER_SEARCH_SUCCESS,LOG_USER_SEARCH_FAILURE,
-   
+  //  SEND_WHATSAPP_ALL_REQUEST, SEND_WHATSAPP_ALL_SUCCESS, SEND_WHATSAPP_ALL_FAILURE,
+  //  SEND_WHATSAPP_REQUEST, SEND_WHATSAPP_SUCCESS, SEND_WHATSAPP_FAILURE
 } from "../actions/userActionTypes";
 
 const API_URL = process.env.REACT_APP_API_URL;
@@ -60,37 +61,56 @@ if (user) {
 
 export const updateOtpUser = (mobile, data) => async (dispatch) => {
   dispatch({ type: UPDATE_OTP_USER_REQUEST });
+
   try {
-    const response = await axios.put(`${API_URL}/otp_user_update/${mobile}`, data);
-    dispatch({ type: UPDATE_OTP_USER_SUCCESS, payload: response.data });
+    const response = await axios.put(
+      `${API_URL}/otp_user_update/${mobile}`,   
+      data,
+      { headers: { "Content-Type": "application/json" } }
+    );
+
+    dispatch({
+      type: UPDATE_OTP_USER_SUCCESS,
+      payload: response.data,
+    });
+
     return response.data;
   } catch (error) {
-    const errPayload = error.response?.data || error.message;
-    dispatch({ type: UPDATE_OTP_USER_FAILURE, payload: errPayload });
+    dispatch({
+      type: UPDATE_OTP_USER_FAILURE,
+      payload: error.response?.data || error.message,
+    });
+
     throw error;
   }
 };
 
-// --- View Single OTP User ---
+
+
 export const viewOtpUser = (mobile) => async (dispatch) => {
+
   dispatch({ type: VIEW_OTP_USER_REQUEST });
+
   try {
+
     const response = await axios.get(`${API_URL}/otp_user/${mobile}`);
 
     dispatch({
       type: VIEW_OTP_USER_SUCCESS,
-      payload: response.data.user,   
+      payload: response.data.user,
     });
 
     return response.data.user;
 
   } catch (error) {
+
     dispatch({
       type: VIEW_OTP_USER_FAILURE,
       payload: error.response?.data || error.message,
     });
   }
 };
+
 
 
 // --- View All OTP Users ---
@@ -156,3 +176,59 @@ export const logUserSearch = (userId, query, location, category) => async (dispa
     throw error;
   }
 };
+
+// export const sendWhatsApp = (mobile, userName, customMessage) => async (dispatch) => {
+//   dispatch({ type: SEND_WHATSAPP_REQUEST });
+
+//   try {
+//     const res = await axios.post(`${API_URL}/leadssend/whatsapp`, {
+//       mobile,
+//       userName,
+//       customMessage,
+//     });
+
+//     dispatch({
+//       type: SEND_WHATSAPP_SUCCESS,
+//       payload: res.data,
+//     });
+
+//     return res.data;
+
+//   } catch (error) {
+//     dispatch({
+//       type: SEND_WHATSAPP_FAILURE,
+//       payload: error.response?.data || error.message,
+//     });
+
+//     throw error;
+//   }
+// };
+
+// // -----------------------------------------------
+// // SEND WHATSAPP TO ALL LEADS
+// // -----------------------------------------------
+// export const sendWhatsAppToAll = (users, customMessage) => async (dispatch) => {
+//   dispatch({ type: SEND_WHATSAPP_ALL_REQUEST });
+
+//   try {
+//     const res = await axios.post(`${API_URL}/leadssend/whatsappall`, {
+//       users,
+//       customMessage,
+//     });
+
+//     dispatch({
+//       type: SEND_WHATSAPP_ALL_SUCCESS,
+//       payload: res.data,
+//     });
+
+//     return res.data;
+
+//   } catch (error) {
+//     dispatch({
+//       type: SEND_WHATSAPP_ALL_FAILURE,
+//       payload: error.response?.data || error.message,
+//     });
+
+//     throw error;
+//   }
+// };

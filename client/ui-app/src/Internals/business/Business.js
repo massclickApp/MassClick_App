@@ -370,7 +370,6 @@ export default function BusinessList() {
     id: null,
   });
 
-
   const modules = {
     toolbar: [
       [{ 'header': '1' }, { 'header': '2' }],
@@ -426,6 +425,7 @@ export default function BusinessList() {
     setBusinessValue(content);
     setFormData((prev) => ({ ...prev, businessDetails: content }));
   };
+
   const handleOpeningHourChange = (index, field, value) => {
     setFormData((prev) => {
       const updatedHours = [...(prev.openingHours || defaultOpeningHours)];
@@ -463,16 +463,12 @@ export default function BusinessList() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     if (name === "category") {
       const selected = category.find((cat) => cat.category === value);
-
       setFormData((prev) => ({
         ...prev,
         category: value,
-
         keywords: selected?.keywords || [],
-
         slug: selected?.slug || "",
         seoTitle: selected?.seoTitle || "",
         seoDescription: selected?.seoDescription || "",
@@ -651,12 +647,12 @@ export default function BusinessList() {
         })
       );
     }
-
     const payload = {
       ...formData,
       businessDetails: businessvalue,
       kycDocuments: kycBase64,
     };
+
     try {
       let response;
 
@@ -859,9 +855,9 @@ export default function BusinessList() {
 
                   if (value.length >= 2) {
                     dispatch(getUserClientSuggestion(value));
-                    setShowSuggestions(true);   // 🔥 SHOW DROPDOWN
+                    setShowSuggestions(true);
                   } else {
-                    setShowSuggestions(false);  // HIDE DROPDOWN
+                    setShowSuggestions(false);
                   }
                 }}
                 onBlur={() => {
@@ -880,7 +876,7 @@ export default function BusinessList() {
                 <ul
                   style={{
                     position: "absolute",
-                    top: "70px",
+                    top: "80px",
                     left: 0,
                     width: "100%",
                     background: "#fff",
@@ -900,12 +896,12 @@ export default function BusinessList() {
                       onClick={() => {
                         setFormData((prev) => ({
                           ...prev,
-                          clientId: client.clientId,
+                          clientId: `${client.clientId} — ${client.name}`,
                         }));
                         setShowSuggestions(false);
                       }}
                       style={{
-                        padding: "10px",
+                        padding: "12px",
                         cursor: "pointer",
                         borderBottom: "1px solid #eee",
                       }}
@@ -965,6 +961,7 @@ export default function BusinessList() {
               />
               {errors.pincode && <p className="error-text">{errors.pincode}</p>}
             </div>
+
             <div className="form-input-group">
               <label htmlFor="location" className="input-label">Location</label>
               <input
@@ -977,6 +974,7 @@ export default function BusinessList() {
               />
               {errors.location && <p className="error-text">{errors.location}</p>}
             </div>
+
             <div className="form-input-group">
               <label htmlFor="address2" className="input-label">Global Address</label>
               <input
@@ -1694,11 +1692,20 @@ export default function BusinessList() {
           data={rows}
           total={total}
           columns={businessListTable}
-          fetchData={(pageNo, pageSize) =>
-            dispatch(getAllBusinessList({ pageNo, pageSize }))
-          }
-
+          fetchData={(pageNo, pageSize, options = {}) => {
+            dispatch(
+              getAllBusinessList({
+                pageNo,
+                pageSize,
+                search: options.search || "",
+                status: options.status || "all",
+                sortBy: options.sortBy || null,
+                sortOrder: options.sortOrder || "asc",
+              })
+            );
+          }}
         />
+
       </Box>
 
       <Dialog open={deleteDialog.open} onClose={() => setDeleteDialog({ open: false, id: null, name: "" })}>

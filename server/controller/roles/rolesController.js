@@ -27,7 +27,19 @@ export const viewAllRolesAction = async (req, res) => {
     const pageNo = parseInt(req.query.pageNo) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
 
-    const { list, total } = await viewAllRoles(pageNo, pageSize);
+    const search = req.query.search || "";
+    const status = req.query.status || "all";
+    const sortBy = req.query.sortBy || null;
+    const sortOrder = req.query.sortOrder === "desc" ? -1 : 1;
+
+    const { list, total } = await viewAllRoles({
+      pageNo,
+      pageSize,
+      search,
+      status,
+      sortBy,
+      sortOrder
+    });
 
     res.send({
       data: list,
@@ -37,7 +49,7 @@ export const viewAllRolesAction = async (req, res) => {
     });
 
   } catch (error) {
-    console.error(error);
+    console.error("Roles fetch error:", error);
     return res.status(BAD_REQUEST.code).send({ message: error.message });
   }
 };

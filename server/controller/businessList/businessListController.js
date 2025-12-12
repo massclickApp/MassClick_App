@@ -35,17 +35,32 @@ export const viewBusinessListAction = async (req, res) => {
 };
 export const viewAllBusinessListAction = async (req, res) => {
   try {
-    const { userRole, userId } = req.authUser; 
+    const { userRole, userId } = req.authUser;
+
     const pageNo = parseInt(req.query.pageNo) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
 
-    const { list, total } = await viewAllBusinessList(userRole, userId, pageNo, pageSize);
+    const search = (req.query.search || "").trim();
+    const status = req.query.status || "all";          
+    const sortBy = req.query.sortBy || "createdAt";   
+    const sortOrder = req.query.sortOrder === "asc" ? "asc" : "desc";
 
-    res.send({
+    const { list, total } = await viewAllBusinessList({
+      role: userRole,
+      userId,
+      pageNo,
+      pageSize,
+      search,
+      status,
+      sortBy,
+      sortOrder
+    });
+
+    return res.send({
       data: list,
       total,
       pageNo,
-      pageSize
+      pageSize,
     });
 
   } catch (error) {

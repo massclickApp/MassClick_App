@@ -95,66 +95,140 @@ export const verifyOtpAndLogin = async (req, res) => {
 // };
 
 export const updateOtpUser = async (req, res) => {
-    try {
-        const { mobile } = req.params;
-        const updateData = { ...req.body };
+  try {
+    const { mobile } = req.params;
+    const updateData = { ...req.body };
 
-        const user = await User.findOne({ mobileNumber1: mobile });
-        if (!user) return res.status(404).json({ success: false, message: "User not found" });
-
-        // ---------- profile image handling ----------
-        if (updateData.profileImage?.startsWith && updateData.profileImage.startsWith("data:image")) {
-            const uploadResult = await uploadImageToS3(
-                updateData.profileImage,
-                `user/profiles/${user._id}/profile-${Date.now()}`
-            );
-            user.profileImageKey = uploadResult.key;
-        } else if (updateData.profileImage === null || updateData.profileImage === "") {
-            user.profileImageKey = "";
-        }
-        delete updateData.profileImage;
-
-        // forbidden fields
-        const forbiddenFields = ["currentOtp", "otpGeneratedAt", "otpExpiresAt", "profileImageKey"];
-        forbiddenFields.forEach((field) => delete updateData[field]);
-
-        // ---------- handle businessCategory safely ----------
-        if (updateData.businessCategory) {
-            // if frontend sends a non-empty object with category value/or _id, merge it
-            if (typeof updateData.businessCategory === "object" && (updateData.businessCategory.category || updateData.businessCategory._id)) {
-                user.businessCategory = {
-                    ...(user.businessCategory || {}),
-                    ...updateData.businessCategory,
-                };
-            } else if (typeof updateData.businessCategory === "string" && updateData.businessCategory.trim() !== "") {
-                // if frontend sent a plain string (category name), set it without wiping other fields
-                user.businessCategory = {
-                    ...(user.businessCategory || {}),
-                    category: updateData.businessCategory,
-                };
-            }
-            delete updateData.businessCategory;
-        }
-
-        Object.keys(updateData).forEach((key) => {
-            user[key] = updateData[key];
-        });
-
-        user.updatedAt = new Date();
-
-        await user.save();
-
-        const userObject = user.toObject();
-        if (userObject.profileImageKey) {
-            userObject.profileImage = getSignedUrlByKey(userObject.profileImageKey);
-        }
-
-        return res.json({ success: true, message: "User updated successfully", user: userObject });
-    } catch (err) {
-        console.error("Error updating user:", err);
-        return res.status(500).json({ success: false, message: err.message });
+    const user = await User.findOne({ mobileNumber1: mobile });
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
     }
+
+
+    if (updateData.markRead) {
+      const { leadId } = updateData.markRead;
+
+      await User.updateOne(
+        { mobileNumber1: mobile, "leadsData._id": leadId },
+        { $set: { "leadsData.$.isReaded": true } }
+      );
+
+      delete updateData.markRead;
+
+      return res.json({
+        success: true,
+        message: "Lead marked as read",
+      });
+    }
+
+
+    if (updateData.profileImage?.startsWith?.("data:image")) {
+      const uploadResult = await uploadImageToS3(
+        updateData.profileImage,
+        `user/profiles/${user._id}/profile-${Date.now()}`
+      );
+      user.profileImageKey = uploadResult.key;
+    } else if (
+      updateData.profileImage === null ||
+      updateData.profileImage === ""
+    ) {
+      user.profileImageKey = "";
+    }
+    delete updateData.profileImage;
+
+    /* ----------------------------------------------------
+     🔥 3. REMOVE FIELDS THAT SHOULD NEVER BE UPDATED
+    ---------------------------------------------------- */
+    const forbiddenFields = [
+      "currentOtp",
+      "otpGeneratedAt",
+      "otpExpiresAt",
+      "profileImageKey",
+    ];
+    forbiddenFields.forEach((field) => delete updateData[field]);
+
+    /* ----------------------------------------------------
+     🔥 4. BUSINESS CATEGORY UPDATE
+    ---------------------------------------------------- */
+    if (updateData.businessCategory) {
+      if (
+        typeof updateData.businessCategory === "object" &&
+        (updateData.businessCategory.category ||
+          updateData.businessCategory._id)
+      ) {
+        user.businessCategory = {
+          ...(user.businessCategory || {}),
+          ...updateData.businessCategory,
+        };
+      }
+      delete updateData.businessCategory;
+    }
+
+    /* ----------------------------------------------------
+     🔥 5. HANDLE LEADS — STORE ONLY NEW UNIQUE LEADS
+    ---------------------------------------------------- */
+    if (updateData.leadsData) {
+      const lead = updateData.leadsData;
+
+      // ❌ prevent empty leads
+      if (!lead.mobileNumber1 && !lead.email) {
+        delete updateData.leadsData;
+      } else {
+        // 🔍 strong duplicate validation
+        const exists = user.leadsData.some(
+          (l) =>
+            l.mobileNumber1 === lead.mobileNumber1 &&
+            l.searchedUserText === lead.searchedUserText &&
+            l.time === lead.time &&
+            l.userName === lead.userName
+        );
+
+        // only push if it's a truly NEW lead
+        if (!exists) {
+          user.leadsData.push({
+            email: lead.email || "",
+            mobileNumber1: lead.mobileNumber1 || "",
+            mobileNumber2: lead.mobileNumber2 || "",
+            searchedUserText: lead.searchedUserText || "",
+            time: lead.time || "",
+            userName: lead.userName || "",
+            isReaded: false,
+          });
+        }
+
+        delete updateData.leadsData;
+      }
+    }
+
+    /* ----------------------------------------------------
+     🔥 6. APPLY ANY OTHER FIELD UPDATES
+    ---------------------------------------------------- */
+    Object.keys(updateData).forEach((key) => {
+      user[key] = updateData[key];
+    });
+
+    user.updatedAt = new Date();
+    await user.save();
+
+    /* ----------------------------------------------------
+     🔥 7. RETURN UPDATED USER
+    ---------------------------------------------------- */
+    const userObject = user.toObject();
+    if (userObject.profileImageKey) {
+      userObject.profileImage = getSignedUrlByKey(userObject.profileImageKey);
+    }
+
+    return res.json({
+      success: true,
+      message: "User updated successfully",
+      user: userObject,
+    });
+  } catch (err) {
+    console.error("Error updating user:", err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
 };
+
 
 export const viewOtpUser = async (req, res) => {
     try {
@@ -236,16 +310,6 @@ export const logUserSearch = async (req, res) => {
         res.json({ success: true, message: "Search logged successfully", searchHistory: user.searchHistory });
     } catch (err) {
         console.error("Error logging search:", err);
-        res.status(500).json({ success: false, message: err.message });
-    }
-};
-
-export const matchLeads = async (req, res) => {
-    try {
-        const result = await matchLeadsService(req.body);
-        res.json({ success: true, ...result });
-    } catch (err) {
-        console.error("matchLeads error:", err);
         res.status(500).json({ success: false, message: err.message });
     }
 };

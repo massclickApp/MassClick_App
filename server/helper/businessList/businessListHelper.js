@@ -171,72 +171,144 @@ export const viewAllClientBusinessList = async () => {
 
 //   return businessListWithDetails;
 // };
-export const viewAllBusinessList = async (role, userId, pageNo, pageSize) => {
-    let query = {};
+export const viewAllBusinessList = async ({
+  role,
+  userId,
+  pageNo,
+  pageSize,
+  search,
+  status,
+  sortBy,
+  sortOrder
+}) => {
 
-    if (role === "SuperAdmin") {
-        query = {};
-    } else if (role === "SalesManager") {
-        const manager = await userModel.findById(userId).lean();
-        const salesOfficerIds = manager?.salesBy || [];
+  let query = {};
 
-        const allowedCreators = [
-            new mongoose.Types.ObjectId(userId),
-            ...salesOfficerIds.map((id) => new mongoose.Types.ObjectId(id)),
-        ];
+  // -------------------------
+  // ROLE-BASED ACCESS FILTER
+  // -------------------------
+  if (role === "SuperAdmin") {
+    query = {};
+  } 
+  else if (role === "SalesManager") {
+    const manager = await userModel.findById(userId).lean();
+    const salesOfficerIds = manager?.salesBy || [];
 
-        query = { createdBy: { $in: allowedCreators } };
-    } else if (role === "SalesOfficer") {
-        query = { createdBy: new mongoose.Types.ObjectId(userId) };
-    } else if (["client", "PublicUser", "user"].includes(role)) {
-        query = { isActive: true };
-    } else {
-        throw new Error("Unauthorized role");
-    }
+    const allowedCreators = [
+      new mongoose.Types.ObjectId(userId),
+      ...salesOfficerIds.map((id) => new mongoose.Types.ObjectId(id))
+    ];
 
-    const total = await businessListModel.countDocuments(query);
+    query = { createdBy: { $in: allowedCreators } };
+  } 
+  else if (role === "SalesOfficer") {
+    query = { createdBy: new mongoose.Types.ObjectId(userId) };
+  } 
+  else if (["client", "PublicUser", "user"].includes(role)) {
+    query = { isActive: true };
+  } 
+  else {
+    throw new Error("Unauthorized role");
+  }
 
-    const businessList = await businessListModel
-        .find(query)
-        .skip((pageNo - 1) * pageSize)
-        .limit(pageSize)
-        .lean();
+  // --------------------------------
+  // STATUS FILTER (Active/Inactive)
+  // --------------------------------
+  if (status === "active") query.activeBusinesses = true;
+  if (status === "inactive") query.activeBusinesses = false;
 
-    const businessListWithDetails = await Promise.all(
-        businessList.map(async (business) => {
-            if (business.bannerImageKey)
-                business.bannerImage = getSignedUrlByKey(business.bannerImageKey);
+  // --------------------------------
+  // SEARCH FILTER
+  // Valid schema fields ONLY
+  // --------------------------------
+  const searchableFields = [
+    "businessName",
+    "location",
+    "category",
+    "description",
+    "email",
+    "contact",
+    "contactList",
+    "whatsappNumber",
+    "businessDetails",
+    "globalAddress",
+    "keywords"
+  ];
 
-            if (business.businessImagesKey?.length > 0)
-                business.businessImages = business.businessImagesKey.map((key) =>
-                    getSignedUrlByKey(key)
-                );
+  if (search) {
+    const regexSearch = searchableFields.map((field) => ({
+      [field]: { $regex: search, $options: "i" }
+    }));
 
-            if (business.kycDocumentsKey?.length > 0)
-                business.kycDocuments = business.kycDocumentsKey.map((key) =>
-                    getSignedUrlByKey(key)
-                );
+    query.$or = regexSearch;
+  }
 
-            let locationDetailsArray = [];
-            if (
-                business.location &&
-                mongoose.Types.ObjectId.isValid(business.location)
-            ) {
-                const location = await locationModel.findById(business.location).lean();
-                if (location) {
-                    locationDetailsArray = [location.city || "", location.state || ""];
-                }
-            } else if (business.location) {
-                locationDetailsArray = [business.location];
-            }
+  // -------------------------
+  // SORTING
+  // -------------------------
+  const allowedSortFields = [
+    "createdAt",
+    "businessName",
+    "location",
+    "category"
+  ];
 
-            business.locationDetails = locationDetailsArray.filter(Boolean).join(", ");
-            return business;
-        })
-    );
+  const sort = {};
 
-    return { list: businessListWithDetails, total };
+  if (allowedSortFields.includes(sortBy)) {
+    sort[sortBy] = sortOrder === "asc" ? 1 : -1;
+  } else {
+    sort.createdAt = -1;  // default sort
+  }
+
+  // -------------------------
+  // PAGINATION + TOTAL COUNT
+  // -------------------------
+  const total = await businessListModel.countDocuments(query);
+
+  const businessList = await businessListModel
+    .find(query)
+    .sort(sort)
+    .skip((pageNo - 1) * pageSize)
+    .limit(pageSize)
+    .lean();
+
+  // -------------------------
+  // ATTACH IMAGES + LOCATION DETAILS
+  // -------------------------
+  const businessListWithDetails = await Promise.all(
+    businessList.map(async (business) => {
+
+      // Signed banner
+      if (business.bannerImageKey) {
+        business.bannerImage = getSignedUrlByKey(business.bannerImageKey);
+      }
+
+      // Signed business images
+      if (business.businessImagesKey?.length > 0) {
+        business.businessImages = business.businessImagesKey.map((key) =>
+          getSignedUrlByKey(key)
+        );
+      }
+
+      if (business.kycDocumentsKey?.length > 0) {
+        business.kycDocuments = business.kycDocumentsKey.map((key) =>
+          getSignedUrlByKey(key)
+        );
+      }
+
+      business.locationDetails = business.location || "";
+
+      return business;
+    })
+  );
+
+  return {
+    list: businessListWithDetails,
+    total,
+  };
 };
+
 
 
 export const updateBusinessList = async (id, data) => {

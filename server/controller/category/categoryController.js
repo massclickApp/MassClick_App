@@ -43,15 +43,30 @@ export const viewAllCategoryAction = async (req, res) => {
   try {
     const pageNo = parseInt(req.query.pageNo) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
-    const { list, total } = await viewAllCategory(pageNo, pageSize);
+
+    const search = req.query.search || "";
+    const status = req.query.status || "all";
+    const sortBy = req.query.sortBy || null;
+    const sortOrder = req.query.sortOrder === "desc" ? -1 : 1;
+
+    const { list, total } = await viewAllCategory({
+      pageNo,
+      pageSize,
+      search,
+      status,
+      sortBy,
+      sortOrder
+    });
+
     res.send({
       data: list,
       total,
       pageNo,
       pageSize
-    }); 
+    });
+
   } catch (error) {
-    console.error(error);
+    console.error("viewAllCategoryAction error:", error);
     return res.status(BAD_REQUEST.code).send({ message: error.message });
   }
 };

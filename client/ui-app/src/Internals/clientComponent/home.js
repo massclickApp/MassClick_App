@@ -41,6 +41,7 @@ const LandingPage = () => {
         }
     };
 
+
     useEffect(() => {
         const handleScroll = () => {
             if (heroSectionRef.current) {
@@ -110,7 +111,6 @@ const LandingPage = () => {
                     />
                 </Box>
             )}
-
 
             <Box sx={{ height: isScrolled ? STICKY_SEARCH_BAR_HEIGHT : 0 }} />
 

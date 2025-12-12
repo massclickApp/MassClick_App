@@ -1,94 +1,94 @@
-/* Notification container */
-.ln-root {
-  max-width: 700px;
-  margin: 30px auto;
-  padding: 20px;
-  font-family: "Inter", sans-serif;
-}
-
-/* Header */
-.ln-header {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 25px;
-}
-
-.ln-back-btn {
-  background: none;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-/* List */
-.ln-list {
+/* Scroll */
+.ln-modern-list {
   list-style: none;
   padding: 0;
   margin: 0;
+  max-height: 450px;
+  overflow-y: auto;
 }
 
-/* Notification item (similar to FB) */
-.ln-item {
+.ln-modern-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ln-modern-list::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+}
+
+/* Notification Row */
+.ln-modern-item {
   display: flex;
   align-items: center;
   gap: 15px;
-  padding: 15px 10px;
-  border-radius: 10px;
+  padding: 18px 22px;
+  transition: all 0.25s ease;
   cursor: pointer;
-  transition: 0.2s ease;
+  border-bottom: 1px solid #f8e2ce;
 }
 
-.ln-item:hover {
-  background: #f3f4f6;
+/* UNREAD — soft orange highlight */
+.ln-modern-item.unread {
+  background: #fff4e5;
+  box-shadow: inset 0 0 8px rgba(247, 148, 29, 0.15);
 }
 
-/* Avatar circle */
-.ln-avatar {
-  width: 45px;
-  height: 45px;
-  background: #5565ff;
-  color: white;
+/* READ — normal */
+.ln-modern-item.read {
+  background: #ffffff;
+}
+
+.ln-modern-item:hover {
+  background: #fff8ef;
+}
+
+/* Avatar */
+.ln-modern-avatar {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #ffb46b, #f7941d);
+  color: #fff;
   font-size: 20px;
-  border-radius: 50%;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-weight: 600;
 }
 
-/* Notification text */
-.ln-body {
+/* Text Body */
+.ln-modern-body {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
-.ln-text {
+.ln-modern-title {
   font-size: 15px;
-  color: #111;
+  color: #333;
+  line-height: 1.4;
 }
 
-.ln-meta {
+.ln-modern-time {
   font-size: 13px;
-  color: #666;
-  margin-top: 3px;
+  color: #999;
 }
 
-.ln-time {
-  margin-left: 5px;
-  color: #888;
-}
-
-/* Blue unread dot */
-.ln-dot {
+/* UNREAD ORANGE DOT */
+.ln-modern-dot {
   width: 10px;
   height: 10px;
-  background: #1877f2;
+  background: #f7941d;
   border-radius: 50%;
 }
-  
-/* Empty state */
-.ln-empty {
-  text-align: center;
-  font-size: 18px;
-  padding: 50px 0;
-  color: #777;
+
+/* Lead Detail Rows */
+.ln-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+  font-size: 15px;
+  color: #444;
 }

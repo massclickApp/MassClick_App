@@ -37,14 +37,37 @@ export const viewRoles = async (id) => {
     }
 };
 
-export const viewAllRoles = async (pageNo, pageSize) => {
+export const viewAllRoles = async ({
+  pageNo,
+  pageSize,
+  search,
+  status,
+  sortBy,
+  sortOrder
+}) => {
   try {
-    const query = {};
+    let query = {};
+
+    if (search && search.trim() !== "") {
+      query.$or = [
+        { roleName: { $regex: search, $options: "i" } },
+        { permissions: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+        { createdBy: { $regex: search, $options: "i" } }
+      ];
+    }
+
+    if (status === "active") query.isActive = true;
+    if (status === "inactive") query.isActive = false;
+
+    let sortQuery = {};
+    if (sortBy) sortQuery[sortBy] = sortOrder;
 
     const total = await rolesModel.countDocuments(query);
 
     const roles = await rolesModel
       .find(query)
+      .sort(sortQuery)
       .skip((pageNo - 1) * pageSize)
       .limit(pageSize)
       .lean();

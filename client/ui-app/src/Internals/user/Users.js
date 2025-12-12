@@ -185,12 +185,12 @@ export default function User() {
     .filter((user) => user.isActive)
     .map((user, index) => {
       const managedOfficers = user.role === 'SalesManager'
-        ? (user.salesBy || []) 
+        ? (user.salesBy || [])
           .map(officerId => users.find(u => u._id === officerId)?.userName)
-          .filter(name => name) 
+          .filter(name => name)
           .join(', ') || 'None'
         : '-';
-      
+
       return {
         id: user._id || index,
         userName: user.userName,
@@ -202,53 +202,53 @@ export default function User() {
         businessCategory: user.businessCategory || "-",
         managedBy: salesManagers.find(m => m._id === user.managedBy)?.userName || "-",
         managerIdForEdit: user.managedBy || "",
-        salesOfficers: managedOfficers, 
+        salesOfficers: managedOfficers,
       };
     });
 
-const userList = [
-  {
-    id: "userProfile",
-    label: "User Profile",
-    renderCell: (value) =>
-      value ? <Avatar src={value} alt="User" /> : "-",
-  },
-  { id: "userName", label: "User Name" },
-  { id: "emailId", label: "Email" },
-  { id: "role", label: "Role" },
-  {
-    id: "managedInfo",
-    label: "Assigned Manager / Managed Officers",
-    renderCell: (_, row) => {
-      if (row.role === "SalesManager") {
-        return (
-          <Box component="span" sx={{ whiteSpace: "normal", lineHeight: "1.2" }}>
-            {row.salesOfficers || "-"}
-          </Box>
-        );
-      } else if (row.role === "SalesOfficer") {
-        return row.managedBy || "-";
-      }
-      return "-";
+  const userList = [
+    {
+      id: "userProfile",
+      label: "User Profile",
+      renderCell: (value) =>
+        value ? <Avatar src={value} alt="User" /> : "-",
     },
-  },
-  { id: "businessLocation", label: "Business Location" },
-  { id: "businessCategory", label: "Business Category" },
-  {
-    id: "action",
-    label: "Action",
-    renderCell: (_, row) => (
-      <div style={{ display: "flex", gap: "8px" }}>
-        <IconButton color="primary" size="small" onClick={() => handleEdit(row)}>
-          <EditRoundedIcon fontSize="small" />
-        </IconButton>
-        <IconButton color="error" size="small" onClick={() => handleDeleteClick(row)}>
-          <DeleteOutlineRoundedIcon fontSize="small" />
-        </IconButton>
-      </div>
-    ),
-  },
-];
+    { id: "userName", label: "User Name" },
+    { id: "emailId", label: "Email" },
+    { id: "role", label: "Role" },
+    {
+      id: "managedInfo",
+      label: "Assigned Manager / Managed Officers",
+      renderCell: (_, row) => {
+        if (row.role === "SalesManager") {
+          return (
+            <Box component="span" sx={{ whiteSpace: "normal", lineHeight: "1.2" }}>
+              {row.salesOfficers || "-"}
+            </Box>
+          );
+        } else if (row.role === "SalesOfficer") {
+          return row.managedBy || "-";
+        }
+        return "-";
+      },
+    },
+    { id: "businessLocation", label: "Business Location" },
+    { id: "businessCategory", label: "Business Category" },
+    {
+      id: "action",
+      label: "Action",
+      renderCell: (_, row) => (
+        <div style={{ display: "flex", gap: "8px" }}>
+          <IconButton color="primary" size="small" onClick={() => handleEdit(row)}>
+            <EditRoundedIcon fontSize="small" />
+          </IconButton>
+          <IconButton color="error" size="small" onClick={() => handleDeleteClick(row)}>
+            <DeleteOutlineRoundedIcon fontSize="small" />
+          </IconButton>
+        </div>
+      ),
+    },
+  ];
 
 
   // Modified fields array: Role is removed to be manually placed in the form
@@ -389,16 +389,16 @@ const userList = [
           </div>
         </form>
 
-       {error && (
-  <p className="user-error-text" style={{ marginTop: "16px" }}>
-    {(() => {
-      if (typeof error === "string") return error;
-      if (error instanceof Error) return error.message;
-      if (typeof error === "object") return JSON.stringify(error, null, 2);
-      return String(error);
-    })()}
-  </p>
-)}
+        {error && (
+          <p className="user-error-text" style={{ marginTop: "16px" }}>
+            {(() => {
+              if (typeof error === "string") return error;
+              if (error instanceof Error) return error.message;
+              if (typeof error === "object") return JSON.stringify(error, null, 2);
+              return String(error);
+            })()}
+          </p>
+        )}
 
       </div>
 
@@ -410,8 +410,8 @@ const userList = [
           data={rows}
           columns={userList}
           total={total}
-          fetchData={(pageNo, pageSize) =>
-            dispatch(getAllUsers({ pageNo, pageSize }))
+          fetchData={(pageNo, pageSize, options) =>
+            dispatch(getAllUsers({ pageNo, pageSize, options }))
           }
         />
       </Box>

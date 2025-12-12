@@ -76,14 +76,40 @@ export const viewUser = async (id) => {
     throw error;
   }
 };
-export const viewAllUser = async (pageNo, pageSize) => {
+export const viewAllUser = async ({
+  pageNo,
+  pageSize,
+  search,
+  status,
+  sortBy,
+  sortOrder
+}) => {
   try {
-    const query = {};
+    let query = {};
+
+    // 🔍 SEARCH (Name, Email, Role, Contact, etc.)
+    if (search && search.trim().length > 0) {
+      query.$or = [
+        { userName: { $regex: search, $options: "i" } },
+        { emailId: { $regex: search, $options: "i" } },
+        { role: { $regex: search, $options: "i" } },
+        { contact: { $regex: search, $options: "i" } },
+        { businessLocation: { $regex: search, $options: "i" } },
+        { businessCategory: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    if (status === "active") query.isActive = true;
+    if (status === "inactive") query.isActive = false;
+
+    let sortQuery = {};
+    if (sortBy) sortQuery[sortBy] = sortOrder;
 
     const total = await userModel.countDocuments(query);
 
     const users = await userModel
       .find(query)
+      .sort(sortQuery)
       .skip((pageNo - 1) * pageSize)
       .limit(pageSize)
       .lean();

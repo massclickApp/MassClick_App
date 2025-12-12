@@ -281,8 +281,8 @@ export default function Location() {
                         data={rows}
                         columns={locationList}
                         total={total}
-                        fetchData={(pageNo, pageSize) =>
-                            dispatch(getAllLocation({ pageNo, pageSize }))
+                        fetchData={(pageNo, pageSize, options) =>
+                            dispatch(getAllLocation({ pageNo, pageSize, options }))
                         }
                     />
                 </Box>
