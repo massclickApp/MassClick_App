@@ -29,7 +29,7 @@ const CategoryDropdown = ({ options, setSearchTerm, closeDropdown }) => {
   const handleOptionClick = (value) => {
     setSearchTerm(value);
     closeDropdown();
-    document.activeElement.blur();   
+    document.activeElement.blur();
   };
 
   if (!options || options.length === 0) return null;
@@ -71,9 +71,7 @@ const CardsSearch = ({
   const { openDrawer } = useDrawer();
 
   const businessListState = useSelector((state) => state.businessListReducer || {});
-
   const { searchLogs = [], backendSuggestions = [] } = businessListState;
-
 
   const [internalLocationName, setInternalLocationName] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -93,8 +91,6 @@ const CardsSearch = ({
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [debouncedLocation, setDebouncedLocation] = useState("");
 
-
-
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(searchTerm || ""), 200);
     return () => clearTimeout(t);
@@ -104,8 +100,6 @@ const CardsSearch = ({
     const t = setTimeout(() => setDebouncedLocation(locationName || ""), 200);
     return () => clearTimeout(t);
   }, [locationName]);
-
-
 
   useEffect(() => {
     dispatch(getAllSearchLogs());
@@ -123,8 +117,6 @@ const CardsSearch = ({
       dispatch(getBackendSuggestions(debouncedLocation.trim()));
     }
   }, [debouncedLocation, dispatch]);
-
-
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -161,10 +153,6 @@ const CardsSearch = ({
     return lower.length <= 4 || !lower.includes(" ");
   };
 
-
-  // ------------------------------
-  // CATEGORY SUGGESTION BUILDER
-  // ------------------------------
   const suggestionCategories = (() => {
     if (!backendSuggestions.length) return [];
 
@@ -230,9 +218,6 @@ const CardsSearch = ({
   })();
 
 
-  // ------------------------------
-  // SEARCH HANDLER
-  // ------------------------------
   const handleSearch = async (e) => {
     e?.preventDefault?.();
 
@@ -268,18 +253,12 @@ const CardsSearch = ({
   };
 
 
-  // ------------------------------
-  // MODAL HANDLERS
-  // ------------------------------
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
 
   const loggedIn = categoryBarHelpers.checkLogin();
 
 
-  // ------------------------------
-  // JSX RETURN
-  // ------------------------------
   return (
     <>
       <header
@@ -288,7 +267,6 @@ const CardsSearch = ({
       >
         <div className="search-header-content">
 
-          {/* --------------------------- LOGO --------------------------- */}
           <div className="logo-section">
             <div className="logo-circle">
               <Tooltip title="Go to Home Page" arrow>
@@ -320,14 +298,10 @@ const CardsSearch = ({
             </Box>
           </div>
 
-
-          {/* --------------------------- SEARCH AREA --------------------------- */}
           <div className="search-area">
 
-            {/* --------------------------- LOCATION INPUT --------------------------- */}
             <div className="input-group location-group" ref={locationRef}>
               <LocationOnIcon className="input-adornment start" />
-
               <input
                 className="custom-input"
                 placeholder="Enter location manually..."
@@ -353,7 +327,7 @@ const CardsSearch = ({
                           onClick={() => {
                             setLocationName(loc);
                             setIsLocationDropdownOpen(false);
-                            document.activeElement.blur(); // 🔥 close permanently
+                            document.activeElement.blur();
                           }}
                           style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
                         >
@@ -367,7 +341,6 @@ const CardsSearch = ({
             </div>
 
 
-            {/* --------------------------- SEARCH INPUT --------------------------- */}
             <div className="input-group search-group" ref={categoryRef}>
               <input
                 className="custom-input"
@@ -375,12 +348,13 @@ const CardsSearch = ({
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
+                  setCategoryName(e.target.value);
                   setIsCategoryDropdownOpen(true);
                 }}
+
                 onFocus={() => setIsCategoryDropdownOpen(true)}
               />
 
-              {/* Recent Searches */}
               {isCategoryDropdownOpen && searchTerm.trim().length < 2 && (
                 <CategoryDropdown
                   options={categoryOptions}
@@ -397,7 +371,6 @@ const CardsSearch = ({
                 />
               )}
 
-              {/* SUGGESTIONS */}
               {isCategoryDropdownOpen && searchTerm.trim().length >= 2 && (
                 <div className="category-custom-dropdown" style={{ zIndex: 2000 }}>
                   <div className="trending-label">SUGGESTIONS</div>
@@ -412,7 +385,7 @@ const CardsSearch = ({
                           setCategoryName(suggestion);
                           setIsCategoryDropdownOpen(false);
 
-                          document.activeElement.blur(); 
+                          document.activeElement.blur();
                         }}
                         style={{
                           display: "flex",

@@ -114,7 +114,7 @@ export default function GlobalDrawer() {
         <HeaderBox
           onClick={() => {
             closeDrawer();
-            navigate("/user_edit-profile");
+            navigate("/home");
           }}
 
           sx={{ cursor: "pointer" }}>

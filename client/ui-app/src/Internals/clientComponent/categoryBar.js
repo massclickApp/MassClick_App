@@ -71,6 +71,7 @@ import PolicyPage from "../clientComponent/userMenu/PolicyPage/PolicyPage.js";
 import FeedbackPage from "../clientComponent/userMenu/FeedbackPage/FeedBackPage.js";
 import HelpPage from "../clientComponent/userMenu/HelpPage/HelpPage.js";
 import LeadsNotificationModal from "./leadsNotification/leadsNotification.js";
+import './categoryBar.css'
 
 const categories = [
     { name: "Leads", icon: <MailIcon /> },
@@ -114,9 +115,16 @@ const CategoryBar = () => {
     const [selectedLanguage, setSelectedLanguage] = useState("English");
     const [anchorEl, setAnchorEl] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
+
     const otpState = useSelector((state) => state.otpReducer || {});
-    const { viewResponse, verifyResponse } = otpState;
+    const { viewResponse } = otpState;
     const userName = viewResponse?.user?.userName || '';
+    const authUser = useSelector((state) => state.otp?.viewResponse) || {};
+    const leadsData = authUser?.leadsData || [];
+
     useEffect(() => {
         const mobile = localStorage.getItem("mobileNumber");
         if (mobile) {
@@ -124,17 +132,8 @@ const CategoryBar = () => {
         }
     }, [dispatch]);
 
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
-    const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
-
-    const authUser = useSelector((state) => state.otp?.viewResponse) || {};
-    const leadsData = authUser?.leadsData || [];
-
     const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
     const handleMenuClose = () => setAnchorEl(null);
-
     const handleOpenModal = () => setIsModalOpen(true);
     const handleCloseModal = () => setIsModalOpen(false);
 
@@ -147,7 +146,6 @@ const CategoryBar = () => {
         localStorage.removeItem("authToken");
         localStorage.removeItem("mobileNumber");
         localStorage.removeItem("authUser");
-
         setIsLoggedIn(false);
         setIsDrawerOpen(false);
         navigate("/home");
@@ -158,7 +156,6 @@ const CategoryBar = () => {
         checkLogin();
         window.addEventListener("storage", checkLogin);
         window.addEventListener("authChange", checkLogin);
-
         const handleOpenDrawer = () => setIsDrawerOpen(true);
         window.addEventListener("openUserDrawer", handleOpenDrawer);
 
@@ -184,19 +181,15 @@ const CategoryBar = () => {
             navigate(item.path);
         }
     };
+
     const handleCategoryClick = (name) => {
         if (name === "Leads") {
-            const authUser = localStorage.getItem("authUser");
-
-            if (!authUser) {
+            if (!localStorage.getItem("authUser")) {
                 setIsModalOpen(true);
                 return;
             }
-
             navigate("/leads");
-            return;
-        }
-        else if (name === "Advertise") {
+        } else if (name === "Advertise") {
             navigate("/advertise");
         } else if (name === "Free Listing") {
             navigate("/free-listing");
@@ -205,417 +198,89 @@ const CategoryBar = () => {
         }
     };
 
-    const drawerList = (currentPath) => (
-        <Box sx={{ width: 320 }} role="presentation" onClick={handleDrawerToggle(false)} onKeyDown={handleDrawerToggle(false)}>
 
-            <Box sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                p: 3,
-                bgcolor: '#fafafa',
-                borderBottom: '1px solid #eee'
-            }}>
-                <IconButton onClick={handleDrawerToggle(false)} sx={{ color: 'text.secondary', mr: 2, p: 0 }}>
+    const drawerList = (currentPath) => (
+        <div className="drawerList" role="presentation" onClick={handleDrawerToggle(false)} onKeyDown={handleDrawerToggle(false)}>
+            <div className="drawerHeader">
+                <IconButton onClick={handleDrawerToggle(false)} className="closeButton">
                     <CloseIcon />
                 </IconButton>
-                <Box sx={{ flexGrow: 1, textAlign: 'right' }}>
-                    <Typography variant="subtitle1" fontWeight={700} sx={{ lineHeight: 1.2 }}>
-                        {userName}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary" sx={{
-                        fontSize: '0.75rem',
-                        cursor: 'pointer',
-                        '&:hover': { textDecoration: 'underline' }
-                    }}>
-                        Click to view profile
-                    </Typography>
-                </Box>
+                <div className="userInfo">
+                    <h3 className="userName">{userName || 'Guest User'}</h3>
+                    <p className="viewProfileText">Click to view profile</p>
+                </div>
+                <Avatar sx={{ width: 48, height: 48, ml: 2, bgcolor: '#F7941D' }}>
+                    {userName ? userName[0].toUpperCase() : 'G'}
+                </Avatar>
+            </div>
 
-                <Avatar sx={{ width: 48, height: 48, ml: 2, bgcolor: '#F7941D' }}>P</Avatar>
-            </Box>
-
-            <List disablePadding>
+            <ul className="menuList">
                 {userMenuItems.map((item, index) => {
-
                     const isActive = currentPath === item.path;
+                    const isDividerBefore = item.name === "User Edit Profile" || item.name === "User Policy";
 
                     if (item.isLanguageSwitch) {
                         return (
-                            <ListItem key={item.name} disablePadding sx={{ py: 1.5, px: 3, borderTop: '1px solid #f0f0f0' }}>
-                                <ListItemIcon sx={{ minWidth: 40, color: 'text.secondary' }}>
-                                    {item.icon}
-                                </ListItemIcon>
-                                <ListItemText primary={item.name} sx={{ m: 0, flex: 'none', color: 'text.primary', fontWeight: 500 }} />
-                                <FormControl size="small" sx={{ ml: 'auto', minWidth: 100 }}>
+                            <li key={item.name} className="languageSwitchItem">
+                                <div className="languageIconAndText">
+                                    <div className="menuIcon">{item.icon}</div>
+                                    <span className="menuText">{item.name}</span>
+                                </div>
+                                <FormControl size="small" className="languageSelectControl">
                                     <Select
                                         value={selectedLanguage}
                                         onChange={(e) => setSelectedLanguage(e.target.value)}
                                         onClick={(e) => e.stopPropagation()}
-                                        sx={{
-                                            fontSize: "0.9rem",
-                                            height: 36,
-                                            boxShadow: 'none',
-                                            '& fieldset': { border: '1px solid #ddd !important' },
-                                            '.MuiSelect-select': { py: '6px' }
-                                        }}
+                                        className="languageSelect"
                                     >
                                         {languages.map((lang) => (
-                                            <MenuItem key={lang.name} value={lang.name} sx={{ fontSize: "0.9rem" }}>
-                                                {lang.nativeName}
-                                            </MenuItem>
+                                            <MenuItem key={lang.name} value={lang.name}>{lang.nativeName}</MenuItem>
                                         ))}
                                     </Select>
                                 </FormControl>
-                            </ListItem>
+                            </li>
                         );
                     }
 
-                    /* Standard Menu Item */
                     return (
                         <React.Fragment key={index}>
-                            {(item.name === "User Edit Profile" || item.name === "User Policy") && (
-                                <Divider sx={{ my: 1, borderColor: '#f0f0f0' }} />
-                            )}
-
-                            <ListItem disablePadding>
-                                <ListItemButton
-                                    onClick={() => handleDrawerItemClick(item)}
-                                    sx={{
-                                        py: 1.2,
-                                        px: 3, // Consistent padding
-                                        bgcolor: isActive ? 'rgba(247, 148, 29, 0.08)' : (item.isLogout ? 'rgba(255, 0, 0, 0.05)' : 'transparent'),
-                                        '&:hover': {
-                                            bgcolor: isActive ? 'rgba(247, 148, 29, 0.15)' : (item.isLogout ? 'rgba(255, 0, 0, 0.1)' : 'rgba(0, 0, 0, 0.04)')
-                                        }
-                                    }}
-                                >
-                                    <ListItemIcon sx={{ minWidth: 40 }}>
-                                        <Box sx={{ color: isActive ? '#F7941D' : (item.isLogout ? 'error.main' : 'text.secondary') }}>
-                                            {item.icon}
-                                        </Box>
-                                    </ListItemIcon>
-                                    <ListItemText
-                                        primary={item.name.startsWith('User ') ? item.name.replace('User ', '') : item.name} // Clean up redundant "User" prefix
-                                        primaryTypographyProps={{
-                                            fontWeight: isActive ? 600 : 500,
-                                            fontSize: '0.95rem',
-                                            color: isActive ? '#F7941D' : (item.isLogout ? 'error.main' : 'text.primary')
-                                        }}
-                                    />
-                                </ListItemButton>
-                            </ListItem>
+                            {isDividerBefore && <Divider className="menuDivider" />}
+                            <li
+                                className={`menuItem ${isActive ? 'active' : ''} ${item.isLogout ? 'logout' : ''}`}
+                                onClick={() => handleDrawerItemClick(item)}
+                            >
+                                <div className="menuIcon">{item.icon}</div>
+                                <span className="menuText">
+                                    {item.name.startsWith('User ') ? item.name.replace('User ', '') : item.name}
+                                </span>
+                            </li>
                         </React.Fragment>
                     );
                 })}
-            </List>
-        </Box>
+            </ul>
+        </div>
     );
+
     return (
-        <Box
-            sx={{
-                bgcolor: "white",
-                py: { xs: 1.5, sm: 2 },
-                px: { xs: 2.5, sm: 4, md: 6 },
-                position: "sticky",
-                top: 0,
-                zIndex: 1100,
-                boxShadow: "0 8px 25px rgba(0, 0, 0, 0.1)",
-                borderBottom: "none",
-                transition: "box-shadow 0.3s ease-in-out",
-            }}
-        >
-            <Box
-                sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    flexWrap: "wrap",
-                    gap: { xs: 2, sm: 3 },
-                }}
-            >
-                <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 1.5, sm: 2 } }}>
-                    <Box
-                        sx={{
-                            width: { xs: 40, sm: 48 },
-                            height: { xs: 40, sm: 48 },
-                            borderRadius: "50%",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            bgcolor: "#fff",
-                            boxShadow: "0 6px 15px rgba(234, 109, 17, 0.4)",
-                            transition: "transform 0.3s ease",
-                            "&:hover": { transform: "scale(1.05)" },
-                        }}
-                    >
-                        <img
-                            src={MI}
-                            alt="Logo"
-                            style={{
-                                width: "100%",
-                                height: "100%",
-                                borderRadius: "50%",
-                                objectFit: "cover",
-                            }}
-                        />
-                    </Box>
-                    <Box sx={{ display: "flex", flexDirection: "column" }}>
-                        <Typography
-                            variant="h5"
-                            sx={{
-                                fontWeight: 800,
-                                fontSize: { xs: "1.2rem", sm: "1.5rem", md: "1.8rem" },
-                                letterSpacing: "0.5px",
-                                lineHeight: 1.1,
-                                background: "linear-gradient(45deg, #FF8C00, #FFA500)",
-                                WebkitBackgroundClip: "text",
-                                WebkitTextFillColor: "transparent",
-                            }}
-                        >
-                            Mass<Box component="span">click</Box>
-                        </Typography>
-                        <Typography
-                            sx={{
-                                fontSize: { xs: "0.75rem", sm: "0.9rem" },
-                                color: "text.secondary",
-                                fontWeight: 400,
-                                mt: 0.5,
-                            }}
-                        >
-                            India's Leading Local Search Engine
-                        </Typography>
-                    </Box>
-                </Box>
+        <header className="categoryBarContainer">
+            <div className="categoryBarContent">
 
-                <Box
-                    sx={{
-                        display: { xs: "none", sm: "flex" },
-                        alignItems: "center",
-                        gap: { sm: 2, md: 3 },
-                        flexGrow: 1,
-                        justifyContent: "center",
-                    }}
-                >
-                    <FormControl size="small" sx={{ minWidth: 120 }}>
+                <div className="logoGroup">
+                    <div className="logoWrapper">
+                        <img src={MI} alt="Massclick Logo" className="logoImage" />
+                    </div>
+                    <div className="brandingText">
+                        <h1 className="mainTitle">Mass<span>click</span></h1>
+                        <p className="subTitle">India's Leading Local Search Engine</p>
+                    </div>
+                </div>
+
+                <nav className="desktopNav">
+                    <FormControl size="small" className="languageSelectControlDesktop">
                         <Select
                             value={selectedLanguage}
                             onChange={(e) => setSelectedLanguage(e.target.value)}
-                            sx={{
-                                fontSize: "1rem",
-                                fontWeight: 500,
-                                borderRadius: "30px",
-                                bgcolor: "#f5f5f5",
-                                color: "text.primary",
-                                "& .MuiSelect-select": { py: 1, px: 2.5 },
-                                boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-                                "&:hover": { boxShadow: "0 4px 12px rgba(0,0,0,0.1)" },
-                                "& fieldset": { border: "none" },
-                            }}
-                        >
-                            {languages.map((lang) => (
-                                <MenuItem key={lang.name} value={lang.name} sx={{ fontSize: "1rem" }}>
-                                    {lang.nativeName}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-
-                    {categories.map((category, index) => (
-                        <Button
-                            key={index}
-                            variant="text"
-                            startIcon={category.icon}
-                            onClick={() => handleCategoryClick(category.name)}
-                            sx={{
-                                color: "text.primary",
-                                fontWeight: 600,
-                                textTransform: "none",
-                                fontSize: "1rem",
-                                px: 2.5,
-                                py: 1,
-                                position: "relative",
-                                transition: "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
-                                "&:hover": {
-                                    color: "#F7941D",
-                                    bgcolor: "transparent",
-                                    transform: "translateY(-3px)",
-                                },
-                                "&:after": {
-                                    content: '""',
-                                    position: "absolute",
-                                    bottom: 0,
-                                    left: "50%",
-                                    width: 0,
-                                    height: "2px",
-                                    bgcolor: "#F7941D",
-                                    transition: "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
-                                    transform: "translateX(-50%)",
-                                },
-                                "&:hover:after": { width: "80%" },
-                            }}
-                        >
-                            {category.name}
-                        </Button>
-                    ))}
-                </Box>
-
-                <Box
-                    sx={{
-                        display: { xs: "none", sm: "flex" },
-                        alignItems: "center",
-                        gap: { sm: 1.5, md: 2 },
-                    }}
-                >
-                    {!isLoggedIn ? (
-                        <Button
-                            variant="contained"
-                            startIcon={<LoginIcon />}
-                            onClick={handleOpenModal}
-                            sx={{
-                                background: "linear-gradient(45deg, #FF6F00, #F7941D)",
-                                color: "white",
-                                textTransform: "none",
-                                fontSize: { xs: "0.9rem", sm: "1rem" },
-                                borderRadius: "30px",
-                                px: { xs: 2.5, sm: 3.5 },
-                                py: { xs: 1, sm: 1.2 },
-                                whiteSpace: "nowrap",
-                                boxShadow: "0 10px 30px rgba(255, 123, 0, 0.4)",
-                                transition: "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
-                                "&:hover": {
-                                    background: "linear-gradient(45deg, #cc5a0f, #ff8a2d)",
-                                    boxShadow: "0 15px 40px rgba(255, 123, 0, 0.5)",
-                                },
-                            }}
-                        >
-                            Login / Sign Up
-                        </Button>
-                    ) : (
-                        <IconButton
-                            onClick={openDrawer}
-                            sx={{
-                                color: "gray",
-                                bgcolor: "rgba(0,0,0,0.04)",
-                                width: 48,
-                                height: 48,
-                                transition: "all 0.3s ease",
-                                "&:hover": {
-                                    color: "white",
-                                    background: "linear-gradient(45deg, #ea6d11, #ff9c3b)",
-                                    boxShadow: "0 4px 12px rgba(234,109,17,0.35)",
-                                    transform: "scale(1.1)",
-                                },
-                            }}
-                        >
-                            <AccountCircleIcon sx={{ fontSize: 28 }} />
-                        </IconButton>
-                    )}
-
-                    {isLoggedIn && (
-                        <IconButton
-                            sx={{
-                                color: "gray",
-                                bgcolor: "rgba(0,0,0,0.04)",
-                                width: 48,
-                                height: 48,
-                                transition: "all 0.3s ease",
-                                "&:hover": {
-                                    color: "white",
-                                    background: "linear-gradient(45deg, #ea6d11, #ff9c3b)",
-                                    boxShadow: "0 4px 12px rgba(234,109,17,0.35)",
-                                    transform: "scale(1.1)",
-                                },
-                            }}
-                            onClick={() => {
-                                setIsNotificationModalOpen(true);
-                            }}
-                            aria-label="notifications"
-                        >
-                            <Badge
-                                badgeContent={leadsData?.length || 0}
-                                color="error"
-                                max={99}
-                                overlap="circular"
-                                anchorOrigin={{
-                                    vertical: "top",
-                                    horizontal: "right",
-                                }}
-                                sx={{
-                                    "& .MuiBadge-badge": {
-                                        fontSize: "0.7rem",
-                                        height: "18px",
-                                        minWidth: "18px",
-                                        borderRadius: "50%",
-                                    },
-                                }}
-                            >
-                                <NotificationsIcon sx={{ fontSize: 26 }} />
-                            </Badge>
-                        </IconButton>
-                    )}
-                </Box>
-                <Box
-                    sx={{
-                        display: { xs: "flex", sm: "none" },
-                        alignItems: "center",
-                        gap: 2,
-                    }}
-                >
-                    {!isLoggedIn ? (
-                        <Button
-                            variant="contained"
-                            onClick={handleOpenModal}
-                            sx={{
-                                background: "linear-gradient(45deg, #ea6d11, #ff9c3b)",
-                                color: "white",
-                                textTransform: "none",
-                                fontSize: "0.85rem",
-                                borderRadius: "20px",
-                                px: 2.5,
-                                py: 1,
-                                whiteSpace: "nowrap",
-                                boxShadow: "0 3px 10px rgba(234,109,17,0.35)",
-                                "&:hover": { background: "linear-gradient(45deg, #cc5a0f, #ff8a2d)" },
-                            }}
-                        >
-                            Login / Signup
-                        </Button>
-                    ) : (
-                        <IconButton
-                            onClick={openDrawer}
-                            sx={{
-                                color: "gray",
-                                bgcolor: "rgba(0,0,0,0.04)",
-                                width: 48,
-                                height: 48,
-                                transition: "all 0.3s ease",
-                                "&:hover": {
-                                    color: "white",
-                                    background: "linear-gradient(45deg, #ea6d11, #ff9c3b)",
-                                    boxShadow: "0 4px 12px rgba(234,109,17,0.35)",
-                                    transform: "scale(1.1)",
-                                },
-                            }}
-                        >
-                            <AccountCircleIcon />
-                        </IconButton>
-                    )}
-                    <IconButton
-                        sx={{ color: "text.primary", display: { xs: "inline-flex", sm: "none" } }}
-                        onClick={handleMenuClick}
-                    >
-                        <MenuIcon sx={{ fontSize: 28 }} />
-                    </IconButton>
-                </Box>
-            </Box>
-
-            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-                <MenuItem disabled>
-                    <FormControl size="small" sx={{ minWidth: 120 }}>
-                        <Select
-                            value={selectedLanguage}
-                            onChange={(e) => setSelectedLanguage(e.target.value)}
+                            className="languageSelectDesktop"
                         >
                             {languages.map((lang) => (
                                 <MenuItem key={lang.name} value={lang.name}>
@@ -624,56 +289,79 @@ const CategoryBar = () => {
                             ))}
                         </Select>
                     </FormControl>
-                </MenuItem>
+
+                    <div className="categoryButtons">
+                        {categories.map((category, index) => (
+                            <button
+                                key={index}
+                                className="categoryButton"
+                                onClick={() => handleCategoryClick(category.name)}
+                            >
+                                {category.icon}
+                                <span>{category.name}</span>
+                            </button>
+                        ))}
+                    </div>
+                </nav>
+
+                {/* ACTION BUTTONS */}
+                <div className="actionButtons">
+
+                    <IconButton
+                        className="mobileMenuButton"
+                        onClick={handleMenuClick}
+                    >
+                        <MenuIcon />
+                    </IconButton>
+
+                    {!isLoggedIn ? (
+                        <button
+                            className="authButton loginButton"
+                            onClick={() => setIsModalOpen(true)}
+                        >
+                            <LoginIcon />
+                            <span className="loginText">Login / Sign Up</span>
+                        </button>
+                    ) : (
+                        <>
+                            <IconButton onClick={openDrawer} className="iconButtonPrimary">
+                                <AccountCircleIcon />
+                            </IconButton>
+
+                            <IconButton
+                                className="iconButtonPrimary"
+                                onClick={() => setIsNotificationModalOpen(true)}
+                            >
+                                <Badge badgeContent={leadsData.length} color="error">
+                                    <NotificationsIcon />
+                                </Badge>
+                            </IconButton>
+                        </>
+                    )}
+                </div>
+            </div>
+
+            {/* ✅ MOBILE / TABLET MENU */}
+            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
                 {categories.map((category, index) => (
                     <MenuItem
                         key={index}
-                        onClick={() => {
-                            handleMenuClose();
-                            handleCategoryClick(category.name);
-                        }}
+                        onClick={() => handleCategoryClick(category.name)}
                     >
                         {category.icon}
-                        <Box component="span" sx={{ ml: 1 }}>
-                            {category.name}
-                        </Box>
+                        <span style={{ marginLeft: 10 }}>{category.name}</span>
                     </MenuItem>
                 ))}
-                <MenuItem onClick={handleMenuClose}>
-                    <NotificationsIcon />
-                    <Box component="span" sx={{ ml: 1 }}>
-                        Notifications
-                    </Box>
-                </MenuItem>
-                <MenuItem onClick={handleMenuClose}>
-                    <AccountCircleIcon />
-                    <Box component="span" sx={{ ml: 1 }}>
-                        Account
-                    </Box>
-                </MenuItem>
             </Menu>
-            <AddBusinessModal open={isModalOpen} handleClose={handleCloseModal} />
+
+            <AddBusinessModal open={isModalOpen} handleClose={() => setIsModalOpen(false)} />
+
             <LeadsNotificationModal
                 open={isNotificationModalOpen}
                 onClose={() => setIsNotificationModalOpen(false)}
                 notifications={leadsData}
             />
-
-            <SwipeableDrawer
-                anchor="right"
-                open={isDrawerOpen}
-                onClose={handleDrawerToggle(false)}
-                onOpen={handleDrawerToggle(true)}
-                ModalProps={{
-                    keepMounted: true,
-                    disablePortal: true,
-                    style: { zIndex: 999999 }
-                }}
-                sx={{ '& .MuiDrawer-paper': { zIndex: 999999 } }}
-            >
-                {drawerList(location.pathname)}
-            </SwipeableDrawer>
-        </Box>
+        </header>
     );
 };
 

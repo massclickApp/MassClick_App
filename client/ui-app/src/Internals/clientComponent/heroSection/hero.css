@@ -17,45 +17,51 @@
 
 .hero-section {
   position: relative;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-    background: linear-gradient(
-    135deg,
-    #0f2027 0%,
-    #203a43 40%,
-    #ff7b00 100%
-  );
-  background-size: cover;
-  background-position: center;
   width: 100%;
-  min-height: 15vh;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  text-align: center;
-  overflow: visible !important;
-    z-index: 1;
+  height: 260px;
+  min-height: 360px;
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #f9fafb;
+  background-image:
+    radial-gradient(circle at 15% 20%,
+      rgba(255, 123, 0, 0.08),
+      transparent 45%),
+    radial-gradient(circle at 85% 75%,
+      rgba(0, 102, 255, 0.06),
+      transparent 50%),
+    linear-gradient(180deg,
+      #ffffff 0%,
+      #f6f7f9 100%);
+
+  overflow: visible !important;
 }
 
-.hero-content {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  max-width: 1200px;
 
-  padding: 60px 15px;
-  margin: 80px auto 0;
+.hero-content {
+  width: 100%;
+  max-width: 1100px;
+  padding: 48px 24px;
 
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 25px;
+  gap: 24px;
 
-  backdrop-filter: blur(2px);
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 20px;
+
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  overflow: visible !important;
+
+  backdrop-filter: blur(8px);
 }
+
 
 .hero-title {
   font-size: clamp(2.5rem, 6vw, 4rem);
@@ -405,14 +411,16 @@
 
 .category-custom-dropdown {
   position: absolute !important;
-  top: 105%;
+  top: calc(100% + 8px);
   left: 0;
-  right: 0;
-  background: #fff;
+  width: 100%;           
+  max-width: 100%;
+  background: #ffffff;
   z-index: 3000 !important;
   border-radius: 12px;
-  box-shadow: 0 12px 28px rgba(0,0,0,0.18);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
 }
+
 
 /* BELOW HERO */
 .categories-wrapper {
