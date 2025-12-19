@@ -406,7 +406,6 @@ const CardsSearch = ({
             </div>
 
 
-            {/* --------------------------- SEARCH BUTTON --------------------------- */}
             <button className="search-btn" onClick={handleSearch}>
               <span>Search</span>
               <i className="fa-solid fa-magnifying-glass"></i>

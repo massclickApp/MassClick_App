@@ -80,7 +80,6 @@
     margin-top: 2px;
 }
 
-/* --- SEARCH AREA --- */
 .search-area {
     display: flex;
     flex-wrap: nowrap;
@@ -91,7 +90,6 @@
     max-width: 1100px;
     margin-left: 3vw;
 
-    /* FIX: prevents overflow on tablets */
     min-width: 0;
 }
 
@@ -196,7 +194,6 @@
     transform: translateY(-2px);
 }
 
-/* --- ADD BUSINESS BUTTON --- */
 .add-business-btn {
     height: 50px;
     background: linear-gradient(45deg, #ff6f00, #f7941d);
@@ -225,7 +222,6 @@
     display: none;
 }
 
-/* --- RESPONSIVENESS --- */
 
 @media (max-width: 1024px) {
 
