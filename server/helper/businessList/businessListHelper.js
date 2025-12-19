@@ -184,9 +184,7 @@ export const viewAllBusinessList = async ({
 
   let query = {};
 
-  // -------------------------
-  // ROLE-BASED ACCESS FILTER
-  // -------------------------
+
   if (role === "SuperAdmin") {
     query = {};
   } 
@@ -211,16 +209,11 @@ export const viewAllBusinessList = async ({
     throw new Error("Unauthorized role");
   }
 
-  // --------------------------------
-  // STATUS FILTER (Active/Inactive)
-  // --------------------------------
+
   if (status === "active") query.activeBusinesses = true;
   if (status === "inactive") query.activeBusinesses = false;
 
-  // --------------------------------
-  // SEARCH FILTER
-  // Valid schema fields ONLY
-  // --------------------------------
+ 
   const searchableFields = [
     "businessName",
     "location",
@@ -622,31 +615,82 @@ export const findBusinessByMobile = async (mobile) => {
   }
 };
 
-export const getDashboardSummaryHelper = async () => {
+export const getDashboardSummaryHelper = async ({ role, userId }) => {
 
+  let query = {};
+
+  // -------------------------
+  // ROLE BASED QUERY
+  // -------------------------
+  if (role === "SuperAdmin") {
+    query = {};
+  } 
+  else if (role === "SalesManager") {
+    const manager = await userModel.findById(userId).lean();
+    const salesOfficerIds = manager?.salesBy || [];
+
+    const allowedCreators = [
+      new mongoose.Types.ObjectId(userId),
+      ...salesOfficerIds.map(id => new mongoose.Types.ObjectId(id))
+    ];
+
+    query = { createdBy: { $in: allowedCreators } };
+  } 
+  else if (role === "SalesOfficer") {
+    query = { createdBy: new mongoose.Types.ObjectId(userId) };
+  } 
+  else if (["client", "PublicUser", "user"].includes(role)) {
+    query = { isActive: true };
+  } 
+  else {
+    throw new Error("Unauthorized role");
+  }
+
+  // -------------------------
+  // DATE CALCULATION
+  // -------------------------
   const today = new Date();
   const startOfToday = new Date(today.setHours(0, 0, 0, 0));
 
+  // -------------------------
+  // COUNTS (ROLE AWARE)
+  // -------------------------
   const todayCount = await businessListModel.countDocuments({
+    ...query,
     createdAt: { $gte: startOfToday }
   });
 
-  const totalCount = await businessListModel.countDocuments();
+  const totalCount = await businessListModel.countDocuments(query);
 
   const activeCount = await businessListModel.countDocuments({
+    ...query,
     activeBusinesses: true
   });
 
   const inactiveCount = totalCount - activeCount;
 
+  // -------------------------
+  // HOT CATEGORY (ROLE AWARE)
+  // -------------------------
   const hotCategoryAgg = await businessListModel.aggregate([
-    { $match: { activeBusinesses: true } },
-    { $group: { _id: "$category", count: { $sum: 1 } } },
+    {
+      $match: {
+        ...query,
+        activeBusinesses: true
+      }
+    },
+    {
+      $group: {
+        _id: "$category",
+        count: { $sum: 1 }
+      }
+    },
     { $sort: { count: -1 } },
     { $limit: 1 }
   ]);
 
-  const hotCategory = hotCategoryAgg.length > 0 ? hotCategoryAgg[0]._id : "No Category";
+  const hotCategory =
+    hotCategoryAgg.length > 0 ? hotCategoryAgg[0]._id : "No Category";
 
   return {
     todayCount,
@@ -657,15 +701,48 @@ export const getDashboardSummaryHelper = async () => {
   };
 };
 
-export const getDashboardChartsHelper = async () => {
-  const year = new Date().getFullYear();
 
+export const getDashboardChartsHelper = async ({ role, userId }) => {
+
+  let query = {};
+
+
+  if (role === "SuperAdmin") {
+    query = {};
+  }
+  else if (role === "SalesManager") {
+    const manager = await userModel.findById(userId).lean();
+    const salesOfficerIds = manager?.salesBy || [];
+
+    const allowedCreators = [
+      new mongoose.Types.ObjectId(userId),
+      ...salesOfficerIds.map(id => new mongoose.Types.ObjectId(id))
+    ];
+
+    query = { createdBy: { $in: allowedCreators } };
+  }
+  else if (role === "SalesOfficer") {
+    query = { createdBy: new mongoose.Types.ObjectId(userId) };
+  }
+  else if (["client", "PublicUser", "user"].includes(role)) {
+    query = { isActive: true };
+  }
+  else {
+    throw new Error("Unauthorized role");
+  }
+
+  const year = new Date().getFullYear();
+  const startOfYear = new Date(`${year}-01-01`);
+  const endOfYear = new Date(`${year}-12-31`);
+
+ 
   const monthly = await businessListModel.aggregate([
     {
       $match: {
+        ...query,
         createdAt: {
-          $gte: new Date(`${year}-01-01`),
-          $lte: new Date(`${year}-12-31`)
+          $gte: startOfYear,
+          $lte: endOfYear
         }
       }
     },
@@ -678,7 +755,9 @@ export const getDashboardChartsHelper = async () => {
     { $sort: { "_id.month": 1 } }
   ]);
 
+
   const categories = await businessListModel.aggregate([
+    { $match: query },
     {
       $group: {
         _id: "$category",
@@ -690,6 +769,7 @@ export const getDashboardChartsHelper = async () => {
 
   return { monthly, categories };
 };
+
 
 export const getPendingBusinessList = async () => {
   return await businessListModel.find(

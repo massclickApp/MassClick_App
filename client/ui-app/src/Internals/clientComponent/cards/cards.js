@@ -4,7 +4,6 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import "./cards.css";
 
-// ✅ Import Material UI Icons
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import PhoneIcon from "@mui/icons-material/Phone";
@@ -69,7 +68,6 @@ const Cards = ({
         </div>
 
         <div className="card-content">
-          {/* --- Meta Info (Rating + Reviews) --- */}
           <h2 className="card-title">{title}</h2>
 
           <div className="card-meta">
@@ -83,9 +81,7 @@ const Cards = ({
             </div>
           </div>
 
-          {/* --- Title --- */}
 
-          {/* --- Category --- */}
           {category && (
             <p className="card-category">
               <InfoOutlinedIcon className="icon" />
@@ -93,19 +89,16 @@ const Cards = ({
             </p>
           )}
 
-          {/* --- Address --- */}
           <p className="card-address">
             <LocationOnIcon className="icon" />
             {address}
           </p>
 
-          {/* --- Details --- */}
           <p className="card-details">
             <InfoOutlinedIcon className="icon" />
             {details}
           </p>
 
-          {/* --- Buttons --- */}
           <div className="cardpage-actions">
             <button
               className="card-action-button phone-button"

@@ -300,8 +300,14 @@ export const findBusinessByMobileAction = async (req, res) => {
 
 export const dashboardSummaryAction = async (req, res) => {
   try {
-    const summary = await getDashboardSummaryHelper();  
+    const { userRole, userId } = req.authUser;
+
     
+    const summary = await getDashboardSummaryHelper({
+      role: userRole,
+      userId
+    });
+
     return res.send({
       success: true,
       ...summary
@@ -313,15 +319,27 @@ export const dashboardSummaryAction = async (req, res) => {
   }
 };
 
+
 export const dashboardChartsAction = async (req, res) => {
   try {
-    const data = await getDashboardChartsHelper();
-    res.send({ success: true, ...data });
+    const { userRole, userId } = req.authUser;
+
+    const data = await getDashboardChartsHelper({
+      role: userRole,
+      userId
+    });
+
+    return res.send({
+      success: true,
+      ...data
+    });
+
   } catch (error) {
-    console.error(error);
-    res.status(500).send({ message: "Chart data fetch failed" });
+    console.error("Dashboard Charts Error:", error);
+    return res.status(500).send({ message: "Chart data fetch failed" });
   }
 };
+
 export const getPendingBusinessAction = async (req, res) => {
   try {
     const result = await getPendingBusinessList();

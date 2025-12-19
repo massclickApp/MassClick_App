@@ -51,11 +51,13 @@ export default function SideMenu({ onItemClick }) {
       text: "Category",
       icon: CategoryIcon,
       path: "/dashboard/category",
+      roles: ["SuperAdmin"],
     },
     {
       text: "Location",
       icon: LocationOnIcon,
       path: "/dashboard/location",
+      roles: ["SuperAdmin"],
     },
     {
       text: "Users",

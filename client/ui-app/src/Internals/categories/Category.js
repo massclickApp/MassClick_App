@@ -314,8 +314,8 @@ export default function Category() {
             />
           </div>
 
-          <div className="category-form-input-group"> {/* UPDATED CLASS NAME */}
-            <label className="category-input-label">Category Type</label> {/* UPDATED CLASS NAME */}
+          <div className="category-form-input-group"> 
+            <label className="category-input-label">Category Type</label>
             <select
               name="categoryType"
               className={`category-select-input ${errors.categoryType ? "category-error" : ""}`}
@@ -332,8 +332,8 @@ export default function Category() {
           </div>
 
           {formData.categoryType === "Sub Category" && (
-            <div className="category-form-input-group"> {/* UPDATED CLASS NAME */}
-              <label className="category-input-label">Sub Category Type</label> {/* UPDATED CLASS NAME */}
+            <div className="category-form-input-group"> 
+              <label className="category-input-label">Sub Category Type</label>
               <select
                 name="subCategoryType"
                 className={`category-select-input ${errors.subCategoryType ? "category-error" : ""

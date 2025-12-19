@@ -127,7 +127,6 @@ const LeadsCardHistory = () => {
     syncLeads();
   }, [leadsUsers, dispatch]);
 
-
  useEffect(() => {
         const mobile = localStorage.getItem("mobileNumber");
         if (mobile) {
@@ -310,6 +309,7 @@ const LeadsCardHistory = () => {
                 aria-label="Search leads"
               />
             </div>
+            
             <div className="lh-controls-right">
               <label className="lh-sort-label">
                 Sort by:

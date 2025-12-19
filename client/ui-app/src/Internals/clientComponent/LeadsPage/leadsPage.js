@@ -102,10 +102,16 @@ export default function LeadsPage() {
   const [repeatOnly, setRepeatOnly] = useState(false);
 
 useEffect(() => {
-  if (mobileNumber) {
-    dispatch(viewOtpUser(mobileNumber));
-  }
+  if (!mobileNumber) return;
+
+  dispatch(viewOtpUser(mobileNumber));
   dispatch(getAllSearchLogs());
+
+  const interval = setInterval(() => {
+    dispatch(getAllSearchLogs());
+  }, 30000); 
+
+  return () => clearInterval(interval);
 }, [dispatch, mobileNumber]);
 
 function normalizeText(str = "") {

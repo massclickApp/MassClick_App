@@ -216,7 +216,56 @@ export default function BusinessList() {
       return updatedFiles;
     });
   };
+
+const FIELD_LABELS = {
+  clientId: "Client ID",
+  businessName: "Business Name",
+  experience: "Experience",
+  location: "Location",
+  category: "Category",
+};
+
+  const validateStep = (step) => {
+  let newErrors = {};
+
+  if (step === 0) {
+    if (!formData.clientId) newErrors.clientId = "Client ID is required";
+    if (!formData.businessName) newErrors.businessName = "Business Name is required";
+    if (!formData.experience) newErrors.experience = "Experience is required";
+    if (!formData.location) newErrors.location = "Location is required";
+  }
+
+  if (step === 2) {
+    if (!formData.category) newErrors.category = "Category is required";
+  }
+
+  setErrors(newErrors);
+
+  if (Object.keys(newErrors).length > 0) {
+    const missingFields = Object.keys(newErrors)
+      .map((key) => FIELD_LABELS[key] || key)
+      .join(", ");
+
+    enqueueSnackbar(
+      `Please fill required fields: ${missingFields}`,
+      {
+        variant: "error",
+        autoHideDuration: 4000,
+      }
+    );
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    return false;
+  }
+
+  return true;
+};
+
+
+
   const handleNext = () => {
+    if (!validateStep(activeStep)) return;
+
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -266,7 +315,6 @@ export default function BusinessList() {
     }
   };
 
-
   const fieldsToCheck = [
     "keywords",
     "slug",
@@ -299,7 +347,6 @@ export default function BusinessList() {
     return updates;
   };
 
-
   const defaultOpeningHours = [
     { day: "Monday", open: "", close: "", isClosed: false, is24Hours: false },
     { day: "Tuesday", open: "", close: "", isClosed: false, is24Hours: false },
@@ -309,8 +356,6 @@ export default function BusinessList() {
     { day: "Saturday", open: "", close: "", isClosed: false, is24Hours: false },
     { day: "Sunday", open: "", close: "", isClosed: false, is24Hours: false },
   ];
-
-
 
   const handleOpenGallery = (rowId) => {
     const business = businessList.find((b) => b._id === rowId);
@@ -542,6 +587,7 @@ export default function BusinessList() {
     setActiveStep(0);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
+  
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {

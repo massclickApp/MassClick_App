@@ -234,6 +234,9 @@ button:active {
 
 
 @media (max-width: 599px) {
+      .brandingText {
+        display: flex;
+    }
     .desktopNav {
         display: none;
     }
@@ -245,15 +248,14 @@ button:active {
         border-radius: 50%;
     }
 
-    .loginText {
-        display: none;
+   .loginText {
+        display: inline;
     }
 
     .loginButton {
-        width: 44px;
-        height: 44px;
-        padding: 0;
-        border-radius: 50%;
+        width: auto;
+        padding-inline: 1rem;
+        border-radius: 999px;
     }
 }
 
@@ -263,7 +265,7 @@ button:active {
     }
 
     .brandingText {
-        display: none;
+        display: flex; 
     }
 
     .categoryBarContent {
