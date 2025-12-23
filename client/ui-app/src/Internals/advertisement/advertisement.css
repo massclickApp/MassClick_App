@@ -72,7 +72,6 @@
   border-color: #ff8a00;
 }
 
-/* ================= SPANS ================= */
 .span-2 {
   grid-column: span 8;
 }
@@ -81,7 +80,6 @@
   grid-column: span 12;
 }
 
-/* ================= UPLOAD ================= */
 .upload-box {
   display: flex;
   gap: 16px;

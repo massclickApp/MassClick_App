@@ -12,6 +12,16 @@ const parseDate = (date) => {
   return null;
 };
 
+const normalizeCategory = (value = "") => {
+  return value
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z]/g, "")
+    .replace(/s$/, "");
+};
+
+
 const TopBannerAds = ({ category }) => {
   const dispatch = useDispatch();
 
@@ -24,9 +34,6 @@ const TopBannerAds = ({ category }) => {
   const { categoryAdvertisements = [], loading } = useSelector(
     (state) => state.advertisement || {}
   );
-
-  console.log("categoryAdvertisements", categoryAdvertisements);
-
 
   const bannerAds = useMemo(() => {
     if (!categoryAdvertisements.length || !category) return [];
@@ -44,14 +51,13 @@ const TopBannerAds = ({ category }) => {
         (ad.bannerImageKey
           ? `https://massclickdev.s3.ap-southeast-2.amazonaws.com/${ad.bannerImageKey}`
           : null);
+      if (now < start.getTime() || now > end.getTime()) return false;
 
       return (
         ad.isActive &&
         !ad.isDeleted &&
         ad.position === "TOP_BANNER" &&
-        ad.category?.trim().toLowerCase() ===
-        category.trim().toLowerCase() &&
-        end >= now &&
+        normalizeCategory(ad.category) === normalizeCategory(category) &&
         image
       );
     });
