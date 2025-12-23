@@ -53,12 +53,12 @@ export default function SideMenu({ onItemClick }) {
       path: "/dashboard/category",
       roles: ["SuperAdmin"],
     },
-    {
-      text: "Location",
-      icon: LocationOnIcon,
-      path: "/dashboard/location",
-      roles: ["SuperAdmin"],
-    },
+    // {
+    //   text: "Location",
+    //   icon: LocationOnIcon,
+    //   path: "/dashboard/location",
+    //   roles: ["SuperAdmin"],
+    // },
     {
       text: "Users",
       icon: InterpreterModeIcon,
@@ -75,6 +75,12 @@ export default function SideMenu({ onItemClick }) {
       text: "EnquiryPage",
       icon: TodayIcon,
       path: "/dashboard/enquiry",
+      roles: ["SuperAdmin"],
+    },
+    {
+      text: "Advertisements",
+      icon: TodayIcon,
+      path: "/dashboard/advertisements",
       roles: ["SuperAdmin"],
     },
   ];

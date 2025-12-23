@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getBusinessByCategory } from "../../../../redux/actions/businessListAction.js";
 import CardsSearch from "../../CardsSearch/CardsSearch.js";
 import { useNavigate } from "react-router-dom";
+import TopBannerAds from "../../banners/topBanner/topBanner.js";
 
 const GymCards = () => {
     const dispatch = useDispatch();
@@ -54,6 +55,7 @@ const GymCards = () => {
         <>
             <CardsSearch />
             <br /><br /><br />
+            <TopBannerAds category="Gym" />
 
             <div className="restaurants-list-wrapper">
                 {categoryBusinessList.map((business) => {

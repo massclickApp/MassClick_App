@@ -1,13 +1,13 @@
 import React from 'react';
 import './aboutUspage.css';
 
-import AccountCircleIcon from '@mui/icons-material/AccountCircle'; // For Great Support
-import GavelIcon from '@mui/icons-material/Gavel';             // For Transparent Business
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';   // For Professional Service
-import CheckIcon from '@mui/icons-material/Check';             // For feature lists
-import AccessTimeIcon from '@mui/icons-material/AccessTime';   // For 5+ Years Stat
-import PeopleIcon from '@mui/icons-material/People';           // For 500+ Clients Stat
-import BusinessCenterIcon from '@mui/icons-material/BusinessCenter'; // For 15+ Employees Stat
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import GavelIcon from '@mui/icons-material/Gavel';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import CheckIcon from '@mui/icons-material/Check';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import PeopleIcon from '@mui/icons-material/People';
+import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
 import Footer from '../footer';
 import AboutUs from '../../../../assets/aboutUs.jpg'
 import CardsSearch from '../../CardsSearch/CardsSearch';
@@ -52,7 +52,6 @@ const AboutUsPage = () => {
         }
     ];
 
-    // Removed the duplicate "Commitment to Quality" and enhanced the language
     const platformFeatures = [
         "Domain Expertise",
         "Commitment to Quality",
@@ -62,17 +61,15 @@ const AboutUsPage = () => {
         "Dedicated Business Support"
     ];
 
-    // Restructured Stats Data
     const statsData = [
         { Icon: AccessTimeIcon, number: "7+", label: "Years Experience" },
         { Icon: PeopleIcon, number: "5000+", label: "Clients Globally" },
         { Icon: BusinessCenterIcon, number: "15+", label: "Talented Employees" },
     ];
 
-
     return (
         <>
-            <CardsSearch /><br/><br/><br/>
+            <CardsSearch /><br /><br /><br />
 
             <div className="about-us-page-container">
 
@@ -119,13 +116,11 @@ const AboutUsPage = () => {
                             <p className="platform-description">
                                 Welcome to MassClick – the ultimate global hub for discovering and connecting with top-notch, verified businesses worldwide. Whether you're a savvy shopper searching for premier local services or a thriving entrepreneur looking to boost your international brand visibility, our scalable platform provides reliable and efficient solutions.
                             </p>
-
+                            
                             <FeatureList features={platformFeatures} />
                         </div>
                     </div>
                 </section>
-
-
             </div>
             <Footer />
         </>

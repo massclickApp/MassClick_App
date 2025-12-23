@@ -17,6 +17,7 @@ const carePillars = [
         buttonText: "Search Articles",
         link: "/faqs"
     },
+
     {
         id: 2,
         title: "Speak to a Specialist",
@@ -25,6 +26,7 @@ const carePillars = [
         buttonText: "Start Live Chat",
         link: "/contact"
     },
+    
     {
         id: 3,
         title: "Community & Social Hub",

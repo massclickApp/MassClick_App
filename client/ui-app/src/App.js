@@ -52,6 +52,7 @@ import TokenExpiredModal from './Internals/tokenModel/tokenModel.js';
 import BusinessEnquiry from './Internals/clientComponent/businessEnquiry/businessEnquiry.js';
 import CategoryDynamicPage from './Internals/clientComponent/cards/popularCategories/popularCategoryDrawer.js';
 import EnquiryPage from './Internals/enquiry-page/enquiry-page.js';
+import AdvertisementPage from './Internals/advertisement/advertisement.js';
 import GlobalDrawer from "./Internals/clientComponent/Drawer/globalDrawer.js";
 
 const ComingSoon = ({ title }) => (
@@ -177,6 +178,7 @@ function App() {
                 <Route path="location" element={<Location />} />
                 <Route path="roles" element={<Roles />} />
                 <Route path="enquiry" element={<EnquiryPage />} />
+                <Route path="advertisements" element={<AdvertisementPage />} />
               </Route>
             </Route>
           </Routes>

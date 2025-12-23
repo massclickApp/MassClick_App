@@ -1,5 +1,8 @@
 import { ObjectId } from "mongodb";
 import userClientModel from "../../model/userClientModel/userClientModel.js"
+import userModel from "../../model/userModel.js";
+import mongoose from "mongoose";
+
 
 export const createUsersClients = async function (reqBody = {}) {
   try {
@@ -48,7 +51,10 @@ export const viewUserClients = async (id) => {
         throw error;
     }
 };
+
 export const viewAllUserClients = async ({
+  role,
+  userId,
   pageNo,
   pageSize,
   search,
@@ -59,7 +65,37 @@ export const viewAllUserClients = async ({
   try {
     let query = {};
 
-    if (search && search.trim().length > 0) {
+  
+    if (role === "SuperAdmin") {
+      query = {};
+    }
+    else if (role === "SalesManager") {
+      const manager = await userModel.findById(userId).lean();
+      const salesOfficerIds = manager?.salesBy || [];
+
+      const allowedCreators = [
+        new mongoose.Types.ObjectId(userId),
+        ...salesOfficerIds.map(id => new mongoose.Types.ObjectId(id))
+      ];
+
+      query = { createdBy: { $in: allowedCreators } };
+    }
+    else if (role === "SalesOfficer") {
+      query = { createdBy: new mongoose.Types.ObjectId(userId) };
+    }
+    else if (["client", "PublicUser", "user"].includes(role)) {
+      query = { isActive: true };
+    }
+    else {
+      throw new Error("Unauthorized role");
+    }
+
+  
+    if (status === "active") query.isActive = true;
+    if (status === "inactive") query.isActive = false;
+
+
+    if (search) {
       query.$or = [
         { clientId: { $regex: search, $options: "i" } },
         { name: { $regex: search, $options: "i" } },
@@ -70,17 +106,26 @@ export const viewAllUserClients = async ({
       ];
     }
 
-    if (status === "active") query.isActive = true;
-    if (status === "inactive") query.isActive = false;
+ 
+    const allowedSortFields = [
+      "createdAt",
+      "name",
+      "businessName",
+      "emailId"
+    ];
 
-    let sortQuery = {};
-    if (sortBy) sortQuery[sortBy] = sortOrder;
+    const sort = {};
+    if (allowedSortFields.includes(sortBy)) {
+      sort[sortBy] = sortOrder === "asc" ? 1 : -1;
+    } else {
+      sort.createdAt = -1;
+    }
 
     const total = await userClientModel.countDocuments(query);
 
     const usersClient = await userClientModel
       .find(query)
-      .sort(sortQuery)
+      .sort(sort)
       .skip((pageNo - 1) * pageSize)
       .limit(pageSize)
       .lean();
@@ -88,7 +133,7 @@ export const viewAllUserClients = async ({
     return { list: usersClient, total };
 
   } catch (error) {
-    console.error("Error fetching usersClient:", error);
+    console.error("Error fetching user clients:", error);
     throw error;
   }
 };

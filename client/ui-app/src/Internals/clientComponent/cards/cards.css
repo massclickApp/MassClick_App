@@ -24,9 +24,7 @@
   --transition-smooth: 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-/* ======================================= */
-/* CARD WRAPPER */
-/* ======================================= */
+
 
 .base-card {
   display: flex;
@@ -49,9 +47,7 @@
   box-shadow: var(--shadow-hover);
 }
 
-/* ======================================= */
-/* IMAGE SIDE */
-/* ======================================= */
+
 
 .card-image-container {
   width: 140px;
@@ -73,14 +69,11 @@
   transition: transform .35s ease;
 }
 
-/* Modern small zoom on hover */
 .base-card:hover .card-image {
   transform: scale(1.06);
 }
 
-/* ======================================= */
-/* CONTENT SIDE */
-/* ======================================= */
+
 
 .card-content {
   flex-grow: 1;

@@ -13,7 +13,8 @@ export const Collections = {
     MESSAGE91: 'message91',
     MSGUSERS: 'msgusers',
     LOCATIONIP: 'locationip',
-    PAYMENT: 'payment'
+    PAYMENT: 'payment',
+    ADVERTISMENTS: 'advertisments',
 };
 
 export const {
@@ -31,6 +32,7 @@ export const {
     MESSAGE91,
     MSGUSERS,
     LOCATIONIP,
-    PAYMENT
+    PAYMENT,
+    ADVERTISMENTS
 
 } = Collections;

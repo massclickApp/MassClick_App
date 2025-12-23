@@ -14,6 +14,7 @@ import enquiryRoutes from "./routes/enquiryRoute.js"
 import startYourProjectRoutes from "./routes/startYourProjectRoutes.js"
 import otpRoutes from "./routes/msg91Routes.js"
 import phonePayRoutes from "./routes/phonePayRoute.js"
+import advertismentRoutes from "./routes/advertistmentRoute.js"
 
 dotenv.config();
 
@@ -37,6 +38,8 @@ app.use(enquiryRoutes)
 app.use(startYourProjectRoutes)
 app.use(otpRoutes)
 app.use(phonePayRoutes)
+app.use(advertismentRoutes)
+
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Database Connected ✅'))
   .catch((err) => console.log('Database connection error ❌', err));

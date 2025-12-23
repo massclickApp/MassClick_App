@@ -2,15 +2,24 @@ import { createUsersClients, viewUserClients, viewAllUserClients,searchUsersClie
 import { BAD_REQUEST } from "../../errorCodes.js";
 
 export const addUsersClientAction = async (req, res) => {
-    try {
-        const reqBody = req.body;
-        const result = await createUsersClients(reqBody);
-        res.send(result);
-    } catch (error) {
-        console.error(error);
-        return res.status(BAD_REQUEST.code).send(error.message);
+  try {
+    const reqBody = req.body;
+
+    if (req.authUser && req.authUser.userId) {
+      reqBody.createdBy = req.authUser.userId;
+    } else {
+      return res.status(401).send({ message: "Unauthorized: Missing userId" });
     }
+
+    const result = await createUsersClients(reqBody);
+    res.send(result);
+
+  } catch (error) {
+    console.error("Error in addUsersClientAction:", error);
+    return res.status(BAD_REQUEST.code).send({ message: error.message });
+  }
 };
+
 export const viewUsersClientAction = async (req, res) => {
     try {
         const userId = req.params.id;
@@ -21,17 +30,22 @@ export const viewUsersClientAction = async (req, res) => {
         return res.status(BAD_REQUEST.code).send({ message: error.message });
     }
 };
+
 export const viewAllUsersClientAction = async (req, res) => {
   try {
+    const { userRole, userId } = req.authUser; 
+
     const pageNo = parseInt(req.query.pageNo) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
 
-    const search = req.query.search || "";
+    const search = (req.query.search || "").trim();
     const status = req.query.status || "all";
-    const sortBy = req.query.sortBy || null;
-    const sortOrder = req.query.sortOrder === "desc" ? -1 : 1;
+    const sortBy = req.query.sortBy || "createdAt";
+    const sortOrder = req.query.sortOrder === "asc" ? "asc" : "desc";
 
     const { list, total } = await viewAllUserClients({
+      role: userRole,   
+      userId,          
       pageNo,
       pageSize,
       search,
@@ -40,7 +54,7 @@ export const viewAllUsersClientAction = async (req, res) => {
       sortOrder
     });
 
-    res.send({
+    return res.send({
       data: list,
       total,
       pageNo,
@@ -48,10 +62,11 @@ export const viewAllUsersClientAction = async (req, res) => {
     });
 
   } catch (error) {
-    console.error(error);
+    console.error("Error in viewAllUsersClientAction:", error);
     return res.status(BAD_REQUEST.code).send({ message: error.message });
   }
 };
+
 export const updateUsersClientAction = async (req, res) => {
     try {
         const userId = req.params.id;

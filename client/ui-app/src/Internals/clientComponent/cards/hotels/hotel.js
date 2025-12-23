@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getBusinessByCategory } from "../../../../redux/actions/businessListAction.js";
 import CardsSearch from "../../CardsSearch/CardsSearch.js";
 import { useNavigate } from "react-router-dom";
+import TopBannerAds from "../../banners/topBanner/topBanner.js";
 
 const HotelCards = () => {
     const dispatch = useDispatch();
@@ -53,7 +54,9 @@ const HotelCards = () => {
     return (
         <>
             <CardsSearch />
-            <br /><br /><br />
+      <main className="page-content">
+
+            <TopBannerAds category="Hotels" />
 
             <div className="restaurants-list-wrapper">
                 {categoryBusinessList.map((business) => {
@@ -82,11 +85,13 @@ const HotelCards = () => {
                             rating={averageRating}
                             reviews={totalRatings}
                             to={businessUrl}
-                            state={{ id: business._id }} 
+                            state={{ id: business._id }}
                         />
                     );
                 })}
             </div>
+                  </main>
+
         </>
     );
 };

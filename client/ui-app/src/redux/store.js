@@ -13,6 +13,7 @@ import otpReducer from './reducers/otpReducer.js'
 import clientReducer from './reducers/clientAuthReducer.js'
 import phonepeReducer from './reducers/phonePayReducer.js';
 import leadsReducer from './reducers/leadsReducer.js';
+import advertisementReducer from './reducers/advertisementReducer.js';
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -27,7 +28,8 @@ const rootReducer = combineReducers({
   otp: otpReducer,
   clientReducer: clientReducer,
   phonepe : phonepeReducer,
-  leads : leadsReducer,  
+  leads : leadsReducer,
+  advertisement: advertisementReducer,  
 });
 
 export const store = createStore(rootReducer, applyMiddleware(thunk));

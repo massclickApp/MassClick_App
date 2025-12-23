@@ -33,6 +33,7 @@ export const viewBusinessListAction = async (req, res) => {
         return res.status(BAD_REQUEST.code).send({ message: error.message });
     }
 };
+
 export const viewAllBusinessListAction = async (req, res) => {
   try {
     const { userRole, userId } = req.authUser;
@@ -68,6 +69,7 @@ export const viewAllBusinessListAction = async (req, res) => {
     return res.status(BAD_REQUEST.code).send({ message: error.message });
   }
 };
+
 export const viewAllClientBusinessListAction = async (req, res) => {
     try {
         const allBusiness = await viewAllClientBusinessList();
