@@ -1,4 +1,3 @@
-
 :root {
     --primary-color: #F7941D;
     --primary-dark: #FF6F00;
@@ -234,7 +233,7 @@ button:active {
 
 
 @media (max-width: 599px) {
-      .brandingText {
+    .brandingText {
         display: flex;
     }
     .desktopNav {
@@ -248,8 +247,8 @@ button:active {
         border-radius: 50%;
     }
 
-   .loginText {
-        display: inline;
+    .loginText {
+        display: none;
     }
 
     .loginButton {
@@ -265,7 +264,7 @@ button:active {
     }
 
     .brandingText {
-        display: flex; 
+        display: flex;
     }
 
     .categoryBarContent {

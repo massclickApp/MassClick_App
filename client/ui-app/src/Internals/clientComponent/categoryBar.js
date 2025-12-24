@@ -320,7 +320,7 @@ const CategoryBar = () => {
                             onClick={() => setIsModalOpen(true)}
                         >
                             <LoginIcon />
-                            <span className="loginText">Login</span>
+                            <span className="loginText">Login / Sign Up</span>
                         </button>
                     ) : (
                         <>

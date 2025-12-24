@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import "./CardsSearch.css";
 
-import { getAllLocation } from "../../../redux/actions/locationAction";
+import LoginIcon from "@mui/icons-material/Login";
 import {
   getAllSearchLogs,
   getBackendSuggestions,
@@ -292,7 +292,12 @@ const CardsSearch = ({
                 Mass<span>click</span>
               </Typography>
 
-              <Typography sx={{ color: "text.secondary", mt: 0.5 }}>
+              <Typography
+                sx={{
+                  color: "text.secondary",
+                  mt: 0.5,
+                  display: { xs: "none", sm: "block" },
+                }}              >
                 India's Leading Local Search Engine
               </Typography>
             </Box>
@@ -417,6 +422,7 @@ const CardsSearch = ({
             {!loggedIn ? (
               <Button
                 variant="contained"
+                startIcon={<LoginIcon />}
                 onClick={handleOpenModal}
                 sx={{
                   background: "linear-gradient(45deg, #FF6F00, #F7941D)",
@@ -424,9 +430,10 @@ const CardsSearch = ({
                   textTransform: "none",
                   fontSize: { xs: "0.9rem", sm: "1rem" },
                   borderRadius: "30px",
-                  px: { xs: 2.5, sm: 3.5 },
+                  px: { xs: 1.8, sm: 3.5 },
                   py: { xs: 1, sm: 1.2 },
                   whiteSpace: "nowrap",
+                  minWidth: { xs: "auto", sm: "unset" },
                   boxShadow: "0 10px 30px rgba(255, 123, 0, 0.4)",
                   transition: "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
                   "&:hover": {
@@ -435,7 +442,14 @@ const CardsSearch = ({
                   },
                 }}
               >
-                Login / Sign Up
+                <Box
+                  component="span"
+                  sx={{
+                    display: { xs: "none", sm: "inline" },
+                  }}
+                >
+                  Login / Sign Up
+                </Box>
               </Button>
             ) : (
               <IconButton onClick={openDrawer}>
@@ -452,3 +466,4 @@ const CardsSearch = ({
 };
 
 export default CardsSearch;
+  

@@ -26,7 +26,9 @@ const app = express();
 app.use(cors({
   origin: [
     'https://massclick.in',
-    'https://www.massclick.in'
+    'https://www.massclick.in',
+    'http://localhost:3000',
+
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],

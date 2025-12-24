@@ -21,7 +21,6 @@ const normalizeCategory = (value = "") => {
     .replace(/s$/, "");
 };
 
-
 const TopBannerAds = ({ category }) => {
   const dispatch = useDispatch();
 

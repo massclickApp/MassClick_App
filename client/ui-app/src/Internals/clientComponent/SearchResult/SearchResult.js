@@ -9,22 +9,28 @@ import "./SearchResult.css";
 
 const SearchResults = () => {
   const dispatch = useDispatch();
-  const { location: locParam, searchTerm: termParam } = useParams();
-  const locationState = useLocation();
 
+  const { location: locParam, searchTerm: termParam } = useParams();
+
+  const locationState = useLocation();
   const resultsFromState = locationState.state?.results || [];
 
-  const [results, setResults] = useState(resultsFromState);
+  const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const locationText = locParam?.toString().trim() || "";
   const valueText = termParam?.toString().trim() || "";
 
   useEffect(() => {
-    if (resultsFromState.length > 0) return;
-
     const fetchData = async () => {
       setLoading(true);
+
+      if (resultsFromState.length > 0) {
+        setResults(resultsFromState);
+        setLoading(false);
+        return;
+      }
+
       const action = await dispatch(
         backendMainSearch(valueText, locationText, valueText)
       );
@@ -34,24 +40,26 @@ const SearchResults = () => {
     };
 
     fetchData();
-  }, [valueText, locationText, dispatch, resultsFromState.length]);
+  }, [valueText, locationText, dispatch]); 
 
   const createSlug = (text) => {
     if (!text) return "unknown";
-    return text
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "") || "unknown";
+    return (
+      text
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)+/g, "") || "unknown"
+    );
   };
 
   return (
     <>
       <CardsSearch />
-      <br /><br />
+      <br />
+      <br />
 
       <Box sx={{ minHeight: "100vh", bgcolor: "#f8f9fb", pt: 4, pb: 6 }}>
         <Box sx={{ maxWidth: "1200px", margin: "auto", p: 2 }}>
-
           {loading ? (
             <Card sx={{ p: 4, textAlign: "center" }}>
               <Typography>Loading...</Typography>
@@ -75,9 +83,12 @@ const SearchResults = () => {
                     title={business.businessName}
                     phone={business.contact}
                     whatsapp={business.whatsappNumber}
-                    address={business.locationDetails || business.location}
-                    details={`Experience: ${business.experience || "N/A"
-                      } | Category: ${business.category}`}
+                    address={
+                      business.locationDetails || business.location
+                    }
+                    details={`Experience: ${
+                      business.experience || "N/A"
+                    } | Category: ${business.category}`}
                     imageSrc={
                       business.bannerImage ||
                       "https://via.placeholder.com/120x100?text=Logo"
@@ -86,7 +97,6 @@ const SearchResults = () => {
                     reviews={business.reviews?.length || 0}
                     to={finalUrl}
                     state={{ id: business._id }}
-
                   />
                 );
               })}

@@ -80,8 +80,9 @@ export const findBusinessesByCategory = async (category) => {
 
   const businessList = await businessListModel.find(query).lean();
 
-  if (!businessList || businessList.length === 0)
-    throw new Error("No business found");
+ if (!businessList || businessList.length === 0) {
+    return [];
+  }
 
   return businessList.map((business) => {
     if (business.bannerImageKey)
