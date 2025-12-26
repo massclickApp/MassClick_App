@@ -310,24 +310,41 @@ export const getAllSearchLogs = () => async (dispatch) => {
   dispatch({ type: FETCH_SEARCH_LOGS_REQUEST });
 
   try {
-    const token = await dispatch(getClientToken());
+    const token = localStorage.getItem("accessToken");
 
     if (!token) {
-      throw new Error("No valid access token found");
+      return dispatch({
+        type: FETCH_SEARCH_LOGS_FAILURE,
+        payload: "No access token",
+      });
     }
-    const response = await axios.get(`${API_URL}/businesslist/trending-searches/viewall`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
 
-    const logs = Array.isArray(response.data) ? response.data : [];
-    dispatch({ type: FETCH_SEARCH_LOGS_SUCCESS, payload: logs });
+    const response = await axios.get(
+      `${API_URL}/businesslist/trending-searches/viewall`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    dispatch({
+      type: FETCH_SEARCH_LOGS_SUCCESS,
+      payload: Array.isArray(response.data) ? response.data : [],
+    });
   } catch (error) {
+    if (error.response?.status === 401) {
+      localStorage.clear();
+    }
+
     dispatch({
       type: FETCH_SEARCH_LOGS_FAILURE,
       payload: error.response?.data || error.message,
     });
   }
 };
+
+
 export const getBackendSuggestions = (search) => async (dispatch) => {
   dispatch({ type: SUGGESTION_BUSINESS_REQUEST });
 

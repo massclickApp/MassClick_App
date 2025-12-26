@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { relogin } from './redux/actions/authAction.js';
@@ -85,89 +85,79 @@ function App() {
   const [authChecked, setAuthChecked] = useState(false);
   const [showTokenExpired, setShowTokenExpired] = useState(false);
   const dispatch = useDispatch();
+  const intervalRef = useRef(null);
 
   const authUser = useSelector((state) => state.otp.viewResponse);
   const searchLogs = useSelector(
     (state) => state.businessListReducer?.searchLogs || []
   );
 
-  const lastCategoryRef = React.useRef(null);
 
-  useEffect(() => {
-    dispatch(getAllSearchLogs());
+  // useEffect(() => {
+  //   const category = authUser?.businessCategory?.category;
 
-    const interval = setInterval(() => {
-      dispatch(getAllSearchLogs());
-    }, 30000);
+  //   if (!category) {
+  //     dispatch(setRuntimeLeads([]));
+  //     return;
+  //   }
 
-    return () => clearInterval(interval);
-  }, [dispatch]);
+  //   if (!searchLogs.length) {
+  //     dispatch(setRuntimeLeads([]));
+  //     return;
+  //   }
 
-  useEffect(() => {
-    const category = authUser?.businessCategory?.category;
+  //   const leads = [];
 
-    if (!category) {
-      dispatch(setRuntimeLeads([]));
-      return;
-    }
+  //   searchLogs.forEach((log) => {
+  //     if (!log?.userDetails) return;
 
-    if (!searchLogs.length) {
-      dispatch(setRuntimeLeads([]));
-      return;
-    }
+  //     const logCategory =
+  //       log.category || log.categoryName || log.searchedUserText;
 
-    const leads = [];
+  //     if (
+  //       !logCategory ||
+  //       logCategory.toLowerCase().trim() !==
+  //       category.toLowerCase().trim()
+  //     )
+  //       return;
 
-    searchLogs.forEach((log) => {
-      if (!log?.userDetails) return;
+  //     const createdAt =
+  //       log.createdAt || log.created_at || log.date || null;
 
-      const logCategory =
-        log.category || log.categoryName || log.searchedUserText;
+  //     const searchedText =
+  //       typeof log.searchedUserText === "string"
+  //         ? log.searchedUserText
+  //         : "";
 
-      if (
-        !logCategory ||
-        logCategory.toLowerCase().trim() !==
-        category.toLowerCase().trim()
-      )
-        return;
+  //     const pushUser = (u) =>
+  //       leads.push({
+  //         _id: `${u.mobileNumber1 || u.email}-${createdAt}`,
+  //         userName: u.userName || "Unknown",
+  //         mobileNumber1: u.mobileNumber1,
+  //         email: u.email,
+  //         searchedUserText: searchedText,
+  //         time: createdAt,
+  //         category,
+  //         isReaded: false,
+  //       });
 
-      const createdAt =
-        log.createdAt || log.created_at || log.date || null;
+  //     Array.isArray(log.userDetails)
+  //       ? log.userDetails.forEach(pushUser)
+  //       : pushUser(log.userDetails);
+  //   });
 
-      const searchedText =
-        typeof log.searchedUserText === "string"
-          ? log.searchedUserText
-          : "";
+  //   const map = {};
+  //   leads.forEach((l) => {
+  //     const key = l.mobileNumber1 || l.email;
+  //     if (!key) return;
 
-      const pushUser = (u) =>
-        leads.push({
-          _id: `${u.mobileNumber1 || u.email}-${createdAt}`,
-          userName: u.userName || "Unknown",
-          mobileNumber1: u.mobileNumber1,
-          email: u.email,
-          searchedUserText: searchedText,
-          time: createdAt,
-          category,
-          isReaded: false,
-        });
+  //     if (!map[key] || new Date(l.time) > new Date(map[key].time)) {
+  //       map[key] = l;
+  //     }
+  //   });
 
-      Array.isArray(log.userDetails)
-        ? log.userDetails.forEach(pushUser)
-        : pushUser(log.userDetails);
-    });
-
-    const map = {};
-    leads.forEach((l) => {
-      const key = l.mobileNumber1 || l.email;
-      if (!key) return;
-
-      if (!map[key] || new Date(l.time) > new Date(map[key].time)) {
-        map[key] = l;
-      }
-    });
-
-    dispatch(setRuntimeLeads(Object.values(map)));
-  }, [authUser?.businessCategory?.category, searchLogs, dispatch]);
+  //   dispatch(setRuntimeLeads(Object.values(map)));
+  // }, [authUser?.businessCategory?.category, searchLogs, dispatch]);
 
   useEffect(() => {
     const initAuth = async () => {
@@ -203,6 +193,76 @@ function App() {
 
     initAuth();
   }, [dispatch]);
+
+ useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+
+    if (!token || !isAuthenticated) {
+      clearInterval(intervalRef.current);
+      return;
+    }
+
+    dispatch(getAllSearchLogs());
+
+    intervalRef.current = setInterval(() => {
+      const tokenExists = localStorage.getItem("accessToken");
+      if (!tokenExists) {
+        clearInterval(intervalRef.current);
+        return;
+      }
+      dispatch(getAllSearchLogs());
+    }, 30000);
+
+    return () => clearInterval(intervalRef.current);
+  }, [dispatch, isAuthenticated]);
+
+   useEffect(() => {
+    const category = authUser?.businessCategory?.category;
+
+    if (!category || !searchLogs.length) {
+      dispatch(setRuntimeLeads([]));
+      return;
+    }
+
+    const leadsMap = {};
+
+    searchLogs.forEach((log) => {
+      const logCategory =
+        log.category || log.categoryName || log.searchedUserText;
+
+      if (
+        !logCategory ||
+        logCategory.toLowerCase().trim() !== category.toLowerCase().trim()
+      )
+        return;
+
+      const createdAt = log.createdAt || log.created_at || log.date;
+
+      const users = Array.isArray(log.userDetails)
+        ? log.userDetails
+        : [log.userDetails];
+
+      users.forEach((u) => {
+        const key = u?.mobileNumber1 || u?.email;
+        if (!key) return;
+
+        if (!leadsMap[key] || new Date(createdAt) > new Date(leadsMap[key].time)) {
+          leadsMap[key] = {
+            _id: `${key}-${createdAt}`,
+            userName: u.userName || "Unknown",
+            mobileNumber1: u.mobileNumber1,
+            email: u.email,
+            searchedUserText: log.searchedUserText || "",
+            time: createdAt,
+            category,
+            isReaded: false,
+          };
+        }
+      });
+    });
+
+    dispatch(setRuntimeLeads(Object.values(leadsMap)));
+  }, [authUser?.businessCategory?.category, searchLogs, dispatch]);
 
   if (!authChecked) {
     return (
