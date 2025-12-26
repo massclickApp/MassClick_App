@@ -5,7 +5,8 @@ import {
   UPDATE_OTP_USER_REQUEST, UPDATE_OTP_USER_SUCCESS, UPDATE_OTP_USER_FAILURE,
   VIEW_OTP_USER_REQUEST, VIEW_OTP_USER_SUCCESS, VIEW_OTP_USER_FAILURE,
   VIEWALL_OTP_USER_REQUEST, VIEWALL_OTP_USER_SUCCESS, VIEWALL_OTP_USER_FAILURE,
-  LOG_USER_SEARCH_REQUEST, LOG_USER_SEARCH_SUCCESS, LOG_USER_SEARCH_FAILURE, SET_FILTERED_LEADS,SET_ALL_LEADS,
+  LOG_USER_SEARCH_REQUEST, LOG_USER_SEARCH_SUCCESS, LOG_USER_SEARCH_FAILURE, SET_FILTERED_LEADS, SET_ALL_LEADS,
+  SET_RUNTIME_LEADS, MARK_RUNTIME_LEAD_READ,
   // SEND_WHATSAPP_REQUEST,
   // SEND_WHATSAPP_SUCCESS,
   // SEND_WHATSAPP_FAILURE,
@@ -25,6 +26,8 @@ const initialState = {
   viewAllResponse: null,
   searchLogResponse: null,
 
+  runtimeLeadsNotifications: [], 
+
   // whatsappResponse: null,
   // whatsappAllResponse: null,
 
@@ -39,8 +42,8 @@ export default function otpReducer(state = initialState, action) {
     case VIEW_OTP_USER_REQUEST:
     case VIEWALL_OTP_USER_REQUEST:
     case LOG_USER_SEARCH_REQUEST:
-    // case SEND_WHATSAPP_REQUEST:
-    // case SEND_WHATSAPP_ALL_REQUEST:
+      // case SEND_WHATSAPP_REQUEST:
+      // case SEND_WHATSAPP_ALL_REQUEST:
       return { ...state, loading: true, error: null };
 
     case SEND_OTP_SUCCESS:
@@ -61,6 +64,23 @@ export default function otpReducer(state = initialState, action) {
     case LOG_USER_SEARCH_SUCCESS:
       return { ...state, loading: false, searchLogResponse: action.payload, error: null };
 
+       case SET_RUNTIME_LEADS:
+      return {
+        ...state,
+        runtimeLeadsNotifications: action.payload,
+      };
+
+    case MARK_RUNTIME_LEAD_READ:
+      return {
+        ...state,
+        runtimeLeadsNotifications: state.runtimeLeadsNotifications.map((n) =>
+          n._id === action.payload
+            ? { ...n, isReaded: true }
+            : n
+        ),
+      }
+
+
     // case SEND_WHATSAPP_SUCCESS:
     //   return { ...state, loading: false, whatsappResponse: action.payload, error: null };
 
@@ -73,8 +93,8 @@ export default function otpReducer(state = initialState, action) {
     case VIEW_OTP_USER_FAILURE:
     case VIEWALL_OTP_USER_FAILURE:
     case LOG_USER_SEARCH_FAILURE:
-    // case SEND_WHATSAPP_FAILURE:
-    // case SEND_WHATSAPP_ALL_FAILURE:
+      // case SEND_WHATSAPP_FAILURE:
+      // case SEND_WHATSAPP_ALL_FAILURE:
       return { ...state, loading: false, error: action.payload };
 
     case USER_LOGOUT:

@@ -7,6 +7,7 @@ import {
   VIEW_OTP_USER_REQUEST, VIEW_OTP_USER_SUCCESS, VIEW_OTP_USER_FAILURE,
   VIEWALL_OTP_USER_REQUEST, VIEWALL_OTP_USER_SUCCESS, VIEWALL_OTP_USER_FAILURE,
    LOG_USER_SEARCH_REQUEST, LOG_USER_SEARCH_SUCCESS,LOG_USER_SEARCH_FAILURE,
+   SET_RUNTIME_LEADS, MARK_RUNTIME_LEAD_READ,
   //  SEND_WHATSAPP_ALL_REQUEST, SEND_WHATSAPP_ALL_SUCCESS, SEND_WHATSAPP_ALL_FAILURE,
   //  SEND_WHATSAPP_REQUEST, SEND_WHATSAPP_SUCCESS, SEND_WHATSAPP_FAILURE
 } from "../actions/userActionTypes";
@@ -232,3 +233,15 @@ export const logUserSearch = (userId, query, location, category) => async (dispa
 //     throw error;
 //   }
 // };
+
+
+export const setRuntimeLeads = (leads) => ({
+  type: SET_RUNTIME_LEADS,
+  payload: leads,
+});
+
+export const markRuntimeLeadRead = (leadId) => ({
+  type: MARK_RUNTIME_LEAD_READ,
+  payload: leadId,
+});
+

@@ -59,7 +59,7 @@ const RestaurantsCards = () => {
         <>
             <CardsSearch />
             <br /><br /><br /><br />
-            <TopBannerAds category="Restaurant" />
+            <TopBannerAds category="Restaurants" />
             <div className="restaurants-list-wrapper">
                 {categoryBusinessList.map((business) => {
                     const averageRating = business.averageRating?.toFixed(1) || 0;

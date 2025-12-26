@@ -71,6 +71,8 @@ import PolicyPage from "../clientComponent/userMenu/PolicyPage/PolicyPage.js";
 import FeedbackPage from "../clientComponent/userMenu/FeedbackPage/FeedBackPage.js";
 import HelpPage from "../clientComponent/userMenu/HelpPage/HelpPage.js";
 import LeadsNotificationModal from "./leadsNotification/leadsNotification.js";
+import { markRuntimeLeadRead } from "../../redux/actions/otpAction.js";
+
 import './categoryBar.css'
 
 const categories = [
@@ -125,11 +127,15 @@ const CategoryBar = () => {
     const authUser = useSelector((state) => state.otp?.viewResponse) || {};
     const leadsData = authUser?.leadsData || [];
 
+    const notifications =
+        useSelector((state) => state.otp.runtimeLeadsNotifications) || [];
+
     useEffect(() => {
         const mobile = localStorage.getItem("mobileNumber");
         if (mobile) {
             dispatch(viewOtpUser(mobile));
         }
+        dispatch(markRuntimeLeadRead());
     }, [dispatch]);
 
     const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
@@ -332,7 +338,7 @@ const CategoryBar = () => {
                                 className="iconButtonPrimary"
                                 onClick={() => setIsNotificationModalOpen(true)}
                             >
-                                <Badge badgeContent={leadsData.length} color="error">
+                                <Badge badgeContent={notifications.length} color="error">
                                     <NotificationsIcon />
                                 </Badge>
                             </IconButton>
@@ -359,7 +365,6 @@ const CategoryBar = () => {
             <LeadsNotificationModal
                 open={isNotificationModalOpen}
                 onClose={() => setIsNotificationModalOpen(false)}
-                notifications={leadsData}
             />
         </header>
     );

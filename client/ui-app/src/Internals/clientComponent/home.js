@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from "react-redux";
 import { Box, Drawer, List, ListItem, ListItemText } from '@mui/material';
 import HeroSection from '../clientComponent/heroSection/heroSection.js';
 import CategoryBar from '../clientComponent/categoryBar';
@@ -13,10 +14,13 @@ import PopularCategories from './popularCategories/popularCategories';
 import Footer from './footer/footer';
 import CardsSearch from './CardsSearch/CardsSearch';
 import OTPLoginModel from './AddBusinessModel.js';
+import { viewOtpUser } from '../../redux/actions/otpAction.js';
 
 const STICKY_SEARCH_BAR_HEIGHT = 85;
 
 const LandingPage = () => {
+        const dispatch = useDispatch(); 
+
     const [searchResults, setSearchResults] = useState(null);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
@@ -27,6 +31,19 @@ const LandingPage = () => {
     const [checkedLogin, setCheckedLogin] = useState(false);
 
     const heroSectionRef = useRef(null);
+
+     useEffect(() => {
+        const mobile = localStorage.getItem("mobileNumber");
+        if (!mobile) return;
+
+        dispatch(viewOtpUser(mobile));
+
+        const interval = setInterval(() => {
+            dispatch(viewOtpUser(mobile));
+        }, 20000);
+
+        return () => clearInterval(interval);
+    }, [dispatch]);
 
     const isUserLoggedIn = () => {
         try {

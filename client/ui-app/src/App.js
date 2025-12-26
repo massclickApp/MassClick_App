@@ -54,6 +54,9 @@ import CategoryDynamicPage from './Internals/clientComponent/cards/popularCatego
 import EnquiryPage from './Internals/enquiry-page/enquiry-page.js';
 import AdvertisementPage from './Internals/advertisement/advertisement.js';
 import GlobalDrawer from "./Internals/clientComponent/Drawer/globalDrawer.js";
+import { useSelector } from "react-redux";
+import { setRuntimeLeads } from "./redux/actions/otpAction";
+import { getAllSearchLogs } from './redux/actions/businessListAction.js';
 
 const ComingSoon = ({ title }) => (
   <div style={{ textAlign: 'center', marginTop: '20%' }}>
@@ -82,6 +85,89 @@ function App() {
   const [authChecked, setAuthChecked] = useState(false);
   const [showTokenExpired, setShowTokenExpired] = useState(false);
   const dispatch = useDispatch();
+
+  const authUser = useSelector((state) => state.otp.viewResponse);
+  const searchLogs = useSelector(
+    (state) => state.businessListReducer?.searchLogs || []
+  );
+
+  const lastCategoryRef = React.useRef(null);
+
+  useEffect(() => {
+    dispatch(getAllSearchLogs());
+
+    const interval = setInterval(() => {
+      dispatch(getAllSearchLogs());
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [dispatch]);
+
+  useEffect(() => {
+    const category = authUser?.businessCategory?.category;
+
+    if (!category) {
+      dispatch(setRuntimeLeads([]));
+      return;
+    }
+
+    if (!searchLogs.length) {
+      dispatch(setRuntimeLeads([]));
+      return;
+    }
+
+    const leads = [];
+
+    searchLogs.forEach((log) => {
+      if (!log?.userDetails) return;
+
+      const logCategory =
+        log.category || log.categoryName || log.searchedUserText;
+
+      if (
+        !logCategory ||
+        logCategory.toLowerCase().trim() !==
+        category.toLowerCase().trim()
+      )
+        return;
+
+      const createdAt =
+        log.createdAt || log.created_at || log.date || null;
+
+      const searchedText =
+        typeof log.searchedUserText === "string"
+          ? log.searchedUserText
+          : "";
+
+      const pushUser = (u) =>
+        leads.push({
+          _id: `${u.mobileNumber1 || u.email}-${createdAt}`,
+          userName: u.userName || "Unknown",
+          mobileNumber1: u.mobileNumber1,
+          email: u.email,
+          searchedUserText: searchedText,
+          time: createdAt,
+          category,
+          isReaded: false,
+        });
+
+      Array.isArray(log.userDetails)
+        ? log.userDetails.forEach(pushUser)
+        : pushUser(log.userDetails);
+    });
+
+    const map = {};
+    leads.forEach((l) => {
+      const key = l.mobileNumber1 || l.email;
+      if (!key) return;
+
+      if (!map[key] || new Date(l.time) > new Date(map[key].time)) {
+        map[key] = l;
+      }
+    });
+
+    dispatch(setRuntimeLeads(Object.values(map)));
+  }, [authUser?.businessCategory?.category, searchLogs, dispatch]);
 
   useEffect(() => {
     const initAuth = async () => {

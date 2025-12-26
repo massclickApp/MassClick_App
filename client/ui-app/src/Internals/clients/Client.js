@@ -58,11 +58,7 @@ export default function UserClients() {
     if (!formData.name.trim()) newErrors.name = "Name is required";
     if (!formData.contact.trim()) newErrors.contact = "Contact is required";
 
-    if (!formData.emailId) {
-      newErrors.emailId = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.emailId)) {
-      newErrors.emailId = "Invalid email format";
-    }
+
 
     if (!formData.businessName.trim())
       newErrors.businessName = "Business Name is required";
