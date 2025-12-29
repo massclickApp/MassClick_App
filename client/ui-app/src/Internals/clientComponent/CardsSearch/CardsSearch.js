@@ -345,7 +345,6 @@ const CardsSearch = ({
                 )}
             </div>
 
-
             <div className="input-group search-group" ref={categoryRef}>
               <input
                 className="custom-input"
@@ -356,7 +355,6 @@ const CardsSearch = ({
                   setCategoryName(e.target.value);
                   setIsCategoryDropdownOpen(true);
                 }}
-
                 onFocus={() => setIsCategoryDropdownOpen(true)}
               />
 
@@ -367,7 +365,7 @@ const CardsSearch = ({
                     setSearchTerm(val);
                     setCategoryName(val);
                     setIsCategoryDropdownOpen(false);
-                    document.activeElement.blur(); // 🔥 fix
+                    document.activeElement.blur(); 
                   }}
                   closeDropdown={() => {
                     setIsCategoryDropdownOpen(false);
@@ -410,13 +408,11 @@ const CardsSearch = ({
               <MicIcon className="input-adornment end" />
             </div>
 
-
             <button className="search-btn" onClick={handleSearch}>
               <span>Search</span>
               <i className="fa-solid fa-magnifying-glass"></i>
             </button>
           </div>
-
 
           <Box sx={{ display: "flex", alignItems: "center" }}>
             {!loggedIn ? (

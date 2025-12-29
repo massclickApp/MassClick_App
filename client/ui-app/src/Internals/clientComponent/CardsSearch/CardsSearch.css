@@ -231,8 +231,13 @@
     }
 
     .search-area {
-        flex-wrap: wrap; /* FIX */
-    }
+    display: none !important;
+  }
+}
+@media (min-width: 1025px) {
+  .search-area {
+    display: flex;
+  }
 }
 
 @media (max-width: 768px) {

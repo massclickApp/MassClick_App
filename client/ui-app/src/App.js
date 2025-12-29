@@ -57,6 +57,7 @@ import GlobalDrawer from "./Internals/clientComponent/Drawer/globalDrawer.js";
 import { useSelector } from "react-redux";
 import { setRuntimeLeads } from "./redux/actions/otpAction";
 import { getAllSearchLogs } from './redux/actions/businessListAction.js';
+import { getClientToken } from "./redux/actions/authAction.js";
 
 const ComingSoon = ({ title }) => (
   <div style={{ textAlign: 'center', marginTop: '20%' }}>
@@ -91,6 +92,22 @@ function App() {
   const searchLogs = useSelector(
     (state) => state.businessListReducer?.searchLogs || []
   );
+
+
+  const getValidToken = async (dispatch) => {
+    let token = localStorage.getItem("accessToken");
+    if (token) return token;
+
+    const clientToken = localStorage.getItem("clientAccessToken");
+    if (clientToken) return clientToken;
+
+    const result = await dispatch(getClientToken());
+    return (
+      result?.accessToken ||
+      result?.clientAccessToken ||
+      null
+    );
+  };
 
 
   // useEffect(() => {
@@ -194,29 +211,43 @@ function App() {
     initAuth();
   }, [dispatch]);
 
- useEffect(() => {
-    const token = localStorage.getItem("accessToken");
+  useEffect(() => {
+    let isMounted = true;
 
-    if (!token || !isAuthenticated) {
-      clearInterval(intervalRef.current);
-      return;
-    }
+    const startPolling = async () => {
+      const token = await getValidToken(dispatch);
 
-    dispatch(getAllSearchLogs());
-
-    intervalRef.current = setInterval(() => {
-      const tokenExists = localStorage.getItem("accessToken");
-      if (!tokenExists) {
+      if (!token || !isAuthenticated) {
         clearInterval(intervalRef.current);
         return;
       }
-      dispatch(getAllSearchLogs());
-    }, 30000);
 
-    return () => clearInterval(intervalRef.current);
+      dispatch(getAllSearchLogs());
+
+      intervalRef.current = setInterval(async () => {
+        if (!isMounted) return;
+
+        const validToken = await getValidToken(dispatch);
+
+        if (!validToken) {
+          clearInterval(intervalRef.current);
+          return;
+        }
+
+        dispatch(getAllSearchLogs());
+      }, 30000);
+    };
+
+    startPolling();
+
+    return () => {
+      isMounted = false;
+      clearInterval(intervalRef.current);
+    };
   }, [dispatch, isAuthenticated]);
 
-   useEffect(() => {
+
+  useEffect(() => {
     const category = authUser?.businessCategory?.category;
 
     if (!category || !searchLogs.length) {
@@ -232,7 +263,8 @@ function App() {
 
       if (
         !logCategory ||
-        logCategory.toLowerCase().trim() !== category.toLowerCase().trim()
+        logCategory.toLowerCase().trim() !==
+        category.toLowerCase().trim()
       )
         return;
 
