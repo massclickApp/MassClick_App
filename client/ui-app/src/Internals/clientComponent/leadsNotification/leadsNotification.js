@@ -20,7 +20,7 @@ import { updateOtpUser, viewOtpUser } from "../../../redux/actions/otpAction";
 
 import "./leadsNotification.css";
 
-const LeadsNotificationModal = ({ open, onClose, notifications }) => {
+const LeadsNotificationModal = ({ open, onClose,  notifications = []  }) => {
   const dispatch = useDispatch();
 
   const [selectedLead, setSelectedLead] = useState(null);
