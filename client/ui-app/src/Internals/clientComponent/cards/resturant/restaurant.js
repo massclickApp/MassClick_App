@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import "./restuarants.css";
 import CardDesign from "../cards.js";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,18 +6,35 @@ import { getBusinessByCategory } from "../../../../redux/actions/businessListAct
 import CardsSearch from "../../CardsSearch/CardsSearch.js";
 import { useNavigate } from "react-router-dom";
 import TopBannerAds from "../../banners/topBanner/topBanner.js";
+import { clientLogin } from "../../../../redux/actions/clientAuthAction.js";
 
 const RestaurantsCards = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const hasFetchedRef = useRef(false);
+
 
     const { categoryBusinessList = [], loading } = useSelector(
         (state) => state.businessListReducer || {}
     );
 
+    const clientToken = useSelector(
+        (state) => state.clientAuth?.accessToken
+    );
+
+
+
     useEffect(() => {
-        dispatch(getBusinessByCategory("restaurant"));
-    }, [dispatch]);
+        if (!clientToken) {
+            dispatch(clientLogin());
+            return;
+        }
+
+        if (!hasFetchedRef.current) {
+            dispatch(getBusinessByCategory("restaurant"));
+            hasFetchedRef.current = true;
+        }
+    }, [dispatch, clientToken]);
 
     const createSlug = (text) => {
         if (!text || typeof text !== "string") return "unknown";

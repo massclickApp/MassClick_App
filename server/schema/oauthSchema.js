@@ -8,6 +8,10 @@ const oauthSchema = new mongoose.Schema({
     refreshTokenExpiresAt: { type: Date, required: true },
     client: { type: Object, required: true },
     user: { type: Object, required: true },
+    isRevoked: { type: Boolean, default: false },
+    lastUsedAt: { type: Date, default: Date.now },
+    createdAt: { type: Date, default: Date.now },
+
 });
 
 export default oauthSchema;

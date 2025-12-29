@@ -33,10 +33,7 @@ export const getAllEnquiry = () => async (dispatch) => {
     }
 };
 
-// =========================================================
-// 2. CREATE ENQUIRY (Frontend Form Use)
-// =========================================================
-// Note: Changed parameter name for clarity
+
 export const createEnquiry = (enquiryData) => async (dispatch) => { 
     dispatch({ type: CREATE_ENQUIRY_REQUEST }); // Use ENQUIRY type
     try {
@@ -54,38 +51,33 @@ export const createEnquiry = (enquiryData) => async (dispatch) => {
         return createdEnquiry;
     } catch (error) {
         const errPayload = error.response?.data || error.message;
-        dispatch({ type: CREATE_ENQUIRY_FAILURE, payload: errPayload }); // Use ENQUIRY type
+        dispatch({ type: CREATE_ENQUIRY_FAILURE, payload: errPayload });
         throw error;
     }
 };
 
-// =========================================================
-// 3. EDIT ENQUIRY (Admin Dashboard Use)
-// =========================================================
-export const editEnquiry = (id, enquiryData) => async (dispatch) => { // Updated parameter name
-    dispatch({ type: EDIT_ENQUIRY_REQUEST }); // Use ENQUIRY type
+
+export const editEnquiry = (id, enquiryData) => async (dispatch) => { 
+    dispatch({ type: EDIT_ENQUIRY_REQUEST });
     try {
         const token = localStorage.getItem("accessToken");
-        const response = await axios.put(`${API_URL}/api/enquiry/update/${id}`, enquiryData, { // *** CORRECTED API ROUTE ***
+        const response = await axios.put(`${API_URL}/api/enquiry/update/${id}`, enquiryData, { 
             headers: { Authorization: `Bearer ${token}` },
         });
         
-        // The backend `updateEnquiryAction` sends the data inside an object with an `enquiry` key.
         const updatedEnquiry = response.data.enquiry || response.data; 
         
-        dispatch({ type: EDIT_ENQUIRY_SUCCESS, payload: updatedEnquiry }); // Use ENQUIRY type
+        dispatch({ type: EDIT_ENQUIRY_SUCCESS, payload: updatedEnquiry }); 
         return updatedEnquiry;
     } catch (error) {
-        dispatch({ type: EDIT_ENQUIRY_FAILURE, payload: error.response?.data || error.message }); // Use ENQUIRY type
+        dispatch({ type: EDIT_ENQUIRY_FAILURE, payload: error.response?.data || error.message }); 
         throw error;
     }
 };
 
-// =========================================================
-// 4. DELETE ENQUIRY (Admin Dashboard Use)
-// =========================================================
+
 export const deleteEnquiry = (id) => async (dispatch) => {
-    dispatch({ type: DELETE_ENQUIRY_REQUEST }); // Use ENQUIRY type
+    dispatch({ type: DELETE_ENQUIRY_REQUEST }); 
     try {
         const token = localStorage.getItem("accessToken");
         const { data } = await axios.delete(`${API_URL}/api/enquiry/delete/${id}`, { 

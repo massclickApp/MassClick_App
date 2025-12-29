@@ -39,6 +39,8 @@ const Cards = ({
     e.preventDefault();
     alert("Enquiry form will open!");
   };
+  const EMPTY_PIXEL =
+    "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
 
   const safeRating =
     typeof rating === "object"
@@ -59,11 +61,11 @@ const Cards = ({
       <div className="base-card" {...props}>
         <div className="card-image-container">
           <LazyLoadImage
-            src={imageSrc}
+            src={imageSrc || EMPTY_PIXEL}
+            placeholderSrc={EMPTY_PIXEL}
             alt={`${title} thumbnail`}
             className="card-image"
             effect="blur"
-            placeholderSrc="https://via.placeholder.com/120x100?text=Loading..."
           />
         </div>
 

@@ -160,6 +160,7 @@ export const getBusinessByCategory = (category) => async (dispatch) => {
 
   try {
     const token = await dispatch(getClientToken());
+    if (!token) throw new Error("Client token not available");
 
     const response = await axios.get(
       `${API_URL}/businesslist/category?category=${category}`,
@@ -310,7 +311,7 @@ export const getAllSearchLogs = () => async (dispatch) => {
   dispatch({ type: FETCH_SEARCH_LOGS_REQUEST });
 
   try {
-    const token = localStorage.getItem("accessToken");
+    const token = await dispatch(getClientToken());
 
     if (!token) {
       return dispatch({

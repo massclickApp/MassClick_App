@@ -10,7 +10,7 @@ import rolesReducer from './reducers/rolesReducer.js';
 import enquiryReducer from './reducers/enquiryReducer.js';
 import startProjectReducer from './reducers/startProjectReducer.js'
 import otpReducer from './reducers/otpReducer.js'
-import clientReducer from './reducers/clientAuthReducer.js'
+import clientAuthReducer from './reducers/clientAuthReducer.js'
 import phonepeReducer from './reducers/phonePayReducer.js';
 import leadsReducer from './reducers/leadsReducer.js';
 import advertisementReducer from './reducers/advertisementReducer.js';
@@ -26,7 +26,7 @@ const rootReducer = combineReducers({
   enquiryReducer: enquiryReducer,
   startProjectReducer: startProjectReducer,
   otp: otpReducer,
-  clientReducer: clientReducer,
+  clientAuth: clientAuthReducer, 
   phonepe : phonepeReducer,
   leads : leadsReducer,
   advertisement: advertisementReducer,  

@@ -88,7 +88,7 @@ export const getAdvertisementByCategory = (category) => async (dispatch) => {
   dispatch({ type: VIEWCATEGORY_AD_REQUEST });
 
   try {
-    const token = await getValidToken(dispatch);
+      const token = await dispatch(getClientToken());
 
     const response = await axios.get(
       `${API_URL}/advertisment/category?category=${encodeURIComponent(category)}`,
