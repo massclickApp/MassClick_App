@@ -25,7 +25,10 @@ import {
   FETCH_DASHBOARDCHART_FAILURE,
   FETCH_PENDINGBUSINESS_REQUEST,
   FETCH_PENDINGBUSINESS_SUCCESS,
-  FETCH_PENDINGBUSINESS_FAILURE
+  FETCH_PENDINGBUSINESS_FAILURE,
+  UPDATE_SEARCH_LOG_REQUEST,
+  UPDATE_SEARCH_LOG_SUCCESS,
+  UPDATE_SEARCH_LOG_FAILURE
 } from '../actions/userActionTypes';
 
 const initialState = {
@@ -163,6 +166,30 @@ export default function businessListReducer(state = initialState, action) {
         businessDetails: null,
         businessDetailsError: action.payload,
       };
+    case UPDATE_SEARCH_LOG_REQUEST:
+      return {
+        ...state,
+        searchLogsLoading: true,
+        searchLogsError: null,
+      };
+
+    case UPDATE_SEARCH_LOG_SUCCESS:
+      return {
+        ...state,
+        searchLogsLoading: false,
+        searchLogs: state.searchLogs.map((log) =>
+          log._id === action.payload._id ? action.payload : log
+        ),
+      };
+
+    case UPDATE_SEARCH_LOG_FAILURE:
+      return {
+        ...state,
+        searchLogsLoading: false,
+        searchLogsError: action.payload,
+      };
+
+
     case FETCH_DASHBOARDCARD_REQUEST:
       return {
         ...state,

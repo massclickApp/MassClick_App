@@ -15,6 +15,7 @@ import startYourProjectRoutes from "./routes/startYourProjectRoutes.js"
 import otpRoutes from "./routes/msg91Routes.js"
 import phonePayRoutes from "./routes/phonePayRoute.js"
 import advertismentRoutes from "./routes/advertistmentRoute.js"
+import leadsDataRoutes from "./routes/leadsDataRoutes.js"
 
 dotenv.config();
 
@@ -49,6 +50,7 @@ app.use('/', startYourProjectRoutes);
 app.use('/', otpRoutes);
 app.use('/', phonePayRoutes);
 app.use('/', advertismentRoutes);
+app.use('/', leadsDataRoutes);
 
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Database Connected âœ…'))

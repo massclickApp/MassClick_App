@@ -1,4 +1,4 @@
-import { createSearchLog, getAllSearchLogs, getMatchedSearchLogs } from "../../helper/businessList/logSearchHelper.js";
+import { createSearchLog, getAllSearchLogs, getMatchedSearchLogs, updateSearchData } from "../../helper/businessList/logSearchHelper.js";
 
 export const logSearchAction = async (req, res) => {
     try {
@@ -50,5 +50,31 @@ export const viewSearchAction = async (req, res) => {
   } catch (error) {
     console.error("Error fetching matched search logs:", error);
     res.status(500).json({ message: "Failed to fetch search logs" });
+  }
+};
+export const updateSearchAction = async (req, res) => {
+  try {
+    const searchID = req.params.id;
+
+    if (!searchID) {
+      return res.status(400).json({ message: "Search log ID required" });
+    }
+
+    const updateData = {
+      ...req.body,
+      updatedAt: new Date(),
+      updatedBy: req.authUser?.userId || null,
+    };
+
+    const updatedLog = await updateSearchData(searchID, updateData);
+
+    return res.status(200).json({
+      success: true,
+      data: updatedLog,
+    });
+
+  } catch (error) {
+    console.error("updateSearchAction error:", error);
+    return res.status(500).json({ message: error.message });
   }
 };

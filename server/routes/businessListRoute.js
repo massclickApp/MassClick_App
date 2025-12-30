@@ -2,7 +2,7 @@ import express from 'express'
 
 import { addBusinessListAction, getTrendingSearchesAction, viewBusinessListAction, getSuggestionsController, mainSearchController, viewAllBusinessListAction, updateBusinessListAction, deleteBusinessListAction, activeBusinessListAction, viewAllClientBusinessListAction, viewBusinessByCategory, findBusinessByMobileAction, dashboardSummaryAction, dashboardChartsAction, getPendingBusinessAction } from "../controller/businessList/businessListController.js"
 import { oauthAuthentication } from '../helper/oauthHelper.js';
-import { logSearchAction, viewLogSearchAction, viewSearchAction } from "../controller/businessList/logSearchController.js"
+import { logSearchAction, viewLogSearchAction, viewSearchAction, updateSearchAction } from "../controller/businessList/logSearchController.js"
 
 const router = express.Router();
 
@@ -14,6 +14,7 @@ router.put('/api/businesslist/update/:id', oauthAuthentication, updateBusinessLi
 router.delete('/api/businesslist/delete/:id', oauthAuthentication, deleteBusinessListAction);
 router.put('/api/businesslist/activate/:id', oauthAuthentication, activeBusinessListAction);
 router.post('/api/businesslist/log-search', oauthAuthentication, logSearchAction);
+router.put('/api/businesslist/log-search/:id', oauthAuthentication, updateSearchAction);
 router.get('/api/businesslist/trending-searches', oauthAuthentication, getTrendingSearchesAction);
 router.get('/api/businesslist/trending-searches/viewall', oauthAuthentication, viewLogSearchAction);
 router.post('/api/businesslist/trending-searches/view', oauthAuthentication, viewSearchAction);

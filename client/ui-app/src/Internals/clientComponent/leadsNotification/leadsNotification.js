@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -6,7 +6,8 @@ import {
   IconButton,
   Typography,
   Box,
-  Paper
+  Paper,
+  CircularProgress
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -16,18 +17,28 @@ import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
 import CategoryIcon from "@mui/icons-material/Category";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import AttachEmailIcon from "@mui/icons-material/AttachEmail";
-import { updateOtpUser, viewOtpUser } from "../../../redux/actions/otpAction";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+
+import { fetchMatchedLeads } from "../../../redux/actions/leadsAction";
 
 import "./leadsNotification.css";
+import { updateSearchLogRead } from "../../../redux/actions/businessListAction";
 
-const LeadsNotificationModal = ({ open, onClose,  notifications = []  }) => {
+const LeadsNotificationModal = ({ open, onClose }) => {
   const dispatch = useDispatch();
 
   const [selectedLead, setSelectedLead] = useState(null);
   const [readItems, setReadItems] = useState([]);
 
-  const authUser = useSelector((state) => state.otp.viewResponse) || {};
-  const leadsData = authUser?.leadsData || [];
+  const { leads: leadsData, loading } = useSelector(
+    (state) => state.leads
+  );
+
+  useEffect(() => {
+    if (open) {
+      dispatch(fetchMatchedLeads());
+    }
+  }, [open, dispatch]);
 
   const timeAgo = (time) => {
     if (!time) return "";
@@ -40,21 +51,21 @@ const LeadsNotificationModal = ({ open, onClose,  notifications = []  }) => {
     return new Date(time).toLocaleDateString();
   };
 
-  const handleRead = async (n) => {
-    setSelectedLead(n);
+  const handleRead = async (lead) => {
+    const user = lead.userDetails?.[0] || {};
 
-    setReadItems((prev) => [...prev, n._id]);
+    const normalizedLead = {
+      ...lead,
+      ...user,
+    };
 
-    const businessMobile = localStorage.getItem("mobileNumber");
+    setSelectedLead(normalizedLead);
 
-    await dispatch(
-      updateOtpUser(businessMobile, {
-        markRead: { leadId: n._id }
-      })
-    );
+    setReadItems((prev) => [...prev, lead._id]);
 
-    await dispatch(viewOtpUser(businessMobile));
+    dispatch(updateSearchLogRead(lead._id));
   };
+
 
   return (
     <Dialog
@@ -102,40 +113,48 @@ const LeadsNotificationModal = ({ open, onClose,  notifications = []  }) => {
       </DialogTitle>
 
       <DialogContent sx={{ p: 0 }}>
-        {!selectedLead ? (
+        {loading ? (
+          <Box sx={{ p: 4, textAlign: "center" }}>
+            <CircularProgress />
+          </Box>
+        ) : !selectedLead ? (
           <ul className="ln-modern-list">
-            {notifications.map((n, i) => {
-        
-              const isRead =
-                readItems.includes(n._id) || n.isReaded === true;
+            {leadsData.length === 0 ? (
+              <Typography sx={{ p: 3, textAlign: "center", color: "#999" }}>
+                No notifications found
+              </Typography>
+            ) : (
+              leadsData.map((lead) => {
+                const user = lead.userDetails?.[0] || {};
+                const isRead =
+                  lead.isRead === true || readItems.includes(lead._id);
 
-              return (
-                <li
-                  key={i}
-                  className={`ln-modern-item ${
-                    isRead ? "read" : "unread"
-                  }`}
-                  onClick={() => handleRead(n)}
-                >
-                  <div className="ln-modern-avatar">
-                    {(n.userName || "U").charAt(0).toUpperCase()}
-                  </div>
+                return (
+                  <li
+                    key={lead._id}
+                    className={`ln-modern-item ${isRead ? "read" : "unread"}`}
+                    onClick={() => handleRead(lead)}
+                  >
+                    <div className="ln-modern-avatar">
+                      {(user.userName || "U").charAt(0).toUpperCase()}
+                    </div>
 
-                  <div className="ln-modern-body">
-                    <span className="ln-modern-title">
-                      <strong>{n.userName}</strong> searched{" "}
-                      <strong>"{n.searchedUserText}"</strong>
-                    </span>
+                    <div className="ln-modern-body">
+                      <span className="ln-modern-title">
+                        <strong>{user.userName || "Unknown"}</strong> searched{" "}
+                        <strong>"{lead.searchedUserText}"</strong>
+                      </span>
 
-                    <span className="ln-modern-time">
-                      {timeAgo(n.time)}
-                    </span>
-                  </div>
+                      <span className="ln-modern-time">
+                        {timeAgo(lead.createdAt)}
+                      </span>
+                    </div>
 
-                  {!isRead && <div className="ln-modern-dot"></div>}
-                </li>
-              );
-            })}
+                    {!isRead && <div className="ln-modern-dot" />}
+                  </li>
+                );
+              })
+            )}
           </ul>
         ) : (
           <Box sx={{ p: 3 }}>
@@ -143,8 +162,6 @@ const LeadsNotificationModal = ({ open, onClose,  notifications = []  }) => {
               elevation={4}
               sx={{
                 borderRadius: 4,
-                overflow: "hidden",
-                background: "#fff",
                 p: 2,
                 boxShadow: "0 5px 15px rgba(247,148,29,0.25)"
               }}
@@ -156,16 +173,11 @@ const LeadsNotificationModal = ({ open, onClose,  notifications = []  }) => {
                   borderRadius: 3,
                   mb: 2,
                   display: "flex",
-                  justifyContent: "space-between",
-                  border: "1px solid #ffd6aa"
+                  justifyContent: "space-between"
                 }}
               >
                 <Box>
-                  <Typography
-                    fontWeight={700}
-                    fontSize={18}
-                    color="#F7941D"
-                  >
+                  <Typography fontWeight={700} fontSize={18} color="#F7941D">
                     {selectedLead.userName}
                   </Typography>
                   <Typography fontSize={13} color="#e97700">
@@ -174,54 +186,48 @@ const LeadsNotificationModal = ({ open, onClose,  notifications = []  }) => {
                 </Box>
 
                 <Typography
-                  sx={{
-                    fontSize: 13,
-                    cursor: "pointer",
-                    color: "#666"
-                  }}
+                  sx={{ cursor: "pointer", color: "#666" }}
                   onClick={() => setSelectedLead(null)}
                 >
                   Hide
                 </Typography>
               </Box>
 
-              {/* DETAILS */}
-              <Box
-                sx={{
-                  background: "linear-gradient(180deg,#fff7ef,#ffeedd)",
-                  borderRadius: 3,
-                  p: 2.5,
-                  border: "1px solid #ffdaba"
-                }}
-              >
+              <Box sx={{ p: 2 }}>
                 <Box className="ln-row">
                   <PhoneIphoneIcon sx={{ color: "#F7941D" }} />
-                  <strong>Mobile:</strong> &nbsp;
-                  {selectedLead.mobileNumber1}
-                </Box>
-
-                <Box className="ln-row">
-                  <PhoneIphoneIcon sx={{ color: "#F7941D" }} />
-                  <strong>Mobile 2:</strong> &nbsp;
-                  {selectedLead.mobileNumber2}
+                  <strong>Mobile:</strong>&nbsp;
+                  {selectedLead.mobileNumber1 || "N/A"}
                 </Box>
 
                 <Box className="ln-row">
                   <AttachEmailIcon sx={{ color: "#F7941D" }} />
-                  <strong>Email:</strong> &nbsp;
+                  <strong>Email:</strong>&nbsp;
                   {selectedLead.email || "N/A"}
                 </Box>
 
                 <Box className="ln-row">
                   <CategoryIcon sx={{ color: "#F7941D" }} />
-                  <strong>Category:</strong> &nbsp;
+                  <strong>Category:</strong>&nbsp;
+                  {selectedLead.categoryName}
+                </Box>
+
+                <Box className="ln-row">
+                  <CategoryIcon sx={{ color: "#F7941D" }} />
+                  <strong>Searched:</strong>&nbsp;
                   {selectedLead.searchedUserText}
                 </Box>
 
                 <Box className="ln-row">
+                  <LocationOnIcon sx={{ color: "#F7941D" }} />
+                  <strong>Location:</strong>&nbsp;
+                  {selectedLead.location}
+                </Box>
+
+                <Box className="ln-row">
                   <AccessTimeIcon sx={{ color: "#F7941D" }} />
-                  <strong>Created:</strong> &nbsp;
-                  {new Date(selectedLead.time).toLocaleString()}
+                  <strong>Created:</strong>&nbsp;
+                  {new Date(selectedLead.createdAt).toLocaleString()}
                 </Box>
               </Box>
             </Paper>

@@ -54,8 +54,6 @@ const LeadsCardHistory = () => {
   const emailReadyCount = leadsUsers.filter((u) => u.email).length;
   const whatsappReadyCount = phoneReadyCount;
 
-    const authUser = useSelector((state) => state.otp.viewResponse) || {};
-    const leadsData = authUser?.leadsData || [];
 
 
   const filteredLeads = useMemo(() => {

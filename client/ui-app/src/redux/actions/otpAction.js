@@ -235,13 +235,3 @@ export const logUserSearch = (userId, query, location, category) => async (dispa
 // };
 
 
-export const setRuntimeLeads = (leads) => ({
-  type: SET_RUNTIME_LEADS,
-  payload: leads,
-});
-
-export const markRuntimeLeadRead = (leadId) => ({
-  type: MARK_RUNTIME_LEAD_READ,
-  payload: leadId,
-});
-

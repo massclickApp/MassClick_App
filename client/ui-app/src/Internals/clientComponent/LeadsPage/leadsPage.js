@@ -1,12 +1,11 @@
-// LeadsPage.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setRuntimeLeads, viewOtpUser } from "../../../redux/actions/otpAction";
-import { getAllSearchLogs } from "../../../redux/actions/businessListAction";
+import { viewOtpUser } from "../../../redux/actions/otpAction";
+import { fetchMatchedLeads } from "../../../redux/actions/leadsAction";
 import { useNavigate } from "react-router-dom";
 import CardsSearch from "../CardsSearch/CardsSearch";
-// import { sendWhatsAppToAll } from "../../../redux/actions/otpAction";
 import "./leadsPage.css";
+
 
 function StatCard({ label, value, onClick, accent, children }) {
   return (
@@ -14,7 +13,6 @@ function StatCard({ label, value, onClick, accent, children }) {
       className={`lp-stat-card ${accent ? "lp-stat-accent" : ""}`}
       onClick={onClick}
       type="button"
-      aria-pressed={accent ? "true" : "false"}
     >
       <div className="lp-stat-left">
         <div className="lp-stat-value">{value}</div>
@@ -28,15 +26,12 @@ function StatCard({ label, value, onClick, accent, children }) {
 }
 
 function LeadRow({ user }) {
-  const formattedTime = (() => {
-    if (!user?.time) return null;
-    const d = new Date(user.time);
-    if (Number.isNaN(d.getTime())) return null;
-    return d.toLocaleString();
-  })();
+  const formattedTime = user.time
+    ? new Date(user.time).toLocaleString()
+    : null;
 
   return (
-    <article className="lp-lead-row" aria-label={`Lead ${user.userName || "Unknown"}`}>
+    <article className="lp-lead-row">
       <div className="lp-avatar" aria-hidden>
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
           <circle cx="12" cy="8" r="3.2" stroke="#2F3A8F" strokeWidth="1.2" />
@@ -44,8 +39,6 @@ function LeadRow({ user }) {
             d="M4 20c1.8-4 6.2-6 8-6s6.2 2 8 6"
             stroke="#2F3A8F"
             strokeWidth="1.2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
           />
         </svg>
       </div>
@@ -53,11 +46,7 @@ function LeadRow({ user }) {
       <div className="lp-lead-body">
         <div className="lp-lead-head">
           <h4 className="lp-lead-title">{user.userName || "Unknown User"}</h4>
-          {formattedTime && (
-            <time className="lp-lead-time" dateTime={new Date(user.time).toISOString()}>
-              {formattedTime}
-            </time>
-          )}
+          {formattedTime && <time className="lp-lead-time">{formattedTime}</time>}
         </div>
 
         <p className="lp-lead-desc">
@@ -73,272 +62,79 @@ function LeadRow({ user }) {
   );
 }
 
+
 export default function LeadsPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const mobileNumber = localStorage.getItem("mobileNumber");
-  // const [alreadySent, setAlreadySent] = useState(false);
 
-  const { searchLogs = [] } = useSelector((state) => state.businessListReducer || {});
-  
   const authUser = useSelector((state) => state.otp.viewResponse) || {};
+  const { leads: backendLeads = [] } = useSelector((state) => state.leads);
 
-  const {
-    businessName,
-    businessLocation,
-    businessCategory,
-    mobileNumber1,
-    emailVerified,
-    userName,
-  } = authUser;
+  const { businessName, businessLocation, businessCategory } = authUser;
 
   const hasBusinessCategory =
-    businessCategory &&
-    typeof businessCategory === "object" &&
-    typeof businessCategory.category === "string" &&
-    businessCategory.category.trim() !== "";
+    businessCategory?.category && businessCategory.category.trim() !== "";
 
   const [range, setRange] = useState("all");
   const [repeatOnly, setRepeatOnly] = useState(false);
 
-useEffect(() => {
-  if (!mobileNumber) return;
+  /* ================================
+     FETCH BACKEND DATA
+  ================================ */
+  useEffect(() => {
+    if (!mobileNumber) return;
+    dispatch(viewOtpUser(mobileNumber));
+    dispatch(fetchMatchedLeads());
+  }, [dispatch, mobileNumber]);
 
-  dispatch(viewOtpUser(mobileNumber));
-  dispatch(getAllSearchLogs());
-
-  const interval = setInterval(() => {
-    dispatch(getAllSearchLogs());
-  }, 30000); 
-
-  return () => clearInterval(interval);
-}, [dispatch, mobileNumber]);
-
-function normalizeText(str = "") {
-  return String(str || "")
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")      
-    .replace(/[_\-\.,\/#!$%\^&\*;:{}=\+~()@\[\]"'<>?|`\\]/g, " ") 
-    .replace(/[^0-9a-zA-Z\u00C0-\u024F\s]/g, " ") 
-    .toLowerCase()
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function tokenize(str = "") {
-  const s = normalizeText(str);
-  return s ? s.split(" ").filter(Boolean) : [];
-}
-
-function levenshtein(a = "", b = "") {
-  if (a === b) return 0;
-  const al = a.length, bl = b.length;
-  if (al === 0) return bl;
-  if (bl === 0) return al;
-  const v0 = new Array(bl + 1).fill(0);
-  const v1 = new Array(bl + 1).fill(0);
-  for (let j = 0; j <= bl; j++) v0[j] = j;
-  for (let i = 0; i < al; i++) {
-    v1[0] = i + 1;
-    for (let j = 0; j < bl; j++) {
-      const cost = a[i] === b[j] ? 0 : 1;
-      v1[j + 1] = Math.min(v1[j] + 1, v0[j + 1] + 1, v0[j] + cost);
-    }
-    for (let j = 0; j <= bl; j++) v0[j] = v1[j];
-  }
-  return v1[bl];
-}
-
-const DEBUG_MATCH = false; 
-const FUZZY_THRESHOLD = 2; 
-
-const matchedUsers = useMemo(() => {
-  try {
-    if (!Array.isArray(searchLogs)) return [];
-    if (!hasBusinessCategory) return [];
-
-    const categoryName = normalizeText(businessCategory?.category);
-    const titleName = normalizeText(businessCategory?.title);
-    const seoTitleName = normalizeText(businessCategory?.seoTitle);
-
-    const keywords = (Array.isArray(businessCategory?.keywords) ? businessCategory.keywords : [])
-      .map(k => normalizeText(k))
-      .filter(Boolean);
-
-    const searchTerms = [categoryName, titleName, seoTitleName, ...keywords].filter(Boolean);
-    if (searchTerms.length === 0) {
-      if (DEBUG_MATCH) console.warn("matcher: no search terms for businessCategory", businessCategory);
-      return [];
-    }
-
-    const normalizeLogFields = (log) => {
-      const rawCandidates = [
-        log.categoryName,
-        log.category,
-        log.searchCategory,
-        log.searchedUserText,
-        log.title,
-        log.description,
-        log.meta,
-        log.note,
-        log.searchText,
-      ].filter(Boolean);
-
-      const joined = rawCandidates.join(" ");
-      const normJoined = normalizeText(joined);
-      const normFields = rawCandidates.map(normalizeText).filter(Boolean);
-      return { rawCandidates, joined, normJoined, normFields };
-    };
-
-    const matchedLogs = [];
-    const nonMatchedLogsDebug = [];
-
-    for (const log of searchLogs) {
-      const { rawCandidates, joined, normJoined, normFields } = normalizeLogFields(log);
-
-      let matched = false;
-      let matchReason = "";
-
-      for (const term of searchTerms) {
-        if (!term) continue;
-        if (normJoined.includes(term)) {
-          matched = true;
-          matchReason = `joined-contains:${term}`;
-          break;
-        }
-      }
-      if (matched) {
-        matchedLogs.push({ log, matchReason, normJoined, rawCandidates });
-        continue;
-      }
-
-      for (const term of searchTerms) {
-        const termTokens = tokenize(term);
-        for (const tkn of termTokens) {
-          for (const field of normFields) {
-            const fieldTokens = field.split(" ").filter(Boolean);
-            if (fieldTokens.includes(tkn) || field.includes(tkn)) {
-              matched = true;
-              matchReason = `token-overlap:${tkn}`;
-              break;
-            }
-          }
-          if (matched) break;
-        }
-        if (matched) break;
-      }
-      if (matched) {
-        matchedLogs.push({ log, matchReason, normJoined, rawCandidates });
-        continue;
-      }
-
-      for (const field of normFields) {
-        for (const term of searchTerms) {
-          if (field === term) {
-            matched = true;
-            matchReason = `field-eq:${term}`;
-            break;
-          }
-        }
-        if (matched) break;
-      }
-      if (matched) {
-        matchedLogs.push({ log, matchReason, normJoined, rawCandidates });
-        continue;
-      }
-
-      for (const term of searchTerms) {
-        const candidatesToCheck = [normJoined, ...normFields];
-        for (const candidate of candidatesToCheck) {
-          if (!candidate) continue;
-          const len = Math.max(candidate.length, term.length);
-          const allowed = Math.max(1, Math.min(FUZZY_THRESHOLD, Math.floor(len * 0.25)));
-          const dist = levenshtein(candidate, term);
-          if (dist <= allowed) {
-            matched = true;
-            matchReason = `fuzzy:${term}:dist=${dist}`;
-            break;
-          }
-        }
-        if (matched) break;
-      }
-
-      if (matched) {
-        matchedLogs.push({ log, matchReason, normJoined, rawCandidates });
-      } else {
-        nonMatchedLogsDebug.push({ log, normJoined, rawCandidates });
-      }
-    }
-
-    if (DEBUG_MATCH) {
-      console.groupCollapsed(`matcher debug: matched ${matchedLogs.length} / ${searchLogs.length}`);
-      matchedLogs.slice(0, 50).forEach(m => {
-        console.log("MATCHED:", m.matchReason, m.normJoined, m.rawCandidates);
-      });
-      console.groupEnd();
-
-      console.groupCollapsed("matcher debug: non-matches sample");
-      nonMatchedLogsDebug.slice(0, 50).forEach(nm => {
-        console.log("NO MATCH:", nm.normJoined, nm.rawCandidates);
-      });
-      console.groupEnd();
-    }
-
+  /* ================================
+     FLATTEN BACKEND LEADS
+  ================================ */
+  const matchedUsers = useMemo(() => {
     const users = [];
-    matchedLogs.forEach(({ log }) => {
-      const createdAt = log.createdAt || log.created_at || log.date || null;
-      const searchedText = typeof log.searchedUserText === "string"
-        ? log.searchedUserText
-        : (log.searchedUserText ? String(log.searchedUserText) : "");
+    backendLeads.forEach((log) => {
+      const createdAt = log.createdAt || null;
+      const searchedText = log.searchedUserText || "";
 
       if (Array.isArray(log.userDetails)) {
         log.userDetails.forEach((u) => {
-          users.push({ ...u, time: createdAt, searchedUserText: searchedText });
+          users.push({
+            ...u,
+            time: createdAt,
+            searchedUserText: searchedText,
+          });
         });
-      } else if (log.userDetails && typeof log.userDetails === "object") {
-        users.push({ ...log.userDetails, time: createdAt, searchedUserText: searchedText });
       }
     });
 
     const unique = {};
-    const normalizeLeadKey = (u) => {
-      if (u.mobileNumber1) {
-        const phone = String(u.mobileNumber1).replace(/\D/g, "");
-        if (phone) return `p:${phone}`;
-      }
-      if (u.email) return `e:${String(u.email).trim().toLowerCase()}`;
-      if (u.userName) return `n:${String(u.userName).trim().toLowerCase()}`;
-      return null;
-    };
-
-    const uniqueUsers = users.filter((u) => {
-      const key = normalizeLeadKey(u);
-      if (!key) return false;
-      if (unique[key]) return false;
+    return users.filter((u) => {
+      const key = u.mobileNumber1 || u.email || u.userName;
+      if (!key || unique[key]) return false;
       unique[key] = true;
       return true;
     });
-
-    return uniqueUsers;
-
-  } catch (err) {
-    console.error("matchedUsers error:", err);
-    return [];
-  }
-}, [searchLogs, businessCategory, hasBusinessCategory]);
+  }, [backendLeads]);
 
 
-  const { filteredUsers, todayCount, last7Count, last30Count, repeatCount } = useMemo(() => {
+  const {
+    filteredUsers,
+    todayCount,
+    last7Count,
+    last30Count,
+    repeatCount,
+  } = useMemo(() => {
     const msDay = 24 * 60 * 60 * 1000;
     const now = new Date();
     const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const sevenAgo = new Date(startToday.getTime() - 6 * msDay); 
-    const thirtyAgo = new Date(startToday.getTime() - 29 * msDay); 
+    const sevenAgo = new Date(startToday.getTime() - 6 * msDay);
+    const thirtyAgo = new Date(startToday.getTime() - 29 * msDay);
 
     const repeatMap = {};
-    let todayCount = 0;
-    let last7Count = 0;
-    let last30Count = 0;
+    let today = 0,
+      last7 = 0,
+      last30 = 0;
 
     matchedUsers.forEach((u) => {
       const key = u.mobileNumber1 || u.email || u.userName;
@@ -346,66 +142,41 @@ const matchedUsers = useMemo(() => {
 
       if (u.time) {
         const d = new Date(u.time);
-        if (!Number.isNaN(d.getTime())) {
-          if (d >= startToday) todayCount += 1;
-          if (d >= sevenAgo) last7Count += 1;
-          if (d >= thirtyAgo) last30Count += 1;
-        }
+        if (d >= startToday) today++;
+        if (d >= sevenAgo) last7++;
+        if (d >= thirtyAgo) last30++;
       }
     });
 
-    const repeatVisitorSet = new Set(Object.keys(repeatMap).filter((k) => repeatMap[k] > 1));
-    const repeatCount = repeatVisitorSet.size;
+    const repeatSet = new Set(
+      Object.keys(repeatMap).filter((k) => repeatMap[k] > 1)
+    );
 
-    const filteredUsers = matchedUsers.filter((u) => {
+    const filtered = matchedUsers.filter((u) => {
       let ok = true;
-
       if (range !== "all" && u.time) {
         const d = new Date(u.time);
-        if (!Number.isNaN(d.getTime())) {
-          if (range === "today") ok = d >= startToday;
-          else if (range === "7") ok = d >= sevenAgo;
-          else if (range === "30") ok = d >= thirtyAgo;
-        }
+        if (range === "today") ok = d >= startToday;
+        else if (range === "7") ok = d >= sevenAgo;
+        else if (range === "30") ok = d >= thirtyAgo;
       }
-
-      if (!ok) return false;
-
       if (repeatOnly) {
         const key = u.mobileNumber1 || u.email || u.userName;
-        if (!key || !repeatVisitorSet.has(key)) return false;
+        ok = ok && repeatSet.has(key);
       }
-
-      return true;
+      return ok;
     });
 
-    return { filteredUsers, todayCount, last7Count, last30Count, repeatCount };
+    return {
+      filteredUsers: filtered,
+      todayCount: today,
+      last7Count: last7,
+      last30Count: last30,
+      repeatCount: repeatSet.size,
+    };
   }, [matchedUsers, range, repeatOnly]);
 
   const leadsCount = matchedUsers.length;
-
-  // const todayUsers = useMemo(() => {
-  //   const now = new Date();
-  //   const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-  //   return matchedUsers.filter((u) => {
-  //     if (!u.time) return false;
-  //     const d = new Date(u.time);
-  //     if (Number.isNaN(d.getTime())) return false;
-  //     return d >= startToday;
-  //   });
-  // }, [matchedUsers]);
-
-  // useEffect(() => {
-  //   if (todayUsers.length > 0 && !alreadySent) {
-  //     const message = "Hello! You searched our category today. How may we assist you? 😊";
-
-  //     dispatch(sendWhatsAppToAll(todayUsers, message));
-
-  //     setAlreadySent(true);
-  //   }
-  // }, [todayUsers, alreadySent, dispatch]);
-
 
   if (!hasBusinessCategory) {
     return (
@@ -432,10 +203,6 @@ const matchedUsers = useMemo(() => {
   }
 
   const handleTotalLeadsClick = () => {
-    if (!matchedUsers.length) {
-      alert("No leads found.");
-      return;
-    }
     navigate("/user/search-history", { state: { leadsUsers: matchedUsers } });
   };
 
@@ -443,18 +210,15 @@ const matchedUsers = useMemo(() => {
     leadsCount === 0
       ? "No data yet"
       : leadsCount > 20 || repeatCount > 5
-      ? "High quality"
-      : leadsCount > 5
-      ? "Moderate quality"
-      : "Low quality";
+        ? "High quality"
+        : leadsCount > 5
+          ? "Moderate quality"
+          : "Low quality";
 
   return (
     <div className="lp-root">
       <main className="lp-container">
         <CardsSearch />
-        <br />
-        <br />
-        <br />
         <section className="lp-card">
           <header className="lp-header">
             <div className="lp-business">
@@ -522,10 +286,9 @@ const matchedUsers = useMemo(() => {
                     </span>
                   </div>
                   <div className="lp-leads-list">
-                    {filteredUsers.map((u, index) => {
-                      const key = u.mobileNumber1 || u.email || u.userName || index;
-                      return <LeadRow key={key} user={u} />;
-                    })}
+                    {filteredUsers.map((u, i) => (
+                      <LeadRow key={i} user={u} />
+                    ))}
                   </div>
                 </>
               ) : (

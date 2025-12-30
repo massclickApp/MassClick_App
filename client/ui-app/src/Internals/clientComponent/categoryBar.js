@@ -4,25 +4,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { viewOtpUser } from "../../redux/actions/otpAction.js";
 import { useDrawer } from "./Drawer/drawerContext.js";
 import {
-    Box,
-    Button,
     Select,
     FormControl,
     IconButton,
     Menu,
-    Typography,
     MenuItem,
-    Dialog,
-    DialogTitle,
-    List,
-    ListItem,
-    ListItemAvatar,
     Avatar,
-    ListItemButton,
-    ListItemText,
-    SwipeableDrawer,
-    ListItemIcon,
-
 } from "@mui/material";
 import Badge from "@mui/material/Badge";
 import {
@@ -71,7 +58,7 @@ import PolicyPage from "../clientComponent/userMenu/PolicyPage/PolicyPage.js";
 import FeedbackPage from "../clientComponent/userMenu/FeedbackPage/FeedBackPage.js";
 import HelpPage from "../clientComponent/userMenu/HelpPage/HelpPage.js";
 import LeadsNotificationModal from "./leadsNotification/leadsNotification.js";
-import { markRuntimeLeadRead } from "../../redux/actions/otpAction.js";
+import { fetchMatchedLeads } from "../../redux/actions/leadsAction.js";
 
 import './categoryBar.css'
 
@@ -125,17 +112,17 @@ const CategoryBar = () => {
     const { viewResponse } = otpState;
     const userName = viewResponse?.user?.userName || '';
     const authUser = useSelector((state) => state.otp?.viewResponse) || {};
-    const leadsData = authUser?.leadsData || [];
 
-    const notifications =
-        useSelector((state) => state.otp.runtimeLeadsNotifications) || [];
+   const { leads: leadsData, loading } = useSelector(
+      (state) => state.leads
+    );
 
     useEffect(() => {
         const mobile = localStorage.getItem("mobileNumber");
         if (mobile) {
             dispatch(viewOtpUser(mobile));
         }
-        dispatch(markRuntimeLeadRead());
+        dispatch(fetchMatchedLeads());
     }, [dispatch]);
 
     const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
@@ -338,7 +325,7 @@ const CategoryBar = () => {
                                 className="iconButtonPrimary"
                                 onClick={() => setIsNotificationModalOpen(true)}
                             >
-                                <Badge badgeContent={notifications.length} color="error">
+                                <Badge badgeContent={leadsData.length} color="error">
                                     <NotificationsIcon />
                                 </Badge>
                             </IconButton>
@@ -347,7 +334,6 @@ const CategoryBar = () => {
                 </div>
             </div>
 
-            {/* ✅ MOBILE / TABLET MENU */}
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
                 {categories.map((category, index) => (
                     <MenuItem

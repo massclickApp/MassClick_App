@@ -21,7 +21,8 @@ const searchLogSchema = new mongoose.Schema({
             email: String
         }
     ],
-
+  isRead: { type: Boolean, default: false },
+  whatsapp: { type: Boolean, default: false },
    createdAt: {
         type: Date,
         default: Date.now,

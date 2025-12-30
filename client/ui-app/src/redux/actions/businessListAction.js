@@ -16,7 +16,8 @@ import {
   FETCH_VIEWBUSINESSDETAILS_REQUEST, FETCH_VIEWBUSINESSDETAILS_SUCCESS, FETCH_VIEWBUSINESSDETAILS_FAILURE,
   FETCH_DASHBOARDCARD_REQUEST, FETCH_DASHBOARDCARD_SUCCESS, FETCH_DASHBOARDCARD_FAILURE,
   FETCH_DASHBOARDCHART_REQUEST, FETCH_DASHBOARDCHART_SUCCESS, FETCH_DASHBOARDCHART_FAILURE,
-  FETCH_PENDINGBUSINESS_REQUEST, FETCH_PENDINGBUSINESS_SUCCESS, FETCH_PENDINGBUSINESS_FAILURE
+  FETCH_PENDINGBUSINESS_REQUEST, FETCH_PENDINGBUSINESS_SUCCESS, FETCH_PENDINGBUSINESS_FAILURE,
+  UPDATE_SEARCH_LOG_REQUEST, UPDATE_SEARCH_LOG_SUCCESS, UPDATE_SEARCH_LOG_FAILURE
 } from "../actions/userActionTypes.js";
 import { getClientToken } from "./clientAuthAction.js";
 const API_URL = process.env.REACT_APP_API_URL;
@@ -533,6 +534,35 @@ export const getPendingBusinessList = () => async (dispatch) => {
     dispatch({
       type: FETCH_PENDINGBUSINESS_FAILURE,
       payload: error.response?.data || error.message,
+    });
+  }
+};
+
+export const updateSearchLogRead = (searchLogId) => async (dispatch) => {
+  dispatch({ type: UPDATE_SEARCH_LOG_REQUEST });
+
+  try {
+    const token = await getValidToken(dispatch);
+
+    const response = await axios.put(
+      `${API_URL}/businesslist/log-search/${searchLogId}`,
+      { isRead: true },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    dispatch({
+      type: UPDATE_SEARCH_LOG_SUCCESS,
+      payload: response.data.data,
+    });
+
+    return response.data.data;
+
+  } catch (error) {
+    dispatch({
+      type: UPDATE_SEARCH_LOG_FAILURE,
+      payload: error.response?.data?.message || error.message,
     });
   }
 };

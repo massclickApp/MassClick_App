@@ -51,3 +51,19 @@ export const getMatchedSearchLogs = async (category, keywords) => {
     return [];
   }
 };
+
+export const updateSearchData = async (id, data) => {
+  if (!ObjectId.isValid(id)) {
+    throw new Error("Invalid search log ID");
+  }
+
+  const searchData = await searchLogModel.findByIdAndUpdate(
+    id,
+    { $set: data },
+    { new: true }
+  );
+
+  if (!searchData) throw new Error("Search log not found");
+
+  return searchData;
+};
