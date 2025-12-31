@@ -125,7 +125,7 @@ export const relogin = () => async (dispatch) => {
     return response.data;
   } catch (error) {
     const message =
-      error.response?.data?.error || // string from API
+      error.response?.data?.error || 
       error.response?.data?.message ||
       error.message ||
       "Something went wrong";
@@ -138,9 +138,6 @@ export const relogin = () => async (dispatch) => {
 };
 
 
-// Logout
-// authActions.js
-// authActions.js
 export const logout = () => async (dispatch) => {
   const token = localStorage.getItem("accessToken");
 

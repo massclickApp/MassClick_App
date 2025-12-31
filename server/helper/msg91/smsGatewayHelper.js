@@ -95,35 +95,42 @@ export const verifyOtp = async (number, otp) => {
   }
 };
 
-// export const sendWhatsAppMessage = async (mobile, variables = {}) => {
-//   try {
-//     if (!mobile) throw new Error("Mobile number required");
 
-//     const formattedMobile = mobile.toString().replace(/\D/g, "");
-//     const mobileWithCountry = "91" + formattedMobile;
+export const sendWhatsAppMessage = async (mobile, variables = {}) => {
+  if (!mobile) throw new Error("Mobile number required");
 
-//     const payload = {
-//       flow_id: MSG91_FLOW_ID,
-//       sender: MSG91_SENDER,
-//       mobiles: mobileWithCountry,
-//       var: variables
-//     };
+  const cleanMobile = mobile.toString().replace(/\D/g, "");
 
-//     const headers = {
-//       authkey: MSG91_AUTHKEY,
-//       "Content-Type": "application/json",
-//     };
+  if (cleanMobile.length !== 10) {
+    throw new Error("Invalid mobile number");
+  }
 
-//     const response = await axios.post(
-//       "https://api.msg91.com/api/v5/whatsapp/flow/",
-//       payload,
-//       { headers }
-//     );
+  const payload = {
+    flow_id: process.env.MSG91_FLOW_ID,
+    sender: process.env.MSG91_SENDER,
+    mobiles: `91${cleanMobile}`,
+    var: variables
+  };
 
-//     return response.data;
+  try {
+    const response = await axios.post(
+      "https://api.msg91.com/api/v5/whatsapp/flow/",
+      payload,
+      {
+        headers: {
+          authkey: process.env.MSG91_AUTHKEY,
+          "Content-Type": "application/json"
+        }
+      }
+    );
 
-//   } catch (err) {
-//     console.error("MSG91 WhatsApp error:", err?.response?.data || err.message);
-//     throw new Error(err?.response?.data?.message || "WhatsApp sending failed");
-//   }
-// };
+    return response.data;
+
+  } catch (err) {
+    console.error(
+      "MSG91 WhatsApp Error:",
+      err?.response?.data || err.message
+    );
+    throw new Error("WhatsApp sending failed");
+  }
+};

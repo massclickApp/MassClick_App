@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 import User from "../../model/msg91Model/usersModels.js";
 import { getSignedUrlByKey } from "../../s3Uploder.js";
 import businessListModel from "../../model/businessList/businessListModel.js";
+import searchLogModel from "../../model/businessList/searchLogModel.js";
+import { sendWhatsAppMessage } from "../../helper/msg91/smsGatewayHelper.js";
 
 export const sendOtpAction = async (req, res) => {
   const { phoneNumber } = req.body;
@@ -110,69 +112,169 @@ export const verifyOtpAction = async (req, res) => {
   }
 };
 
-// export const sendWhatsApp = async (req, res) => {
-//   try {
-//     const { mobile, userName, customMessage } = req.body;
+export const sendWhatsAppForLead = async (req, res) => {
+  try {
+    const { leadId, customMessage } = req.body;
 
-//     if (!mobile)
-//       return res.status(400).json({ success: false, message: "Mobile required" });
+    if (!leadId) {
+      return res.status(400).json({
+        success: false,
+        message: "Lead ID required"
+      });
+    }
 
-//     const vars = {
-//       name: userName || "Customer",
-//       message: customMessage || "Thank you for showing interest!"
-//     };
+   
+    const lead = await searchLogModel.findOne({
+      _id: leadId,
+      whatsapp: { $ne: true }
+    });
 
-//     const response = await sendWhatsAppMessage(mobile, vars);
+    if (!lead) {
+      return res.json({
+        success: true,
+        message: "WhatsApp already sent"
+      });
+    }
 
-//     res.json({
-//       success: true,
-//       message: "WhatsApp sent successfully",
-//       data: response
-//     });
+    const user = lead.userDetails?.[0];
+    const mobile = user?.mobileNumber1;
 
-//   } catch (err) {
-//     res.status(500).json({
-//       success: false,
-//       message: err.message
-//     });
-//   }
-// };
+    if (!mobile || mobile.length !== 10) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid mobile number not found"
+      });
+    }
 
+  
+    await sendWhatsAppMessage(mobile, {
+      name: user.userName || "Customer",
+      message:
+        customMessage ||
+        `We noticed you searched for "${lead.searchedUserText}". We can help you instantly.`
+    });
 
-// export const sendWhatsAppToAll = async (req, res) => {
-//   try {
-//     const { users, customMessage } = req.body;
+    await searchLogModel.updateOne(
+      { _id: lead._id },
+      {
+        $set: {
+          whatsapp: true,
+          whatsappSentAt: new Date(),
+          whatsappMeta: {
+            provider: "MSG91",
+            status: "sent"
+          }
+        }
+      }
+    );
 
-//     if (!Array.isArray(users) || !users.length) {
-//       return res.status(400).json({ success: false, message: "Users array required" });
-//     }
+    return res.json({
+      success: true,
+      message: "WhatsApp sent and lead updated"
+    });
 
-//     const results = [];
+  } catch (err) {
+    console.error("WhatsApp Lead Error:", err);
+    return res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
 
-//     for (const user of users) {
-//       const mobile = user.mobileNumber1 || user.mobileNumber2;
-//       if (!mobile) continue;
+export const sendWhatsAppToLeadsBulk = async (req, res) => {
+  try {
+    const { leadIds, customMessage } = req.body;
 
-//       const vars = {
-//         name: user.userName || "Customer",
-//         message: customMessage || "Thank you for your interest!"
-//       };
+    if (!Array.isArray(leadIds) || !leadIds.length) {
+      return res.status(400).json({
+        success: false,
+        message: "Lead IDs array required"
+      });
+    }
 
-//       try {
-//         const res = await sendWhatsAppMessage(mobile, vars);
-//         results.push({ mobile, status: "sent", res });
-//       } catch (err) {
-//         results.push({ mobile, status: "failed", error: err.message });
-//       }
-//     }
+ 
+    const leads = await searchLogModel.find({
+      _id: { $in: leadIds },
+      whatsapp: { $ne: true }
+    });
 
-//     res.json({
-//       success: true,
-//       message: "Bulk WhatsApp process completed",
-//       results
-//     });
+    const tasks = leads.map(async (lead) => {
+      const user = lead.userDetails?.[0];
+      const mobile = user?.mobileNumber1;
 
-//   } catch (err) {
-//     res.status(500).json({ success: false, message: err.message });
-//   }
-// };
+      if (!mobile || mobile.length !== 10) {
+        return {
+          leadId: lead._id,
+          status: "skipped",
+          reason: "Invalid mobile"
+        };
+      }
+
+      try {
+        await sendWhatsAppMessage(mobile, {
+          name: user.userName || "Customer",
+          message:
+            customMessage ||
+            `We noticed you searched for "${lead.searchedUserText}".`
+        });
+
+        await searchLogModel.updateOne(
+          { _id: lead._id },
+          {
+            $set: {
+              whatsapp: true,
+              whatsappSentAt: new Date(),
+              whatsappMeta: {
+                provider: "MSG91",
+                status: "sent"
+              }
+            }
+          }
+        );
+
+        return {
+          leadId: lead._id,
+          mobile,
+          status: "sent"
+        };
+
+      } catch (err) {
+        await searchLogModel.updateOne(
+          { _id: lead._id },
+          {
+            $set: {
+              whatsappMeta: {
+                provider: "MSG91",
+                status: "failed",
+                error: err.message
+              }
+            }
+          }
+        );
+
+        return {
+          leadId: lead._id,
+          mobile,
+          status: "failed",
+          error: err.message
+        };
+      }
+    });
+
+    const results = await Promise.all(tasks);
+
+    return res.json({
+      success: true,
+      message: "Bulk WhatsApp completed",
+      results
+    });
+
+  } catch (err) {
+    console.error("Bulk WhatsApp Error:", err);
+    return res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};

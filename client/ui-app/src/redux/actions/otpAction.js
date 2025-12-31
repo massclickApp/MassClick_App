@@ -8,8 +8,8 @@ import {
   VIEWALL_OTP_USER_REQUEST, VIEWALL_OTP_USER_SUCCESS, VIEWALL_OTP_USER_FAILURE,
    LOG_USER_SEARCH_REQUEST, LOG_USER_SEARCH_SUCCESS,LOG_USER_SEARCH_FAILURE,
    SET_RUNTIME_LEADS, MARK_RUNTIME_LEAD_READ,
-  //  SEND_WHATSAPP_ALL_REQUEST, SEND_WHATSAPP_ALL_SUCCESS, SEND_WHATSAPP_ALL_FAILURE,
-  //  SEND_WHATSAPP_REQUEST, SEND_WHATSAPP_SUCCESS, SEND_WHATSAPP_FAILURE
+   SEND_WHATSAPP_ALL_REQUEST, SEND_WHATSAPP_ALL_SUCCESS, SEND_WHATSAPP_ALL_FAILURE,
+   SEND_WHATSAPP_REQUEST, SEND_WHATSAPP_SUCCESS, SEND_WHATSAPP_FAILURE
 } from "../actions/userActionTypes";
 
 const API_URL = process.env.REACT_APP_API_URL;
@@ -113,8 +113,6 @@ export const viewOtpUser = (mobile) => async (dispatch) => {
 };
 
 
-
-// --- View All OTP Users ---
 export const viewAllOtpUsers = () => async (dispatch) => {
   dispatch({ type: VIEWALL_OTP_USER_REQUEST });
   try {
@@ -178,60 +176,64 @@ export const logUserSearch = (userId, query, location, category) => async (dispa
   }
 };
 
-// export const sendWhatsApp = (mobile, userName, customMessage) => async (dispatch) => {
-//   dispatch({ type: SEND_WHATSAPP_REQUEST });
+export const sendWhatsAppForLead = (leadId, customMessage = "") => async (dispatch) => {
+  dispatch({ type: SEND_WHATSAPP_REQUEST });
 
-//   try {
-//     const res = await axios.post(`${API_URL}/leadssend/whatsapp`, {
-//       mobile,
-//       userName,
-//       customMessage,
-//     });
+  try {
+    const res = await axios.post(
+      `${API_URL}/leadssend/whatsapp`,
+      { leadId, customMessage },
+      { headers: { "Content-Type": "application/json" } }
+    );
 
-//     dispatch({
-//       type: SEND_WHATSAPP_SUCCESS,
-//       payload: res.data,
-//     });
+    dispatch({
+      type: SEND_WHATSAPP_SUCCESS,
+      payload: {
+        leadId,
+        response: res.data
+      }
+    });
 
-//     return res.data;
+    return res.data;
 
-//   } catch (error) {
-//     dispatch({
-//       type: SEND_WHATSAPP_FAILURE,
-//       payload: error.response?.data || error.message,
-//     });
+  } catch (error) {
+    dispatch({
+      type: SEND_WHATSAPP_FAILURE,
+      payload: error.response?.data || error.message
+    });
+    throw error;
+  }
+};
 
-//     throw error;
-//   }
-// };
 
-// // -----------------------------------------------
-// // SEND WHATSAPP TO ALL LEADS
-// // -----------------------------------------------
-// export const sendWhatsAppToAll = (users, customMessage) => async (dispatch) => {
-//   dispatch({ type: SEND_WHATSAPP_ALL_REQUEST });
+// -----------------------------------------------
+// SEND WHATSAPP TO ALL LEADS
+// -----------------------------------------------
+export const sendWhatsAppToLeadsBulk = (leadIds = [], customMessage = "") => async (dispatch) => {
+  dispatch({ type: SEND_WHATSAPP_ALL_REQUEST });
 
-//   try {
-//     const res = await axios.post(`${API_URL}/leadssend/whatsappall`, {
-//       users,
-//       customMessage,
-//     });
+  try {
+    const res = await axios.post(
+      `${API_URL}/leadssend/whatsappall`,
+      { leadIds, customMessage },
+      { headers: { "Content-Type": "application/json" } }
+    );
 
-//     dispatch({
-//       type: SEND_WHATSAPP_ALL_SUCCESS,
-//       payload: res.data,
-//     });
+    dispatch({
+      type: SEND_WHATSAPP_ALL_SUCCESS,
+      payload: res.data
+    });
 
-//     return res.data;
+    return res.data;
 
-//   } catch (error) {
-//     dispatch({
-//       type: SEND_WHATSAPP_ALL_FAILURE,
-//       payload: error.response?.data || error.message,
-//     });
+  } catch (error) {
+    dispatch({
+      type: SEND_WHATSAPP_ALL_FAILURE,
+      payload: error.response?.data || error.message
+    });
+    throw error;
+  }
+};
 
-//     throw error;
-//   }
-// };
 
 
