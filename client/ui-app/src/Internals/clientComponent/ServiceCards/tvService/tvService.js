@@ -1,86 +1,139 @@
-import React, { useEffect } from "react";
-import "./tvService.css";
-import CardDesign from "../../cards/cards.js";
+import React, { useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getBusinessByCategory } from "../../../../redux/actions/businessListAction.js";
-import CardsSearch from "../../../clientComponent/CardsSearch/CardsSearch.js";
 import { useNavigate } from "react-router-dom";
 
+import "./tvService.css";
+
+import CardDesign from "../../cards/cards.js";
+import CardsSearch from "../../../clientComponent/CardsSearch/CardsSearch.js";
+import TopBannerAds from "../../../clientComponent/banners/topBanner/topBanner.js";
+
+import { getBusinessByCategory } from "../../../../redux/actions/businessListAction.js";
+import { clientLogin } from "../../../../redux/actions/clientAuthAction.js";
+
+const CATEGORY = "tv service";
+
+const createSlug = (text) => {
+  if (typeof text !== "string" || !text.trim()) return "unknown";
+
+  return (
+    text
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "") || "unknown"
+  );
+};
+
 const TvServiceCards = () => {
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-    const { categoryBusinessList = [], loading } = useSelector(
-        (state) => state.businessListReducer || {}
-    );
+  const { categoryBusinessList = [], loading, error } = useSelector(
+    (state) => state.businessListReducer || {}
+  );
 
-    useEffect(() => {
-        dispatch(getBusinessByCategory("tv service"));
-    }, [dispatch]);
+  const clientToken = useSelector(
+    (state) => state.clientAuth?.accessToken
+  );
 
-    const createSlug = (text = "") =>
-        text
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, "-")
-            .replace(/(^-|-$)+/g, "") || "unknown";
-
-    if (loading) {
-        return <p className="loading-text">Loading TV Service Providers...</p>;
+  useEffect(() => {
+    if (!clientToken) {
+      dispatch(clientLogin());
+      return;
     }
 
-    if (!loading && categoryBusinessList.length === 0) {
-        return (
-            <div className="no-results-container">
-                <p className="no-results-title">No TV Service Providers Found 😔</p>
-                <p className="no-results-suggestion">
-                    It looks like we don't have any businesses matching "TV Service" right now.
-                </p>
-                <button className="go-home-button" onClick={() => navigate("/home")}>
-                    Go to Homepage
-                </button>
-            </div>
-        );
+    if (!categoryBusinessList.length) {
+      dispatch(getBusinessByCategory(CATEGORY));
     }
+  }, [clientToken, categoryBusinessList.length, dispatch]);
 
+  const handleRetry = useCallback(() => {
+    dispatch(getBusinessByCategory(CATEGORY));
+  }, [dispatch]);
+
+  if (error) {
     return (
-        <>
-            <CardsSearch />
-            <br /><br /><br />
-
-            <div className="restaurants-list-wrapper">
-                {categoryBusinessList.map((business) => {
-                    const rating = business.averageRating?.toFixed(1) || 0;
-                    const reviews = business.reviews?.length || 0;
-
-                    const nameSlug = createSlug(business.businessName);
-                    const addressSlug = createSlug(business.street || "unknown");
-                    const locationSlug = createSlug(business.location || "unknown");
-
-                    const slug = `${nameSlug}-${addressSlug}-${locationSlug}`;
-                    const businessUrl = `/business/${slug}`;
-
-                    return (
-                        <CardDesign
-                            key={business._id}
-                            title={business.businessName}
-                            phone={business.contact}
-                            whatsapp={business.whatsappNumber}
-                            address={business.location}
-                            details={`Experience: ${business.experience} | Category: ${business.category}`}
-                            imageSrc={
-                                business.bannerImage ||
-                                "https://via.placeholder.com/120x100?text=Logo"
-                            }
-                            rating={rating}
-                            reviews={reviews}
-                            to={businessUrl}            
-                            state={{ id: business._id }}  
-                        />
-                    );
-                })}
-            </div>
-        </>
+      <div className="no-results-container">
+        <p className="no-results-title">Something went wrong 😕</p>
+        <p className="no-results-suggestion">
+          Please try again later.
+        </p>
+        <button
+          className="go-home-button"
+          onClick={handleRetry}
+        >
+          Retry
+        </button>
+      </div>
     );
+  }
+
+  return (
+    <>
+      <CardsSearch />
+
+      <div className="page-spacing" />
+
+      <TopBannerAds category={CATEGORY} />
+
+      {loading && (
+        <p className="loading-text">Loading Tv Service...</p>
+      )}
+
+      {!loading && categoryBusinessList.length === 0 && (
+        <div className="no-results-container">
+          <p className="no-results-title">No Tv Service Found 😔</p>
+          <p className="no-results-suggestion">
+            We don’t have tv service listed right now.
+          </p>
+          <button
+            className="go-home-button"
+            onClick={() => navigate("/home")}
+          >
+            Go to Homepage
+          </button>
+        </div>
+      )}
+
+      <div className="restaurants-list-wrapper">
+        {categoryBusinessList.map((business) => {
+          const averageRating =
+            typeof business.averageRating === "number"
+              ? business.averageRating.toFixed(1)
+              : "0.0";
+
+          const totalRatings = business.reviews?.length || 0;
+
+          const locationSlug = createSlug(business.location);
+          const businessSlug = createSlug(
+            `${business.businessName}-${business.street}`
+          );
+
+          const businessUrl = `/${locationSlug}/${businessSlug}/${business._id}`;
+
+          return (
+            <CardDesign
+              key={business._id}
+              title={business.businessName}
+              phone={business.contact}
+              whatsapp={business.whatsappNumber}
+              address={business.location}
+              details={`Experience: ${business.experience} | Category: ${business.category}`}
+              imageSrc={
+                business.bannerImage ||
+                "https://via.placeholder.com/120x100?text=Logo"
+              }
+              rating={averageRating}
+              reviews={totalRatings}
+              to={businessUrl}
+              state={{ id: business._id }}
+            />
+          );
+        })}
+      </div>
+    </>
+  );
 };
 
 export default TvServiceCards;

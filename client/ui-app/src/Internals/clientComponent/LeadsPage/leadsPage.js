@@ -79,18 +79,14 @@ export default function LeadsPage() {
   const [range, setRange] = useState("all");
   const [repeatOnly, setRepeatOnly] = useState(false);
 
-  /* ================================
-     FETCH BACKEND DATA
-  ================================ */
+
   useEffect(() => {
     if (!mobileNumber) return;
     dispatch(viewOtpUser(mobileNumber));
     dispatch(fetchMatchedLeads());
   }, [dispatch, mobileNumber]);
 
-  /* ================================
-     FLATTEN BACKEND LEADS
-  ================================ */
+ 
   const matchedUsers = useMemo(() => {
     const users = [];
     backendLeads.forEach((log) => {
@@ -218,7 +214,7 @@ export default function LeadsPage() {
   return (
     <div className="lp-root">
       <main className="lp-container">
-        <CardsSearch />
+        <CardsSearch /><br /><br /><br />
         <section className="lp-card">
           <header className="lp-header">
             <div className="lp-business">

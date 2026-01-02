@@ -1,18 +1,29 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import "./popularCategories.css";
 import { useDispatch, useSelector } from "react-redux";
-import { getBusinessByCategory } from "../../../../redux/actions/businessListAction";
+
+import "./popularCategories.css";
+
 import CardsSearch from "../../CardsSearch/CardsSearch";
 import CardDesign from "../cards";
+import TopBannerAds from "../../banners/topBanner/topBanner";
 
-const slugify = (text = "") =>
-  String(text)
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)+/g, "");
+import { getBusinessByCategory } from "../../../../redux/actions/businessListAction";
+import { clientLogin } from "../../../../redux/actions/clientAuthAction";
 
-export default function CategoryDynamicPage() {
+const createSlug = (text) => {
+  if (typeof text !== "string" || !text.trim()) return "unknown";
+
+  return (
+    text
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "") || "unknown"
+  );
+};
+
+const CategoryDynamicPage = () => {
   const { categorySlug } = useParams();
   const { state } = useLocation();
   const dispatch = useDispatch();
@@ -21,26 +32,48 @@ export default function CategoryDynamicPage() {
   const realCategoryName =
     state?.categoryName || categorySlug.replace(/-/g, " ");
 
-  const { categoryBusinessList = [], loading } = useSelector(
+  const { categoryBusinessList = [], loading, error } = useSelector(
     (s) => s.businessListReducer || {}
   );
 
+  const clientToken = useSelector(
+    (s) => s.clientAuth?.accessToken
+  );
+
   useEffect(() => {
+    if (!clientToken) {
+      dispatch(clientLogin());
+      return;
+    }
+
+    if (!categoryBusinessList.length) {
+      dispatch(getBusinessByCategory(realCategoryName));
+    }
+  }, [
+    clientToken,
+    categoryBusinessList.length,
+    realCategoryName,
+    dispatch,
+  ]);
+
+  const handleRetry = useCallback(() => {
     dispatch(getBusinessByCategory(realCategoryName));
   }, [dispatch, realCategoryName]);
 
-  if (loading) {
-    return <p className="loading-text">Loading categories...</p>;
-  }
 
-  if (!loading && categoryBusinessList.length === 0) {
+
+  if (error) {
     return (
       <div className="no-results-container">
-        <p className="no-results-title">
-          No "{realCategoryName}" found 😔
+        <p className="no-results-title">Something went wrong 😕</p>
+        <p className="no-results-suggestion">
+          Please try again later.
         </p>
-        <button className="go-home-button" onClick={() => navigate("/home")}>
-          Go to Homepage
+        <button
+          className="go-home-button"
+          onClick={handleRetry}
+        >
+          Retry
         </button>
       </div>
     );
@@ -48,34 +81,73 @@ export default function CategoryDynamicPage() {
 
   return (
     <>
-      <CardsSearch /><br /><br /><br />
+      <CardsSearch />
+
+      <div className="page-spacing" />
+
+      <TopBannerAds category={realCategoryName} />
+
+      {loading && (
+        <p className="loading-text">
+          Loading {realCategoryName}...
+        </p>
+      )}
+
+      {!loading && categoryBusinessList.length === 0 && (
+        <div className="no-results-container">
+          <p className="no-results-title">
+            No {realCategoryName} Found 😔
+          </p>
+          <p className="no-results-suggestion">
+            We don’t have businesses listed under this category right now.
+          </p>
+          <button
+            className="go-home-button"
+            onClick={() => navigate("/home")}
+          >
+            Go to Homepage
+          </button>
+        </div>
+      )}
 
       <div className="restaurants-list-wrapper">
-        {categoryBusinessList.map((b) => {
-          const nameSlug = slugify(b.businessName);
-          const addressSlug = slugify(b.street || "unknown");
-          const locationSlug = slugify(b.location || "unknown");
+        {categoryBusinessList.map((business) => {
+          const averageRating =
+            typeof business.averageRating === "number"
+              ? business.averageRating.toFixed(1)
+              : "0.0";
 
-          const slug = `${nameSlug}-${addressSlug}-${locationSlug}`;
-          const businessUrl = `/business/${slug}`;
+          const totalRatings = business.reviews?.length || 0;
+
+          const locationSlug = createSlug(business.location);
+          const businessSlug = createSlug(
+            `${business.businessName}-${business.street}`
+          );
+
+          const businessUrl = `/${locationSlug}/${businessSlug}/${business._id}`;
 
           return (
             <CardDesign
-              key={b._id}
-              title={b.businessName}
-              phone={b.contact}
-              whatsapp={b.whatsappNumber}
-              address={b.location}
-              details={`Experience: ${b.experience} | Category: ${b.category}`}
-              imageSrc={b.bannerImage || "https://via.placeholder.com/120x100?text=Logo"}
-              rating={b.averageRating?.toFixed(1) || 0}
-              reviews={b.reviews?.length || 0}
+              key={business._id}
+              title={business.businessName}
+              phone={business.contact}
+              whatsapp={business.whatsappNumber}
+              address={business.location}
+              details={`Experience: ${business.experience} | Category: ${business.category}`}
+              imageSrc={
+                business.bannerImage ||
+                "https://via.placeholder.com/120x100?text=Logo"
+              }
+              rating={averageRating}
+              reviews={totalRatings}
               to={businessUrl}
-              state={{ id: b._id }} 
+              state={{ id: business._id }}
             />
           );
         })}
       </div>
     </>
   );
-}
+};
+
+export default CategoryDynamicPage;

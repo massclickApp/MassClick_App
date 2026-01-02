@@ -1,78 +1,70 @@
-/* --- restuarants.css --- */
-
 .restaurants-list-wrapper {
     width: 100%;
-    max-width: 1200px; /* Standard maximum width for main content on large screens */
-    margin: 20px auto; /* Center the container horizontally, add vertical spacing */
-    
-    display: grid;
-    
-    grid-template-columns: 1fr; 
-    gap: 15px; /* Spacing between the list items (cards) */
-    padding: 0 20px; /* Horizontal padding for desktop/tablet screens */
-    box-sizing: border-box; /* Include padding/border in element's total width */
-}
-/* Styling for the No Results Message */
+    max-width: 1200px;
+    margin: 20px auto;
 
-/* --- INTERNATIONAL-LEVEL NO RESULTS DESIGN --- */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.page-spacing {
+    margin-bottom: 100px;
+}
+
+.loading-text {
+    text-align: center;
+    font-size: 16px;
+    padding: 20px;
+    color: #666;
+}
 
 .no-results-container {
-    /* Center and define boundaries */
-    max-width: 650px; /* Slightly wider for better space */
-    margin: 80px auto; /* More vertical space */
+    max-width: 650px;
+    margin: 80px auto;
     padding: 50px 30px;
-    
-    /* Modern container style */
+
     text-align: center;
-    border: none; /* Remove the dashed border */
-    border-radius: 12px; /* Smoother, larger radius */
-    background: #ffffff; /* Crisp white background */
-    
-    /* Stronger, professional shadow */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Deeper, softer shadow */
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
-/* 1. Visual Element (The Icon/Emoji) */
 .no-results-title {
-    font-size: 32px; /* Larger, more authoritative title */
+    font-size: 32px;
     font-weight: 700;
-    color: #1a1a1a; /* Very dark text for contrast */
-    margin-bottom: 5px;
-    
-    /* Add an impactful, larger icon/emoji */
+    color: #1a1a1a;
+
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .no-results-title::before {
-    /* Use a visually strong, neutral icon */
-    content: "🔎"; /* Magnifying glass, or use a proper icon library */
-    font-size: 40px; 
+    content: "🔎";
+    font-size: 40px;
     margin-right: 15px;
 }
 
-
-/* 2. Core Messaging */
 .no-results-suggestion {
-    font-size: 18px; /* Slightly larger, easier to read */
-    color: #666; /* Soft gray for body text */
+    font-size: 18px;
+    color: #666;
     margin-top: 15px;
     line-height: 1.6;
 }
 
-/* 3. Call to Action (The most important part after the message) */
 .no-results-action {
     font-size: 18px;
     font-weight: 600;
-    color: #333; /* Make this suggestion stand out */
-    margin-top: 30px;
-    margin-bottom: 30px;
+    color: #333;
+    margin: 30px 0;
 }
 
-/* 4. The Button (Make it look like a primary action) */
 .go-home-button {
-    background-color: #007bff; /* Primary Brand Color */
+    background-color: #007bff;
     color: white;
     font-size: 16px;
     font-weight: 600;
@@ -80,30 +72,27 @@
     border: none;
     border-radius: 6px;
     cursor: pointer;
+
     transition: background-color 0.3s ease, transform 0.1s ease;
-    
-    /* Separation from other elements */
-    margin-top: 15px;
-    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3); /* Subtle button shadow */
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
 }
 
 .go-home-button:hover {
-    background-color: #0056b3; /* Darker on hover */
-    transform: translateY(-2px); /* Slight lift effect */
+    background-color: #0056b3;
+    transform: translateY(-2px);
 }
 
 @media (max-width: 992px) {
     .restaurants-list-wrapper {
-        max-width: 960px; /* Adjust max-width slightly for smaller tablets */
+        max-width: 960px;
         padding: 0 15px;
     }
 }
 
-/* Mobile View (max-width: 600px) */
 @media (max-width: 600px) {
     .restaurants-list-wrapper {
-        /* On mobile, cards should be full width and use more vertical padding */
         margin: 10px auto;
-        padding: 0 10px; /* Reduced padding on very small screens */
+        padding: 0 10px;
+        gap: 12px;
     }
 }

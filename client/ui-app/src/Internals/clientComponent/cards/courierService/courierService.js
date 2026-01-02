@@ -1,50 +1,72 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import "./courierService.css";
+
 import CardDesign from "../cards.js";
-import { useDispatch, useSelector } from "react-redux";
-import { getBusinessByCategory } from "../../../../redux/actions/businessListAction.js";
 import CardsSearch from "../../CardsSearch/CardsSearch.js";
+
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+
+import { getBusinessByCategory } from "../../../../redux/actions/businessListAction.js";
+import { clientLogin } from "../../../../redux/actions/clientAuthAction.js";
+import TopBannerAds from "../../banners/topBanner/topBanner.js";
+
+const CATEGORY = "courier service";
+
+const createSlug = (text) => {
+    if (typeof text !== "string" || !text.trim()) return "unknown";
+
+    return (
+        text
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/(^-|-$)+/g, "") || "unknown"
+    );
+};
 
 const CourierServiceCards = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { categoryBusinessList = [], loading } = useSelector(
+    const { categoryBusinessList = [], loading, error } = useSelector(
         (state) => state.businessListReducer || {}
     );
 
+    const clientToken = useSelector(
+        (state) => state.clientAuth?.accessToken
+    );
+
     useEffect(() => {
-        dispatch(getBusinessByCategory("courier service"));
+        if (!clientToken) {
+            dispatch(clientLogin());
+            return;
+        }
+
+        if (!categoryBusinessList.length) {
+            dispatch(getBusinessByCategory(CATEGORY));
+        }
+    }, [clientToken, categoryBusinessList.length, dispatch]);
+
+
+    const handleRetry = useCallback(() => {
+        dispatch(getBusinessByCategory(CATEGORY));
     }, [dispatch]);
 
-    const createSlug = (text) => {
-        if (!text) return "";
-        return text
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, "-")
-            .replace(/(^-|-$)+/g, "");
-    };
 
-    if (loading) {
-        return <p className="loading-text">Loading courier services...</p>;
-    }
 
-    if (!loading && categoryBusinessList.length === 0) {
+    if (error) {
         return (
             <div className="no-results-container">
-                <p className="no-results-title">No Courier Services Found Yet 😔</p>
+                <p className="no-results-title">Something went wrong 😕</p>
                 <p className="no-results-suggestion">
-                    It looks like we don't have any courier service businesses in our data right now.
-                </p>
-                <p className="no-results-action">
-                    Please try another category or check back later!
+                    Please try again later.
                 </p>
                 <button
                     className="go-home-button"
-                    onClick={() => navigate("/home")}
+                    onClick={handleRetry}
                 >
-                    Go to Homepage
+                    Retry
                 </button>
             </div>
         );
@@ -53,19 +75,45 @@ const CourierServiceCards = () => {
     return (
         <>
             <CardsSearch />
-            <br /><br /><br />
+
+            <div className="page-spacing" />
+
+            <TopBannerAds category={CATEGORY} />
+
+            {loading && (
+                <p className="loading-text">Loading courier services...</p>
+            )}
+
+            {!loading && categoryBusinessList.length === 0 && (
+                <div className="no-results-container">
+                    <p className="no-results-title">No Courier Services Found 😔</p>
+                    <p className="no-results-suggestion">
+                        We don’t have courier services listed right now.
+                    </p>
+                    <button
+                        className="go-home-button"
+                        onClick={() => navigate("/home")}
+                    >
+                        Go to Homepage
+                    </button>
+                </div>
+            )}
 
             <div className="restaurants-list-wrapper">
                 {categoryBusinessList.map((business) => {
-                    const avgRating = business.averageRating?.toFixed(1) || 0;
+                    const averageRating =
+                        typeof business.averageRating === "number"
+                            ? business.averageRating.toFixed(1)
+                            : "0.0";
+
                     const totalRatings = business.reviews?.length || 0;
 
-                    const nameSlug = createSlug(business.businessName);
-                    const locationSlug = createSlug(business.location || "unknown");
-                    const addressSlug = createSlug(business.street || "unknown");
+                    const locationSlug = createSlug(business.location);
+                    const businessSlug = createSlug(
+                        `${business.businessName}-${business.street}`
+                    );
 
-                    const slug = `${nameSlug}-${addressSlug}-${locationSlug}`;
-                    const businessUrl = `/business/${slug}`;
+                    const businessUrl = `/${locationSlug}/${businessSlug}/${business._id}`;
 
                     return (
                         <CardDesign
@@ -73,16 +121,16 @@ const CourierServiceCards = () => {
                             title={business.businessName}
                             phone={business.contact}
                             whatsapp={business.whatsappNumber}
-                            address={`${business.location}`}
+                            address={business.location}
                             details={`Experience: ${business.experience} | Category: ${business.category}`}
                             imageSrc={
                                 business.bannerImage ||
                                 "https://via.placeholder.com/120x100?text=Logo"
                             }
-                            rating={avgRating}
+                            rating={averageRating}
                             reviews={totalRatings}
                             to={businessUrl}
-                            state={{ id: business._id }}  
+                            state={{ id: business._id }}
                         />
                     );
                 })}
