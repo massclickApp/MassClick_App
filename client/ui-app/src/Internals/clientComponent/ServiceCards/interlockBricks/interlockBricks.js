@@ -9,50 +9,38 @@ import CardsSearch from "../../../clientComponent/CardsSearch/CardsSearch.js";
 import TopBannerAds from "../../../clientComponent/banners/topBanner/topBanner.js";
 
 import { getBusinessByCategory } from "../../../../redux/actions/businessListAction.js";
-import { clientLogin } from "../../../../redux/actions/clientAuthAction.js";
 
 const CATEGORY = "interlock bricks";
 
 const createSlug = (text) => {
   if (typeof text !== "string" || !text.trim()) return "unknown";
 
-  return (
-    text
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "") || "unknown"
-  );
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
 };
 
 const InterlockBricksCards = () => {
-   const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { categoryBusinessList = [], loading, error } = useSelector(
-    (state) => state.businessListReducer || {}
+  const { categoryBusinessList = {}, loading, error } = useSelector(
+    (state) => state.businessListReducer
   );
 
-  const clientToken = useSelector(
-    (state) => state.clientAuth?.accessToken
-  );
+  const interlockBricksList = categoryBusinessList[CATEGORY] || [];
 
   useEffect(() => {
-    if (!clientToken) {
-      dispatch(clientLogin());
-      return;
-    }
-
-    if (!categoryBusinessList.length) {
+    if (!interlockBricksList.length) {
       dispatch(getBusinessByCategory(CATEGORY));
     }
-  }, [clientToken, categoryBusinessList.length, dispatch]);
-
+  }, [interlockBricksList.length, dispatch]);
 
   const handleRetry = useCallback(() => {
     dispatch(getBusinessByCategory(CATEGORY));
   }, [dispatch]);
-
 
   if (error) {
     return (
@@ -80,12 +68,16 @@ const InterlockBricksCards = () => {
       <TopBannerAds category={CATEGORY} />
 
       {loading && (
-        <p className="loading-text">Loading interlock Bricks...</p>
+        <p className="loading-text">
+          Loading interlock bricks...
+        </p>
       )}
 
-      {!loading && categoryBusinessList.length === 0 && (
+      {!loading && interlockBricksList.length === 0 && (
         <div className="no-results-container">
-          <p className="no-results-title">No Interlock Bricks Found 😔</p>
+          <p className="no-results-title">
+            No Interlock Bricks Found 😔
+          </p>
           <p className="no-results-suggestion">
             We don’t have interlock bricks listed right now.
           </p>
@@ -99,7 +91,7 @@ const InterlockBricksCards = () => {
       )}
 
       <div className="restaurants-list-wrapper">
-        {categoryBusinessList.map((business) => {
+        {interlockBricksList.map((business) => {
           const averageRating =
             typeof business.averageRating === "number"
               ? business.averageRating.toFixed(1)

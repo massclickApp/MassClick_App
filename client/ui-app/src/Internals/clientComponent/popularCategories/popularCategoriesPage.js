@@ -1,23 +1,24 @@
 import React, { useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import "./popularCategories.css";
 import { useDispatch, useSelector } from "react-redux";
-import { getBusinessByCategory } from "../../../redux/actions/businessListAction";
-import { clientLogin } from "../../../redux/actions/clientAuthAction";
+
+import "./popularCategories.css";
+
 import CardsSearch from "../CardsSearch/CardsSearch";
 import CardDesign from "../cards/cards";
 import TopBannerAds from "../banners/topBanner/topBanner";
 
+import { getBusinessByCategory } from "../../../redux/actions/businessListAction";
+
+/* ---------- slug helper ---------- */
 const createSlug = (text) => {
   if (typeof text !== "string" || !text.trim()) return "unknown";
 
-  return (
-    text
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "") || "unknown"
-  );
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
 };
 
 export default function PopularCategoryPage() {
@@ -25,38 +26,30 @@ export default function PopularCategoryPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const clientToken = useSelector(
-    (s) => s.clientAuth?.accessToken
-  );
-
-  const { categoryBusinessList = [], loading, error } = useSelector(
-    (s) => s.businessListReducer || {}
-  );
-
   const readableCategory = categorySlug
     ?.replace(/-/g, " ")
     .toLowerCase();
 
-  useEffect(() => {
-    if (!clientToken) {
-      dispatch(clientLogin());
-      return;
-    }
+  const { categoryBusinessList = {}, loading, error } = useSelector(
+    (s) => s.businessListReducer
+  );
 
-    if (!categoryBusinessList.length) {
+  // ✅ category-specific list
+  const categoryList = categoryBusinessList[readableCategory] || [];
+
+  /* ---------- Fetch ---------- */
+  useEffect(() => {
+    if (!categoryList.length) {
       dispatch(getBusinessByCategory(readableCategory));
     }
-  }, [clientToken, categoryBusinessList.length, dispatch]);
+  }, [categoryList.length, readableCategory, dispatch]);
 
-
+  /* ---------- Retry ---------- */
   const handleRetry = useCallback(() => {
     dispatch(getBusinessByCategory(readableCategory));
-  }, [dispatch]);
+  }, [dispatch, readableCategory]);
 
-  if (loading) {
-    return <p className="loading-text">Loading results...</p>;
-  }
-
+  /* ---------- Error ---------- */
   if (error) {
     return (
       <div className="no-results-container">
@@ -75,7 +68,7 @@ export default function PopularCategoryPage() {
   }
 
   return (
-   <>
+    <>
       <CardsSearch />
 
       <div className="page-spacing" />
@@ -83,14 +76,18 @@ export default function PopularCategoryPage() {
       <TopBannerAds category={readableCategory} />
 
       {loading && (
-        <p className="loading-text">Loading readableCategory...</p>
+        <p className="loading-text">
+          Loading {readableCategory}...
+        </p>
       )}
 
-      {!loading && categoryBusinessList.length === 0 && (
+      {!loading && categoryList.length === 0 && (
         <div className="no-results-container">
-          <p className="no-results-title">No {readableCategory} Found 😔</p>
+          <p className="no-results-title">
+            No {readableCategory} Found 😔
+          </p>
           <p className="no-results-suggestion">
-            We don’t have restaurants listed right now.
+            We don’t have businesses listed under this category right now.
           </p>
           <button
             className="go-home-button"
@@ -102,7 +99,7 @@ export default function PopularCategoryPage() {
       )}
 
       <div className="restaurants-list-wrapper">
-        {categoryBusinessList.map((business) => {
+        {categoryList.map((business) => {
           const averageRating =
             typeof business.averageRating === "number"
               ? business.averageRating.toFixed(1)

@@ -9,50 +9,38 @@ import CardsSearch from "../../../clientComponent/CardsSearch/CardsSearch.js";
 import TopBannerAds from "../../../clientComponent/banners/topBanner/topBanner.js";
 
 import { getBusinessByCategory } from "../../../../redux/actions/businessListAction.js";
-import { clientLogin } from "../../../../redux/actions/clientAuthAction.js";
 
 const CATEGORY = "real estate";
 
 const createSlug = (text) => {
   if (typeof text !== "string" || !text.trim()) return "unknown";
 
-  return (
-    text
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "") || "unknown"
-  );
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
 };
 
 const RealEstateCards = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { categoryBusinessList = [], loading, error } = useSelector(
-    (state) => state.businessListReducer || {}
+  const { categoryBusinessList = {}, loading, error } = useSelector(
+    (state) => state.businessListReducer
   );
 
-  const clientToken = useSelector(
-    (state) => state.clientAuth?.accessToken
-  );
+  const realEstateList = categoryBusinessList[CATEGORY] || [];
 
   useEffect(() => {
-    if (!clientToken) {
-      dispatch(clientLogin());
-      return;
-    }
-
-    if (!categoryBusinessList.length) {
+    if (!realEstateList.length) {
       dispatch(getBusinessByCategory(CATEGORY));
     }
-  }, [clientToken, categoryBusinessList.length, dispatch]);
-
+  }, [realEstateList.length, dispatch]);
 
   const handleRetry = useCallback(() => {
     dispatch(getBusinessByCategory(CATEGORY));
   }, [dispatch]);
-
 
   if (error) {
     return (
@@ -80,12 +68,16 @@ const RealEstateCards = () => {
       <TopBannerAds category={CATEGORY} />
 
       {loading && (
-        <p className="loading-text">Loading real Estate...</p>
+        <p className="loading-text">
+          Loading real estate...
+        </p>
       )}
 
-      {!loading && categoryBusinessList.length === 0 && (
+      {!loading && realEstateList.length === 0 && (
         <div className="no-results-container">
-          <p className="no-results-title">No Real Estate Found 😔</p>
+          <p className="no-results-title">
+            No Real Estate Found 😔
+          </p>
           <p className="no-results-suggestion">
             We don’t have real estate listed right now.
           </p>
@@ -99,7 +91,7 @@ const RealEstateCards = () => {
       )}
 
       <div className="restaurants-list-wrapper">
-        {categoryBusinessList.map((business) => {
+        {realEstateList.map((business) => {
           const averageRating =
             typeof business.averageRating === "number"
               ? business.averageRating.toFixed(1)

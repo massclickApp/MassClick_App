@@ -9,49 +9,38 @@ import CardsSearch from "../../../clientComponent/CardsSearch/CardsSearch.js";
 import TopBannerAds from "../../../clientComponent/banners/topBanner/topBanner.js";
 
 import { getBusinessByCategory } from "../../../../redux/actions/businessListAction.js";
-import { clientLogin } from "../../../../redux/actions/clientAuthAction.js";
 
 const CATEGORY = "beauty parlour";
 
 const createSlug = (text) => {
   if (typeof text !== "string" || !text.trim()) return "unknown";
 
-  return (
-    text
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "") || "unknown"
-  );
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
 };
 
 const BeautyParloursCards = () => {
- const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { categoryBusinessList = [], loading, error } = useSelector(
-    (state) => state.businessListReducer || {}
+  const { categoryBusinessList = {}, loading, error } = useSelector(
+    (state) => state.businessListReducer
   );
 
-  const clientToken = useSelector(
-    (state) => state.clientAuth?.accessToken
-  );
+  const beautyParlourList = categoryBusinessList[CATEGORY] || [];
 
   useEffect(() => {
-    if (!clientToken) {
-      dispatch(clientLogin());
-      return;
-    }
-
-    if (!categoryBusinessList.length) {
+    if (!beautyParlourList.length) {
       dispatch(getBusinessByCategory(CATEGORY));
     }
-  }, [clientToken, categoryBusinessList.length, dispatch]);
+  }, [beautyParlourList.length, dispatch]);
 
   const handleRetry = useCallback(() => {
     dispatch(getBusinessByCategory(CATEGORY));
   }, [dispatch]);
-
 
   if (error) {
     return (
@@ -79,10 +68,10 @@ const BeautyParloursCards = () => {
       <TopBannerAds category={CATEGORY} />
 
       {loading && (
-        <p className="loading-text">Loading beauty Parlours...</p>
+        <p className="loading-text">Loading Beauty Parlours...</p>
       )}
 
-      {!loading && categoryBusinessList.length === 0 && (
+      {!loading && beautyParlourList.length === 0 && (
         <div className="no-results-container">
           <p className="no-results-title">No Beauty Parlours Found 😔</p>
           <p className="no-results-suggestion">
@@ -98,7 +87,7 @@ const BeautyParloursCards = () => {
       )}
 
       <div className="restaurants-list-wrapper">
-        {categoryBusinessList.map((business) => {
+        {beautyParlourList.map((business) => {
           const averageRating =
             typeof business.averageRating === "number"
               ? business.averageRating.toFixed(1)

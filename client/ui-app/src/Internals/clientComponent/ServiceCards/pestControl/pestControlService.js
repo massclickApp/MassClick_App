@@ -9,44 +9,34 @@ import CardsSearch from "../../../clientComponent/CardsSearch/CardsSearch.js";
 import TopBannerAds from "../../../clientComponent/banners/topBanner/topBanner.js";
 
 import { getBusinessByCategory } from "../../../../redux/actions/businessListAction.js";
-import { clientLogin } from "../../../../redux/actions/clientAuthAction.js";
 
 const CATEGORY = "pest control";
 
 const createSlug = (text) => {
   if (typeof text !== "string" || !text.trim()) return "unknown";
 
-  return (
-    text
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "") || "unknown"
-  );
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
 };
 
 const PestControlCards = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { categoryBusinessList = [], loading, error } = useSelector(
-    (state) => state.businessListReducer || {}
+  const { categoryBusinessList = {}, loading, error } = useSelector(
+    (state) => state.businessListReducer
   );
 
-  const clientToken = useSelector(
-    (state) => state.clientAuth?.accessToken
-  );
+  const pestControlList = categoryBusinessList[CATEGORY] || [];
 
   useEffect(() => {
-    if (!clientToken) {
-      dispatch(clientLogin());
-      return;
-    }
-
-    if (!categoryBusinessList.length) {
+    if (!pestControlList.length) {
       dispatch(getBusinessByCategory(CATEGORY));
     }
-  }, [clientToken, categoryBusinessList.length, dispatch]);
+  }, [pestControlList.length, dispatch]);
 
   const handleRetry = useCallback(() => {
     dispatch(getBusinessByCategory(CATEGORY));
@@ -78,12 +68,16 @@ const PestControlCards = () => {
       <TopBannerAds category={CATEGORY} />
 
       {loading && (
-        <p className="loading-text">Loading pest Control...</p>
+        <p className="loading-text">
+          Loading pest control...
+        </p>
       )}
 
-      {!loading && categoryBusinessList.length === 0 && (
+      {!loading && pestControlList.length === 0 && (
         <div className="no-results-container">
-          <p className="no-results-title">No Pest Control Found 😔</p>
+          <p className="no-results-title">
+            No Pest Control Found 😔
+          </p>
           <p className="no-results-suggestion">
             We don’t have pest control listed right now.
           </p>
@@ -97,7 +91,7 @@ const PestControlCards = () => {
       )}
 
       <div className="restaurants-list-wrapper">
-        {categoryBusinessList.map((business) => {
+        {pestControlList.map((business) => {
           const averageRating =
             typeof business.averageRating === "number"
               ? business.averageRating.toFixed(1)

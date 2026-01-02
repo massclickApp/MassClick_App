@@ -1,52 +1,42 @@
 import React, { useEffect, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
 import "./beautySpa.css";
+
 import CardDesign from "../cards.js";
 import CardsSearch from "../../CardsSearch/CardsSearch.js";
-import { useDispatch, useSelector } from "react-redux";
-import { getBusinessByCategory } from "../../../../redux/actions/businessListAction.js";
-import { clientLogin } from "../../../../redux/actions/clientAuthAction.js";
-import { useNavigate } from "react-router-dom";
 import TopBannerAds from "../../banners/topBanner/topBanner.js";
+
+import { getBusinessByCategory } from "../../../../redux/actions/businessListAction.js";
 
 const CATEGORY = "beauty spa";
 
 const createSlug = (text) => {
   if (typeof text !== "string" || !text.trim()) return "unknown";
 
-  return (
-    text
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "") || "unknown"
-  );
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
 };
 
 const BeautySpaCards = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-
-  const {
-    categoryBusinessList = [],
-    loading,
-    error,
-  } = useSelector((state) => state.businessListReducer || {});
-
-  const clientToken = useSelector(
-    (state) => state.clientAuth?.accessToken
+  const { categoryBusinessList = {}, loading, error } = useSelector(
+    (state) => state.businessListReducer
   );
 
-  useEffect(() => {
-    if (!clientToken) {
-      dispatch(clientLogin());
-      return;
-    }
+  const beautySpaList = categoryBusinessList[CATEGORY] || [];
 
-    if (!categoryBusinessList.length) {
+  useEffect(() => {
+    if (!beautySpaList.length) {
       dispatch(getBusinessByCategory(CATEGORY));
     }
-  }, [clientToken, categoryBusinessList.length, dispatch]);
+  }, [beautySpaList.length, dispatch]);
 
   const handleRetry = useCallback(() => {
     dispatch(getBusinessByCategory(CATEGORY));
@@ -76,15 +66,16 @@ const BeautySpaCards = () => {
       <CardsSearch />
 
       <div className="page-spacing" />
+
       <TopBannerAds category={CATEGORY} />
 
       {loading && (
         <p className="loading-text">
-          Loading beautySpa...
+          Loading beauty & spa...
         </p>
       )}
 
-      {!loading && categoryBusinessList.length === 0 && (
+      {!loading && beautySpaList.length === 0 && (
         <div className="no-results-container">
           <p className="no-results-title">No Beauty / Spa Found 😔</p>
           <p className="no-results-suggestion">
@@ -100,7 +91,7 @@ const BeautySpaCards = () => {
       )}
 
       <div className="restaurants-list-wrapper">
-        {categoryBusinessList.map((business) => {
+        {beautySpaList.map((business) => {
           const averageRating = Number.isFinite(business.averageRating)
             ? business.averageRating.toFixed(1)
             : "0.0";

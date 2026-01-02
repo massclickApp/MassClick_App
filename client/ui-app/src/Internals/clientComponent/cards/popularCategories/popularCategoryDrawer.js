@@ -9,18 +9,15 @@ import CardDesign from "../cards";
 import TopBannerAds from "../../banners/topBanner/topBanner";
 
 import { getBusinessByCategory } from "../../../../redux/actions/businessListAction";
-import { clientLogin } from "../../../../redux/actions/clientAuthAction";
 
 const createSlug = (text) => {
   if (typeof text !== "string" || !text.trim()) return "unknown";
 
-  return (
-    text
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "") || "unknown"
-  );
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
 };
 
 const CategoryDynamicPage = () => {
@@ -32,35 +29,21 @@ const CategoryDynamicPage = () => {
   const realCategoryName =
     state?.categoryName || categorySlug.replace(/-/g, " ");
 
-  const { categoryBusinessList = [], loading, error } = useSelector(
-    (s) => s.businessListReducer || {}
+  const { categoryBusinessList = {}, loading, error } = useSelector(
+    (s) => s.businessListReducer
   );
 
-  const clientToken = useSelector(
-    (s) => s.clientAuth?.accessToken
-  );
+  const businessList = categoryBusinessList[realCategoryName] || [];
 
   useEffect(() => {
-    if (!clientToken) {
-      dispatch(clientLogin());
-      return;
-    }
-
-    if (!categoryBusinessList.length) {
+    if (!businessList.length) {
       dispatch(getBusinessByCategory(realCategoryName));
     }
-  }, [
-    clientToken,
-    categoryBusinessList.length,
-    realCategoryName,
-    dispatch,
-  ]);
+  }, [businessList.length, realCategoryName, dispatch]);
 
   const handleRetry = useCallback(() => {
     dispatch(getBusinessByCategory(realCategoryName));
   }, [dispatch, realCategoryName]);
-
-
 
   if (error) {
     return (
@@ -93,7 +76,7 @@ const CategoryDynamicPage = () => {
         </p>
       )}
 
-      {!loading && categoryBusinessList.length === 0 && (
+      {!loading && businessList.length === 0 && (
         <div className="no-results-container">
           <p className="no-results-title">
             No {realCategoryName} Found 😔
@@ -111,7 +94,7 @@ const CategoryDynamicPage = () => {
       )}
 
       <div className="restaurants-list-wrapper">
-        {categoryBusinessList.map((business) => {
+        {businessList.map((business) => {
           const averageRating =
             typeof business.averageRating === "number"
               ? business.averageRating.toFixed(1)

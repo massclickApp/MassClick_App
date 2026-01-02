@@ -9,44 +9,34 @@ import CardsSearch from "../../../clientComponent/CardsSearch/CardsSearch.js";
 import TopBannerAds from "../../../clientComponent/banners/topBanner/topBanner.js";
 
 import { getBusinessByCategory } from "../../../../redux/actions/businessListAction.js";
-import { clientLogin } from "../../../../redux/actions/clientAuthAction.js";
 
 const CATEGORY = "steel dealer";
 
 const createSlug = (text) => {
   if (typeof text !== "string" || !text.trim()) return "unknown";
 
-  return (
-    text
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "") || "unknown"
-  );
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
 };
 
 const SteelDealersCards = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { categoryBusinessList = [], loading, error } = useSelector(
-    (state) => state.businessListReducer || {}
+  const { categoryBusinessList = {}, loading, error } = useSelector(
+    (state) => state.businessListReducer
   );
 
-  const clientToken = useSelector(
-    (state) => state.clientAuth?.accessToken
-  );
+  const steelDealersList = categoryBusinessList[CATEGORY] || [];
 
   useEffect(() => {
-    if (!clientToken) {
-      dispatch(clientLogin());
-      return;
-    }
-
-    if (!categoryBusinessList.length) {
+    if (!steelDealersList.length) {
       dispatch(getBusinessByCategory(CATEGORY));
     }
-  }, [clientToken, categoryBusinessList.length, dispatch]);
+  }, [steelDealersList.length, dispatch]);
 
   const handleRetry = useCallback(() => {
     dispatch(getBusinessByCategory(CATEGORY));
@@ -78,12 +68,16 @@ const SteelDealersCards = () => {
       <TopBannerAds category={CATEGORY} />
 
       {loading && (
-        <p className="loading-text">Loading steel Dealers...</p>
+        <p className="loading-text">
+          Loading Steel Dealers...
+        </p>
       )}
 
-      {!loading && categoryBusinessList.length === 0 && (
+      {!loading && steelDealersList.length === 0 && (
         <div className="no-results-container">
-          <p className="no-results-title">No Steel Dealers Found 😔</p>
+          <p className="no-results-title">
+            No Steel Dealers Found 😔
+          </p>
           <p className="no-results-suggestion">
             We don’t have steel dealers listed right now.
           </p>
@@ -97,7 +91,7 @@ const SteelDealersCards = () => {
       )}
 
       <div className="restaurants-list-wrapper">
-        {categoryBusinessList.map((business) => {
+        {steelDealersList.map((business) => {
           const averageRating =
             typeof business.averageRating === "number"
               ? business.averageRating.toFixed(1)
