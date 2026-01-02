@@ -9,7 +9,6 @@ import CardsSearch from "../../CardsSearch/CardsSearch.js";
 import TopBannerAds from "../../banners/topBanner/topBanner.js";
 
 import { getBusinessByCategory } from "../../../../redux/actions/businessListAction.js";
-import { clientLogin } from "../../../../redux/actions/clientAuthAction.js";
 
 const CATEGORY = "restaurant";
 
@@ -33,20 +32,11 @@ const RestaurantsCards = () => {
 
   const restaurantList = categoryBusinessList[CATEGORY] || [];
 
-  const clientToken = useSelector(
-    (state) => state.clientAuth?.accessToken
-  );
-
   useEffect(() => {
-    if (!clientToken) {
-      dispatch(clientLogin());
-      return;
-    }
-
     if (!restaurantList.length) {
       dispatch(getBusinessByCategory(CATEGORY));
     }
-  }, [clientToken, restaurantList.length, dispatch]);
+  }, [restaurantList.length, dispatch]);
 
   const handleRetry = useCallback(() => {
     dispatch(getBusinessByCategory(CATEGORY));
