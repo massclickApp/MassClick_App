@@ -28,7 +28,7 @@ app.use(cors({
   origin: [
     'https://massclick.in',
     'https://www.massclick.in',
-    'http://localhost:3000',
+    // 'http://localhost:3000',
 
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

@@ -170,8 +170,12 @@ export const getBusinessByCategory = (category) => async (dispatch) => {
 
     dispatch({
       type: CATEGORY_BUSINESS_SUCCESS,
-      payload: response.data,
+      payload: {
+        category,
+        data: response.data,
+      },
     });
+
 
   } catch (error) {
     dispatch({
@@ -205,7 +209,7 @@ export const toggleBusinessStatus = ({ id, newStatus }) => async (dispatch) => {
   dispatch({ type: ACTIVE_BUSINESS_REQUEST });
 
   try {
-       const token = localStorage.getItem("accessToken");
+    const token = localStorage.getItem("accessToken");
 
 
     if (!token) {

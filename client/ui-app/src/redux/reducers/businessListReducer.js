@@ -37,7 +37,7 @@ const initialState = {
   pageNo: 1,
   pageSize: 10,
   clientBusinessList: [],
-  categoryBusinessList: [],
+  categoryBusinessList: {},
   loading: false,
   error: null,
 
@@ -228,17 +228,25 @@ export default function businessListReducer(state = initialState, action) {
       return {
         ...state,
         loading: false,
-        categoryBusinessList: action.payload,
+        categoryBusinessList: {
+          ...state.categoryBusinessList,
+          [action.payload.category]: action.payload.data,
+        },
         error: null,
       };
+
 
     case CATEGORY_BUSINESS_FAILURE:
       return {
         ...state,
         loading: false,
-        categoryBusinessList: [],
-        error: action.payload,
+        categoryBusinessList: {
+          ...state.categoryBusinessList,
+          [action.payload.category]: [],
+        },
+        error: action.payload.error,
       };
+
 
     /** ------------------- TRENDING ------------------- **/
     case FETCH_TRENDING_REQUEST:

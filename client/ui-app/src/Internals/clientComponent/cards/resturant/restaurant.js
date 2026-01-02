@@ -16,24 +16,22 @@ const CATEGORY = "restaurant";
 const createSlug = (text) => {
   if (typeof text !== "string" || !text.trim()) return "unknown";
 
-  return (
-    text
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "") || "unknown"
-  );
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
 };
 
 const RestaurantsCards = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-
-
-  const { categoryBusinessList = [], loading, error } = useSelector(
-    (state) => state.businessListReducer || {}
+  const { categoryBusinessList = {}, loading, error } = useSelector(
+    (state) => state.businessListReducer
   );
+
+  const restaurantList = categoryBusinessList[CATEGORY] || [];
 
   const clientToken = useSelector(
     (state) => state.clientAuth?.accessToken
@@ -45,17 +43,14 @@ const RestaurantsCards = () => {
       return;
     }
 
-    if (!categoryBusinessList.length) {
+    if (!restaurantList.length) {
       dispatch(getBusinessByCategory(CATEGORY));
     }
-  }, [clientToken, categoryBusinessList.length, dispatch]);
-
+  }, [clientToken, restaurantList.length, dispatch]);
 
   const handleRetry = useCallback(() => {
     dispatch(getBusinessByCategory(CATEGORY));
   }, [dispatch]);
-
-
 
   if (error) {
     return (
@@ -86,7 +81,7 @@ const RestaurantsCards = () => {
         <p className="loading-text">Loading restaurants...</p>
       )}
 
-      {!loading && categoryBusinessList.length === 0 && (
+      {!loading && restaurantList.length === 0 && (
         <div className="no-results-container">
           <p className="no-results-title">No Restaurants Found 😔</p>
           <p className="no-results-suggestion">
@@ -102,7 +97,7 @@ const RestaurantsCards = () => {
       )}
 
       <div className="restaurants-list-wrapper">
-        {categoryBusinessList.map((business) => {
+        {restaurantList.map((business) => {
           const averageRating =
             typeof business.averageRating === "number"
               ? business.averageRating.toFixed(1)

@@ -56,6 +56,7 @@ import AdvertisementPage from './Internals/advertisement/advertisement.js';
 import GlobalDrawer from "./Internals/clientComponent/Drawer/globalDrawer.js";
 // import { useSelector } from "react-redux";
 // import { sendWhatsAppForLead } from "./redux/actions/otpAction.js";
+import { fetchMatchedLeads } from "./redux/actions/leadsAction.js";
 
 
 const ComingSoon = ({ title }) => (
@@ -85,48 +86,11 @@ function App() {
   const [authChecked, setAuthChecked] = useState(false);
   const [showTokenExpired, setShowTokenExpired] = useState(false);
   const dispatch = useDispatch();
-  // const autoSentLeadsRef = React.useRef(new Set());
 
-  // const { leads: leadsData, loading: leadsLoading } = useSelector(
-  //   (state) => state.leads
-  // );
-
-  // useEffect(() => {
-  //   if (leadsLoading || !Array.isArray(leadsData)) return;
-
-  //   const eligibleLeads = leadsData.filter((lead) => {
-  //     const mobile = lead.userDetails?.[0]?.mobileNumber1;
-
-  //     return (
-  //       lead.whatsapp !== true &&
-  //       mobile &&
-  //       mobile.length === 10 &&
-  //       !autoSentLeadsRef.current.has(lead._id)
-  //     );
-  //   });
-
-  //   if (!eligibleLeads.length) return;
-
-  //   const sendSequentially = async () => {
-  //     for (const lead of eligibleLeads) {
-  //       try {
-  //         await new Promise((r) => setTimeout(r, 800));
-
-  //         await dispatch(sendWhatsAppForLead(lead._id));
-
-  //         autoSentLeadsRef.current.add(lead._id);
-  //       } catch (err) {
-  //         console.error("Auto WhatsApp failed:", lead._id, err);
-  //       }
-  //     }
-  //   };
-
-  //   sendSequentially();
-
-  // }, [leadsData, leadsLoading, dispatch]);
-
-
-
+  useEffect(() => {
+    dispatch(fetchMatchedLeads());
+  }, [dispatch]);
+  
   useEffect(() => {
     const initAuth = async () => {
       const accessToken = localStorage.getItem("accessToken");
@@ -169,6 +133,8 @@ function App() {
       </div>
     );
   }
+
+
 
   return (
     <ThemeProvider theme={theme}>
