@@ -148,19 +148,24 @@ function App() {
             <Route path="/admin" element={<Login setIsAuthenticated={setIsAuthenticated} isAuthenticated={isAuthenticated} />} />
             <Route path="/home" element={<BusinessListing />} />
             <Route path="/category/:categorySlug" element={<CategoryDynamicPage />} />
+
             {userMenuItems.map((item) => {
               const Component = item.component || (() => <ComingSoon title={item.name} />);
               return <Route key={item.path} path={item.path} element={<Component />} />;
             })}
+
             {FooterRoutes.map((route) => (
               <Route key={route.path} path={route.path} element={route.element} />
             ))}
+
             <Route path="/:location/:searchTerm" element={<SearchResults />} />
             <Route path="/trending/:categorySlug" element={<TrendingCards />} />
+
             {featuredServices.map((service) => {
               const Component = service.component || (() => <ComingSoon title={service.name} />);
               return <Route key={service.path} path={service.path} element={<Component />} />;
             })}
+
             <Route
               path="/:location/:businessSlug/:id"
               element={<BusinessDetails />}
@@ -172,6 +177,7 @@ function App() {
             <Route path="/advertise" element={<AdvertisePage />} />
             <Route path="/user/search-history" element={<LeadsCardHistory />} />
             <Route path="/business-enquiry" element={<BusinessEnquiry />} />
+
             {categoriesServices.flatMap((category, categoryIndex) =>
               category.items.map((item, itemIndex) => {
                 const path = item.path || item.route || `auto-path-${categoryIndex}-${itemIndex}`;

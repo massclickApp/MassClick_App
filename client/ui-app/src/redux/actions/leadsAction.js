@@ -31,7 +31,6 @@ export const fetchMatchedLeads = () => async (dispatch) => {
       }
     );
 
-   
     const matchedSearchLogs =
       response?.data?.data?.matchedSearchLogs || [];
 

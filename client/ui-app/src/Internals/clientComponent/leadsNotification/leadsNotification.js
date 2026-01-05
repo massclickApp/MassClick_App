@@ -66,7 +66,6 @@ const LeadsNotificationModal = ({ open, onClose }) => {
     dispatch(updateSearchLogRead(lead._id));
   };
 
-
   return (
     <Dialog
       open={open}
@@ -184,7 +183,6 @@ const LeadsNotificationModal = ({ open, onClose }) => {
                     Lead ID: {selectedLead._id}
                   </Typography>
                 </Box>
-
                 <Typography
                   sx={{ cursor: "pointer", color: "#666" }}
                   onClick={() => setSelectedLead(null)}
@@ -192,38 +190,32 @@ const LeadsNotificationModal = ({ open, onClose }) => {
                   Hide
                 </Typography>
               </Box>
-
               <Box sx={{ p: 2 }}>
                 <Box className="ln-row">
                   <PhoneIphoneIcon sx={{ color: "#F7941D" }} />
                   <strong>Mobile:</strong>&nbsp;
                   {selectedLead.mobileNumber1 || "N/A"}
                 </Box>
-
                 <Box className="ln-row">
                   <AttachEmailIcon sx={{ color: "#F7941D" }} />
                   <strong>Email:</strong>&nbsp;
                   {selectedLead.email || "N/A"}
                 </Box>
-
                 <Box className="ln-row">
                   <CategoryIcon sx={{ color: "#F7941D" }} />
                   <strong>Category:</strong>&nbsp;
                   {selectedLead.categoryName}
                 </Box>
-
                 <Box className="ln-row">
                   <CategoryIcon sx={{ color: "#F7941D" }} />
                   <strong>Searched:</strong>&nbsp;
                   {selectedLead.searchedUserText}
                 </Box>
-
                 <Box className="ln-row">
                   <LocationOnIcon sx={{ color: "#F7941D" }} />
                   <strong>Location:</strong>&nbsp;
                   {selectedLead.location}
                 </Box>
-
                 <Box className="ln-row">
                   <AccessTimeIcon sx={{ color: "#F7941D" }} />
                   <strong>Created:</strong>&nbsp;

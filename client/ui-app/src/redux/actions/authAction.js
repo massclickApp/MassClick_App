@@ -19,45 +19,6 @@ const API_URL = process.env.REACT_APP_API_URL;
 const CLIENT_ID = process.env.REACT_APP_OAUTH_CLIENT_ID;
 const CLIENT_SECRET = process.env.REACT_APP_OAUTH_CLIENT_SECRET;
 
-
-// export const clientLogin = () => async (dispatch) => {
-//   // const existingToken = localStorage.getItem("clientAccessToken");
-//   // const expiresAt = localStorage.getItem("clientAccessTokenExpiresAt");
-
-//   // if (existingToken && new Date(expiresAt) > new Date()) {
-//   //   return { accessToken: existingToken };
-//   // }
-
-//   dispatch({ type: CLIENT_LOGIN_REQUEST });
-
-//   try {
-//     const response = await axios.post(`${API_URL}/oauth/client`, {
-//       clientId: CLIENT_ID,
-//       clientSecret: CLIENT_SECRET,
-//     });
-
-//     const { accessToken, refreshToken, user, accessTokenExpiresAt } = response.data;
-
-//     localStorage.setItem("clientAccessToken", accessToken);
-//     localStorage.setItem("clientAccessTokenExpiresAt", accessTokenExpiresAt);
-//     localStorage.setItem("clientRefreshToken", refreshToken);
-
-//     dispatch({
-//       type: CLIENT_LOGIN_SUCCESS,
-//       payload: { accessToken, refreshToken, user },
-//     });
-
-//     return response.data;
-//   } catch (error) {
-//     dispatch({
-//       type: CLIENT_LOGIN_FAILURE,
-//       payload: error.response?.data || error.message,
-//     });
-//     throw error;
-//   }
-// };
-
-
 export const login = (userName, password) => async (dispatch) => {
   dispatch({ type: LOGIN_REQUEST });
 
@@ -137,7 +98,6 @@ export const relogin = () => async (dispatch) => {
   }
 };
 
-
 export const logout = () => async (dispatch) => {
   const token = localStorage.getItem("accessToken");
 
@@ -172,33 +132,6 @@ export const logout = () => async (dispatch) => {
   }
 };
 
-
-// export const getClientToken = () => async (dispatch) => {
-//   let clientAccessToken = localStorage.getItem("clientAccessToken");
-//   const expiresAtRaw = sessionStorage.getItem("clientAccessTokenExpiresAt");
-//   const expiresAt = expiresAtRaw ? new Date(expiresAtRaw).getTime() : 0;
-
-//   const now = Date.now();
-
-//   if (!clientAccessToken || now >= expiresAt) {
-//     try {
-//       const result = await dispatch(clientLogin());
-//       clientAccessToken = result.accessToken;
-
-//       if (result.expiresIn) {
-//         const newExpiresAt = Date.now() + result.expiresIn * 1000;
-//         sessionStorage.setItem("clientAccessTokenExpiresAt", newExpiresAt);
-//       }
-//     } catch (error) {
-//       console.error("Client token refresh failed:", error);
-//       localStorage.removeItem("clientAccessToken");
-//       sessionStorage.removeItem("clientAccessTokenExpiresAt");
-//       throw error;
-//     }
-//   }
-
-//   return clientAccessToken;
-// };
 
 
 
