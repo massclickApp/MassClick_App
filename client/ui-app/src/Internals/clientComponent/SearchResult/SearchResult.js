@@ -8,6 +8,7 @@ import "./SearchResult.css";
 import CardsSearch from "../CardsSearch/CardsSearch";
 import CardDesign from "../cards/cards.js";
 import { backendMainSearch } from "../../../redux/actions/businessListAction";
+import TopBannerAds from "../banners/topBanner/topBanner.js";
 
 
 const createSlug = (text) => {
@@ -41,7 +42,7 @@ const SearchResults = () => {
 
   const stateAppliedRef = useRef(false);
 
- 
+
   useEffect(() => {
     if (
       resultsFromState &&
@@ -59,7 +60,7 @@ const SearchResults = () => {
     ).then((action) => {
       setResults(action?.payload || []);
     });
-  }, [searchText, locationText, dispatch]); 
+  }, [searchText, locationText, dispatch]);
 
 
   const handleRetry = useCallback(() => {
@@ -86,12 +87,11 @@ const SearchResults = () => {
     );
   }
 
-
   return (
     <>
       <CardsSearch />
-
-      <Box sx={{ minHeight: "100vh", bgcolor: "#f8f9fb", pt: 4, pb: 6 }}>
+      <TopBannerAds category={results} />
+      <Box sx={{ minHeight: "100vh", bgcolor: "#f8f9fb", pt: 8, pb: 6 }}>
         <Box sx={{ maxWidth: "1200px", margin: "auto", p: 2 }}>
           {loading && (
             <p className="loading-text">
@@ -139,9 +139,8 @@ const SearchResults = () => {
                   address={
                     business.locationDetails || business.location
                   }
-                  details={`Experience: ${
-                    business.experience || "N/A"
-                  } | Category: ${business.category}`}
+                  details={`Experience: ${business.experience || "N/A"
+                    } | Category: ${business.category}`}
                   imageSrc={
                     business.bannerImage ||
                     "https://via.placeholder.com/120x100?text=Logo"
