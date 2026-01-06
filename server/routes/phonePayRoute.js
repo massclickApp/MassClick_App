@@ -4,7 +4,7 @@ import { oauthAuthentication } from "../helper/oauthHelper.js";
 
 const router = express.Router();
 
-router.post("/api/phonepe/create", oauthAuthentication, createPaymentAction);
-router.get("/api/phonepe/status/:transactionId", oauthAuthentication, checkPaymentStatusAction);
+router.post("/api/phonepe/create",  createPaymentAction);
+router.get("/api/phonepe/status/:transactionId", checkPaymentStatusAction);
 
 export default router;

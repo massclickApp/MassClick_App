@@ -6,7 +6,7 @@ import { oauthAuthentication } from '../helper/oauthHelper.js';
 
 const router = express.Router();
 
-router.get('/api/leadsData/leads/:mobileNumber', oauthAuthentication, getLeadsByMobileAction);
+router.get('/api/leadsData/leads/:mobileNumber', getLeadsByMobileAction);
 
 
 export default router; 
