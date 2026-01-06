@@ -10,7 +10,7 @@ import TopBannerAds from "../../banners/topBanner/topBanner.js";
 
 import { getBusinessByCategory } from "../../../../redux/actions/businessListAction.js";
 
-const CATEGORY = "rent & hire";
+const CATEGORY = "rent and hire";
 
 const createSlug = (text) => {
   if (typeof text !== "string" || !text.trim()) return "unknown";

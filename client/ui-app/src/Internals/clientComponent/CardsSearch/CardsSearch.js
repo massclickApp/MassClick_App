@@ -23,6 +23,15 @@ import AddBusinessModel from "../AddBusinessModel";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useDrawer } from "../Drawer/drawerContext";
 
+const toSlug = (text = "") =>
+  text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+
+
 const CategoryDropdown = ({ options, setSearchTerm, closeDropdown }) => {
   const MAX_HEIGHT_PX = 200;
 
@@ -249,7 +258,10 @@ const CardsSearch = ({
 
     dispatch(logSearchActivity(derivedCategory, logLocation, userDetails, term));
 
-    navigate(`/${location || "All"}/${term || "All"}`, { state: { results } });
+    const slugLocation = toSlug(location || "All");
+    const slugTerm = toSlug(term || "All");
+
+    navigate(`/${slugLocation}/${slugTerm}`, { state: { results } });
   };
 
 

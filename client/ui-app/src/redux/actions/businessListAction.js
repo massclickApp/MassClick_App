@@ -160,7 +160,7 @@ export const getBusinessByCategory = (category) => async (dispatch) => {
   dispatch({ type: CATEGORY_BUSINESS_REQUEST });
 
   try {
-    const token = await dispatch(getClientToken());
+    const token = localStorage.getItem("clientAccessToken");
     if (!token) throw new Error("Client token not available");
 
     const response = await axios.get(
@@ -180,7 +180,7 @@ export const getBusinessByCategory = (category) => async (dispatch) => {
     dispatch({
       type: CATEGORY_BUSINESS_FAILURE,
       payload: {
-        category, 
+        category,
         error: error.response?.data?.message || error.message,
       },
     });
@@ -207,6 +207,7 @@ export const createBusinessList = (businessListData) => async (dispatch) => {
     throw error;
   }
 };
+
 export const toggleBusinessStatus = ({ id, newStatus }) => async (dispatch) => {
   dispatch({ type: ACTIVE_BUSINESS_REQUEST });
 

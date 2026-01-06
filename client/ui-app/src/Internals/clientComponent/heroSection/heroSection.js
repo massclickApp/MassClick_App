@@ -16,6 +16,15 @@ import { logUserSearch } from "../../../redux/actions/otpAction";
 import { useNavigate } from "react-router-dom";
 import "./hero.css";
 
+const toSlug = (text = "") =>
+  text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+
+
 const CategoryDropdown = ({ label, options, onSelect }) => {
   const MAX_HEIGHT_PX = 220;
   if (!options || options.length === 0) return null;
@@ -244,26 +253,16 @@ const HeroSection = ({
 
     dispatch(logSearchActivity(category || "All Categories", location || "Global", userDetails, term));
 
-    navigate(`/${location || "All"}/${term || "All"}`, { state: { results } });
+    const slugLocation = toSlug(location || "All");
+    const slugTerm = toSlug(term || "All");
+
+    navigate(`/${slugLocation}/${slugTerm}`, { state: { results } });
   };
 
   return (
     <div
       className="hero-section"
-    //   style={{
-    //     backgroundImage: `
-    //   linear-gradient(
-    //     to bottom,
-    //     rgba(0,0,0,0.20) 0%,
-    //     rgba(0,0,0,0.35) 40%,
-    //     rgba(0,0,0,0.45) 100%
-    //   ),
-    //   url(${backgroundImage})
-    // `,
-    //     backgroundSize: "cover",
-    //     backgroundPosition: "center",
-    //     backgroundRepeat: "no-repeat",
-    //   }}
+   
     >
 
       <div className="hero-content hero-minimal">
