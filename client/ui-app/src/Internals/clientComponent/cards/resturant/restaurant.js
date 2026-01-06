@@ -3,18 +3,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import "./restuarants.css";
-
 import CardDesign from "../cards.js";
 import CardsSearch from "../../CardsSearch/CardsSearch.js";
 import TopBannerAds from "../../banners/topBanner/topBanner.js";
-
 import { getBusinessByCategory } from "../../../../redux/actions/businessListAction.js";
 
 const CATEGORY = "restaurant";
 
 const createSlug = (text) => {
   if (typeof text !== "string" || !text.trim()) return "unknown";
-
   return text
     .toLowerCase()
     .trim()
@@ -33,26 +30,19 @@ const RestaurantsCards = () => {
   const restaurantList = categoryBusinessList[CATEGORY] || [];
 
   useEffect(() => {
-    if (!restaurantList.length) {
-      dispatch(getBusinessByCategory(CATEGORY));
-    }
-  }, [restaurantList.length, dispatch]);
+    dispatch(getBusinessByCategory(CATEGORY));
+  }, [dispatch]);
 
   const handleRetry = useCallback(() => {
     dispatch(getBusinessByCategory(CATEGORY));
   }, [dispatch]);
 
-  if (error) {
+  if (error && !restaurantList.length) {
     return (
       <div className="no-results-container">
         <p className="no-results-title">Something went wrong 😕</p>
-        <p className="no-results-suggestion">
-          Please try again later.
-        </p>
-        <button
-          className="go-home-button"
-          onClick={handleRetry}
-        >
+        <p className="no-results-suggestion">Please try again later.</p>
+        <button className="go-home-button" onClick={handleRetry}>
           Retry
         </button>
       </div>
@@ -62,16 +52,14 @@ const RestaurantsCards = () => {
   return (
     <>
       <CardsSearch />
-
       <div className="page-spacing" />
-
       <TopBannerAds category={CATEGORY} />
 
       {loading && (
         <p className="loading-text">Loading restaurants...</p>
       )}
 
-      {!loading && restaurantList.length === 0 && (
+      {!loading && !restaurantList.length && (
         <div className="no-results-container">
           <p className="no-results-title">No Restaurants Found 😔</p>
           <p className="no-results-suggestion">
@@ -95,12 +83,9 @@ const RestaurantsCards = () => {
 
           const totalRatings = business.reviews?.length || 0;
 
-          const locationSlug = createSlug(business.location);
-          const businessSlug = createSlug(
+          const businessUrl = `/${createSlug(business.location)}/${createSlug(
             `${business.businessName}-${business.street}`
-          );
-
-          const businessUrl = `/${locationSlug}/${businessSlug}/${business._id}`;
+          )}/${business._id}`;
 
           return (
             <CardDesign

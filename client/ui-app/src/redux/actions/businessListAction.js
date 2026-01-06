@@ -176,11 +176,13 @@ export const getBusinessByCategory = (category) => async (dispatch) => {
       },
     });
 
-
   } catch (error) {
     dispatch({
       type: CATEGORY_BUSINESS_FAILURE,
-      payload: error.response?.data || error.message,
+      payload: {
+        category, 
+        error: error.response?.data?.message || error.message,
+      },
     });
   }
 };
