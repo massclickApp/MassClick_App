@@ -3,6 +3,10 @@ import './feedback.css';
 import StarIcon from '@mui/icons-material/Star';
 import Footer from '../footer';
 import CardsSearch from '../../CardsSearch/CardsSearch';
+import { Helmet } from "react-helmet-async";
+import { FEEDBACK_META } from "../../seo/seoDocument";
+
+
 
 const highImpactFeedback = [
     {
@@ -77,7 +81,24 @@ const FeedbackCard = ({ feedback }) => (
 const FeedbackComponent = () => {
     return (
         <>
-            <CardsSearch /><br/><br/><br/>
+            <Helmet>
+                <title>{FEEDBACK_META.title}</title>
+
+                <meta
+                    name="description"
+                    content={FEEDBACK_META.description}
+                />
+
+                <meta name="robots" content="index, follow" />
+                <meta name="author" content="Massclick" />
+                <meta name="publisher" content="Massclick" />
+
+                <link
+                    rel="canonical"
+                    href={FEEDBACK_META.canonical}
+                />
+            </Helmet>
+            <CardsSearch /><br /><br /><br />
 
             <section className="section-feedback-grid">
                 <div className="feedback-header-wrapper">

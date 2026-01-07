@@ -4,6 +4,8 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CardsSearch from '../../CardsSearch/CardsSearch';
 import Footer from '../footer';
+import { PRIVACY_POLICY_META } from "../../seo/seoDocument";
+import { Helmet } from "react-helmet-async";
 
 // ----------------------------------------------------
 // Content from the uploaded Privacy Policy images
@@ -118,28 +120,41 @@ const PrivacyPolicy = () => {
     };
 
     return (
-          <>
-            <CardsSearch/>
-        <section className="section-privacy">
-            <div className="privacy-header-wrapper">
-                <h2 className="section-title-privacy">Our <span className="highlight-text-privacy">Privacy Policy</span></h2>
-                <p className="section-subtitle-privacy">
-                    This Privacy Policy ("Policy") explains how massclick.in ("Website") collects, uses, discloses, and protects the personal information of users ("Users" or "you") when using our Website. By accessing or using the Website, you consent to the collection, use, disclosure, and protection of your personal information as described in this Policy. If you do not agree with any part of this Policy, please refrain from using our Website.
-                </p>
-            </div>
+        <>
 
-            <div className="privacy-accordion-container">
-                {policyData.map((item) => (
-                    <AccordionItem 
-                        key={item.id}
-                        item={item}
-                        isOpen={item.id === openItemId}
-                        onClick={handleToggle}
-                    />
-                ))}
-            </div>
-        </section>
-        <Footer/>
+            <Helmet>
+                <title>{PRIVACY_POLICY_META.title}</title>
+
+                <meta name="robots" content="index, follow" />
+                <meta name="author" content="Massclick" />
+                <meta name="publisher" content="Massclick" />
+
+                <link
+                    rel="canonical"
+                    href={PRIVACY_POLICY_META.canonical}
+                />
+            </Helmet>
+            <CardsSearch />
+            <section className="section-privacy">
+                <div className="privacy-header-wrapper">
+                    <h2 className="section-title-privacy">Our <span className="highlight-text-privacy">Privacy Policy</span></h2>
+                    <p className="section-subtitle-privacy">
+                        This Privacy Policy ("Policy") explains how massclick.in ("Website") collects, uses, discloses, and protects the personal information of users ("Users" or "you") when using our Website. By accessing or using the Website, you consent to the collection, use, disclosure, and protection of your personal information as described in this Policy. If you do not agree with any part of this Policy, please refrain from using our Website.
+                    </p>
+                </div>
+
+                <div className="privacy-accordion-container">
+                    {policyData.map((item) => (
+                        <AccordionItem
+                            key={item.id}
+                            item={item}
+                            isOpen={item.id === openItemId}
+                            onClick={handleToggle}
+                        />
+                    ))}
+                </div>
+            </section>
+            <Footer />
         </>
     );
 };

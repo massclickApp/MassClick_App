@@ -4,6 +4,9 @@ import { createStartProject } from '../../../../redux/actions/startProjectAction
 import './digitalMarketing.css';
 import Footer from '../footer';
 import CardsSearch from '../../CardsSearch/CardsSearch';
+import { Helmet } from "react-helmet-async";
+import { DIGITAL_MARKETING_META } from "../../seo/seoDocument";
+
 // NOTE: ICONS from react-icons/fa ARE NOT USED IN THIS VERSION, 
 // since the service icons are handled by <i> tags with CSS classes.
 // import { FaSearchengin, FaGlobe, FaHandsHelping, FaBullhorn, FaMailBulk, FaGoogle } from 'react-icons/fa'; // REMOVED IMPORT
@@ -93,6 +96,29 @@ const DigitalMarketing = () => {
 
     return (
         <>
+
+            <Helmet>
+                <title>{DIGITAL_MARKETING_META.title}</title>
+
+                <meta
+                    name="description"
+                    content={DIGITAL_MARKETING_META.description}
+                />
+
+                <meta
+                    name="keywords"
+                    content={DIGITAL_MARKETING_META.keywords}
+                />
+
+                <meta name="robots" content="index, follow" />
+                <meta name="author" content="Massclick" />
+                <meta name="publisher" content="Massclick" />
+
+                <link
+                    rel="canonical"
+                    href={DIGITAL_MARKETING_META.canonical}
+                />
+            </Helmet>
             <CardsSearch /><br /><br /><br /><br />
             <div className="digital-marketing-page">
                 {/* Section 1: Digital Marketing Intro */}
@@ -170,7 +196,7 @@ const DigitalMarketing = () => {
                         <img
                             src={EnquiryImage}
                             alt="Website design and development screens"
-                            className="digital-cta-local-image" 
+                            className="digital-cta-local-image"
                         />
                     </div>
                     <div className="digital-cta-right-content"> {/* Updated to digital-cta-right-content */}

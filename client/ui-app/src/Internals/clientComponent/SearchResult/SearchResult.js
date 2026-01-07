@@ -9,6 +9,7 @@ import CardsSearch from "../CardsSearch/CardsSearch";
 import CardDesign from "../cards/cards.js";
 import { backendMainSearch } from "../../../redux/actions/businessListAction";
 import TopBannerAds from "../banners/topBanner/topBanner.js";
+import SeoMeta from "../seo/seoMeta.js";
 
 
 const createSlug = (text) => {
@@ -20,7 +21,6 @@ const createSlug = (text) => {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
 };
-
 
 const SearchResults = () => {
   const dispatch = useDispatch();
@@ -89,6 +89,10 @@ const SearchResults = () => {
 
   return (
     <>
+      <SeoMeta
+        category={searchText}
+        location={locationText}
+      />
       <CardsSearch />
       <TopBannerAds category={results} />
       <Box sx={{ minHeight: "100vh", bgcolor: "#f8f9fb", pt: 8, pb: 6 }}>

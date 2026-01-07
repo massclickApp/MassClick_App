@@ -1,14 +1,40 @@
 import React from 'react';
 import './seo.css';
-import SeoImage from '../../../../assets/seo1.jpg'; // Your local background image
-// Placeholder for a possible secondary image, if needed
+import SeoImage from '../../../../assets/seo1.jpg'; 
 import searchGraphic from '../../../../assets/seo.jpg';
 import Footer from '../footer';
 import CardsSearch from '../../CardsSearch/CardsSearch';
+import { Helmet } from "react-helmet-async";
+import { SEO_SERVICE_META } from "../../seo/seoDocument";
+
+
 
 const Seo = () => {
     return (
         <>
+
+            <Helmet>
+                <title>{SEO_SERVICE_META.title}</title>
+
+                <meta
+                    name="description"
+                    content={SEO_SERVICE_META.description}
+                />
+
+                <meta
+                    name="keywords"
+                    content={SEO_SERVICE_META.keywords}
+                />
+
+                <meta name="robots" content="index, follow" />
+                <meta name="author" content="Massclick" />
+                <meta name="publisher" content="Massclick" />
+
+                <link
+                    rel="canonical"
+                    href={SEO_SERVICE_META.canonical}
+                />
+            </Helmet>
             <CardsSearch /><br /><br /><br />
             <div className="seo-container">
 

@@ -5,11 +5,37 @@ import graphic2 from '../../../../assets/graphic1.jpg';
 import Footer from '../footer';
 import CardsSearch from '../../CardsSearch/CardsSearch';
 import height from '../../../../assets/height.jpg'
+import { Helmet } from "react-helmet-async";
+import { GRAPHIC_DESIGN_META } from "../../seo/seoDocument";
+
 
 const GraphicDesign = () => {
     return (
         <>
-            <CardsSearch /><br/><br/><br/>
+            <Helmet>
+                <title>{GRAPHIC_DESIGN_META.title}</title>
+
+                <meta
+                    name="description"
+                    content={GRAPHIC_DESIGN_META.description}
+                />
+
+                <meta
+                    name="keywords"
+                    content={GRAPHIC_DESIGN_META.keywords}
+                />
+
+                <meta name="robots" content="index, follow" />
+                <meta name="author" content="Massclick" />
+                <meta name="publisher" content="Massclick" />
+
+                <link
+                    rel="canonical"
+                    href={GRAPHIC_DESIGN_META.canonical}
+                />
+            </Helmet>
+            
+            <CardsSearch /><br /><br /><br />
             <div className="graphic-design-container">
                 {/* 1. Graphic Design Hero/Intro Section */}
                 <div className="graphic-design-intro-section">
@@ -58,8 +84,7 @@ const GraphicDesign = () => {
                     </div>
                 </div>
 
-                {/* 3. Call-to-Action Section */}
-                 <div className="cta-section">
+                <div className="cta-section">
                     <div className="cta-content"> {/* This will now act as the left half for text */}
                         <h2>Ready to take your online presence to new heights?</h2>
                         <p>Get in touch with us today, and let's discuss how our web design and development services can help you achieve your business objectives. Our team is excited to collaborate with you and create a website that drives growth and success.</p>

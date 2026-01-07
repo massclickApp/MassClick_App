@@ -4,6 +4,8 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CardsSearch from '../../CardsSearch/CardsSearch';
 import Footer from '../footer';
+import { Helmet } from "react-helmet-async";
+import { TERMS_META } from "../../seo/seoDocument";
 
 // ----------------------------------------------------
 // Dummy Content for 8 T&C Sections
@@ -133,7 +135,7 @@ const AccordionItem = ({ item, isOpen, onClick }) => {
 };
 
 const TermsAndConditions = () => {
-    const [openItemId, setOpenItemId] = useState(termsData[0].id); 
+    const [openItemId, setOpenItemId] = useState(termsData[0].id);
 
     const handleToggle = (id) => {
         setOpenItemId(openItemId === id ? null : id);
@@ -141,7 +143,29 @@ const TermsAndConditions = () => {
 
     return (
         <>
-            <CardsSearch /><br/><br/><br/>
+            <Helmet>
+                <title>{TERMS_META.title}</title>
+
+                <meta
+                    name="description"
+                    content={TERMS_META.description}
+                />
+
+                <meta
+                    name="keywords"
+                    content={TERMS_META.keywords}
+                />
+
+                <meta name="robots" content="index, follow" />
+                <meta name="author" content="Massclick" />
+                <meta name="publisher" content="Massclick" />
+
+                <link
+                    rel="canonical"
+                    href={TERMS_META.canonical}
+                />
+            </Helmet>
+            <CardsSearch /><br /><br /><br />
             <section className="section-terms">
                 <div className="terms-header-wrapper">
                     <h2 className="section-title-terms">Our Standard <span className="highlight-text-terms">Terms & Conditions</span></h2>

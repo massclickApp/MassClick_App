@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import { DrawerProvider } from './Internals/clientComponent/Drawer/drawerContext.js';
+import { HelmetProvider } from "react-helmet-async";
 
 const theme = createTheme({
   palette: {
@@ -28,7 +29,9 @@ root.render(
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <DrawerProvider>
-        <App />
+        <HelmetProvider>
+          <App />
+        </HelmetProvider>
       </DrawerProvider>
     </ThemeProvider>
   </Provider>

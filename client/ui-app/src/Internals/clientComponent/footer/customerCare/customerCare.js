@@ -1,13 +1,14 @@
 import React from 'react';
 import './customerCare.css';
-// Import icons (assuming you are using Material UI icons)
 import LiveHelpIcon from '@mui/icons-material/LiveHelp';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import ForumIcon from '@mui/icons-material/Forum';
 import CardsSearch from '../../CardsSearch/CardsSearch';
 import Footer from '../footer';
+import { Helmet } from "react-helmet-async";
+import { CUSTOMER_SUPPORT_META } from "../../seo/seoDocument";
 
-// Data for the Customer Care Pillars
+
 const carePillars = [
     {
         id: 1,
@@ -26,7 +27,7 @@ const carePillars = [
         buttonText: "Start Live Chat",
         link: "/contact"
     },
-    
+
     {
         id: 3,
         title: "Community & Social Hub",
@@ -55,23 +56,40 @@ const CareCard = ({ pillar }) => {
 
 const CustomerCareComponent = () => {
     return (
-          <>
-            <CardsSearch /><br/><br/><br/>
-        <section className="section-customer-care">
-            <div className="care-header-wrapper">
-                <h2 className="section-title-care">Dedicated Customer Care</h2>
-                <p className="section-subtitle-care">
-                    How can we help you today? Access instant support, speak to a specialist, or explore our knowledge base.
-                </p>
-            </div>
+        <>
+            <Helmet>
+                <title>{CUSTOMER_SUPPORT_META.title}</title>
 
-            <div className="care-grid-container">
-                {carePillars.map((pillar) => (
-                    <CareCard key={pillar.id} pillar={pillar} />
-                ))}
-            </div>
-        </section>
-          <Footer />
+                <meta
+                    name="description"
+                    content={CUSTOMER_SUPPORT_META.description}
+                />
+
+                <meta name="robots" content="index, follow" />
+                <meta name="author" content="Massclick" />
+                <meta name="publisher" content="Massclick" />
+
+                <link
+                    rel="canonical"
+                    href={CUSTOMER_SUPPORT_META.canonical}
+                />
+            </Helmet>
+            <CardsSearch /><br /><br /><br />
+            <section className="section-customer-care">
+                <div className="care-header-wrapper">
+                    <h2 className="section-title-care">Dedicated Customer Care</h2>
+                    <p className="section-subtitle-care">
+                        How can we help you today? Access instant support, speak to a specialist, or explore our knowledge base.
+                    </p>
+                </div>
+
+                <div className="care-grid-container">
+                    {carePillars.map((pillar) => (
+                        <CareCard key={pillar.id} pillar={pillar} />
+                    ))}
+                </div>
+            </section>
+            <Footer />
         </>
     );
 };

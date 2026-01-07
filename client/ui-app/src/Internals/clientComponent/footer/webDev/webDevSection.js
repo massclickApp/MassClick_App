@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux'; 
+import { useDispatch, useSelector } from 'react-redux';
 import { createStartProject } from '../../../../redux/actions/startProjectAction';
 
-import { 
-    Container, Grid, Card, CardContent, Typography, Button, Box, 
+import {
+    Container, Grid, Card, CardContent, Typography, Button, Box,
     Modal, TextField, IconButton, CircularProgress, Alert
 } from '@mui/material';
+import { WEB_DEV_META } from "../../seo/seoDocument";
+import { Helmet } from "react-helmet-async";
+
 // Import specific icons
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import MapIcon from '@mui/icons-material/Map';
@@ -13,12 +16,12 @@ import DevicesIcon from '@mui/icons-material/Devices';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
-import CloseIcon from '@mui/icons-material/Close'; 
+import CloseIcon from '@mui/icons-material/Close';
 
-import './webDevSection.css'; 
+import './webDevSection.css';
 import CardsSearch from '../../CardsSearch/CardsSearch';
 import Footer from '../footer';
-import EnquiryImage from '../../../../assets/enquiry.png'; 
+import EnquiryImage from '../../../../assets/enquiry.png';
 
 const featuresData = [
     { title: "Customized Approach", description: "We believe in the power of customization. We take the time to understand your business, target audience, and goals to create a website that reflects your unique brand identity.", icon: AutoFixHighIcon },
@@ -42,7 +45,7 @@ const initialFormState = {
 
 const WebDevSection = () => {
     const dispatch = useDispatch();
-const { loading, error } = useSelector(state => state.startProjectReducer); 
+    const { loading, error } = useSelector(state => state.startProjectReducer);
 
     const [open, setOpen] = useState(false);
     const [formData, setFormData] = useState(initialFormState);
@@ -72,15 +75,15 @@ const { loading, error } = useSelector(state => state.startProjectReducer);
             phone: formData.phone, // contactNumber on backend
             message: formData.message, // message on backend
         };
-        
+
         try {
             await dispatch(createStartProject(payload));
             setSubmissionSuccess(true);
             setFormData(initialFormState); // Clear form fields
-            
+
             // Optionally close the modal after a delay
             setTimeout(() => {
-                handleClose(); 
+                handleClose();
             }, 3000);
 
         } catch (err) {
@@ -106,8 +109,30 @@ const { loading, error } = useSelector(state => state.startProjectReducer);
 
     return (
         <>
-            <CardsSearch /><br/><br/><br/>
-            
+            <Helmet>
+                <title>{WEB_DEV_META.title}</title>
+
+                <meta
+                    name="description"
+                    content={WEB_DEV_META.description}
+                />
+
+                <meta
+                    name="keywords"
+                    content={WEB_DEV_META.keywords}
+                />
+
+                <meta name="robots" content="index, follow" />
+                <meta name="author" content="Massclick" />
+                <meta name="publisher" content="Massclick" />
+
+                <link
+                    rel="canonical"
+                    href={WEB_DEV_META.canonical}
+                />
+            </Helmet>
+            <CardsSearch /><br /><br /><br />
+
             <Container maxWidth="xl" sx={{ padding: { xs: 0, sm: '20px' } }}>
                 {/* 1. HERO SECTION */}
                 <Box
@@ -125,22 +150,22 @@ const { loading, error } = useSelector(state => state.startProjectReducer);
                 >
                     <Grid container spacing={4} alignItems="center">
                         <Grid item xs={12} md={6}>
-                            <Typography 
-                                variant="h1" 
-                                sx={{ 
-                                    fontFamily: 'Montserrat, sans-serif', 
-                                    fontSize: { xs: '2.5rem', md: '3.8rem' }, 
-                                    fontWeight: 800, 
+                            <Typography
+                                variant="h1"
+                                sx={{
+                                    fontFamily: 'Montserrat, sans-serif',
+                                    fontSize: { xs: '2.5rem', md: '3.8rem' },
+                                    fontWeight: 800,
                                     lineHeight: 1.1,
                                     marginBottom: 2
                                 }}
                             >
                                 Elevate Your Presence with Web Design & Development
                             </Typography>
-                            <Typography 
-                                variant="body1" 
-                                sx={{ 
-                                    fontSize: { xs: '1rem', md: '1.15rem' }, 
+                            <Typography
+                                variant="body1"
+                                sx={{
+                                    fontSize: { xs: '1rem', md: '1.15rem' },
                                     lineHeight: 1.7,
                                     marginBottom: 4,
                                     color: 'rgba(255, 255, 255, 0.95)'
@@ -151,7 +176,7 @@ const { loading, error } = useSelector(state => state.startProjectReducer);
                             {/* ATTACHING THE ONCLICK HANDLER HERE */}
                             <Button
                                 variant="contained"
-                                onClick={handleOpen} 
+                                onClick={handleOpen}
                                 sx={{
                                     backgroundColor: 'white',
                                     color: darkOrange,
@@ -175,23 +200,23 @@ const { loading, error } = useSelector(state => state.startProjectReducer);
                         </Grid>
                     </Grid>
                 </Box>
-{/* --- */}
+                {/* --- */}
                 {/* 2. FEATURES SECTION (omitted for brevity) */}
                 <Box sx={{ padding: { xs: 2, md: 5 } }}>
-                    <Typography 
-                        variant="h2" 
-                        align="center" 
-                        sx={{ 
-                            fontFamily: 'Montserrat, sans-serif', 
-                            fontSize: { xs: '1.8rem', md: '2.2rem' }, 
-                            fontWeight: 700, 
+                    <Typography
+                        variant="h2"
+                        align="center"
+                        sx={{
+                            fontFamily: 'Montserrat, sans-serif',
+                            fontSize: { xs: '1.8rem', md: '2.2rem' },
+                            fontWeight: 700,
                             marginBottom: 6,
                             color: '#1f1f1f'
                         }}
                     >
                         Our Core Design Philosophy
                     </Typography>
-                    
+
                     <Grid container spacing={4}>
                         {featuresData.map((feature, index) => {
                             const IconComponent = feature.icon;
@@ -202,7 +227,7 @@ const { loading, error } = useSelector(state => state.startProjectReducer);
                                         sx={{
                                             height: '100%',
                                             borderRadius: '12px',
-                                            borderLeft: `5px solid ${primaryOrange}`, 
+                                            borderLeft: `5px solid ${primaryOrange}`,
                                             transition: 'transform 0.3s, box-shadow 0.3s',
                                             '&:hover': {
                                                 transform: 'translateY(-5px)',
@@ -211,40 +236,40 @@ const { loading, error } = useSelector(state => state.startProjectReducer);
                                         }}
                                     >
                                         <CardContent>
-                                            <Box 
-                                                sx={{ 
-                                                    display: 'flex', 
-                                                    alignItems: 'flex-start', 
-                                                    gap: { xs: 2, sm: 3 }, 
-                                                    flexDirection: { xs: 'column', sm: 'row' } 
+                                            <Box
+                                                sx={{
+                                                    display: 'flex',
+                                                    alignItems: 'flex-start',
+                                                    gap: { xs: 2, sm: 3 },
+                                                    flexDirection: { xs: 'column', sm: 'row' }
                                                 }}
                                             >
-                                                <Box sx={{ 
-                                                    flexShrink: 0, 
+                                                <Box sx={{
+                                                    flexShrink: 0,
                                                     width: { xs: '100%', sm: '50px' },
-                                                    textAlign: { xs: 'center', sm: 'left' } 
+                                                    textAlign: { xs: 'center', sm: 'left' }
                                                 }}>
                                                     <IconComponent sx={{ fontSize: { xs: 35, sm: 40 }, color: darkOrange }} />
                                                 </Box>
 
                                                 <Box sx={{ flexGrow: 1 }}>
-                                                    <Typography 
-                                                        variant="h6" 
-                                                        sx={{ 
-                                                            fontFamily: 'Montserrat, sans-serif', 
-                                                            fontWeight: 700, 
+                                                    <Typography
+                                                        variant="h6"
+                                                        sx={{
+                                                            fontFamily: 'Montserrat, sans-serif',
+                                                            fontWeight: 700,
                                                             color: '#1f1f1f',
-                                                            marginBottom: 1, 
+                                                            marginBottom: 1,
                                                             textAlign: { xs: 'center', sm: 'left' }
                                                         }}
                                                     >
                                                         {feature.title}
                                                     </Typography>
-                                                    <Typography 
-                                                        variant="body2" 
-                                                        color="text.secondary" 
-                                                        sx={{ 
-                                                            lineHeight: 1.7, 
+                                                    <Typography
+                                                        variant="body2"
+                                                        color="text.secondary"
+                                                        sx={{
+                                                            lineHeight: 1.7,
                                                             fontSize: '0.9rem',
                                                             textAlign: { xs: 'center', sm: 'left' }
                                                         }}
@@ -260,7 +285,7 @@ const { loading, error } = useSelector(state => state.startProjectReducer);
                         })}
                     </Grid>
                 </Box>
-{/* --- */}
+                {/* --- */}
                 {/* 3. CALL TO ACTION SECTION (CTA) */}
                 <Box
                     sx={{
@@ -275,23 +300,23 @@ const { loading, error } = useSelector(state => state.startProjectReducer);
                     }}
                 >
                     <Container maxWidth="md">
-                        <Typography 
-                            variant="h3" 
-                            sx={{ 
-                                fontFamily: 'Montserrat, sans-serif', 
-                                fontWeight: 800, 
-                                lineHeight: 1.2, 
-                                marginBottom: 2, 
+                        <Typography
+                            variant="h3"
+                            sx={{
+                                fontFamily: 'Montserrat, sans-serif',
+                                fontWeight: 800,
+                                lineHeight: 1.2,
+                                marginBottom: 2,
                                 fontSize: { xs: '2rem', md: '3.2rem' }
                             }}
                         >
                             Ready to take your online presence to new heights?
                         </Typography>
-                        <Typography 
-                            variant="body1" 
-                            sx={{ 
-                                fontSize: { xs: '1rem', md: '1.15rem' }, 
-                                marginBottom: 5, 
+                        <Typography
+                            variant="body1"
+                            sx={{
+                                fontSize: { xs: '1rem', md: '1.15rem' },
+                                marginBottom: 5,
                                 color: 'rgba(255, 255, 255, 0.9)'
                             }}
                         >
@@ -323,91 +348,91 @@ const { loading, error } = useSelector(state => state.startProjectReducer);
                     </Container>
                 </Box>
             </Container>
-            
-            <Footer /> 
+
+            <Footer />
 
             <Modal
-                           open={open}
-                           onClose={handleClose}
-                           aria-labelledby="quick-project-enquiry-title"
-                           aria-describedby="quick-project-enquiry-description"
-                       >
-                           <Box sx={modalStyle}>
-                               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                                   {/* ... (Modal Header) ... */}
-                               </Box>
-                               
-                               <Typography id="quick-project-enquiry-description" sx={{ mt: 1, mb: 3, color: 'text.secondary' }}>
-                                   Tell us a little about your project, and we'll get back to you within 24 hours.
-                               </Typography>
-           
-                               {/* ... (Alerts for submission success/error) ... */}
-           
-                               <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                   
-                                   {/* 1. Your Name Input */}
-                                   <input
-                                       required 
-                                       className="custom-form-input" // Custom class for styling
-                                       placeholder="Your Name *" 
-                                       name="name" 
-                                       value={formData.name}
-                                       onChange={handleChange}
-                                       type="text"
-                                   />
-                                   
-                                   {/* 2. Email Address Input */}
-                                   <input
-                                       required 
-                                       className="custom-form-input" // Custom class for styling
-                                       placeholder="Email Address *" 
-                                       name="email" 
-                                       value={formData.email}
-                                       onChange={handleChange}
-                                       type="email"
-                                   />
-                                   
-                                   {/* 3. Phone Number Input */}
-                                   <input
-                                       className="custom-form-input" // Custom class for styling
-                                       placeholder="Phone Number (Optional)" 
-                                       name="phone" 
-                                       value={formData.phone}
-                                       onChange={handleChange}
-                                       type="tel"
-                                   />
-                                   
-                                   {/* 4. Project Message Textarea */}
-                                   <textarea
-                                       required
-                                       className="custom-form-textarea" // Custom class for styling
-                                       placeholder="Tell Us About Your Project *"
-                                       name="message" 
-                                       value={formData.message}
-                                       onChange={handleChange}
-                                       rows={4}
-                                   />
-           
-                                   <Button
-                                       type="submit"
-                                       variant="contained"
-                                       fullWidth
-                                       disabled={loading}
-                                       sx={{
-                                           mt: 2,
-                                           backgroundColor: darkOrange,
-                                           '&:hover': {
-                                               backgroundColor: primaryOrange,
-                                           },
-                                           padding: '10px 0',
-                                           fontWeight: 600,
-                                       }}
-                                   >
-                                       {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Submit Enquiry'}
-                                   </Button>
-                               </Box>
-                           </Box>
-                       </Modal>
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="quick-project-enquiry-title"
+                aria-describedby="quick-project-enquiry-description"
+            >
+                <Box sx={modalStyle}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                        {/* ... (Modal Header) ... */}
+                    </Box>
+
+                    <Typography id="quick-project-enquiry-description" sx={{ mt: 1, mb: 3, color: 'text.secondary' }}>
+                        Tell us a little about your project, and we'll get back to you within 24 hours.
+                    </Typography>
+
+                    {/* ... (Alerts for submission success/error) ... */}
+
+                    <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+
+                        {/* 1. Your Name Input */}
+                        <input
+                            required
+                            className="custom-form-input" // Custom class for styling
+                            placeholder="Your Name *"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            type="text"
+                        />
+
+                        {/* 2. Email Address Input */}
+                        <input
+                            required
+                            className="custom-form-input" // Custom class for styling
+                            placeholder="Email Address *"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            type="email"
+                        />
+
+                        {/* 3. Phone Number Input */}
+                        <input
+                            className="custom-form-input" // Custom class for styling
+                            placeholder="Phone Number (Optional)"
+                            name="phone"
+                            value={formData.phone}
+                            onChange={handleChange}
+                            type="tel"
+                        />
+
+                        {/* 4. Project Message Textarea */}
+                        <textarea
+                            required
+                            className="custom-form-textarea" // Custom class for styling
+                            placeholder="Tell Us About Your Project *"
+                            name="message"
+                            value={formData.message}
+                            onChange={handleChange}
+                            rows={4}
+                        />
+
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            fullWidth
+                            disabled={loading}
+                            sx={{
+                                mt: 2,
+                                backgroundColor: darkOrange,
+                                '&:hover': {
+                                    backgroundColor: primaryOrange,
+                                },
+                                padding: '10px 0',
+                                fontWeight: 600,
+                            }}
+                        >
+                            {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Submit Enquiry'}
+                        </Button>
+                    </Box>
+                </Box>
+            </Modal>
         </>
     );
 };

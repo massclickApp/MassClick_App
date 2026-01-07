@@ -5,10 +5,10 @@ import DoneAllIcon from '@mui/icons-material/DoneAll';
 import GavelIcon from '@mui/icons-material/Gavel';
 import CardsSearch from '../../CardsSearch/CardsSearch';
 import Footer from '../footer';
+import { Helmet } from "react-helmet-async";
+import { REFUND_POLICY_META } from "../../seo/seoDocument";
 
-// ----------------------------------------------------
-// Expanded and Professionalized Policy Data
-// ----------------------------------------------------
+
 const policyHighlights = [
     {
         id: 1,
@@ -47,30 +47,42 @@ const PolicyCard = ({ highlight }) => {
 
 const RefundPolicy = () => {
     return (
-          <>
-            <CardsSearch/>
-        <section className="section-refund-policy">
-            <div className="refund-header-wrapper">
-                <h2 className="section-title-refund">Official <span className="highlight-text-refund">Refund Policy</span></h2>
-                <p className="section-subtitle-refund">
-                    At MassClick, we value your trust and strive to provide top-quality business listing services. To maintain transparency and a professional operational standard, we have outlined our non-refundable policy below.
-                </p>
-                <p className="contact-policy-note">
-                    If you have any questions or require further clarification regarding this policy, please feel free to contact our support team before making a payment.
-                </p>
-            </div>
+        <>
+            <Helmet>
+                <title>{REFUND_POLICY_META.title}</title>
 
-            <div className="policy-highlights-container">
-                {policyHighlights.map((highlight) => (
-                    <PolicyCard key={highlight.id} highlight={highlight} />
-                ))}
-            </div>
+                <meta name="robots" content="index, follow" />
+                <meta name="author" content="Massclick" />
+                <meta name="publisher" content="Massclick" />
 
-            <div className="full-policy-cta">
-                <p>For complete details on service termination and client responsibilities, please review our <a href="/terms" className="terms-link-refund">Terms and Conditions.</a></p>
-            </div>
-        </section>
-        <Footer/>
+                <link
+                    rel="canonical"
+                    href={REFUND_POLICY_META.canonical}
+                />
+            </Helmet>
+            <CardsSearch />
+            <section className="section-refund-policy">
+                <div className="refund-header-wrapper">
+                    <h2 className="section-title-refund">Official <span className="highlight-text-refund">Refund Policy</span></h2>
+                    <p className="section-subtitle-refund">
+                        At MassClick, we value your trust and strive to provide top-quality business listing services. To maintain transparency and a professional operational standard, we have outlined our non-refundable policy below.
+                    </p>
+                    <p className="contact-policy-note">
+                        If you have any questions or require further clarification regarding this policy, please feel free to contact our support team before making a payment.
+                    </p>
+                </div>
+
+                <div className="policy-highlights-container">
+                    {policyHighlights.map((highlight) => (
+                        <PolicyCard key={highlight.id} highlight={highlight} />
+                    ))}
+                </div>
+
+                <div className="full-policy-cta">
+                    <p>For complete details on service termination and client responsibilities, please review our <a href="/terms" className="terms-link-refund">Terms and Conditions.</a></p>
+                </div>
+            </section>
+            <Footer />
         </>
     );
 };

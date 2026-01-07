@@ -9,6 +9,8 @@ import CardsSearch from '../../CardsSearch/CardsSearch';
 import Footer from '../footer';
 import { useDispatch, useSelector } from "react-redux";
 import { createEnquiry } from "../../../../redux/actions/enquiryAction";
+import { Helmet } from "react-helmet-async";
+import { BUSINESS_ENQUIRY_META } from "../../seo/seoDocument";
 
 
 const serviceInterests = [
@@ -88,6 +90,20 @@ const EnquiryNow = () => {
 
     return (
         <>
+
+            <Helmet>
+                <title>{BUSINESS_ENQUIRY_META.title}</title>
+
+                <meta name="robots" content="index, follow" />
+                <meta name="author" content="Massclick" />
+                <meta name="publisher" content="Massclick" />
+
+                <link
+                    rel="canonical"
+                    href={BUSINESS_ENQUIRY_META.canonical}
+                />
+            </Helmet>
+            
             <CardsSearch /><br /><br /><br />
 
             <section

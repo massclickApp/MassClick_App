@@ -4,6 +4,10 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import Footer from '../footer';
 import CardsSearch from '../../CardsSearch/CardsSearch';
+import { Helmet } from "react-helmet-async";
+import { TESTIMONIAL_META } from "../../seo/seoDocument";
+
+
 
 // Data for the testimonials
 const clientTestimonials = [
@@ -86,20 +90,20 @@ const Testimonials = () => {
     const autoScrollInterval = 20000; // 20 seconds
 
     const handleNext = useCallback(() => {
-        setCurrentIndex(prevIndex => 
+        setCurrentIndex(prevIndex =>
             prevIndex === clientTestimonials.length - 1 ? 0 : prevIndex + 1
         );
     }, []);
 
     const handlePrev = useCallback(() => {
-        setCurrentIndex(prevIndex => 
+        setCurrentIndex(prevIndex =>
             prevIndex === 0 ? clientTestimonials.length - 1 : prevIndex - 1
         );
     }, []);
 
     useEffect(() => {
         const timer = setInterval(handleNext, autoScrollInterval);
-        
+
         return () => clearInterval(timer);
     }, [handleNext, autoScrollInterval]);
 
@@ -107,10 +111,10 @@ const Testimonials = () => {
         if (sliderRef.current) {
             const cardWidth = sliderRef.current.querySelector('.testimonial-card').offsetWidth;
             const gap = parseFloat(getComputedStyle(sliderRef.current).gap);
-            
-       
+
+
             const newTransformValue = `translateX(-${currentIndex * (cardWidth + gap)}px)`;
-            
+
             sliderRef.current.style.transform = newTransformValue;
         }
     }, [currentIndex]);
@@ -118,44 +122,67 @@ const Testimonials = () => {
 
     return (
         <>
-        <CardsSearch/>
-        <section className="section-testimonials">
-            <h2 className="section-title-testimonials">Our Clients Say <span className="highlight-text-testimonials">About Us</span></h2>
-            
-            <div className="slider-container">
-                <div 
-                    className="slider-track" 
-                    ref={sliderRef}
-                    style={{ 
-                        transform: `translateX(0)`, // Initial state handled by useEffect
-                        transition: 'transform 1s ease-in-out' // Smooth scroll transition
-                    }}
-                >
-                    {clientTestimonials.map((testimonial, index) => (
-                        <TestimonialCard key={index} testimonial={testimonial} />
+            <Helmet>
+                <title>{TESTIMONIAL_META.title}</title>
+
+                <meta
+                    name="description"
+                    content={TESTIMONIAL_META.description}
+                />
+
+                <meta
+                    name="keywords"
+                    content={TESTIMONIAL_META.keywords}
+                />
+
+                <meta name="robots" content="index, follow" />
+                <meta name="author" content="Massclick" />
+                <meta name="publisher" content="Massclick" />
+
+                <link
+                    rel="canonical"
+                    href={TESTIMONIAL_META.canonical}
+                />
+            </Helmet>
+
+            <CardsSearch />
+            <section className="section-testimonials">
+                <h2 className="section-title-testimonials">Our Clients Say <span className="highlight-text-testimonials">About Us</span></h2>
+
+                <div className="slider-container">
+                    <div
+                        className="slider-track"
+                        ref={sliderRef}
+                        style={{
+                            transform: `translateX(0)`, // Initial state handled by useEffect
+                            transition: 'transform 1s ease-in-out' // Smooth scroll transition
+                        }}
+                    >
+                        {clientTestimonials.map((testimonial, index) => (
+                            <TestimonialCard key={index} testimonial={testimonial} />
+                        ))}
+                    </div>
+
+                    <button className="slider-control prev" onClick={handlePrev} aria-label="Previous Testimonial">
+                        <ChevronLeftIcon className="control-icon" />
+                    </button>
+                    <button className="slider-control next" onClick={handleNext} aria-label="Next Testimonial">
+                        <ChevronRightIcon className="control-icon" />
+                    </button>
+                </div>
+
+                <div className="slider-indicators">
+                    {clientTestimonials.map((_, index) => (
+                        <button
+                            key={index}
+                            className={`indicator-dot ${index === currentIndex ? 'active' : ''}`}
+                            onClick={() => setCurrentIndex(index)}
+                            aria-label={`Go to slide ${index + 1}`}
+                        />
                     ))}
                 </div>
-                
-                <button className="slider-control prev" onClick={handlePrev} aria-label="Previous Testimonial">
-                    <ChevronLeftIcon className="control-icon" />
-                </button>
-                <button className="slider-control next" onClick={handleNext} aria-label="Next Testimonial">
-                    <ChevronRightIcon className="control-icon" />
-                </button>
-            </div>
-            
-            <div className="slider-indicators">
-                {clientTestimonials.map((_, index) => (
-                    <button
-                        key={index}
-                        className={`indicator-dot ${index === currentIndex ? 'active' : ''}`}
-                        onClick={() => setCurrentIndex(index)}
-                        aria-label={`Go to slide ${index + 1}`}
-                    />
-                ))}
-            </div>
-        </section>
-        <Footer />
+            </section>
+            <Footer />
         </>
     );
 }

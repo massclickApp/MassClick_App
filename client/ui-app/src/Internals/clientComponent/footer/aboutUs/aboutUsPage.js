@@ -11,6 +11,8 @@ import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
 import Footer from '../footer';
 import AboutUs from '../../../../assets/aboutUs.jpg'
 import CardsSearch from '../../CardsSearch/CardsSearch';
+import { Helmet } from "react-helmet-async";
+import { ABOUT_META } from "../../seo/seoDocument";
 
 const Card = ({ Icon, title, description }) => (
     <div className="card-item">
@@ -69,6 +71,29 @@ const AboutUsPage = () => {
 
     return (
         <>
+
+            <Helmet>
+                <title>{ABOUT_META.title}</title>
+
+                <meta
+                    name="description"
+                    content={ABOUT_META.description}
+                />
+
+                <meta
+                    name="keywords"
+                    content={ABOUT_META.keywords}
+                />
+
+                <meta name="robots" content="index, follow" />
+                <meta name="author" content="Massclick" />
+                <meta name="publisher" content="Massclick" />
+
+                <link
+                    rel="canonical"
+                    href={ABOUT_META.canonical}
+                />
+            </Helmet>
             <CardsSearch /><br /><br /><br />
 
             <div className="about-us-page-container">
@@ -116,7 +141,7 @@ const AboutUsPage = () => {
                             <p className="platform-description">
                                 Welcome to MassClick – the ultimate global hub for discovering and connecting with top-notch, verified businesses worldwide. Whether you're a savvy shopper searching for premier local services or a thriving entrepreneur looking to boost your international brand visibility, our scalable platform provides reliable and efficient solutions.
                             </p>
-                            
+
                             <FeatureList features={platformFeatures} />
                         </div>
                     </div>
