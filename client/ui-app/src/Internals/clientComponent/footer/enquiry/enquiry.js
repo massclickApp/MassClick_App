@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+
 import './enquiry.css'; // Import the new CSS file
 // Removed all MUI imports except Alert (which is good for global messages)
 import Alert from '@mui/material/Alert';
@@ -9,8 +10,8 @@ import CardsSearch from '../../CardsSearch/CardsSearch';
 import Footer from '../footer';
 import { useDispatch, useSelector } from "react-redux";
 import { createEnquiry } from "../../../../redux/actions/enquiryAction";
-import { Helmet } from "react-helmet-async";
-import { BUSINESS_ENQUIRY_META } from "../../seo/seoDocument";
+import SeoMeta from "../../seo/seoMeta";
+import { fetchSeoMeta } from "../../../../redux/actions/seoAction";
 
 
 const serviceInterests = [
@@ -22,6 +23,24 @@ const serviceInterests = [
 const EnquiryNow = () => {
     const dispatch = useDispatch();
 
+    const { meta: seoMetaData } = useSelector(
+        (state) => state.seoReducer
+    );
+
+    useEffect(() => {
+        dispatch(fetchSeoMeta({ pageType: "enquiry" }));
+    }, [dispatch]);
+
+
+    const fallbackSeo = {
+        title: "Enquiry - Massclick",
+        description:
+            "Massclick is a leading local search platform helping users discover trusted businesses and services.",
+        keywords: "about massclick, business directory, local search",
+        canonical: "https://massclick.in/enquiry",
+        robots: "index, follow",
+    };
+    
     const [formData, setFormData] = useState({
         name: '',
         businessName: '',
@@ -90,22 +109,8 @@ const EnquiryNow = () => {
 
     return (
         <>
-
-            <Helmet>
-                <title>{BUSINESS_ENQUIRY_META.title}</title>
-
-                <meta name="robots" content="index, follow" />
-                <meta name="author" content="Massclick" />
-                <meta name="publisher" content="Massclick" />
-
-                <link
-                    rel="canonical"
-                    href={BUSINESS_ENQUIRY_META.canonical}
-                />
-            </Helmet>
-            
+            <SeoMeta seoData={seoMetaData} fallback={fallbackSeo} />
             <CardsSearch /><br /><br /><br />
-
             <section
                 className="enquiry-hero-banner"
                 style={{ backgroundImage: `linear-gradient(rgba(255,102,0,0.7), rgba(255,102,0,0.7)), url(${EnquiryImage})` }}

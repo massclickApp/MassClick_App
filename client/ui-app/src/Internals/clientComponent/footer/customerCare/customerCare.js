@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useEffect } from "react";
 import './customerCare.css';
 import LiveHelpIcon from '@mui/icons-material/LiveHelp';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import ForumIcon from '@mui/icons-material/Forum';
 import CardsSearch from '../../CardsSearch/CardsSearch';
 import Footer from '../footer';
-import { Helmet } from "react-helmet-async";
-import { CUSTOMER_SUPPORT_META } from "../../seo/seoDocument";
+import SeoMeta from "../../seo/seoMeta";
+import { fetchSeoMeta } from "../../../../redux/actions/seoAction";
+import { useDispatch, useSelector } from "react-redux";
 
 
 const carePillars = [
@@ -55,25 +56,29 @@ const CareCard = ({ pillar }) => {
 };
 
 const CustomerCareComponent = () => {
+
+    const dispatch = useDispatch();
+
+    const { meta: seoMetaData } = useSelector(
+        (state) => state.seoReducer
+    );
+
+    useEffect(() => {
+        dispatch(fetchSeoMeta({ pageType: "customerCare" }));
+    }, [dispatch]);
+
+    const fallbackSeo = {
+        title: "Customer Care - Massclick",
+        description:
+            "Massclick is a leading local search platform helping users discover trusted businesses and services.",
+        keywords: "about massclick, business directory, local search",
+        canonical: "https://massclick.in/customerCare",
+        robots: "index, follow",
+    };
+
     return (
         <>
-            <Helmet>
-                <title>{CUSTOMER_SUPPORT_META.title}</title>
-
-                <meta
-                    name="description"
-                    content={CUSTOMER_SUPPORT_META.description}
-                />
-
-                <meta name="robots" content="index, follow" />
-                <meta name="author" content="Massclick" />
-                <meta name="publisher" content="Massclick" />
-
-                <link
-                    rel="canonical"
-                    href={CUSTOMER_SUPPORT_META.canonical}
-                />
-            </Helmet>
+            <SeoMeta seoData={seoMetaData} fallback={fallbackSeo} />
             <CardsSearch /><br /><br /><br />
             <section className="section-customer-care">
                 <div className="care-header-wrapper">

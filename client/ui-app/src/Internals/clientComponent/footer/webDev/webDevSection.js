@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createStartProject } from '../../../../redux/actions/startProjectAction';
 
@@ -6,8 +6,8 @@ import {
     Container, Grid, Card, CardContent, Typography, Button, Box,
     Modal, TextField, IconButton, CircularProgress, Alert
 } from '@mui/material';
-import { WEB_DEV_META } from "../../seo/seoDocument";
-import { Helmet } from "react-helmet-async";
+import SeoMeta from "../../seo/seoMeta";
+import { fetchSeoMeta } from "../../../../redux/actions/seoAction";
 
 // Import specific icons
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
@@ -35,7 +35,6 @@ const featuresData = [
 const primaryOrange = '#ff6600';
 const darkOrange = '#e65100';
 
-// Initial state for the form fields
 const initialFormState = {
     name: '',
     email: '',
@@ -45,6 +44,24 @@ const initialFormState = {
 
 const WebDevSection = () => {
     const dispatch = useDispatch();
+
+    const { meta: seoMetaData } = useSelector(
+        (state) => state.seoReducer
+    );
+
+    useEffect(() => {
+        dispatch(fetchSeoMeta({ pageType: "web" }));
+    }, [dispatch]);
+
+    const fallbackSeo = {
+        title: "Web Design - Massclick",
+        description:
+            "Massclick is a leading local search platform helping users discover trusted businesses and services.",
+        keywords: "Web Design massclick, business directory, local search",
+        canonical: "https://massclick.in/services/web",
+        robots: "index, follow",
+    };
+
     const { loading, error } = useSelector(state => state.startProjectReducer);
 
     const [open, setOpen] = useState(false);
@@ -93,7 +110,6 @@ const WebDevSection = () => {
         }
     };
 
-    // Style object for the modal's central box
     const modalStyle = {
         position: 'absolute',
         top: '50%',
@@ -109,32 +125,11 @@ const WebDevSection = () => {
 
     return (
         <>
-            <Helmet>
-                <title>{WEB_DEV_META.title}</title>
+            <SeoMeta seoData={seoMetaData} fallback={fallbackSeo} />
 
-                <meta
-                    name="description"
-                    content={WEB_DEV_META.description}
-                />
-
-                <meta
-                    name="keywords"
-                    content={WEB_DEV_META.keywords}
-                />
-
-                <meta name="robots" content="index, follow" />
-                <meta name="author" content="Massclick" />
-                <meta name="publisher" content="Massclick" />
-
-                <link
-                    rel="canonical"
-                    href={WEB_DEV_META.canonical}
-                />
-            </Helmet>
             <CardsSearch /><br /><br /><br />
 
             <Container maxWidth="xl" sx={{ padding: { xs: 0, sm: '20px' } }}>
-                {/* 1. HERO SECTION */}
                 <Box
                     sx={{
                         backgroundImage: `linear-gradient(to right, ${darkOrange} 45%, rgba(230, 81, 0, 0.7) 100%), url(${EnquiryImage})`,

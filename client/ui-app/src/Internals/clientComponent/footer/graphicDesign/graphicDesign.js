@@ -1,40 +1,38 @@
-import React from 'react';
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import './graphicDesign.css';
 import graphic1 from '../../../../assets/graphic.jpg';
 import graphic2 from '../../../../assets/graphic1.jpg';
 import Footer from '../footer';
 import CardsSearch from '../../CardsSearch/CardsSearch';
 import height from '../../../../assets/height.jpg'
-import { Helmet } from "react-helmet-async";
-import { GRAPHIC_DESIGN_META } from "../../seo/seoDocument";
+import SeoMeta from "../../seo/seoMeta";
+import { fetchSeoMeta } from "../../../../redux/actions/seoAction";
 
 
 const GraphicDesign = () => {
+  const dispatch = useDispatch();
+
+    const { meta: seoMetaData } = useSelector(
+        (state) => state.seoReducer
+    );
+
+    useEffect(() => {
+        dispatch(fetchSeoMeta({ pageType: "graphic" }));
+    }, [dispatch]);
+
+    const fallbackSeo = {
+        title: "Graphic Design - Massclick",
+        description:
+            "Massclick is a leading local search platform helping users discover trusted businesses and services.",
+        keywords: "graphic design, business directory, local search",
+        canonical: "https://massclick.in/graphic",
+        robots: "index, follow",
+    };
+
     return (
         <>
-            <Helmet>
-                <title>{GRAPHIC_DESIGN_META.title}</title>
-
-                <meta
-                    name="description"
-                    content={GRAPHIC_DESIGN_META.description}
-                />
-
-                <meta
-                    name="keywords"
-                    content={GRAPHIC_DESIGN_META.keywords}
-                />
-
-                <meta name="robots" content="index, follow" />
-                <meta name="author" content="Massclick" />
-                <meta name="publisher" content="Massclick" />
-
-                <link
-                    rel="canonical"
-                    href={GRAPHIC_DESIGN_META.canonical}
-                />
-            </Helmet>
-            
+            <SeoMeta seoData={seoMetaData} fallback={fallbackSeo} />
             <CardsSearch /><br /><br /><br />
             <div className="graphic-design-container">
                 {/* 1. Graphic Design Hero/Intro Section */}

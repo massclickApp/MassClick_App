@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from "react";
 import './aboutUspage.css';
+import { useDispatch, useSelector } from "react-redux";
 
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import GavelIcon from '@mui/icons-material/Gavel';
@@ -11,8 +12,9 @@ import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
 import Footer from '../footer';
 import AboutUs from '../../../../assets/aboutUs.jpg'
 import CardsSearch from '../../CardsSearch/CardsSearch';
-import { Helmet } from "react-helmet-async";
-import { ABOUT_META } from "../../seo/seoDocument";
+import SeoMeta from "../../seo/seoMeta";
+import { fetchSeoMeta } from "../../../../redux/actions/seoAction";
+
 
 const Card = ({ Icon, title, description }) => (
     <div className="card-item">
@@ -36,6 +38,26 @@ const FeatureList = ({ features }) => (
 );
 
 const AboutUsPage = () => {
+
+    const dispatch = useDispatch();
+
+    const { meta: seoMetaData } = useSelector(
+        (state) => state.seoReducer
+    );
+
+    useEffect(() => {
+        dispatch(fetchSeoMeta({ pageType: "about" }));
+    }, [dispatch]);
+
+    const fallbackSeo = {
+        title: "About Us - Massclick",
+        description:
+            "Massclick is a leading local search platform helping users discover trusted businesses and services.",
+        keywords: "about massclick, business directory, local search",
+        canonical: "https://massclick.in/about",
+        robots: "index, follow",
+    };
+
     const chooseCards = [
         {
             Icon: AccountCircleIcon,
@@ -71,29 +93,7 @@ const AboutUsPage = () => {
 
     return (
         <>
-
-            <Helmet>
-                <title>{ABOUT_META.title}</title>
-
-                <meta
-                    name="description"
-                    content={ABOUT_META.description}
-                />
-
-                <meta
-                    name="keywords"
-                    content={ABOUT_META.keywords}
-                />
-
-                <meta name="robots" content="index, follow" />
-                <meta name="author" content="Massclick" />
-                <meta name="publisher" content="Massclick" />
-
-                <link
-                    rel="canonical"
-                    href={ABOUT_META.canonical}
-                />
-            </Helmet>
+            <SeoMeta seoData={seoMetaData} fallback={fallbackSeo} />
             <CardsSearch /><br /><br /><br />
 
             <div className="about-us-page-container">

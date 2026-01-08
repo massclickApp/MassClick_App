@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './termsAndCondition.css';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CardsSearch from '../../CardsSearch/CardsSearch';
 import Footer from '../footer';
-import { Helmet } from "react-helmet-async";
-import { TERMS_META } from "../../seo/seoDocument";
+import SeoMeta from "../../seo/seoMeta";
+import { fetchSeoMeta } from "../../../../redux/actions/seoAction";
+import { useDispatch, useSelector } from "react-redux";
 
 // ----------------------------------------------------
 // Dummy Content for 8 T&C Sections
@@ -135,6 +136,27 @@ const AccordionItem = ({ item, isOpen, onClick }) => {
 };
 
 const TermsAndConditions = () => {
+
+    const dispatch = useDispatch();
+
+    const { meta: seoMetaData } = useSelector(
+        (state) => state.seoReducer
+    );
+
+    useEffect(() => {
+        dispatch(fetchSeoMeta({ pageType: "terms" }));
+    }, [dispatch]);
+
+
+    const fallbackSeo = {
+        title: "Terms and Conditions - Massclick",
+        description:
+            "Massclick is a leading local search platform helping users discover trusted businesses and services.",
+        keywords: "about massclick, business directory, local search",
+        canonical: "https://massclick.in/terms",
+        robots: "index, follow",
+    };
+
     const [openItemId, setOpenItemId] = useState(termsData[0].id);
 
     const handleToggle = (id) => {
@@ -143,28 +165,7 @@ const TermsAndConditions = () => {
 
     return (
         <>
-            <Helmet>
-                <title>{TERMS_META.title}</title>
-
-                <meta
-                    name="description"
-                    content={TERMS_META.description}
-                />
-
-                <meta
-                    name="keywords"
-                    content={TERMS_META.keywords}
-                />
-
-                <meta name="robots" content="index, follow" />
-                <meta name="author" content="Massclick" />
-                <meta name="publisher" content="Massclick" />
-
-                <link
-                    rel="canonical"
-                    href={TERMS_META.canonical}
-                />
-            </Helmet>
+            <SeoMeta seoData={seoMetaData} fallback={fallbackSeo} />
             <CardsSearch /><br /><br /><br />
             <section className="section-terms">
                 <div className="terms-header-wrapper">

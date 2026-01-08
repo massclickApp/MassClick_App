@@ -1,40 +1,41 @@
-import React from 'react';
+import React, { useEffect } from "react";
 import './seo.css';
-import SeoImage from '../../../../assets/seo1.jpg'; 
+import SeoImage from '../../../../assets/seo1.jpg';
 import searchGraphic from '../../../../assets/seo.jpg';
 import Footer from '../footer';
 import CardsSearch from '../../CardsSearch/CardsSearch';
-import { Helmet } from "react-helmet-async";
-import { SEO_SERVICE_META } from "../../seo/seoDocument";
+import SeoMeta from "../../seo/seoMeta";
+import { fetchSeoMeta } from "../../../../redux/actions/seoAction";
+import { useDispatch, useSelector } from "react-redux";
 
 
 
 const Seo = () => {
+
+    const dispatch = useDispatch();
+
+    const { meta: seoMetaData } = useSelector(
+        (state) => state.seoReducer
+    );
+
+    useEffect(() => {
+        dispatch(fetchSeoMeta({ pageType: "seo" }));
+    }, [dispatch]);
+
+    const fallbackSeo = {
+        title: "Search Engine Optimization - Massclick",
+        description:
+            "Massclick is a leading local search platform helping users discover trusted businesses and services.",
+        keywords: "about massclick, business directory, local search",
+        canonical: "https://massclick.in/seo",
+        robots: "index, follow",
+    };
+
     return (
         <>
 
-            <Helmet>
-                <title>{SEO_SERVICE_META.title}</title>
+            <SeoMeta seoData={seoMetaData} fallback={fallbackSeo} />
 
-                <meta
-                    name="description"
-                    content={SEO_SERVICE_META.description}
-                />
-
-                <meta
-                    name="keywords"
-                    content={SEO_SERVICE_META.keywords}
-                />
-
-                <meta name="robots" content="index, follow" />
-                <meta name="author" content="Massclick" />
-                <meta name="publisher" content="Massclick" />
-
-                <link
-                    rel="canonical"
-                    href={SEO_SERVICE_META.canonical}
-                />
-            </Helmet>
             <CardsSearch /><br /><br /><br />
             <div className="seo-container">
 

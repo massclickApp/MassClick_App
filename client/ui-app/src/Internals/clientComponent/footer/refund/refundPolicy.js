@@ -1,12 +1,13 @@
-import React from 'react';
-import './refundPolicy.css'; // New CSS file
+import React, { useEffect } from "react";
+import './refundPolicy.css';
+import { useDispatch, useSelector } from "react-redux";
 import CancelIcon from '@mui/icons-material/Cancel';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import GavelIcon from '@mui/icons-material/Gavel';
 import CardsSearch from '../../CardsSearch/CardsSearch';
 import Footer from '../footer';
-import { Helmet } from "react-helmet-async";
-import { REFUND_POLICY_META } from "../../seo/seoDocument";
+import SeoMeta from "../../seo/seoMeta";
+import { fetchSeoMeta } from "../../../../redux/actions/seoAction";
 
 
 const policyHighlights = [
@@ -46,20 +47,28 @@ const PolicyCard = ({ highlight }) => {
 };
 
 const RefundPolicy = () => {
+    const dispatch = useDispatch();
+
+    const { meta: seoMetaData } = useSelector(
+        (state) => state.seoReducer
+    );
+
+    useEffect(() => {
+        dispatch(fetchSeoMeta({ pageType: "refund" }));
+    }, [dispatch]);
+
+    const fallbackSeo = {
+        title: "Refund Policy - Massclick",
+        description:
+            "Massclick is a leading local search platform helping users discover trusted businesses and services.",
+        keywords: "about massclick, business directory, local search",
+        canonical: "https://massclick.in/refund",
+        robots: "index, follow",
+    };
+
     return (
         <>
-            <Helmet>
-                <title>{REFUND_POLICY_META.title}</title>
-
-                <meta name="robots" content="index, follow" />
-                <meta name="author" content="Massclick" />
-                <meta name="publisher" content="Massclick" />
-
-                <link
-                    rel="canonical"
-                    href={REFUND_POLICY_META.canonical}
-                />
-            </Helmet>
+            <SeoMeta seoData={seoMetaData} fallback={fallbackSeo} />
             <CardsSearch />
             <section className="section-refund-policy">
                 <div className="refund-header-wrapper">

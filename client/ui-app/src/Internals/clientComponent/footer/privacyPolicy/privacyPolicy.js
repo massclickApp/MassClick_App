@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from "react-redux";
 import './privacyPolicy.css'; // New CSS file
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CardsSearch from '../../CardsSearch/CardsSearch';
 import Footer from '../footer';
-import { PRIVACY_POLICY_META } from "../../seo/seoDocument";
-import { Helmet } from "react-helmet-async";
+import SeoMeta from "../../seo/seoMeta";
+import { fetchSeoMeta } from "../../../../redux/actions/seoAction";
 
 // ----------------------------------------------------
 // Content from the uploaded Privacy Policy images
@@ -113,7 +114,27 @@ const AccordionItem = ({ item, isOpen, onClick }) => {
 };
 
 const PrivacyPolicy = () => {
-    const [openItemId, setOpenItemId] = useState(policyData[0].id); // Open the first item by default
+    const dispatch = useDispatch();
+
+    const { meta: seoMetaData } = useSelector(
+        (state) => state.seoReducer
+    );
+
+    useEffect(() => {
+        dispatch(fetchSeoMeta({ pageType: "privacy" }));
+    }, [dispatch]);
+
+
+    const fallbackSeo = {
+        title: "Privacy and Policy - Massclick",
+        description:
+            "Massclick is a leading local search platform helping users discover trusted businesses and services.",
+        keywords: "about massclick, business directory, local search",
+        canonical: "https://massclick.in/privacy",
+        robots: "index, follow",
+    };
+
+    const [openItemId, setOpenItemId] = useState(policyData[0].id);
 
     const handleToggle = (id) => {
         setOpenItemId(openItemId === id ? null : id);
@@ -121,19 +142,7 @@ const PrivacyPolicy = () => {
 
     return (
         <>
-
-            <Helmet>
-                <title>{PRIVACY_POLICY_META.title}</title>
-
-                <meta name="robots" content="index, follow" />
-                <meta name="author" content="Massclick" />
-                <meta name="publisher" content="Massclick" />
-
-                <link
-                    rel="canonical"
-                    href={PRIVACY_POLICY_META.canonical}
-                />
-            </Helmet>
+            <SeoMeta seoData={seoMetaData} fallback={fallbackSeo} />
             <CardsSearch />
             <section className="section-privacy">
                 <div className="privacy-header-wrapper">

@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createStartProject } from '../../../../redux/actions/startProjectAction';
 import './digitalMarketing.css';
 import Footer from '../footer';
 import CardsSearch from '../../CardsSearch/CardsSearch';
-import { Helmet } from "react-helmet-async";
-import { DIGITAL_MARKETING_META } from "../../seo/seoDocument";
+import SeoMeta from "../../seo/seoMeta";
+import { fetchSeoMeta } from "../../../../redux/actions/seoAction";
 
 // NOTE: ICONS from react-icons/fa ARE NOT USED IN THIS VERSION, 
 // since the service icons are handled by <i> tags with CSS classes.
@@ -33,6 +33,24 @@ const initialFormState = {
 const DigitalMarketing = () => {
 
     const dispatch = useDispatch();
+
+    const { meta: seoMetaData } = useSelector(
+        (state) => state.seoReducer
+    );
+
+    useEffect(() => {
+        dispatch(fetchSeoMeta({ pageType: "digital" }));
+    }, [dispatch]);
+
+    const fallbackSeo = {
+        title: "Digital Marketing - Massclick",
+        description:
+            "Massclick is a leading local search platform helping users discover trusted businesses and services.",
+        keywords: "digital marketing, business directory, local search",
+        canonical: "https://massclick.in/digital",
+        robots: "index, follow",
+    };
+
     const { loading, error } = useSelector(state => state.startProjectReducer);
 
     const [open, setOpen] = useState(false);
@@ -97,28 +115,8 @@ const DigitalMarketing = () => {
     return (
         <>
 
-            <Helmet>
-                <title>{DIGITAL_MARKETING_META.title}</title>
+            <SeoMeta seoData={seoMetaData} fallback={fallbackSeo} />
 
-                <meta
-                    name="description"
-                    content={DIGITAL_MARKETING_META.description}
-                />
-
-                <meta
-                    name="keywords"
-                    content={DIGITAL_MARKETING_META.keywords}
-                />
-
-                <meta name="robots" content="index, follow" />
-                <meta name="author" content="Massclick" />
-                <meta name="publisher" content="Massclick" />
-
-                <link
-                    rel="canonical"
-                    href={DIGITAL_MARKETING_META.canonical}
-                />
-            </Helmet>
             <CardsSearch /><br /><br /><br /><br />
             <div className="digital-marketing-page">
                 {/* Section 1: Digital Marketing Intro */}
