@@ -57,6 +57,7 @@ import GlobalDrawer from "./Internals/clientComponent/Drawer/globalDrawer.js";
 // import { useSelector } from "react-redux";
 // import { sendWhatsAppForLead } from "./redux/actions/otpAction.js";
 import { fetchMatchedLeads } from "./redux/actions/leadsAction.js";
+import SeoData from './Internals/seoData/seoData.js';
 
 
 const ComingSoon = ({ title }) => (
@@ -90,7 +91,7 @@ function App() {
   useEffect(() => {
     dispatch(fetchMatchedLeads());
   }, [dispatch]);
-  
+
   useEffect(() => {
     const initAuth = async () => {
       const accessToken = localStorage.getItem("accessToken");
@@ -195,6 +196,7 @@ function App() {
                 <Route path="business" element={<Business />} />
                 <Route path="category" element={<Category />} />
                 <Route path="location" element={<Location />} />
+                <Route path="seo" element={<SeoData />} />
                 <Route path="roles" element={<Roles />} />
                 <Route path="enquiry" element={<EnquiryPage />} />
                 <Route path="advertisements" element={<AdvertisementPage />} />

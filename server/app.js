@@ -16,6 +16,7 @@ import otpRoutes from "./routes/msg91Routes.js"
 import phonePayRoutes from "./routes/phonePayRoute.js"
 import advertismentRoutes from "./routes/advertistmentRoute.js"
 import leadsDataRoutes from "./routes/leadsDataRoutes.js"
+import seoRoutes from './routes/seoRoutes.js'
 
 dotenv.config();
 
@@ -28,7 +29,7 @@ app.use(cors({
   origin: [
     'https://massclick.in',
     'https://www.massclick.in',
-    // 'http://localhost:3000',
+    'http://localhost:3000',
 
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -51,7 +52,7 @@ app.use('/', otpRoutes);
 app.use('/', phonePayRoutes);
 app.use('/', advertismentRoutes);
 app.use('/', leadsDataRoutes);
-
+app.use('/', seoRoutes);
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Database Connected âœ…'))
   .catch((err) => console.log('Database connection error âŒ', err));

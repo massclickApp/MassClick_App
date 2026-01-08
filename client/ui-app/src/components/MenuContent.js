@@ -20,6 +20,7 @@ import InterpreterModeIcon from "@mui/icons-material/InterpreterMode";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import TodayIcon from "@mui/icons-material/Today";
 import { useNavigate, useLocation } from "react-router-dom";
+import DatasetIcon from '@mui/icons-material/Dataset';
 
 export default function SideMenu({ onItemClick }) {
   const navigate = useNavigate();
@@ -59,6 +60,12 @@ export default function SideMenu({ onItemClick }) {
     //   path: "/dashboard/location",
     //   roles: ["SuperAdmin"],
     // },
+     {
+      text: "Seo Management",
+      icon: DatasetIcon,
+      path: "/dashboard/seo",
+      roles: ["SuperAdmin"],
+    },
     {
       text: "Users",
       icon: InterpreterModeIcon,

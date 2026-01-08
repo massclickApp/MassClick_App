@@ -15,6 +15,8 @@ export const Collections = {
     LOCATIONIP: 'locationip',
     PAYMENT: 'payment',
     ADVERTISMENTS: 'advertisments',
+    SEODATAS: 'seodatas',
+
 };
 
 export const {
@@ -33,6 +35,7 @@ export const {
     MSGUSERS,
     LOCATIONIP,
     PAYMENT,
-    ADVERTISMENTS
+    ADVERTISMENTS,
+    SEODATAS
 
 } = Collections;

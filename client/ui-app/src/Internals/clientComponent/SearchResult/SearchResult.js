@@ -10,16 +10,12 @@ import CardDesign from "../cards/cards.js";
 import { backendMainSearch } from "../../../redux/actions/businessListAction";
 import TopBannerAds from "../banners/topBanner/topBanner.js";
 import SeoMeta from "../seo/seoMeta.js";
-
+import { fetchSeoMeta } from "../../../redux/actions/seoAction.js";
+import { CLEAR_SEO_META } from "../../../redux/actions/userActionTypes.js";
 
 const createSlug = (text) => {
-  if (typeof text !== "string" || !text.trim()) return "unknown";
-
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)+/g, "");
+  if (!text) return "unknown";
+  return text.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-");
 };
 
 const SearchResults = () => {
@@ -35,13 +31,16 @@ const SearchResults = () => {
     (state) => state.businessListReducer
   );
 
+  const { meta: seoMetaData } = useSelector(
+    (state) => state.seoReducer
+  );
+
   const [results, setResults] = useState([]);
 
   const locationText = locParam?.toString().trim() || "";
   const searchText = termParam?.toString().trim() || "";
 
   const stateAppliedRef = useRef(false);
-
 
   useEffect(() => {
     if (
@@ -62,10 +61,36 @@ const SearchResults = () => {
     });
   }, [searchText, locationText, dispatch]);
 
+  useEffect(() => {
+    if (!searchText || !locationText) return;
+    const normalize = (v = "") => v.toLowerCase().trim();
+    dispatch(
+      fetchSeoMeta({
+        pageType: "category",
+        category: normalize(searchText),
+        location: normalize(locationText),
+      })
+    );
+
+  }, [dispatch, searchText, locationText]);
 
   const handleRetry = useCallback(() => {
     dispatch(
       backendMainSearch(searchText, locationText, searchText)
+    );
+  }, [dispatch, searchText, locationText]);
+
+  useEffect(() => {
+    if (!searchText || !locationText) return;
+
+    dispatch({ type: CLEAR_SEO_META });
+
+    dispatch(
+      fetchSeoMeta({
+        pageType: "category",
+        category: searchText,
+        location: locationText,
+      })
     );
   }, [dispatch, searchText, locationText]);
 
@@ -87,14 +112,19 @@ const SearchResults = () => {
     );
   }
 
+  const fallbackSeo = {
+    title: `${searchText} in ${locationText} - Massclick`,
+    description: `Find the best ${searchText} in ${locationText}. Get phone numbers, address, ratings and reviews on Massclick.`,
+    keywords: `${searchText} in ${locationText}, ${searchText} near me`,
+    canonical: `https://massclick.in/${createSlug(locationText)}/${createSlug(searchText)}`
+  };
+
   return (
     <>
-      <SeoMeta
-        category={searchText}
-        location={locationText}
-      />
+      <SeoMeta seoData={seoMetaData} fallback={fallbackSeo} />
+
       <CardsSearch />
-      <TopBannerAds category={results} />
+      {/* <TopBannerAds category={results} /> */}
       <Box sx={{ minHeight: "100vh", bgcolor: "#f8f9fb", pt: 8, pb: 6 }}>
         <Box sx={{ maxWidth: "1200px", margin: "auto", p: 2 }}>
           {loading && (

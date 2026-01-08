@@ -14,7 +14,7 @@ import clientAuthReducer from './reducers/clientAuthReducer.js'
 import phonepeReducer from './reducers/phonePayReducer.js';
 import leadsReducer from './reducers/leadsReducer.js';
 import advertisementReducer from './reducers/advertisementReducer.js';
-
+import seoReducer from './reducers/seoReducer.js';
 const rootReducer = combineReducers({
   auth: authReducer,
   userReducer: userReducer,
@@ -30,6 +30,7 @@ const rootReducer = combineReducers({
   phonepe : phonepeReducer,
   leads : leadsReducer,
   advertisement: advertisementReducer,  
+    seoReducer
 });
 
 export const store = createStore(rootReducer, applyMiddleware(thunk));

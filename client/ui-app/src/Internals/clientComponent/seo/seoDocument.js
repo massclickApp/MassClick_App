@@ -54,36 +54,31 @@ export const CATEGORY_META = {
   }
 };
 
-export const HOME_META = {
-  title: "Massclick - Complete Business Solution for Local Search",
+// export const HOME_META = {
+//   title: "Massclick - Complete Business Solution for Local Search",
 
-  description:
-    "Massclick - Best local business search platform for Restaurants, Hotels, Salons, Education, Travel, Hospitals, Hostels, Beauty spa, B2B businesses, and more. Discover verified business details including addresses, phone numbers, reviews, ratings, photos, and location maps - all in one place.",
+//   description:
+//     "Massclick - Best local business search platform for Restaurants, Hotels, Salons, Education, Travel, Hospitals, Hostels, Beauty spa, B2B businesses, and more. Discover verified business details including addresses, phone numbers, reviews, ratings, photos, and location maps - all in one place.",
 
-  keywords:
-    "massclick, local search, hostels, order food, grocery, medicines, online shopping, online booking restaurants, hotels, events, car services, local businesses, massclick customer care, customer support",
+//   keywords:
+//     "massclick, local search, hostels, order food, grocery, medicines, online shopping, online booking restaurants, hotels, events, car services, local businesses, massclick customer care, customer support",
 
-  canonical: "https://www.massclick.com/home"
-};
+//   canonical: "https://massclick.in/home"
+// };
 
 export const ABOUT_META = {
   title: "About Us - Massclick",
-
   description:
     "MassClick is a leading local search platform in India connecting users with verified local services.",
-
   canonical: "https://massclick.in/aboutus"
 };
 
 export const TESTIMONIAL_META = {
   title: "Massclick Reviews, Ratings & User Testimonials",
-
   description:
     "Read Latest Reviews and Testimonials by Massclick Users on how they were connected to businesses easily. Share your views about Massclick.",
-
   keywords:
     "Massclick testimonials, Testimonial of massclick, Massclick client Reviews, Reviews of massclick, massclick user reviews, massclick success stories",
-
   canonical: "https://massclick.in/testimonials"
 };
 

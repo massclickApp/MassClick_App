@@ -15,13 +15,33 @@ import Footer from './footer/footer';
 import CardsSearch from './CardsSearch/CardsSearch';
 import OTPLoginModel from './AddBusinessModel.js';
 import { viewOtpUser } from '../../redux/actions/otpAction.js';
-import { Helmet } from "react-helmet-async";
-import { HOME_META } from "../clientComponent/seo/seoDocument.js";
+// import { Helmet } from "react-helmet-async";
+// import { HOME_META } from "../clientComponent/seo/seoDocument.js";
+import SeoMeta from "./seo/seoMeta";
+import { fetchSeoMeta } from "../../redux/actions/seoAction";
+
 
 const STICKY_SEARCH_BAR_HEIGHT = 85;
 
 const LandingPage = () => {
     const dispatch = useDispatch();
+
+    const { meta: seoMetaData } = useSelector(
+        (state) => state.seoReducer
+    );
+
+    useEffect(() => {
+        dispatch(fetchSeoMeta({ pageType: "home" }));
+    }, [dispatch]);
+
+    const fallbackSeo = {
+        title: "Massclick - India's Leading Local Search Platform",
+        description:
+            "Find trusted local businesses, services, restaurants, hotels, and professionals near you on Massclick.",
+        keywords: "massclick, local search, business directory",
+        canonical: "https://massclick.in/",
+        robots: "index, follow",
+    };
 
     const [searchResults, setSearchResults] = useState(null);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -107,7 +127,7 @@ const LandingPage = () => {
 
     return (
         <>
-            <Helmet>
+            {/* <Helmet>
                 <title>{HOME_META.title}</title>
                 <meta name="description" content={HOME_META.description} />
                 <meta name="keywords" content={HOME_META.keywords} />
@@ -115,7 +135,8 @@ const LandingPage = () => {
                 <meta name="author" content="Massclick" />
                 <meta name="publisher" content="Massclick" />
                 <link rel="canonical" href={HOME_META.canonical} />
-            </Helmet>
+            </Helmet> */}
+            <SeoMeta seoData={seoMetaData} fallback={fallbackSeo} />
 
             <Box sx={{ flexGrow: 1, bgcolor: 'background.default', width: '100%' }}>
                 <Drawer anchor="right" open={mobileMenuOpen} onClose={handleMobileMenuClose}>

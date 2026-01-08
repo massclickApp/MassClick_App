@@ -1,45 +1,49 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
-import { CATEGORY_META } from "./seoDocument.js";
 
-const normalize = (text = "") =>
-  text.toLowerCase().trim().replace(/\s+/g, "");
+const SeoMeta = ({ seoData, fallback }) => {
+  if (!seoData && !fallback) return null;
 
-const slugify = (text = "") =>
-  text.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-");
-
-const SeoMeta = ({ category, location }) => {
-  const normalizedCategory = normalize(category);
-  const normalizedLocation = normalize(location);
-
-  const seoData =
-    CATEGORY_META?.[normalizedCategory]?.[normalizedLocation];
-
-  const title =
-    seoData?.title ||
-    `${category} in ${location} - Massclick`;
-
-  const description =
-    seoData?.description ||
-    `Find the best ${category} in ${location}. Get phone numbers, address, ratings and reviews on Massclick.`;
-
-  const keywords =
-    seoData?.keywords ||
-    `${category} in ${location}, ${category} near me, ${location} ${category}`;
-
-  const canonicalUrl = `https://www.massclick.com/${slugify(
-    location
-  )}/${slugify(category)}`;
+  const meta = seoData ?? fallback;
 
   return (
     <Helmet>
-      <title>{title}</title>
-      <meta name="description" content={description} />
-      <meta name="keywords" content={keywords} />
-      <meta name="robots" content="index, follow" />
-      <meta name="author" content="Massclick" />
-      <meta name="publisher" content="Massclick" />
-      <link rel="canonical" href={canonicalUrl} />
+
+      <title key="title">{meta.title}</title>
+
+      <meta
+        key="description"
+        name="description"
+        content={meta.description}
+      />
+
+      {meta.keywords && (
+        <meta
+          key="keywords"
+          name="keywords"
+          content={meta.keywords}
+        />
+      )}
+
+      <meta
+        key="robots"
+        name="robots"
+        content={meta.robots || "index, follow"}
+      />
+
+      {meta.canonical && (
+        <link
+          key="canonical"
+          rel="canonical"
+          href={meta.canonical}
+        />
+      )}
+
+      <meta key="author" name="author" content="Massclick" />
+      <meta key="publisher" name="publisher" content="Massclick" />
+
+      <meta key="language" httpEquiv="content-language" content="en" />
+      <meta key="charset" charSet="utf-8" />
     </Helmet>
   );
 };
