@@ -30,11 +30,12 @@ export default function SeoData() {
   const dispatch = useDispatch();
 
   const {
-  list: seoList = [],   
+    list: seoList = [],
     total = 0,
-    loading,
-    error,
+    loading = false,
+    error = null,
   } = useSelector((state) => state.seoReducer || {});
+
 
   const [formData, setFormData] = useState({
     pageType: "",
@@ -52,9 +53,11 @@ export default function SeoData() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
 
+
   useEffect(() => {
     dispatch(getAllSeo());
   }, [dispatch]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -62,7 +65,7 @@ export default function SeoData() {
   };
 
   const validateForm = () => {
-    let newErrors = {};
+    const newErrors = {};
 
     if (!formData.pageType) newErrors.pageType = "Page type required";
     if (!formData.title.trim()) newErrors.title = "Meta title required";
@@ -75,7 +78,7 @@ export default function SeoData() {
 
   const resetForm = () => {
     setFormData({
-      pageType: "category",
+      pageType: "",
       category: "",
       location: "",
       title: "",
@@ -105,19 +108,22 @@ export default function SeoData() {
     }
   };
 
- const handleEdit = (row) => {
-  setFormData({
-    pageType: row.pageType,
-    category: row.category || "",
-    location: row.location || "",
-    title: row.title,
-    description: row.description,   
-    keywords: row.keywords || "",   
-    canonical: row.canonical || "", 
-    robots: row.robots || "index, follow",
-  });
-};
+  const handleEdit = (row) => {
+    setEditingId(row.id); 
 
+    setFormData({
+      pageType: row.pageType || "",
+      category: row.category || "",
+      location: row.location || "",
+      title: row.title || "",
+      description: row.description || "",
+      keywords: row.keywords || "",
+      canonical: row.canonical || "",
+      robots: row.robots || "index, follow",
+    });
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const handleDeleteClick = (row) => {
     setSelectedRow(row);
@@ -125,6 +131,8 @@ export default function SeoData() {
   };
 
   const confirmDelete = () => {
+    if (!selectedRow?.id) return;
+
     dispatch(deleteSeo(selectedRow.id)).then(() => {
       dispatch(getAllSeo());
       setDeleteDialogOpen(false);
@@ -137,20 +145,20 @@ export default function SeoData() {
     setSelectedRow(null);
   };
 
-const rows = seoList
-  .filter((seo) => seo.isActive)
-  .map((seo) => ({
-    id: seo._id,
-    pageType: seo.pageType,
-    category: seo.category || "",
-    location: seo.location || "",
-    title: seo.title,
-    description: seo.description || "",
-    keywords: seo.keywords || "",
-    canonical: seo.canonical || "",
-    robots: seo.robots || "index, follow",
-  }));
 
+  const rows = seoList
+    .filter((seo) => seo.isActive)
+    .map((seo) => ({
+      id: seo._id,
+      pageType: seo.pageType,
+      category: seo.category || "",
+      location: seo.location || "",
+      title: seo.title || "",
+      description: seo.description || "",
+      keywords: seo.keywords || "",
+      canonical: seo.canonical || "",
+      robots: seo.robots || "index, follow",
+    }));
 
   const columns = [
     { id: "pageType", label: "Page Type" },
@@ -163,10 +171,10 @@ const rows = seoList
       label: "Action",
       renderCell: (_, row) => (
         <>
-          <IconButton onClick={() => handleEdit(row)} color="primary">
+          <IconButton color="primary" onClick={() => handleEdit(row)}>
             <EditRoundedIcon />
           </IconButton>
-          <IconButton onClick={() => handleDeleteClick(row)} color="error">
+          <IconButton color="error" onClick={() => handleDeleteClick(row)}>
             <DeleteOutlineRoundedIcon />
           </IconButton>
         </>
@@ -184,6 +192,7 @@ const rows = seoList
     { label: "Canonical URL", name: "canonical" },
     { label: "Robots", name: "robots" },
   ];
+
 
   return (
     <div className="seo-page">
@@ -226,7 +235,13 @@ const rows = seoList
 
           <div className="seo-actions">
             <button type="submit" disabled={loading}>
-              {loading ? <CircularProgress size={22} /> : editingId ? "Update SEO" : "Create SEO"}
+              {loading ? (
+                <CircularProgress size={22} />
+              ) : editingId ? (
+                "Update SEO"
+              ) : (
+                "Create SEO"
+              )}
             </button>
 
             {editingId && (
@@ -265,7 +280,11 @@ const rows = seoList
           </DialogContent>
           <DialogActions>
             <Button onClick={cancelDelete}>Cancel</Button>
-            <Button onClick={confirmDelete} color="error" variant="contained">
+            <Button
+              onClick={confirmDelete}
+              color="error"
+              variant="contained"
+            >
               Delete
             </Button>
           </DialogActions>

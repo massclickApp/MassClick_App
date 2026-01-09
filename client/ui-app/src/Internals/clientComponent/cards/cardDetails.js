@@ -36,6 +36,7 @@ import LinkIcon from "@mui/icons-material/Link";
 import Tooltip from "@mui/material/Tooltip";
 
 import Footer from "../footer/footer";
+import BusinessMap from "../businessMap/businessMap";
 
 const SimpleModal = ({ children, onClose, title }) => (
   <div
@@ -417,7 +418,6 @@ const BusinessDetail = () => {
     <>
       <CardsSearch /><br /><br /><br /><br />
       <div className="business-CardDetails-pageWrapper">
-        {/* HERO SECTION */}
         <section className="business-CardDetails-heroSection">
           <div
             className="business-CardDetails-mainImageContainer"
@@ -485,11 +485,8 @@ const BusinessDetail = () => {
           )}
         </section>
 
-        {/* MAIN GRID */}
         <div className="business-CardDetails-mainGrid">
-          {/* LEFT COLUMN */}
           <div className="business-CardDetails-leftColumn">
-            {/* HEADER CARD */}
             <div className="business-CardDetails-headerCard">
               <h2 className="business-CardDetails-businessName">
                 {business.businessName}
@@ -631,9 +628,7 @@ const BusinessDetail = () => {
               </div>
             </div>
 
-            {/* TAB CONTENT */}
             <div className="business-CardDetails-tabContent">
-              {/* OVERVIEW */}
               <section
                 ref={overviewRef}
                 className="business-CardDetails-overviewCard"
@@ -645,7 +640,6 @@ const BusinessDetail = () => {
                 />
               </section>
 
-              {/* QUICK INFO */}
               <section
                 ref={quickInfoRef}
                 className="business-CardDetails-infoBlock"
@@ -689,7 +683,6 @@ const BusinessDetail = () => {
                 </div>
               </section>
 
-              {/* SERVICES */}
               <section
                 ref={servicesRef}
                 className="business-CardDetails-infoBlock"
@@ -711,7 +704,6 @@ const BusinessDetail = () => {
                 )}
               </section>
 
-              {/* PHOTOS */}
               <section
                 ref={photosRef}
                 className="business-CardDetails-photosSection"
@@ -741,7 +733,6 @@ const BusinessDetail = () => {
                 )}
               </section>
 
-              {/* REVIEWS */}
               <section
                 ref={reviewsRef}
                 className="business-CardDetails-reviewsSection"
@@ -802,8 +793,9 @@ const BusinessDetail = () => {
                         <div className="business-CardDetails-reviewHeader">
                           <img
                             src={
-                              review.userAvatar ||
-                              "https://via.placeholder.com/40"
+                              review.userProfileImage
+                                ? review.userProfileImage
+                                : "https://via.placeholder.com/40"
                             }
                             alt={
                               review.userName || "Anonymous User"
@@ -921,7 +913,6 @@ const BusinessDetail = () => {
               </section>
             </div>
 
-            {/* MAP */}
             {business.googleMap && (
               <div className="business-CardDetails-mapWrapper">
                 <iframe
@@ -938,10 +929,8 @@ const BusinessDetail = () => {
             )}
           </div>
 
-          {/* RIGHT SIDEBAR */}
           <aside className="business-CardDetails-rightSidebar">
             <div className="business-CardDetails-sidebarCard">
-              {/* CONTACT */}
               <h3 className="business-CardDetails-sidebarTitle">
                 Contact
               </h3>
@@ -955,7 +944,6 @@ const BusinessDetail = () => {
                 </button>
               </div>
 
-              {/* ADDRESS */}
               <h3 className="business-CardDetails-sidebarTitle">
                 Address
               </h3>
@@ -964,9 +952,9 @@ const BusinessDetail = () => {
               </p>
 
               <div className="business-CardDetails-addressActions">
-                {business.googleMap && (
+                {fullAddress && (
                   <a
-                    href={getMapLink(business.googleMap)}
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(fullAddress)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="business-CardDetails-addressBtn"

@@ -41,6 +41,7 @@ export default function NotificationDropdown({ open, handleClose }) {
   const [expandedId, setExpandedId] = useState(null);
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [loadingId, setLoadingId] = useState(null);
 
   useEffect(() => {
     if (open) {
@@ -53,25 +54,28 @@ export default function NotificationDropdown({ open, handleClose }) {
     return user?.userName || "Unknown";
   };
 
-  const handleMakeLive = (business) => {
-    dispatch(editBusinessList(business._id, { businessesLive: true }))
-      .then(() => {
+  const handleMakeLive = async (business) => {
+    try {
+      setLoadingId(business._id);
 
-        const msg = `
-${business.businessName} is now LIVE!
-Client ID: ${business.clientId}
-Category: ${business.category}
-Location: ${business.location}
-Created By: ${getUserName(business.createdBy)}
-      `;
+      await dispatch(
+        editBusinessList(business._id, { businessesLive: true })
+      );
 
-        setToastMessage(msg);
-        setToastOpen(true);
+      setToastMessage(
+        `${business.businessName} is now LIVE!\n` +
+        `Client ID: ${business.clientId}\n` +
+        `Category: ${business.category}\n` +
+        `Location: ${business.location}\n` +
+        `Created By: ${getUserName(business.createdBy)}`
+      );
 
-        setTimeout(() => {
-          handleClose();
-        }, 300);
-      });
+      setToastOpen(true);
+    } catch (error) {
+      console.error("Activation failed", error);
+    } finally {
+      setLoadingId(null);
+    }
   };
 
   if (!open) return null;
@@ -185,6 +189,7 @@ Created By: ${getUserName(business.createdBy)}
                     <Button
                       fullWidth
                       variant="contained"
+                      disabled={loadingId === b._id}
                       sx={{
                         mt: 2,
                         py: 1,
@@ -200,7 +205,7 @@ Created By: ${getUserName(business.createdBy)}
                       }}
                       onClick={() => handleMakeLive(b)}
                     >
-                      Make Live
+                      {loadingId === b._id ? "Activating..." : "Make Live"}
                     </Button>
                   </Box>
                 </Collapse>

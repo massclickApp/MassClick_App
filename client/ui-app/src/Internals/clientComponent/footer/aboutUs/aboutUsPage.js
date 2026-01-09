@@ -15,7 +15,6 @@ import CardsSearch from '../../CardsSearch/CardsSearch';
 import SeoMeta from "../../seo/seoMeta";
 import { fetchSeoMeta } from "../../../../redux/actions/seoAction";
 
-
 const Card = ({ Icon, title, description }) => (
     <div className="card-item">
         <div className="about-card-icon-wrapper">
