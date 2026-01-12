@@ -120,9 +120,9 @@ const FullScreenGallery = ({ images, initialIndex, onClose }) => {
 };
 
 const BusinessDetail = () => {
-  const { slug } = useParams();
+  const { slug, id } = useParams();
   const { state } = useLocation();
-  const businessID = state?.id;
+  const businessID = id || state?.id;
 
   const dispatch = useDispatch();
 
@@ -145,7 +145,9 @@ const BusinessDetail = () => {
   const reviewsRef = useRef(null);
 
   useEffect(() => {
-    dispatch(getBusinessDetailsById(businessID));
+    if (businessID) {
+      dispatch(getBusinessDetailsById(businessID));
+    }
   }, [dispatch, businessID]);
 
 

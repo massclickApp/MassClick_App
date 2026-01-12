@@ -37,9 +37,7 @@ export const getSeoMeta = async ({ pageType, category, location }) => {
 
     let seo = null;
 
-    /* ===============================
-       1️⃣ Category + Location (Highest Priority)
-       =============================== */
+   
     if (safeCategory && safeLocation) {
       seo = await seoModel.findOne({
         pageType: safePageType,
@@ -51,9 +49,6 @@ export const getSeoMeta = async ({ pageType, category, location }) => {
       if (seo) return seo;
     }
 
-    /* ===============================
-       2️⃣ Category only
-       =============================== */
     if (safeCategory) {
       seo = await seoModel.findOne({
         pageType: safePageType,
@@ -64,9 +59,6 @@ export const getSeoMeta = async ({ pageType, category, location }) => {
       if (seo) return seo;
     }
 
-    /* ===============================
-       3️⃣ Page type only (example: home, about, services)
-       =============================== */
     seo = await seoModel.findOne({
       pageType: safePageType,
       isActive: true,
@@ -74,9 +66,7 @@ export const getSeoMeta = async ({ pageType, category, location }) => {
 
     if (seo) return seo;
 
-    /* ===============================
-       4️⃣ Global fallback (Massclick default)
-       =============================== */
+ 
     return {
       title: "Massclick - Local Business Search Platform",
       description:
@@ -88,7 +78,6 @@ export const getSeoMeta = async ({ pageType, category, location }) => {
   } catch (error) {
     console.error("SEO META FETCH ERROR:", error);
 
-    // Absolute safety fallback
     return {
       title: "Massclick",
       description: "Massclick - India's local business search platform",
