@@ -12,30 +12,30 @@ import { useNavigate } from "react-router-dom";
 // import WaterSupplyIcon from '../../../assets/water.png';
 import RestuarantIcon from '../../../assets/features/restuarant.png';
 import HotelIcon from '../../../assets/features/hotel.png';
-import MassageIcon from '../../../assets/features/massage.png';
-import HomeDecIcon from '../../../assets/features/homeDec.png';
-import WeddingIcon from '../../../assets/features/weddingceremony.png';
-import EducationIcon from '../../../assets/features/education.png';
+import InteriorDesignerIcon from '../../../assets/features/interiors-Designers.png';
+import FurnitureIcon from '../../../assets/features/furniture.png';
 import RentIcon from '../../../assets/features/rent.png';
 import HospitalIcon from '../../../assets/features/hospital.png';
 import ContractIcon from '../../../assets/features/contractor.png';
-import PetShopIcon from '../../../assets/features/petshop.png';
+import housekeeperIcon from '../../../assets/features/housekeeper.png';
 import HostelsIcon from '../../../assets/features/hostels.png';
-import AgentIcon from '../../../assets/features/agent.png';
+import SecuritySystemIcon from '../../../assets/features/security-system.png';
 import DentistIcon from '../../../assets/features/dentist.png';
-import GymIcon from '../../../assets/features/gym.png';
-import LoanIcon from '../../../assets/features/loan.png';
-import EventIcon from '../../../assets/features/eventorgan.png';
-import DrivingIcon from '../../../assets/features/driving.png';
+import FloristIcon from '../../../assets/features/florist.png';
+import WeddingHallIcon from '../../../assets/features/wedding-hall.png';
+import PhotographerIcon from '../../../assets/features/photographer.png';
+import DermatologistIcon from '../../../assets/features/dermatologist.png';
 import PackersIcon from '../../../assets/features/packers.png';
-import DeliveryIcon from '../../../assets/features/delivery.png';
+import MatrimonyIcon from '../../../assets/features/matrimony.png';
 import PopularIcon from '../../../assets/features/popular.png';
+import SexologyIcon from '../../../assets/features/sexology.png';
+import GymIcon from '../../../assets/features/gym.png';
+
 // import RestuarantCards from './cards/retuarants/restuarant';
 import RestaurantCards from '../cards/resturant/restaurant.js';
 import HotelCards from '../cards/hotels/hotel.js';
 import BeautySpaCards from '../cards/beautySpa/beautySpa.js';
 import HomeDecorCards from '../cards/homeDecor/homeDecor.js';
-import WeddingPlanCards from '../cards/weddingPlan/weddingPlan.js';
 import EducationCards from '../cards/education/education.js';
 import RentAndHiringCards from '../cards/RentandHiring/rentAndHiring.js';
 import HospitalsCards from '../cards/hospitals/hospitals.js';
@@ -47,33 +47,42 @@ import DentistsCards from '../cards/dentists/dentists.js';
 import GymCards from '../cards/gym/gym.js';
 import LoansCards from '../cards/loans/loans.js';
 import EventOrganisersCards from '../cards/eventOrganisers/eventOrganisers.js';
-import DrivingSchoolsCards from '../cards/driving Schools/drivingSchools.js';
 import PackersAndMoversCards from '../cards/packersAndMovers/packersAndMovers.js';
 import CourierServiceCards from '../cards/courierService/courierService.js';
 import PopularCategoriesCards from '../cards/popularCategories/popularCategories.js';
+import DermatologistCards from '../cards/dermatologist/dermatologist.js';
+import SexologistCards from '../cards/sexologist/sexologist.js'
+import FurnituresCards from '../cards/furnitures/furnitures.js';
+import FloristCards from '../cards/florist/florist.js';
+import HouseKeeping from '../cards/houseKeeping/houseKeeping.js'
+import SecuritySystemCards from '../cards/securitySystem/securitySystem.js';
+import WeddingMallCards from '../cards/weddingMahal/weddingmall.js';
+import PhotographyCards from '../cards/photography/photography.js';
+import MatrimonyCards from '../cards/matrimony/matrimony.js';
+
 import './featureService.css'
 
 
 export const featuredServices = [
-  { name: "Restaurants", icon: RestuarantIcon, path: "/restaurants", component: RestaurantCards },
   { name: "Hotels", icon: HotelIcon, path: "/hotels", component: HotelCards },
-  { name: "Beauty Spa", icon: MassageIcon, path: "/beauty-spa", component: BeautySpaCards },
-  { name: "Home Decor", icon: HomeDecIcon, path: "/home-decor", component: HomeDecorCards },
-  { name: "Wedding Planning", icon: WeddingIcon, path: "/wedding-planning", component: WeddingPlanCards },
-  { name: "Education", icon: EducationIcon, path: "/education", component: EducationCards },
-  { name: "Rent & Hire", icon: RentIcon, path: "/rent-hire", component: RentAndHiringCards },
+  { name: "Rent And Hire", icon: RentIcon, path: "/rent-hire", component: RentAndHiringCards },
+  { name: "Restaurants", icon: RestuarantIcon, path: "/restaurants", component: RestaurantCards },
   { name: "Hospitals", icon: HospitalIcon, path: "/hospitals", component: HospitalsCards },
-  { name: "Contractors", icon: ContractIcon, path: "/contractors", component: ContractorsCards },
-  { name: "Pet Shops", icon: PetShopIcon, path: "/pet-shops", component: PetShopsCards },
-  { name: "PG/Hostels", icon: HostelsIcon, path: "/pg-hostels", component: PgAndHostelsCards },
-  { name: "Estate Agent", icon: AgentIcon, path: "/estate-agent", component: EstateAgentCards },
   { name: "Dentists", icon: DentistIcon, path: "/dentists", component: DentistsCards },
+  { name: "Dermatologists", icon: DermatologistIcon, path: "/dermatologist", component: DermatologistCards },
+  { name: "Sexologist", icon: SexologyIcon, path: "/sexologist", component: SexologistCards },
+  { name: "Contractors", icon: ContractIcon, path: "/contractors", component: ContractorsCards },
+  { name: "Interior Designer", icon: InteriorDesignerIcon, path: "/interior-designer", component: HomeDecorCards },
   { name: "Gym", icon: GymIcon, path: "/gym", component: GymCards },
-  { name: "Loans", icon: LoanIcon, path: "/loans", component: LoansCards },
-  { name: "Event Organisers", icon: EventIcon, path: "/event-organisers", component: EventOrganisersCards },
-  { name: "Driving Schools", icon: DrivingIcon, path: "/driving-schools", component: DrivingSchoolsCards },
+  { name: "Furnitures", icon: FurnitureIcon, path: "/furnitures", component: FurnituresCards },
+  { name: "Florist", icon: FloristIcon, path: "/florist", component: FloristCards },
   { name: "Packers & Movers", icon: PackersIcon, path: "/packers-movers", component: PackersAndMoversCards },
-  { name: "Courier Service", icon: DeliveryIcon, path: "/courier-service", component: CourierServiceCards },
+  { name: "House Keeping Service", icon: housekeeperIcon, path: "/house-keeping-service", component: HouseKeeping },
+  { name: "Security System", icon: SecuritySystemIcon, path: "/security-system", component: SecuritySystemCards },
+  { name: "Wedding Mahal", icon: WeddingHallIcon, path: "/wedding-mahal", component: WeddingMallCards },
+  { name: "Photography", icon: PhotographerIcon, path: "/photographer", component: PhotographyCards },
+  { name: "Matrimony", icon: MatrimonyIcon, path: "/matrimony", component: MatrimonyCards },
+  { name: "PG/Hostels", icon: HostelsIcon, path: "/pg-hostels", component: PgAndHostelsCards },
   { name: "Popular Categories", icon: PopularIcon, component: PopularCategoriesCards },
 ];
 
@@ -90,7 +99,7 @@ const FeaturedServicesSection = () => {
             className="service-card"
             key={index}
             onClick={() => {
-              
+
               if (service.name === "Popular Categories") {
                 setOpenPopularDrawer(true);
               } else {

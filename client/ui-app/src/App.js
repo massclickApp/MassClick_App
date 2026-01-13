@@ -59,7 +59,6 @@ import GlobalDrawer from "./Internals/clientComponent/Drawer/globalDrawer.js";
 import { fetchMatchedLeads } from "./redux/actions/leadsAction.js";
 import SeoData from './Internals/seoData/seoData.js';
 
-
 const ComingSoon = ({ title }) => (
   <div style={{ textAlign: 'center', marginTop: '20%' }}>
     <h2>{title} Page Coming Soon!</h2>
@@ -134,8 +133,6 @@ function App() {
       </div>
     );
   }
-
-
 
   return (
     <ThemeProvider theme={theme}>
