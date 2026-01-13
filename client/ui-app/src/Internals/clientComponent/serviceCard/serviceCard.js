@@ -21,6 +21,12 @@ import FencingCards from "../ServiceCards/fencing/fencing";
 import InterlockBricksCards from "../ServiceCards/interlockBricks/interlockBricks";
 import SteelDealersCards from "../ServiceCards/steelDealers/steelDealers";
 import RealEstateCards from "../ServiceCards/realEstate/realEstate";
+import BikeServiceCards from "../ServiceCards/bikeService/bikeService";
+import ACServiceCards from "../ServiceCards/acService/acService";
+import ComputerAndLaptopServiceCards from "../ServiceCards/computerAndLaptopService/computerAndLaptopService";
+import CateringServiceCards from "../ServiceCards/cateringService/cateringService";
+import TransportsCards from "../ServiceCards/transports/Transports";
+import DrivingSchoolCards from "../../clientComponent/cards/driving Schools/drivingSchools.js"
 
 import './serviceCard.css'
 
@@ -30,23 +36,23 @@ export const categoriesServices = [
     items: [
       { name: "Car Service", icon: CarMechanic, path: "/services/car-service", component: CarServiceCards },
       { name: "TV Service", icon: TvService, path: "/services/tv-service", component: TvServiceCards },
-      { name: "Bike Service", icon: BikeService, path: "/services/bike-service", component: PestControlCards },
+      { name: "Bike Service", icon: BikeService, path: "/services/bike-service", component: BikeServiceCards },
     ],
   },
   {
     title: "Services",
     items: [
       { name: "Pest Control Service", icon: PestService, path: "/services/pest-control-service", component: PestControlCards },
-      { name: "Ac Services", icon: ACServiceIcon, path: "/services/ac-services", component: SpaAndMassageCards },
-      { name: "Computer And Laptop Service", icon: ComputerAndLaptopIcon, path: "/services/computer-and-services", component: SalonsCards },
+      { name: "Ac Services", icon: ACServiceIcon, path: "/services/ac-services", component: ACServiceCards },
+      { name: "Computer And Laptop Service", icon: ComputerAndLaptopIcon, path: "/services/computer-and-services", component: ComputerAndLaptopServiceCards },
     ],
   },
   {
     title: "Hot Categories",
     items: [
-      { name: "Catering Service", icon: CateringIcon, path: "/hot-categories/catering-services", component: RealEstateCards },
-      { name: "Transports", icon: Transports, path: "/hot-categories/transportation", component: RealEstateCards },
-      { name: "Driving Schools", icon: DrivingSchool, path: "/hot-categories/driving-school", component: RealEstateCards },
+      { name: "Catering Service", icon: CateringIcon, path: "/hot-categories/catering-services", component: CateringServiceCards },
+      { name: "Transports", icon: Transports, path: "/hot-categories/transportation", component: TransportsCards },
+      { name: "Driving Schools", icon: DrivingSchool, path: "/hot-categories/driving-school", component: DrivingSchoolCards },
     ],
   },
   {
