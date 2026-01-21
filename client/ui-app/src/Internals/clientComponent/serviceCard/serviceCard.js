@@ -15,12 +15,9 @@ import ACServiceIcon from "../../../assets/features/ACservice.png"
 import CarServiceCards from "../ServiceCards/carService/carService";
 import TvServiceCards from "../ServiceCards/tvService/tvService";
 import PestControlCards from "../ServiceCards/pestControl/pestControlService";
-import SpaAndMassageCards from "../ServiceCards/spaAndMassage/spaAndMassage";
-import SalonsCards from "../ServiceCards/salons/salons";
 import FencingCards from "../ServiceCards/fencing/fencing";
 import InterlockBricksCards from "../ServiceCards/interlockBricks/interlockBricks";
 import SteelDealersCards from "../ServiceCards/steelDealers/steelDealers";
-import RealEstateCards from "../ServiceCards/realEstate/realEstate";
 import BikeServiceCards from "../ServiceCards/bikeService/bikeService";
 import ACServiceCards from "../ServiceCards/acService/acService";
 import ComputerAndLaptopServiceCards from "../ServiceCards/computerAndLaptopService/computerAndLaptopService";

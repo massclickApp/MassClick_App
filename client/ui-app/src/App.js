@@ -47,6 +47,7 @@ import ScrollToTop from './scrollTop.js';
 import LeadsPage from './Internals/clientComponent/LeadsPage/leadsPage.js';
 import AdvertisePage from './Internals/clientComponent/advertise/advertise.js';
 import FreeListingPage from './Internals/clientComponent/free-Listing/free-Listing.js';
+import MRPPage from './Internals/clientComponent/MRP/mrp.js';
 import LeadsCardHistory from './Internals/clientComponent/LeadsPage/leadsCards/leadsCards.js';
 import TokenExpiredModal from './Internals/tokenModel/tokenModel.js';
 import BusinessEnquiry from './Internals/clientComponent/businessEnquiry/businessEnquiry.js';
@@ -58,6 +59,8 @@ import GlobalDrawer from "./Internals/clientComponent/Drawer/globalDrawer.js";
 // import { sendWhatsAppForLead } from "./redux/actions/otpAction.js";
 import { fetchMatchedLeads } from "./redux/actions/leadsAction.js";
 import SeoData from './Internals/seoData/seoData.js';
+import SeoPageContent from './Internals/seoData/seoPageContent/seoPageContent.js';
+import MRPDatas from './Internals/MRPDATA/mrpData.js';
 
 const ComingSoon = ({ title }) => (
   <div style={{ textAlign: 'center', marginTop: '20%' }}>
@@ -137,7 +140,12 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} autoHideDuration={5000} preventDuplicate>
+      <SnackbarProvider
+        maxSnack={3}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        autoHideDuration={5000}
+        preventDuplicate
+      >
         <Router>
           <ScrollToTop />
           <GlobalDrawer />
@@ -172,6 +180,7 @@ function App() {
             <Route path="/write-review/:businessId/:ratingValue" element={<WriteReviewPage />} />
             <Route path="/leads" element={<LeadsPage />} />
             <Route path="/free-listing" element={<FreeListingPage />} />
+            <Route path="/mni" element={<MRPPage />} />
             <Route path="/advertise" element={<AdvertisePage />} />
             <Route path="/user/search-history" element={<LeadsCardHistory />} />
             <Route path="/business-enquiry" element={<BusinessEnquiry />} />
@@ -194,9 +203,11 @@ function App() {
                 <Route path="category" element={<Category />} />
                 <Route path="location" element={<Location />} />
                 <Route path="seo" element={<SeoData />} />
+                <Route path="seopagecontent" element={<SeoPageContent />} />
                 <Route path="roles" element={<Roles />} />
                 <Route path="enquiry" element={<EnquiryPage />} />
                 <Route path="advertisements" element={<AdvertisementPage />} />
+                <Route path="mni-data" element={<MRPDatas />} />
               </Route>
             </Route>
           </Routes>

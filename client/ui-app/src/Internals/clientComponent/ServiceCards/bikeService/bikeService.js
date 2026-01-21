@@ -73,7 +73,7 @@ const BikeServiceCards = () => {
 
       {!loading && bikeServiceList.length === 0 && (
         <div className="no-results-container">
-          <p className="no-results-title">No Car Services Found 😔</p>
+          <p className="no-results-title">No Bike Services Found 😔</p>
           <p className="no-results-suggestion">
             We don’t have bike services listed right now.
           </p>

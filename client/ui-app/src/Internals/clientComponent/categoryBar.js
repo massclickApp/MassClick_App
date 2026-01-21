@@ -25,6 +25,7 @@ import {
     Language as LanguageIcon
 
 } from "@mui/icons-material";
+import CorporateFareIcon from '@mui/icons-material/CorporateFare';
 import MI from "../../assets/Mi.png";
 import AddBusinessModal from "./AddBusinessModel.js";
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
@@ -64,8 +65,8 @@ import './categoryBar.css'
 
 const categories = [
     { name: "Leads", icon: <MailIcon /> },
+    { name: "MNI", icon: <CorporateFareIcon /> },
     { name: "Advertise", icon: <CampaignIcon /> },
-    { name: "Free Listing", icon: <ListAltIcon /> },
     { name: "Business Enquiry", icon: <AppRegistrationIcon /> },
 ];
 
@@ -113,8 +114,8 @@ const CategoryBar = () => {
     const userName = viewResponse?.user?.userName || '';
     const authUser = useSelector((state) => state.otp?.viewResponse) || {};
 
-   const { leads: leadsData, loading } = useSelector(
-      (state) => state.leads
+    const { leads: leadsData, loading } = useSelector(
+        (state) => state.leads
     );
 
     useEffect(() => {
@@ -184,13 +185,12 @@ const CategoryBar = () => {
             navigate("/leads");
         } else if (name === "Advertise") {
             navigate("/advertise");
-        } else if (name === "Free Listing") {
-            navigate("/free-listing");
+        } else if (name === "MNI") {
+            navigate("/mni");
         } else if (name === "Business Enquiry") {
             navigate("/business-enquiry");
         }
     };
-
 
     const drawerList = (currentPath) => (
         <div className="drawerList" role="presentation" onClick={handleDrawerToggle(false)} onKeyDown={handleDrawerToggle(false)}>

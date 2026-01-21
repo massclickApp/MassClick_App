@@ -227,46 +227,46 @@ const HeroSection = ({
   })();
 
 
-  useEffect(() => {
-    if (!navigator.geolocation) return;
+  // useEffect(() => {
+  //   if (!navigator.geolocation) return;
 
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
+  //   navigator.geolocation.getCurrentPosition(
+  //     async (position) => {
+  //       const { latitude, longitude } = position.coords;
 
-        try {
-          // Use OpenStreetMap (FREE, global, no API key)
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-          );
-          const data = await res.json();
+  //       try {
+  //         // Use OpenStreetMap (FREE, global, no API key)
+  //         const res = await fetch(
+  //           `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+  //         );
+  //         const data = await res.json();
 
-          const address = data.address || {};
-          const detectedLocation =
-            address.city ||
-            address.town ||
-            address.village ||
-            address.state ||
-            address.country ||
-            "";
+  //         const address = data.address || {};
+  //         const detectedLocation =
+  //           address.city ||
+  //           address.town ||
+  //           address.village ||
+  //           address.state ||
+  //           address.country ||
+  //           "";
 
-          if (detectedLocation) {
-            setLocationName(detectedLocation);
-          }
-        } catch (err) {
-          console.error("Location fetch failed", err);
-        }
-      },
-      (error) => {
-        console.warn("Location permission denied");
-        setLocationName("Global");
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-      }
-    );
-  }, []);
+  //         if (detectedLocation) {
+  //           setLocationName(detectedLocation);
+  //         }
+  //       } catch (err) {
+  //         console.error("Location fetch failed", err);
+  //       }
+  //     },
+  //     (error) => {
+  //       console.warn("Location permission denied");
+  //       setLocationName("Global");
+  //     },
+  //     {
+  //       enableHighAccuracy: true,
+  //       timeout: 10000,
+  //     }
+  //   );
+  // }, []);
 
 
   const handleSearch = async (e) => {

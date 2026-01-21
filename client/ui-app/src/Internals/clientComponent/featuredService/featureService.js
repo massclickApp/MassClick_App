@@ -34,21 +34,14 @@ import GymIcon from '../../../assets/features/gym.png';
 // import RestuarantCards from './cards/retuarants/restuarant';
 import RestaurantCards from '../cards/resturant/restaurant.js';
 import HotelCards from '../cards/hotels/hotel.js';
-import BeautySpaCards from '../cards/beautySpa/beautySpa.js';
 import HomeDecorCards from '../cards/homeDecor/homeDecor.js';
-import EducationCards from '../cards/education/education.js';
 import RentAndHiringCards from '../cards/RentandHiring/rentAndHiring.js';
 import HospitalsCards from '../cards/hospitals/hospitals.js';
 import ContractorsCards from '../cards/contractors/contractors.js';
-import PetShopsCards from '../cards/petShops/petShops.js';
 import PgAndHostelsCards from '../cards/pgAndHostels/pgAndHostels.js';
-import EstateAgentCards from '../cards/estateAgent/estateAgent.js';
 import DentistsCards from '../cards/dentists/dentists.js';
 import GymCards from '../cards/gym/gym.js';
-import LoansCards from '../cards/loans/loans.js';
-import EventOrganisersCards from '../cards/eventOrganisers/eventOrganisers.js';
 import PackersAndMoversCards from '../cards/packersAndMovers/packersAndMovers.js';
-import CourierServiceCards from '../cards/courierService/courierService.js';
 import PopularCategoriesCards from '../cards/popularCategories/popularCategories.js';
 import DermatologistCards from '../cards/dermatologist/dermatologist.js';
 import SexologistCards from '../cards/sexologist/sexologist.js'
@@ -61,7 +54,6 @@ import PhotographyCards from '../cards/photography/photography.js';
 import MatrimonyCards from '../cards/matrimony/matrimony.js';
 
 import './featureService.css'
-
 
 export const featuredServices = [
   { name: "Hotels", icon: HotelIcon, path: "/hotels", component: HotelCards },

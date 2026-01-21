@@ -15,6 +15,9 @@ import phonepeReducer from './reducers/phonePayReducer.js';
 import leadsReducer from './reducers/leadsReducer.js';
 import advertisementReducer from './reducers/advertisementReducer.js';
 import seoReducer from './reducers/seoReducer.js';
+import seoPageContentReducer from './reducers/seoPageContentReducer.js'
+import mrpReducer from './reducers/mrpReducer.js';
+
 const rootReducer = combineReducers({
   auth: authReducer,
   userReducer: userReducer,
@@ -26,11 +29,13 @@ const rootReducer = combineReducers({
   enquiryReducer: enquiryReducer,
   startProjectReducer: startProjectReducer,
   otp: otpReducer,
-  clientAuth: clientAuthReducer, 
-  phonepe : phonepeReducer,
-  leads : leadsReducer,
-  advertisement: advertisementReducer,  
-    seoReducer
+  clientAuth: clientAuthReducer,
+  phonepe: phonepeReducer,
+  leads: leadsReducer,
+  advertisement: advertisementReducer,
+  seoReducer,
+  seoPageContentReducer,
+  mrp: mrpReducer,   
 });
 
 export const store = createStore(rootReducer, applyMiddleware(thunk));

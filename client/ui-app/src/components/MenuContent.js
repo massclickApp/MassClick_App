@@ -21,6 +21,7 @@ import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import TodayIcon from "@mui/icons-material/Today";
 import { useNavigate, useLocation } from "react-router-dom";
 import DatasetIcon from '@mui/icons-material/Dataset';
+import CorporateFareIcon from '@mui/icons-material/CorporateFare';
 
 export default function SideMenu({ onItemClick }) {
   const navigate = useNavigate();
@@ -60,10 +61,16 @@ export default function SideMenu({ onItemClick }) {
     //   path: "/dashboard/location",
     //   roles: ["SuperAdmin"],
     // },
-     {
+    {
       text: "Seo Management",
       icon: DatasetIcon,
       path: "/dashboard/seo",
+      roles: ["SuperAdmin"],
+    },
+    {
+      text: "Seo PageContent",
+      icon: DatasetIcon,
+      path: "/dashboard/seopagecontent",
       roles: ["SuperAdmin"],
     },
     {
@@ -88,6 +95,12 @@ export default function SideMenu({ onItemClick }) {
       text: "Advertisements",
       icon: TodayIcon,
       path: "/dashboard/advertisements",
+      roles: ["SuperAdmin"],
+    },
+    {
+      text: "MNI",
+      icon: CorporateFareIcon,
+      path: "/dashboard/mni-data",
       roles: ["SuperAdmin"],
     },
   ];
