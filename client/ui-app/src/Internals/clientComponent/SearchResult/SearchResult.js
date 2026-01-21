@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import { Box } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 import "./SearchResult.css";
 
@@ -14,8 +15,10 @@ import { fetchSeoMeta } from "../../../redux/actions/seoAction.js";
 import { fetchSeoPageContentMeta } from "../../../redux/actions/seoPageContentAction.js";
 import { CLEAR_SEO_META } from "../../../redux/actions/userActionTypes.js";
 
+
 const createSlug = (text = "") =>
   text.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-");
+
 
 const SearchResults = () => {
   const dispatch = useDispatch();
@@ -47,6 +50,7 @@ const SearchResults = () => {
   const [results, setResults] = useState([]);
   const stateAppliedRef = useRef(false);
 
+ 
   useEffect(() => {
     const resultsFromState = locationState.state?.results;
 
@@ -67,25 +71,7 @@ const SearchResults = () => {
     });
   }, [searchText, locationText, dispatch]);
 
-  useEffect(() => {
-    if (!searchText || !locationText) return;
-    const normalize = (v = "") => v.toLowerCase().trim();
-    dispatch(
-      fetchSeoMeta({
-        pageType: "category",
-        category: normalize(searchText),
-        location: normalize(locationText),
-      })
-    );
-
-  }, [dispatch, searchText, locationText]);
-
-  const handleRetry = useCallback(() => {
-    dispatch(
-      backendMainSearch(searchText, locationText, searchText)
-    );
-  }, [dispatch, searchText, locationText]);
-
+  
   useEffect(() => {
     if (!searchText || !locationText) return;
 
@@ -94,12 +80,13 @@ const SearchResults = () => {
     dispatch(
       fetchSeoMeta({
         pageType: "category",
-        category: searchText,
-        location: locationText,
+        category: searchText.toLowerCase(),
+        location: locationText.toLowerCase(),
       })
     );
   }, [dispatch, searchText, locationText]);
 
+  
   useEffect(() => {
     if (!searchText) return;
 
@@ -112,11 +99,12 @@ const SearchResults = () => {
     );
   }, [dispatch, searchText, locationText]);
 
-  // const handleRetry = useCallback(() => {
-  //   dispatch(
-  //     backendMainSearch(searchText, locationText, searchText)
-  //   );
-  // }, [dispatch, searchText, locationText]);
+  const handleRetry = useCallback(() => {
+    dispatch(
+      backendMainSearch(searchText, locationText, searchText)
+    );
+  }, [dispatch, searchText, locationText]);
+
 
   if (error) {
     return (
@@ -142,25 +130,57 @@ const SearchResults = () => {
 
   const seoContent = seoPageContents?.[0];
 
+  
+  const itemListSchema =
+    results.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": `Best ${searchText} in ${locationText}`,
+          "itemListElement": results.map((business, index) => ({
+            "@type": "ListItem",
+            "position": index + 1,
+            "name": business.businessName,
+            "url": `https://massclick.in/${createSlug(
+              business.location
+            )}/${createSlug(business.businessName)}/${business._id}`,
+          })),
+        }
+      : null;
+
   return (
     <>
       <SeoMeta seoData={seoMetaData} fallback={fallbackSeo} />
 
+      {itemListSchema && (
+        <Helmet>
+          <script type="application/ld+json">
+            {JSON.stringify(itemListSchema)}
+          </script>
+        </Helmet>
+      )}
+
       <CardsSearch />
 
-      <Box sx={{ minHeight: "100vh", bgcolor: "#f8f9fb", pt: 6, pb: 8 }}>
+      <Box sx={{ maxWidth: 1200, mx: "auto", px: 2, mt: 3 }}>
+        <h1 className="page-h1">
+          Best {searchText} in {locationText}
+        </h1>
+      </Box>
+
+      <Box sx={{ minHeight: "100vh", bgcolor: "#f8f9fb", pt: 4, pb: 8 }}>
         <Box sx={{ maxWidth: 1200, mx: "auto", px: 2 }}>
 
           {!seoContentLoading && seoContent?.headerContent && (
-            <Box sx={{  py: 6 }}>
-                <article className="seo-article">
-                  <section
-                    className="seo-header-content"
-                    dangerouslySetInnerHTML={{
-                      __html: seoContent.headerContent,
-                    }}
-                  />
-                </article>
+            <Box sx={{ py: 6 }}>
+              <article className="seo-article">
+                <section
+                  className="seo-header-content"
+                  dangerouslySetInnerHTML={{
+                    __html: seoContent.headerContent,
+                  }}
+                />
+              </article>
             </Box>
           )}
 
@@ -208,6 +228,7 @@ const SearchResults = () => {
             })}
           </div>
 
+          {/* SEO Footer Content */}
           {!seoContentLoading && seoContent?.pageContent && (
             <Box sx={{ mt: 8 }}>
               <article className="seo-article">
@@ -221,7 +242,6 @@ const SearchResults = () => {
               </article>
             </Box>
           )}
-
         </Box>
       </Box>
     </>

@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import prerender from "prerender-node";
 import userRoutes from './routes/userRoutes.js';
 import userClientRoutes from './routes/userClientRoute.js'
 import locationRoutes from './routes/locationRoute.js'
@@ -23,6 +24,31 @@ dotenv.config();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URL
 const app = express();
+
+app.use(
+  prerender
+    .set("prerenderToken", process.env.PRERENDER_TOKEN)
+    .set("crawlerUserAgents", [
+      "googlebot",
+      "bingbot",
+      "yandex",
+      "duckduckbot",
+      "baiduspider",
+      "facebookexternalhit",
+      "twitterbot",
+      "rogerbot",
+      "linkedinbot",
+      "embedly",
+      "quora link preview",
+      "showyoubot",
+      "outbrain",
+      "pinterest",
+      "slackbot",
+      "vkShare",
+      "W3C_Validator"
+    ])
+);
+
 const allowedOrigins = [
   'https://massclick.in',
   'https://www.massclick.in',
