@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import mrpModel from "../../model/MRP/mrpModel.js";
 import businessListModel from "../../model/businessList/businessListModel.js";
-import categoryModel from "../../model/Category/categoryModel.js";
+import categoryModel from "../../model/category/categoryModel.js";
 
 export const createMRP = async function (reqBody = {}) {
   try {
