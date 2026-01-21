@@ -1,3 +1,74 @@
+.seo-header-content {
+  font-size: 17px;          
+  line-height: 1.8;
+  color: #333;
+}
+
+.seo-header-content p {
+  font-size: 17px;
+  margin-bottom: 18px;
+}
+
+.seo-header-content h1 {
+  font-size: 32px;
+  margin-bottom: 18px;
+}
+
+.seo-header-content h2 {
+  font-size: 24px;
+  margin-top: 32px;
+  margin-bottom: 12px;
+}
+
+.seo-header-content h3 {
+  font-size: 20px;
+  margin-top: 24px;
+}
+
+
+.seo-article {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 48px 56px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+  line-height: 1.75;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .seo-article {
+    padding: 28px 22px;
+    border-radius: 12px;
+  }
+}
+.seo-article h1 {
+  font-size: 34px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.seo-article h2 {
+  font-size: 24px;
+  margin-top: 40px;
+  margin-bottom: 14px;
+  position: relative;
+}
+
+.seo-article h2::after {
+  content: "";
+  width: 60px;
+  height: 3px;
+  background: #ff6b00;
+  display: block;
+  margin-top: 8px;
+  border-radius: 4px;
+}
+
+.seo-article p {
+  font-size: 16px;
+  color: #444;
+  margin-bottom: 16px;
+}
 
 .restaurants-list-wrapper {
     width: 100%;
@@ -12,7 +83,6 @@
     box-sizing: border-box; 
 }
 
-
 @media (max-width: 992px) {
     .restaurants-list-wrapper {
         max-width: 960px; 
@@ -25,4 +95,18 @@
         margin: 10px auto;
         padding: 0 10px; 
     }
+}
+@media (max-width: 768px) {
+  .seo-header-content,
+  .seo-header-content p {
+    font-size: 16px;
+  }
+
+  .seo-header-content h1 {
+    font-size: 26px;
+  }
+
+  .seo-header-content h2 {
+    font-size: 21px;
+  }
 }

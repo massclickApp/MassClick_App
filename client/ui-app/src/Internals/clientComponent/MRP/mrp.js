@@ -26,7 +26,6 @@ export default function MRPPage() {
     categorySearchResults = []
   } = useSelector(state => state.mrp || {});
   const { mrpList = [] } = useSelector(state => state.mrp || {});
-  console.log("mrpList", mrpList);
 
   const [businessQuery, setBusinessQuery] = useState('');
   const [categoryQuery, setCategoryQuery] = useState('');

@@ -20,7 +20,7 @@ export default function MRPDatas() {
     <div className="mrp-admin-wrap">
 
       <div className="mrp-admin-title">
-        <h1>MRP Responses</h1>
+        <h1>MNI Responses</h1>
         <p>All published business requirements</p>
       </div>
 
