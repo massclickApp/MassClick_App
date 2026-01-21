@@ -130,7 +130,6 @@ const SearchResults = () => {
 
   const seoContent = seoPageContents?.[0];
 
-  
   const itemListSchema =
     results.length > 0
       ? {
@@ -227,8 +226,6 @@ const SearchResults = () => {
               );
             })}
           </div>
-
-          {/* SEO Footer Content */}
           {!seoContentLoading && seoContent?.pageContent && (
             <Box sx={{ mt: 8 }}>
               <article className="seo-article">

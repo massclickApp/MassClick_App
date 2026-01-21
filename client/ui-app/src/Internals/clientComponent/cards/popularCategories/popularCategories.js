@@ -44,6 +44,26 @@ import Tailoring from "../../../../assets/features/tailoring.png";
 import OrganicShop from "../../../../assets/features/organics.png";
 import KidsSchool from "../../../../assets/features/kids-school.png";
 
+import Physiotherapy from "../../../../assets/features/physiotherapy.png";
+import ClinicalLab from "../../../../assets/features/clinicalLab.png";
+import Architect from "../../../../assets/features/architech.png";
+import Sports from "../../../../assets/features/sports.png";
+import Tiles from "../../../../assets/features/tiles.png";
+import ExportAndImport from "../../../../assets/features/import-export.png";
+import Boutique from "../../../../assets/features/boutique.png";
+import BookShop from "../../../../assets/features/book-shop.png";
+import FancyShop from "../../../../assets/features/fancy-store.png";
+import Tatoos from "../../../../assets/features/tatoo.png";
+import NursaryGarden from "../../../../assets/features/nursery.png";
+import SpecialSchool from "../../../../assets/features/special-school.png";
+import MosquitoNet from "../../../../assets/features/mosquito-net.png";
+import FootwearShop from "../../../../assets/features/footwear-shop.png";
+import HomeoClinic from "../../../../assets/features/homieo.png";
+import HearingAid from "../../../../assets/features/hearing-aid.png";
+import Automobiles from "../../../../assets/features/auto-mobiles.png";
+import Cosmetics from "../../../../assets/features/cosmetics.png";
+
+
 
 
 export const STATIC_CATEGORIES = [
@@ -89,6 +109,29 @@ export const STATIC_CATEGORIES = [
 
     { icon: ScrapDealers, label: "Scrap Dealer", path: "/scrap-dealers" },
     { icon: ScrapBuyers, label: "Scrap Buyer", path: "/scrap-buyers" },
+    { icon: Automobiles, label: "Automobiles", path: "/automobiles" },
+    { icon: ExportAndImport, label: "Export & Import", path: "/export-import" },
+
+    { icon: Physiotherapy, label: "Physiotherapy", path: "/physiotherapy" },
+    { icon: ClinicalLab, label: "Clinical Lab", path: "/clinical-lab" },
+    { icon: HomeoClinic, label: "Homeo Clinic", path: "/homeo-clinic" },
+    { icon: Cosmetics, label: "Cosmetics", path: "/cosmetics" },
+
+
+    { icon: Architect, label: "Architect", path: "/architect" },
+    { icon: Sports, label: "Sports", path: "/sports" },
+    { icon: Tiles, label: "Tiles", path: "/tiles" },
+    { icon: BookShop, label: "Book Shop", path: "/book-shop" },
+
+    { icon: FancyShop, label: "Fancy Shop", path: "/fancy-shop" },
+    { icon: Tatoos, label: "Tattoo Artist", path: "/tattoo-artists" },
+    { icon: Boutique, label: "Boutique", path: "/boutique" },
+    { icon: FootwearShop, label: "Footwear Shop", path: "/footwear-shop" },
+
+    { icon: NursaryGarden, label: "Nursary Garden", path: "/nursary-garden" },
+    { icon: SpecialSchool, label: "Special School", path: "/special-school" },
+    { icon: MosquitoNet, label: "Mosquito Net", path: "/mosquito-net" },
+    { icon: HearingAid, label: "Hearing Aid", path: "/hearing-aid" },
 
 ];
 
