@@ -1,5 +1,4 @@
 import express from 'express';
-import bodyParser from 'body-parser';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
@@ -21,25 +20,38 @@ import mrpRoutes from './routes/mrpRoutes.js';
 
 dotenv.config();
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URL
-
 const app = express();
+const allowedOrigins = [
+  'https://massclick.in',
+  'https://www.massclick.in',
+  'http://localhost:3000'
+];
 
 app.use(cors({
-  origin: [
-    'https://massclick.in',
-    'https://www.massclick.in',
-    'http://localhost:3000',
-
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('CORS not allowed'));
+  },
   credentials: true
 }));
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
-app.use(express.json());
+
+
+
+// app.use((req, res, next) => {
+//   if (req.method === 'OPTIONS') {
+//     return res.sendStatus(204);
+//   }
+//   next();
+// });
+
+
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use('/', userRoutes);
 app.use('/', oauthRoutes);
 app.use('/', userClientRoutes);
@@ -56,10 +68,19 @@ app.use('/', leadsDataRoutes);
 app.use('/', seoRoutes);
 app.use('/', mrpRoutes);
 
-mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Database Connected âœ…'))
-  .catch((err) => console.log('Database connection error âŒ', err));
+mongoose.connect(MONGO_URI)
+  .then(() => {
+    console.log('Database Connected ?');
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch(err => {
+    console.error('MongoDB connection failed ?', err);
+    process.exit(1);
+  });
 
 app.listen(PORT, () => {
-    console.log(`Server is listening on port ${PORT} ðŸš€`);
+    console.log(`Server is listening on port ${PORT} ÃƒÂ°Ã…Â¸Ã…Â¡Ã¢â€šÂ¬`);
 });
