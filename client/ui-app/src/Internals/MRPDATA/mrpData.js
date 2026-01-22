@@ -5,15 +5,37 @@ import './mrpData.css';
 
 export default function MRPDatas() {
   const dispatch = useDispatch();
-  const { mrpList = [] } = useSelector(state => state.mrp || {});
+
+  const {
+    mrpList = [],
+    total = 0,
+    pageNo = 1,
+    pageSize = 10,
+    loading
+  } = useSelector(state => state.mrp || {});
+
   const [openId, setOpenId] = useState(null);
 
+  const totalPages = Math.ceil(total / pageSize);
+
   useEffect(() => {
-    dispatch(getAllMRP());
+    dispatch(getAllMRP({ pageNo: 1, pageSize: 10 }));
   }, [dispatch]);
 
   const toggle = (id) => {
     setOpenId(prev => (prev === id ? null : id));
+  };
+
+  const goPrev = () => {
+    if (pageNo > 1) {
+      dispatch(getAllMRP({ pageNo: pageNo - 1, pageSize }));
+    }
+  };
+
+  const goNext = () => {
+    if (pageNo < totalPages) {
+      dispatch(getAllMRP({ pageNo: pageNo + 1, pageSize }));
+    }
   };
 
   return (
@@ -23,6 +45,8 @@ export default function MRPDatas() {
         <h1>MNI Responses</h1>
         <p>All published business requirements</p>
       </div>
+
+      {loading && <p style={{ textAlign: "center" }}>Loading...</p>}
 
       <div className="mrp-response-grid">
         {mrpList.map(item => {
@@ -86,6 +110,20 @@ export default function MRPDatas() {
             </div>
           );
         })}
+      </div>
+
+      <div className="pagination">
+        <button onClick={goPrev} disabled={pageNo === 1}>
+          ⬅ Prev
+        </button>
+
+        <span>
+          Page {pageNo} of {totalPages}
+        </span>
+
+        <button onClick={goNext} disabled={pageNo === totalPages}>
+          Next ➡
+        </button>
       </div>
     </div>
   );
