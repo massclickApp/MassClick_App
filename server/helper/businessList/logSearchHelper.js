@@ -1,18 +1,19 @@
 import { ObjectId } from "mongodb";
 import searchLogModel from "../../model/businessList/searchLogModel.js"
-import mongoose from "mongoose";
 
 
 export const createSearchLog = async function (data = {}) {
-    try {
-        const searchLogDocument = new searchLogModel(data);
-        const result = await searchLogDocument.save();
-        return result;
-    } catch (error) {
-        console.error('Error saving Search Log:', error);
-        return null; 
-    }
+  try {
+    const searchLogDocument = new searchLogModel(data);
+    const result = await searchLogDocument.save();
+    return result;
+  } catch (error) {
+    console.error("Error saving Search Log:", error);
+    return null;
+  }
 };
+
+
 export const getAllSearchLogs = async () => {
     try {
         const logs = await searchLogModel.find().sort({ createdAt: -1 }); 
@@ -67,3 +68,45 @@ export const updateSearchData = async (id, data) => {
 
   return searchData;
 };
+
+
+export const getTopTrendingCategories = async (limit = 10) => {
+  try {
+    const result = await searchLogModel.aggregate([
+      {
+        $match: {
+          categoryName: { $exists: true, $ne: "" }
+        }
+      },
+
+      {
+        $group: {
+          _id: { $toLower: "$categoryName" },
+          totalSearches: { $sum: 1 },
+
+          categoryImage: { $first: "$categoryImage" }
+        }
+      },
+
+      { $sort: { totalSearches: -1 } },
+      { $limit: limit },
+
+      {
+        $project: {
+          _id: 0,
+          categoryName: "$_id",
+          totalSearches: 1,
+          categoryImage: 1
+        }
+      }
+    ]);
+
+    return result;
+
+  } catch (error) {
+    console.error("getTopTrendingCategories error:", error);
+    return [];
+  }
+};
+
+

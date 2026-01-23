@@ -96,41 +96,60 @@ export const verifyOtp = async (number, otp) => {
 };
 
 
-export const sendWhatsAppMessage = async (mobile, variables = {}) => {
-  if (!mobile) throw new Error("Mobile number required");
-
-  const cleanMobile = mobile.toString().replace(/\D/g, "");
-
+export const sendWhatsAppMessage = async (mobile, variables = {}) => {debugger
+  const cleanMobile = mobile.replace(/\D/g, "");
   if (cleanMobile.length !== 10) {
     throw new Error("Invalid mobile number");
   }
 
   const payload = {
-    flow_id: process.env.MSG91_FLOW_ID,
-    sender: process.env.MSG91_SENDER,
-    mobiles: `91${cleanMobile}`,
-    var: variables
+    integrated_number: process.env.MSG91_WHATSAPP_SENDER_ID,
+    content_type: "template",
+    payload: {
+      messaging_product: "whatsapp",
+      type: "template",
+      template: {
+        name: process.env.MSG91_TEMPLATE_NAME,
+        language: {
+          code: process.env.MSG91_TEMPLATE_LANGUAGE,
+          policy: "deterministic"
+        },
+        namespace: process.env.MSG91_TEMPLATE_NAMESPACE,
+        to_and_components: [
+          {
+            to: [`91${cleanMobile}`],
+            components: {
+              body_1: {
+                type: "text",
+                value: variables.name || "Customer"
+              },
+              body_2: {
+                type: "text",
+                value: variables.message || "your recent search"
+              }
+            }
+          }
+        ]
+      }
+    }
   };
 
-  try {
-    const response = await axios.post(
-      "https://api.msg91.com/api/v5/whatsapp/flow/",
-      payload,
-      {
-        headers: {
-          authkey: process.env.MSG91_AUTHKEY,
-          "Content-Type": "application/json"
-        }
+  const response = await axios.post(
+    "https://api.msg91.com/api/v5/whatsapp/whatsapp-outbound-message/bulk/",
+    payload,
+    {
+      headers: {
+        authkey: process.env.MSG91_AUTH_KEY,
+        "Content-Type": "application/json"
       }
-    );
+    }
+  );
 
-    return response.data;
-
-  } catch (err) {
-    console.error(
-      "MSG91 WhatsApp Error:",
-      err?.response?.data || err.message
-    );
-    throw new Error("WhatsApp sending failed");
-  }
+  return response.data;
 };
+
+
+
+
+
+

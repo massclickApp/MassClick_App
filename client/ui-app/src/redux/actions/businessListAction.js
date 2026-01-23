@@ -574,3 +574,29 @@ export const updateSearchLogRead = (searchLogId) => async (dispatch) => {
   }
 };
 
+export const getTrendingCategories = () => async (dispatch) => {
+  dispatch({ type: FETCH_TRENDING_REQUEST });
+
+  try {
+    const token = await dispatch(getClientToken());
+
+    const response = await axios.post(
+      `${API_URL}/businesslist/trending-searches/trending-category`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    dispatch({
+      type: FETCH_TRENDING_SUCCESS,
+      payload: response.data.data || [],
+    });
+
+  } catch (error) {
+    dispatch({
+      type: FETCH_TRENDING_FAILURE,
+      payload: error.response?.data?.message || error.message,
+    });
+  }
+};

@@ -1,68 +1,35 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-
-import CarMechanic from "../../../assets/features/hostels.png";
-import Parlours from "../../../assets/services/parlours.png";
-import Msand from "../../../assets/services/Msand.png";
-import Hotels from "../../../assets/services/Hotels.png";
+import { useDispatch, useSelector } from "react-redux";
 
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
-import "./trendingSearch.css";
+import { getTrendingCategories } from "../../../redux/actions/businessListAction";
 
-export const trendingServices = [
-  {
-    id: 1,
-    name: "Hostels",
-    image: CarMechanic,
-    alt: "Hostels",
-    path: "/trending/hostels",
-  },
-  {
-    id: 2,
-    name: "Parlours",
-    image: Parlours,
-    alt: "Parlours",
-    path: "/trending/parlours",
-  },
-  {
-    id: 3,
-    name: "M Sand",
-    image: Msand,
-    alt: "M Sand",
-    path: "/trending/realestate",
-  },
-  {
-    id: 4,
-    name: "Hotels",
-    image: Hotels,
-    alt: "Hotels",
-    path: "/trending/hotel",
-  },
-];
+import "./trendingSearch.css";
 
 const TrendingSearchesCarousel = () => {
   const carouselRef = useRef(null);
+  const dispatch = useDispatch();
+
+  const { trendingList = [] } = useSelector(
+    (state) => state.businessListReducer
+  );
+
+  useEffect(() => {
+    dispatch(getTrendingCategories());
+  }, [dispatch]);
+
   const scrollAmount = 280;
 
   const scrollRight = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({
-        left: scrollAmount,
-        behavior: "smooth",
-      });
-    }
+    carouselRef.current?.scrollBy({ left: scrollAmount, behavior: "smooth" });
   };
 
   const scrollLeft = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({
-        left: -scrollAmount,
-        behavior: "smooth",
-      });
-    }
+    carouselRef.current?.scrollBy({ left: -scrollAmount, behavior: "smooth" });
   };
 
   return (
@@ -70,7 +37,9 @@ const TrendingSearchesCarousel = () => {
       <div className="trending-search__inner">
         <div className="trending-search__header">
           <div>
-            <h2 className="trending-search__title">Trending Searches Near You</h2>
+            <h2 className="trending-search__title">
+              Trending Searches Near You
+            </h2>
             <p className="trending-search__subtitle">
               Discover what people around you are searching for right now.
             </p>
@@ -82,17 +51,16 @@ const TrendingSearchesCarousel = () => {
             type="button"
             className="trending-search__control trending-search__control--left"
             onClick={scrollLeft}
-            aria-label="Scroll left"
           >
-            <KeyboardDoubleArrowLeftIcon className="trending-search__control-icon" />
+            <KeyboardDoubleArrowLeftIcon />
           </button>
+
           <button
             type="button"
             className="trending-search__control trending-search__control--right"
             onClick={scrollRight}
-            aria-label="Scroll right"
           >
-            <KeyboardDoubleArrowRightIcon className="trending-search__control-icon" />
+            <KeyboardDoubleArrowRightIcon />
           </button>
         </div>
 
@@ -101,25 +69,27 @@ const TrendingSearchesCarousel = () => {
           <div className="trending-search__fade trending-search__fade--right" />
 
           <div className="trending-search__track" ref={carouselRef}>
-            {trendingServices.map((service) => (
+            {trendingList.map((service, index) => (
               <Link
-                key={service.id}
-                to={service.path}
+                key={index}
+                to={`/trending/${service.categoryName}`}
                 className="trending-search__card"
               >
                 <div className="trending-search__card-image-wrapper">
                   <img
-                    src={service.image}
-                    alt={service.alt}
+                    src={service.categoryImage}
+                    alt={service.categoryName}
                     className="trending-search__card-image"
                   />
                 </div>
 
                 <div className="trending-search__card-body">
-                  <p className="trending-search__card-title">{service.name}</p>
+                  <p className="trending-search__card-title">
+                    {service.categoryName}
+                  </p>
                   <div className="trending-search__card-cta">
                     <span>Explore</span>
-                    <ChevronRightIcon className="trending-search__card-cta-icon" />
+                    <ChevronRightIcon />
                   </div>
                 </div>
               </Link>

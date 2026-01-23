@@ -1,29 +1,50 @@
-import { createSearchLog, getAllSearchLogs, getMatchedSearchLogs, updateSearchData } from "../../helper/businessList/logSearchHelper.js";
+import { createSearchLog, getAllSearchLogs, getMatchedSearchLogs, updateSearchData, getTopTrendingCategories } from "../../helper/businessList/logSearchHelper.js";
+import CategoryModel from "../../model/category/categoryModel.js";
+import { getSignedUrlByKey } from "../../s3Uploder.js";
 
 export const logSearchAction = async (req, res) => {
-    try {
-        const { categoryName, location,searchedUserText, userDetails } = req.body;
+  try {
+    const { categoryName, location, searchedUserText, userDetails } = req.body;
 
-        const filteredUser = [{
-            userName: userDetails?.userName || "",
-            mobileNumber1: userDetails?.mobileNumber1 || "",
-            mobileNumber2: userDetails?.mobileNumber2 || "",
-            email: userDetails?.email || ""
-        }];
+    const categorySlug = categoryName
+      ?.toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "");
 
-        await createSearchLog({
-            categoryName,
-            location,
-            searchedUserText,
-            userDetails: filteredUser
-        });
+    const category = await CategoryModel.findOne(
+      { slug: categorySlug },
+      { categoryImageKey: 1 }
+    ).lean();
 
-        res.status(202).send({ message: "Search logged successfully" });
+    const filteredUser = [
+      {
+        userName: userDetails?.userName || "",
+        mobileNumber1: userDetails?.mobileNumber1 || "",
+        mobileNumber2: userDetails?.mobileNumber2 || "",
+        email: userDetails?.email || ""
+      }
+    ];
 
-    } catch (error) {
-        console.error("Error logging search:", error);
-        res.status(500).send({ message: "Error logging search" });
-    }
+    await createSearchLog({
+      categoryName,
+      categoryImage: category?.categoryImageKey || "",
+      location,
+      searchedUserText,
+      userDetails: filteredUser
+    });
+
+    res.status(202).json({
+      success: true,
+      message: "Search logged successfully"
+    });
+
+  } catch (error) {
+    console.error("Error logging search:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error logging search"
+    });
+  }
 };
 
 export const viewLogSearchAction = async (req, res) => {
@@ -78,3 +99,30 @@ export const updateSearchAction = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+export const getTrendingSearchesAction = async (req, res) => {
+  try {
+    const trending = await getTopTrendingCategories(10);
+
+    const formatted = trending.map(item => ({
+      ...item,
+      categoryImage: item.categoryImage
+        ? getSignedUrlByKey(item.categoryImage)
+        : ""
+    }));
+
+    return res.status(200).json({
+      success: true,
+      data: formatted
+    });
+
+  } catch (error) {
+    console.error("getTrendingSearchesAction error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch trending searches"
+    });
+  }
+};
+
+

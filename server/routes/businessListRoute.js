@@ -1,8 +1,8 @@
 import express from 'express'
 
-import { addBusinessListAction, getTrendingSearchesAction, viewBusinessListAction, getSuggestionsController, mainSearchController, viewAllBusinessListAction, updateBusinessListAction, deleteBusinessListAction, activeBusinessListAction, viewAllClientBusinessListAction, viewBusinessByCategory, findBusinessByMobileAction, dashboardSummaryAction, dashboardChartsAction, getPendingBusinessAction } from "../controller/businessList/businessListController.js"
+import { addBusinessListAction, viewBusinessListAction, getSuggestionsController, mainSearchController, viewAllBusinessListAction, updateBusinessListAction, deleteBusinessListAction, activeBusinessListAction, viewAllClientBusinessListAction, viewBusinessByCategory, findBusinessByMobileAction, dashboardSummaryAction, dashboardChartsAction, getPendingBusinessAction } from "../controller/businessList/businessListController.js"
 import { oauthAuthentication } from '../helper/oauthHelper.js';
-import { logSearchAction, viewLogSearchAction, viewSearchAction, updateSearchAction } from "../controller/businessList/logSearchController.js"
+import { logSearchAction, viewLogSearchAction, viewSearchAction, updateSearchAction, getTrendingSearchesAction } from "../controller/businessList/logSearchController.js"
 
 const router = express.Router();
 
@@ -15,9 +15,11 @@ router.delete('/api/businesslist/delete/:id', oauthAuthentication, deleteBusines
 router.put('/api/businesslist/activate/:id', oauthAuthentication, activeBusinessListAction);
 router.post('/api/businesslist/log-search', logSearchAction);
 router.put('/api/businesslist/log-search/:id', updateSearchAction);
-router.get('/api/businesslist/trending-searches', getTrendingSearchesAction);
+// router.get('/api/businesslist/trending-searches', getTrendingSearchesAction);
 router.get('/api/businesslist/trending-searches/viewall',viewLogSearchAction);
 router.post('/api/businesslist/trending-searches/view',viewSearchAction);
+router.post('/api/businesslist/trending-searches/trending-category',getTrendingSearchesAction);
+
 router.get('/api/businesslist/search', mainSearchController);
 router.get('/api/businesslist/suggestions', getSuggestionsController);
 router.get('/api/businesslist/category', viewBusinessByCategory);

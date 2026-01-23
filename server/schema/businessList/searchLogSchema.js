@@ -5,7 +5,11 @@ const searchLogSchema = new mongoose.Schema({
         type: String,
         index: true
     },
-     searchedUserText: {
+    categoryImage: {
+        type: String,
+        index: true
+    },
+    searchedUserText: {
         type: String,
         index: true
     },
@@ -21,12 +25,12 @@ const searchLogSchema = new mongoose.Schema({
             email: String
         }
     ],
-  isRead: { type: Boolean, default: false },
-  whatsapp: { type: Boolean, default: false },
-   createdAt: {
+    isRead: { type: Boolean, default: false },
+    whatsapp: { type: Boolean, default: false },
+    createdAt: {
         type: Date,
         default: Date.now,
-        expires: 604800 
+        expires: 604800
     }
 });
 

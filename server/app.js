@@ -18,6 +18,9 @@ import advertismentRoutes from "./routes/advertistmentRoute.js"
 import leadsDataRoutes from "./routes/leadsDataRoutes.js"
 import seoRoutes from './routes/seoRoutes.js'
 import mrpRoutes from './routes/mrpRoutes.js';
+import popularSearchRoutes from './routes/popularSearchRoutes.js';
+
+// import { startWhatsAppCron } from "./cron/whatsappCron.js";
 
 dotenv.config();
 
@@ -66,15 +69,12 @@ app.use(cors({
   credentials: true
 }));
 
-
-
 // app.use((req, res, next) => {
 //   if (req.method === 'OPTIONS') {
 //     return res.sendStatus(204);
 //   }
 //   next();
 // });
-
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
@@ -94,20 +94,19 @@ app.use('/', advertismentRoutes);
 app.use('/', leadsDataRoutes);
 app.use('/', seoRoutes);
 app.use('/', mrpRoutes);
+app.use('/', popularSearchRoutes);
 
 mongoose.connect(MONGO_URI)
   .then(() => {
-    console.log('Database Connected ?');
+    console.log("✅ Database Connected");
+
+    // startWhatsAppCron();
 
     app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+      console.log(`🚀 Server running on port ${PORT}`);
     });
   })
   .catch(err => {
-    console.error('MongoDB connection failed ?', err);
+    console.error("❌ MongoDB connection failed:", err);
     process.exit(1);
   });
-
-app.listen(PORT, () => {
-    console.log(`Server is listening on port ${PORT} Ã°Å¸Å¡â‚¬`);
-});

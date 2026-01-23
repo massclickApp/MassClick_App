@@ -17,7 +17,8 @@ export const Collections = {
     ADVERTISMENTS: 'advertisments',
     SEODATAS: 'seodatas',
     SEOPAGECONTENT: 'seopagecontent',
-    MRPDATAS: 'mrpdatas'
+    MRPDATAS: 'mrpdatas',
+    ENQUIRYNOWDATAS: 'enquirynowdatas'
 };
 
 export const {
@@ -39,5 +40,6 @@ export const {
     ADVERTISMENTS,
     SEODATAS,
     SEOPAGECONTENT,
-    MRPDATAS
+    MRPDATAS,
+    ENQUIRYNOWDATAS
 } = Collections;

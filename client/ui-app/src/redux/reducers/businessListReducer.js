@@ -251,7 +251,6 @@ export default function businessListReducer(state = initialState, action) {
       };
 
 
-    /** ------------------- TRENDING ------------------- **/
     case FETCH_TRENDING_REQUEST:
       return { ...state, trendingLoading: true, trendingError: null };
 
@@ -270,6 +269,7 @@ export default function businessListReducer(state = initialState, action) {
         trendingList: [],
         trendingError: action.payload,
       };
+
 
     case FIND_BUSINESS_BY_MOBILE_REQUEST:
       return {
