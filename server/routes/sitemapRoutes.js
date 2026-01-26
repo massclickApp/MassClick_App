@@ -3,24 +3,14 @@ import businessListModel from "../model/businessList/businessListModel.js";
 
 const router = express.Router();
 
-/**
- * 🔹 DOMAIN CONFIG
- * - Sitemap files are served from API domain
- * - Actual pages are on main domain
- */
-const SITEMAP_BASE = "https://api.massclick.in";   // sitemap location
-const SITE_BASE = "https://massclick.in";          // real website pages
 
-/**
- * 🔹 LIMIT PER SITEMAP
- * Google allows 50,000
- * We keep 1,000 for safety & performance
- */
+const SITEMAP_BASE = "https://api.massclick.in";   
+const SITE_BASE = "https://massclick.in";          
+
+
 const LIMIT = 1000;
 
-/**
- * 🔹 SLUG GENERATOR
- */
+
 const slugify = (text = "") =>
   text
     .toLowerCase()
@@ -29,13 +19,7 @@ const slugify = (text = "") =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
-/**
- * =========================================================
- * 1️⃣ CATEGORY + CITY SITEMAP
- * URL: /sitemap-category-city-1.xml
- * Example page: https://massclick.in/trichy/restaurants
- * =========================================================
- */
+
 router.get("/sitemap-category-city-:page.xml", async (req, res) => {
   try {
     res.set("Content-Type", "application/xml");
@@ -85,13 +69,6 @@ ${urls}
   }
 });
 
-/**
- * =========================================================
- * 2️⃣ BUSINESS DETAIL SITEMAP
- * URL: /sitemap-business-1.xml
- * Example page: https://massclick.in/trichy/chellammal-manpaanai-samayal
- * =========================================================
- */
 router.get("/sitemap-business-:page.xml", async (req, res) => {
   try {
     res.set("Content-Type", "application/xml");
@@ -134,12 +111,6 @@ ${urls}
   }
 });
 
-/**
- * =========================================================
- * 3️⃣ SITEMAP INDEX
- * URL: /sitemap.xml
- * =========================================================
- */
 router.get("/sitemap.xml", async (req, res) => {
   try {
     res.set("Content-Type", "application/xml");

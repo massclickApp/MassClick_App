@@ -17,7 +17,8 @@ import {
   FETCH_DASHBOARDCARD_REQUEST, FETCH_DASHBOARDCARD_SUCCESS, FETCH_DASHBOARDCARD_FAILURE,
   FETCH_DASHBOARDCHART_REQUEST, FETCH_DASHBOARDCHART_SUCCESS, FETCH_DASHBOARDCHART_FAILURE,
   FETCH_PENDINGBUSINESS_REQUEST, FETCH_PENDINGBUSINESS_SUCCESS, FETCH_PENDINGBUSINESS_FAILURE,
-  UPDATE_SEARCH_LOG_REQUEST, UPDATE_SEARCH_LOG_SUCCESS, UPDATE_SEARCH_LOG_FAILURE
+  UPDATE_SEARCH_LOG_REQUEST, UPDATE_SEARCH_LOG_SUCCESS, UPDATE_SEARCH_LOG_FAILURE,
+  FETCH_BUSINESS_BY_SLUG_REQUEST, FETCH_BUSINESS_BY_SLUG_SUCCESS, FETCH_BUSINESS_BY_SLUG_FAILURE,
 } from "../actions/userActionTypes.js";
 import { getClientToken } from "./clientAuthAction.js";
 const API_URL = process.env.REACT_APP_API_URL;
@@ -600,3 +601,33 @@ export const getTrendingCategories = () => async (dispatch) => {
     });
   }
 };
+
+export const getBusinessDetailsBySlug =
+  ({ location, slug }) =>
+  async (dispatch) => {
+    dispatch({ type: FETCH_BUSINESS_BY_SLUG_REQUEST });
+
+    try {
+      const response = await axios.get(
+        `${API_URL}/business/by-slug`,
+        {
+          params: { location, slug },
+        }
+      );
+
+      dispatch({
+        type: FETCH_BUSINESS_BY_SLUG_SUCCESS,
+        payload: response.data,
+      });
+
+      return response.data;
+
+    } catch (error) {
+      dispatch({
+        type: FETCH_BUSINESS_BY_SLUG_FAILURE,
+        payload: error.response?.data?.message || error.message,
+      });
+
+      return null;
+    }
+  };

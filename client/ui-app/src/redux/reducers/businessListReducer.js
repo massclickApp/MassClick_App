@@ -28,7 +28,10 @@ import {
   FETCH_PENDINGBUSINESS_FAILURE,
   UPDATE_SEARCH_LOG_REQUEST,
   UPDATE_SEARCH_LOG_SUCCESS,
-  UPDATE_SEARCH_LOG_FAILURE
+  UPDATE_SEARCH_LOG_FAILURE,
+  FETCH_BUSINESS_BY_SLUG_REQUEST,
+  FETCH_BUSINESS_BY_SLUG_SUCCESS,
+  FETCH_BUSINESS_BY_SLUG_FAILURE,
 } from '../actions/userActionTypes';
 
 const initialState = {
@@ -77,6 +80,9 @@ const initialState = {
   pendingBusinessLoading: false,
   pendingBusinessError: null,
 
+  businessBySlug: null,
+  businessBySlugLoading: false,
+  businessBySlugError: null,
 
 };
 
@@ -169,6 +175,28 @@ export default function businessListReducer(state = initialState, action) {
         businessDetails: null,
         businessDetailsError: action.payload,
       };
+    case FETCH_BUSINESS_BY_SLUG_REQUEST:
+      return {
+        ...state,
+        businessBySlugLoading: true,
+        businessBySlugError: null,
+      };
+
+    case FETCH_BUSINESS_BY_SLUG_SUCCESS:
+      return {
+        ...state,
+        businessBySlugLoading: false,
+        businessBySlug: action.payload,
+      };
+
+    case FETCH_BUSINESS_BY_SLUG_FAILURE:
+      return {
+        ...state,
+        businessBySlugLoading: false,
+        businessBySlug: null,
+        businessBySlugError: action.payload,
+      };
+
     case UPDATE_SEARCH_LOG_REQUEST:
       return {
         ...state,

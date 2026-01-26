@@ -165,7 +165,7 @@ function App() {
             ))}
 
             <Route path="/:location/:searchTerm" element={<SearchResults />} />
-              <Route path="/trending/:categorySlug" element={<TrendingCards />} />
+            <Route path="/trending/:categorySlug" element={<TrendingCards />} />
 
             {featuredServices.map((service) => {
               const Component = service.component || (() => <ComingSoon title={service.name} />);
@@ -173,7 +173,7 @@ function App() {
             })}
 
             <Route
-              path="/:location/:businessSlug/:id"
+              path="/:location/:businessSlug/:id?"
               element={<BusinessDetails />}
             />
             <Route path="/payment-status/:transactionId" element={<PaymentStatus />} />

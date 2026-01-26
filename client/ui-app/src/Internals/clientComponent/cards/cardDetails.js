@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import {
   getBusinessDetailsById,
+  getBusinessDetailsBySlug,
 } from "../../../redux/actions/businessListAction";
 
 import "./cardDetails.css";
@@ -120,7 +121,7 @@ const FullScreenGallery = ({ images, initialIndex, onClose }) => {
 };
 
 const BusinessDetail = () => {
-  const { slug, id } = useParams();
+const { location, businessSlug, id } = useParams();
   const { state } = useLocation();
   const businessID = id || state?.id;
 
@@ -144,12 +145,18 @@ const BusinessDetail = () => {
   const photosRef = useRef(null);
   const reviewsRef = useRef(null);
 
-  useEffect(() => {
-    if (businessID) {
-      dispatch(getBusinessDetailsById(businessID));
-    }
-  }, [dispatch, businessID]);
-
+useEffect(() => {
+  if (id) {
+    dispatch(getBusinessDetailsById(id));
+  } else if (location && businessSlug) {
+    dispatch(
+      getBusinessDetailsBySlug({
+        location,
+        slug: businessSlug,
+      })
+    );
+  }
+}, [dispatch, id, location, businessSlug]);
 
   if (businessDetailsLoading) {
     return (

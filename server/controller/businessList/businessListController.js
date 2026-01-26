@@ -1,4 +1,4 @@
-import { createBusinessList, viewBusinessList,getDashboardChartsHelper,getPendingBusinessList, findBusinessesByCategory,getDashboardSummaryHelper,findBusinessByMobile, viewAllBusinessList, viewAllClientBusinessList, updateBusinessList, getTrendingSearches, deleteBusinessList, activeBusinessList } from "../../helper/businessList/businessListHelper.js";
+import { createBusinessList, viewBusinessList, findBusinessBySlug, getDashboardChartsHelper,getPendingBusinessList, findBusinessesByCategory,getDashboardSummaryHelper,findBusinessByMobile, viewAllBusinessList, viewAllClientBusinessList, updateBusinessList, getTrendingSearches, deleteBusinessList, activeBusinessList } from "../../helper/businessList/businessListHelper.js";
 import { BAD_REQUEST } from "../../errorCodes.js";
 import businessListModel from "../../model/businessList/businessListModel.js";
 import { getSignedUrlByKey } from "../../s3Uploder.js";
@@ -20,6 +20,31 @@ export const addBusinessListAction = async (req, res) => {
       return res.status(BAD_REQUEST.code).send(error.message);
     }
     return res.status(BAD_REQUEST.code).send("Error saving Business.");
+  }
+};
+
+export const getBusinessBySlugAction = async (req, res) => {
+  try {
+    const { location, slug } = req.query;
+
+    if (!location || !slug) {
+      return res
+        .status(BAD_REQUEST.code)
+        .send({ message: "Location and slug are required" });
+    }
+
+    const result = await findBusinessBySlug({ location, slug });
+
+    if (!result) {
+      return res.status(404).send({ message: "Business not found" });
+    }
+
+    res.send(result);
+  } catch (error) {
+    console.error("❌ getBusinessBySlugAction error:", error);
+    return res
+      .status(BAD_REQUEST.code)
+      .send(error.message || "Failed to fetch business");
   }
 };
 

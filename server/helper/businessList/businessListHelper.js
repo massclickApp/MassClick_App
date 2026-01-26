@@ -52,6 +52,39 @@ export const createBusinessList = async (reqBody = {}) => {
     }
 };
 
+export const findBusinessBySlug = async ({ location, slug }) => {
+  try {
+    const business = await businessListModel.findOne({
+      location: new RegExp(`^${location}$`, "i"),
+      businessName: new RegExp(slug.replace(/-/g, " "), "i"),
+      isActive: true,
+      businessesLive: true,
+    }).lean();
+
+    if (!business) return null;
+
+    if (business.bannerImageKey) {
+      business.bannerImage = getSignedUrlByKey(business.bannerImageKey);
+    }
+
+    if (business.businessImagesKey?.length > 0) {
+      business.businessImages = business.businessImagesKey.map((key) =>
+        getSignedUrlByKey(key)
+      );
+    }
+
+    if (business.kycDocumentsKey?.length > 0) {
+      business.kycDocuments = business.kycDocumentsKey.map((key) =>
+        getSignedUrlByKey(key)
+      );
+    }
+
+    return business;
+  } catch (error) {
+    console.error("❌ findBusinessBySlug error:", error);
+    throw error;
+  }
+};
 export const viewBusinessList = async (id) => {
     if (!ObjectId.isValid(id)) throw new Error("Invalid business ID");
 

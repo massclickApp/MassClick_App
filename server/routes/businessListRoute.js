@@ -1,12 +1,13 @@
 import express from 'express'
 
-import { addBusinessListAction, viewBusinessListAction, getSuggestionsController, mainSearchController, viewAllBusinessListAction, updateBusinessListAction, deleteBusinessListAction, activeBusinessListAction, viewAllClientBusinessListAction, viewBusinessByCategory, findBusinessByMobileAction, dashboardSummaryAction, dashboardChartsAction, getPendingBusinessAction } from "../controller/businessList/businessListController.js"
+import { addBusinessListAction, viewBusinessListAction,getBusinessBySlugAction, getSuggestionsController, mainSearchController, viewAllBusinessListAction, updateBusinessListAction, deleteBusinessListAction, activeBusinessListAction, viewAllClientBusinessListAction, viewBusinessByCategory, findBusinessByMobileAction, dashboardSummaryAction, dashboardChartsAction, getPendingBusinessAction } from "../controller/businessList/businessListController.js"
 import { oauthAuthentication } from '../helper/oauthHelper.js';
 import { logSearchAction, viewLogSearchAction, viewSearchAction, updateSearchAction, getTrendingSearchesAction } from "../controller/businessList/logSearchController.js"
 
 const router = express.Router();
 
 router.post('/api/businesslist/create', oauthAuthentication, addBusinessListAction);
+router.get("/api/business/by-slug", getBusinessBySlugAction);
 router.get('/api/businesslist/view/:id', oauthAuthentication, viewBusinessListAction);
 router.get('/api/businesslist/viewall', oauthAuthentication, viewAllBusinessListAction);
 router.get('/api/businesslist/clientview', oauthAuthentication, viewAllClientBusinessListAction);
