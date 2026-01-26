@@ -70,46 +70,34 @@ ${urls}
 });
 
 router.get("/sitemap-business-:page.xml", async (req, res) => {
-  try {
-    res.set("Content-Type", "application/xml");
-    res.set("Cache-Control", "public, max-age=86400");
+  res.set("Content-Type", "application/xml");
 
-    const page = Number(req.params.page) || 1;
-    const skip = (page - 1) * LIMIT;
+  const page = Number(req.params.page) || 1;
+  const skip = (page - 1) * LIMIT;
 
-    const businesses = await businessListModel
-      .find(
-        { isActive: true, businessesLive: true },
-        { businessName: 1, location: 1, updatedAt: 1 }
-      )
-      .skip(skip)
-      .limit(LIMIT)
-      .lean();
+  const businesses = await businessListModel
+    .find(
+      { isActive: true, businessesLive: true },
+      { businessName: 1, location: 1, updatedAt: 1 }
+    )
+    .skip(skip)
+    .limit(LIMIT)
+    .lean();
 
-    const urls = businesses
-      .map(
-        (b) => `
-        <url>
-          <loc>${SITE_BASE}/${slugify(b.location)}/${slugify(
-          b.businessName
-        )}</loc>
-          <lastmod>${new Date(b.updatedAt).toISOString()}</lastmod>
-          <priority>0.8</priority>
-        </url>
-      `
-      )
-      .join("");
+  const urls = businesses.map(b => `
+    <url>
+      <loc>${SITE_BASE}/${slugify(b.location)}/${slugify(b.businessName)}/${b._id}</loc>
+      <lastmod>${new Date(b.updatedAt).toISOString()}</lastmod>
+      <priority>0.8</priority>
+    </url>
+  `).join("");
 
-    res.send(`<?xml version="1.0" encoding="UTF-8"?>
+  res.send(`<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls}
 </urlset>`);
-
-  } catch (error) {
-    console.error("❌ Business Sitemap Error:", error);
-    res.status(500).end();
-  }
 });
+
 
 router.get("/sitemap.xml", async (req, res) => {
   try {
