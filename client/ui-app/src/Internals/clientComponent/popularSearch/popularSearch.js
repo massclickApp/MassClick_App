@@ -33,8 +33,6 @@ const CardCarousel = () => {
 
   const authUser = JSON.parse(localStorage.getItem("authUser") || "null");
 
-  console.log("Auth User:", authUser);
-
   const scrollByCard = (direction) => {
     if (!containerRef.current) return;
     const cardWidth = containerRef.current.querySelector(".popular-search__card")?.offsetWidth || 280;
@@ -51,7 +49,6 @@ const CardCarousel = () => {
       setIsLoginOpen(true);
       return;
     }
-
     proceedEnquiry(card);
   };
 
@@ -63,7 +60,6 @@ const CardCarousel = () => {
         category: card.title,
         categorySlug: card.title.toLowerCase().replace(/\s+/g, "-"),
         enquirySource: "Popular Searches",
-
         userId: authUser._id,
         userName: authUser.userName,
         mobileNumber1: authUser.mobileNumber1,
@@ -79,8 +75,6 @@ const CardCarousel = () => {
       console.error("❌ Enquiry failed:", error);
     }
   };
-
-
 
   useEffect(() => {
     const onAuthChange = () => {
@@ -168,8 +162,7 @@ const CardCarousel = () => {
         autoHideDuration={5000}
         onClose={() => setShowSuccess(false)}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
-          sx={{ zIndex: 1400 }} 
-
+        sx={{ zIndex: 1400 }} 
       >
         <Alert
           onClose={() => setShowSuccess(false)}

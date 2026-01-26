@@ -78,7 +78,6 @@ export const featuredServices = [
   { name: "Popular Categories", icon: PopularIcon, component: PopularCategoriesCards },
 ];
 
-
 const FeaturedServicesSection = () => {
   const navigate = useNavigate();
   const [openPopularDrawer, setOpenPopularDrawer] = useState(false);
