@@ -10,6 +10,10 @@ const seoPageContentSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    location: {
+      type: String,
+      required: false,
+    },
     headerContent: {
       type: String,
       required: true,
