@@ -62,6 +62,7 @@ import HomeoClinic from "../../../../assets/features/homieo.png";
 import HearingAid from "../../../../assets/features/hearing-aid.png";
 import Automobiles from "../../../../assets/features/auto-mobiles.png";
 import Cosmetics from "../../../../assets/features/cosmetics.png";
+import Loans from "../../../../assets/features/Loans.png";
 
 export const STATIC_CATEGORIES = [
     { icon: Astrologers, label: "Astrologer", path: "/astrologers" },
@@ -105,9 +106,9 @@ export const STATIC_CATEGORIES = [
     { icon: OrganicShop, label: "Organic Shop", path: "/organic-shop" },
 
     { icon: ScrapDealers, label: "Scrap Dealer", path: "/scrap-dealers" },
-    { icon: ScrapBuyers, label: "Scrap Buyer", path: "/scrap-buyers" },
     { icon: Automobiles, label: "Automobiles", path: "/automobiles" },
     { icon: ExportAndImport, label: "Export & Import", path: "/export-import" },
+    { icon: Loans, label: "Loans", path: "/loans" },
 
     { icon: Physiotherapy, label: "Physiotherapy", path: "/physiotherapy" },
     { icon: ClinicalLab, label: "Clinical Lab", path: "/clinical-lab" },
