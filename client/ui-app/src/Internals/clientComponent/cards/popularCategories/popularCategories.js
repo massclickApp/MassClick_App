@@ -54,7 +54,7 @@ import Boutique from "../../../../assets/features/boutique.png";
 import BookShop from "../../../../assets/features/book-shop.png";
 import FancyShop from "../../../../assets/features/fancy-store.png";
 import Tatoos from "../../../../assets/features/tatoo.png";
-import NursaryGarden from "../../../../assets/features/nursery.png";
+import NurseryGarden from "../../../../assets/features/nursery.png";
 import SpecialSchool from "../../../../assets/features/special-school.png";
 import MosquitoNet from "../../../../assets/features/mosquito-net.png";
 import FootwearShop from "../../../../assets/features/footwear-shop.png";
@@ -125,7 +125,7 @@ export const STATIC_CATEGORIES = [
     { icon: Boutique, label: "Boutique", path: "/boutique" },
     { icon: FootwearShop, label: "Footwear Shop", path: "/footwear-shop" },
 
-    { icon: NursaryGarden, label: "Nursary Garden", path: "/nursary-garden" },
+    { icon: NurseryGarden, label: "Nursery Garden", path: "/nursery-garden" },
     { icon: SpecialSchool, label: "Special School", path: "/special-school" },
     { icon: MosquitoNet, label: "Mosquito Net", path: "/mosquito-net" },
     { icon: HearingAid, label: "Hearing Aid", path: "/hearing-aid" },
