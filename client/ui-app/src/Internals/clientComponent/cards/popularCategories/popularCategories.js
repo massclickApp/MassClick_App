@@ -63,9 +63,6 @@ import HearingAid from "../../../../assets/features/hearing-aid.png";
 import Automobiles from "../../../../assets/features/auto-mobiles.png";
 import Cosmetics from "../../../../assets/features/cosmetics.png";
 
-
-
-
 export const STATIC_CATEGORIES = [
     { icon: Astrologers, label: "Astrologer", path: "/astrologers" },
     { icon: VastuConsultant, label: "Vastu Consultant", path: "/vastu-consultants" },
@@ -120,7 +117,7 @@ export const STATIC_CATEGORIES = [
 
     { icon: Architect, label: "Architect", path: "/architect" },
     { icon: Sports, label: "Sports", path: "/sports" },
-    { icon: Tiles, label: "Tiles", path: "/tiles" },
+    { icon: Tiles, label: "Ceramic", path: "/ceramic" },
     { icon: BookShop, label: "Book Shop", path: "/book-shop" },
 
     { icon: FancyShop, label: "Fancy Shop", path: "/fancy-shop" },
