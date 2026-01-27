@@ -65,7 +65,7 @@ import './categoryBar.css'
 
 const categories = [
     { name: "Leads", icon: <MailIcon /> },
-    { name: "MNI", icon: <CorporateFareIcon /> },
+    // { name: "MNI", icon: <CorporateFareIcon /> },
     { name: "Advertise", icon: <CampaignIcon /> },
     { name: "Business Enquiry", icon: <AppRegistrationIcon /> },
 ];
@@ -297,7 +297,6 @@ const CategoryBar = () => {
                     </div>
                 </nav>
 
-                {/* ACTION BUTTONS */}
                 <div className="actionButtons">
 
                     <IconButton
