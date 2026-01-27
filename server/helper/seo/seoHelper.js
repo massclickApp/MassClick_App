@@ -1,4 +1,7 @@
 import seoModel from "../../model/seoModel/seoModel.js";
+import categoryModel from "../../model/category/categoryModel.js";
+import { getSignedUrlByKey } from "../../s3Uploder.js";
+
 
 export const createSeo = async (reqBody = {}) => {
   try {
@@ -128,4 +131,35 @@ export const deleteSeo = async (id) => {
   );
   if (!seo) throw new Error("SEO not found");
   return seo;
+};
+
+export const categorySuggestion = async (search = "", limit = 10) => {
+  try {
+    const regex = new RegExp(search, "i");
+
+    const categories = await categoryModel
+      .find(
+        {
+          isActive: true,
+          category: { $regex: regex }
+        },
+        {
+          category: 1,
+          categoryImageKey: 1
+        }
+      )
+      .limit(limit)
+      .lean();
+
+    return categories.map((cat) => {
+      if (cat.categoryImageKey) {
+        cat.categoryImage = getSignedUrlByKey(cat.categoryImageKey);
+      }
+      return cat;
+    });
+
+  } catch (error) {
+    console.error("categorySuggestion helper error:", error);
+    throw error;
+  }
 };

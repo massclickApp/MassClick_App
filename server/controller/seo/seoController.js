@@ -4,7 +4,8 @@ import {
   viewAllSeo,
   updateSeo,
   deleteSeo,
-  getSeoMeta
+  getSeoMeta,
+  categorySuggestion
 } from "../../helper/seo/seoHelper.js";
 import { BAD_REQUEST } from "../../errorCodes.js";
 
@@ -84,5 +85,25 @@ export const deleteSeoAction = async (req, res) => {
     res.send({ message: "SEO deleted", seo });
   } catch (error) {
     return res.status(400).send({ message: error.message });
+  }
+};
+
+export const categorySuggestionAction = async (req, res) => {
+  try {
+    const search = (req.query.q || "").trim();
+    const limit = parseInt(req.query.limit) || 10;
+
+    if (!search || search.length < 1) {
+      return res.send([]);
+    }
+
+    const categories = await categorySuggestion(search, limit);
+    res.send(categories);
+
+  } catch (error) {
+    console.error("categorySuggestionAction error:", error);
+    return res
+      .status(BAD_REQUEST.code)
+      .send({ message: error.message });
   }
 };

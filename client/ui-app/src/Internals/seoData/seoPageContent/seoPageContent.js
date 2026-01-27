@@ -28,6 +28,7 @@ import "react-quill/dist/quill.snow.css";
 
 import CustomizedTable from "../../../components/Table/CustomizedTable.js";
 import "./seoPageContent.css";
+import { fetchSeoCategorySuggestions } from "../../../redux/actions/seoAction.js";
 
 export default function SeoPageContent() {
     const dispatch = useDispatch();
@@ -35,6 +36,11 @@ export default function SeoPageContent() {
     const seoPageContentState = useSelector(
         (state) => state.seoPageContentReducer
     );
+
+    const { categorySuggestions = [] } = useSelector(
+        (state) => state.seoReducer || {}
+    );
+
 
     const {
         list = [],
@@ -55,6 +61,8 @@ export default function SeoPageContent() {
     const [errors, setErrors] = useState({});
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedRow, setSelectedRow] = useState(null);
+    const [categoryInput, setCategoryInput] = useState("");
+    const [showSuggestions, setShowSuggestions] = useState(false);
 
     const modules = {
         toolbar: [
@@ -90,6 +98,22 @@ export default function SeoPageContent() {
         setErrors(e);
         return Object.keys(e).length === 0;
     };
+
+    useEffect(() => {
+        if (!categoryInput || categoryInput.length < 1) return;
+
+        const delay = setTimeout(() => {
+            dispatch(
+                fetchSeoCategorySuggestions({
+                    query: categoryInput,
+                    limit: 10,
+                })
+            );
+        }, 300);
+
+        return () => clearTimeout(delay);
+    }, [categoryInput, dispatch]);
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -177,16 +201,43 @@ export default function SeoPageContent() {
                             {errors.pageType && <span>{errors.pageType}</span>}
                         </div>
 
-                        <div className="meta-field">
-                            <label>Category</label>
-                            <input
-                                value={formData.category}
-                                onChange={(e) =>
-                                    setFormData((p) => ({ ...p, category: e.target.value }))
-                                }
-                            />
-                            {errors.category && <span>{errors.category}</span>}
+                        <div className="field-shell category-search">
+                            <label className="field-label">Category</label>
+
+                            <div className="category-input-wrapper">
+                                <input
+                                    type="text"
+                                    value={categoryInput}
+                                    placeholder="Search category…"
+                                    onChange={(e) => {
+                                        setCategoryInput(e.target.value);
+                                        setShowSuggestions(true);
+                                        setFormData(p => ({ ...p, category: "" }));
+                                    }}
+                                    onFocus={() => setShowSuggestions(true)}
+                                    onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+                                />
+                                <span className="search-icon">⌕</span>
+                            </div>
+
+                            {showSuggestions && categorySuggestions.length > 0 && (
+                                <ul className="category-suggestion-list">
+                                    {categorySuggestions.map(item => (
+                                        <li
+                                            key={item._id}
+                                            onClick={() => {
+                                                setCategoryInput(item.category);
+                                                setFormData(p => ({ ...p, category: item.category }));
+                                                setShowSuggestions(false);
+                                            }}
+                                        >
+                                            {item.category}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
                         </div>
+
                         <div className="meta-field">
                             <label>Location</label>
                             <input

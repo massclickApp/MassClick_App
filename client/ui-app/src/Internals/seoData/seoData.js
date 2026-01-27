@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
+import Autocomplete from "@mui/material/Autocomplete";
+import TextField from "@mui/material/TextField";
 import {
   createSeo,
   editSeo,
@@ -22,6 +23,7 @@ import {
 
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import { fetchSeoCategorySuggestions } from "../../redux/actions/seoAction.js";
 
 import CustomizedTable from "../../components/Table/CustomizedTable.js";
 import "./seoData.css";
@@ -34,8 +36,8 @@ export default function SeoData() {
     total = 0,
     loading = false,
     error = null,
+    categorySuggestions = [],
   } = useSelector((state) => state.seoReducer || {});
-
 
   const [formData, setFormData] = useState({
     pageType: "",
@@ -52,11 +54,28 @@ export default function SeoData() {
   const [editingId, setEditingId] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [categoryInput, setCategoryInput] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
 
   useEffect(() => {
     dispatch(getAllSeo());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (!categoryInput || categoryInput.length < 1) return;
+
+    const delay = setTimeout(() => {
+      dispatch(
+        fetchSeoCategorySuggestions({
+          query: categoryInput,
+          limit: 10,
+        })
+      );
+    }, 300);
+
+    return () => clearTimeout(delay);
+  }, [categoryInput, dispatch]);
 
 
   const handleChange = (e) => {
@@ -109,7 +128,7 @@ export default function SeoData() {
   };
 
   const handleEdit = (row) => {
-    setEditingId(row.id); 
+    setEditingId(row.id);
 
     setFormData({
       pageType: row.pageType || "",
@@ -121,6 +140,7 @@ export default function SeoData() {
       canonical: row.canonical || "",
       robots: row.robots || "index, follow",
     });
+    setCategoryInput(row.category || "");
 
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -184,7 +204,7 @@ export default function SeoData() {
 
   const fields = [
     { label: "Page Type", name: "pageType" },
-    { label: "Category", name: "category" },
+    // { label: "Category", name: "category" },
     { label: "Location", name: "location" },
     { label: "Meta Title", name: "title" },
     { label: "Meta Description", name: "description" },
@@ -202,6 +222,51 @@ export default function SeoData() {
         </h2>
 
         <form onSubmit={handleSubmit} className="seo-form-grid">
+          <div className="seo-form-input-group category-search">
+            <label className="seo-input-label">Category</label>
+            <input
+              type="text"
+              value={categoryInput}
+              placeholder="Search category"
+              className="seo-text-input"
+              onChange={(e) => {
+                setCategoryInput(e.target.value);
+                setShowSuggestions(true);
+                setFormData((prev) => ({
+                  ...prev,
+                  category: "",
+                }));
+              }}
+              onFocus={() => setShowSuggestions(true)}
+              onBlur={() => {
+                setTimeout(() => setShowSuggestions(false), 150);
+              }}
+            />
+
+            {showSuggestions && categorySuggestions.length > 0 && (
+              <ul className="category-suggestion-list">
+                {categorySuggestions.map((item) => (
+                  <li
+                    key={item._id}
+                    className="category-suggestion-item"
+                    onClick={() => {
+                      setCategoryInput(item.category);
+                      setFormData((prev) => ({
+                        ...prev,
+                        category: item.category,
+                      }));
+                      setShowSuggestions(false);
+                    }}
+                  >
+                    {item.category}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+
+
           {fields.map(({ label, name }) => (
             <div key={name} className="seo-form-input-group">
               <label className="seo-input-label">{label}</label>
@@ -211,9 +276,8 @@ export default function SeoData() {
                   name={name}
                   value={formData[name]}
                   onChange={handleChange}
-                  className={`seo-textarea ${
-                    errors[name] ? "error" : ""
-                  }`}
+                  className={`seo-textarea ${errors[name] ? "error" : ""
+                    }`}
                 />
               ) : (
                 <input
@@ -221,9 +285,8 @@ export default function SeoData() {
                   name={name}
                   value={formData[name]}
                   onChange={handleChange}
-                  className={`seo-text-input ${
-                    errors[name] ? "error" : ""
-                  }`}
+                  className={`seo-text-input ${errors[name] ? "error" : ""
+                    }`}
                 />
               )}
 

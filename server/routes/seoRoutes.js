@@ -5,7 +5,8 @@ import {
   viewAllSeoAction,
   updateSeoAction,
   deleteSeoAction,
-  getSeoMetaAction
+  getSeoMetaAction,
+  categorySuggestionAction
 } from "../controller/seo/seoController.js";
 import { addSeoPageContentAction, viewAllSeoPageContentAction,getSeoPageContentMetaAction,getSeoPageContentAction,deleteSeoPageContentAction,updateSeoPageContentAction } from "../controller/seo/seoPageContentController.js";
 import { oauthAuthentication } from "../helper/oauthHelper.js";
@@ -18,6 +19,7 @@ router.get("/api/seo/meta", getSeoMetaAction);
 router.get("/api/seo/viewall", oauthAuthentication, viewAllSeoAction);
 router.put("/api/seo/update/:id", oauthAuthentication, updateSeoAction);
 router.delete("/api/seo/delete/:id", oauthAuthentication, deleteSeoAction);
+router.get("/api/seo/category-suggestions", oauthAuthentication, categorySuggestionAction);
 
 router.post("/api/seopagecontent/create", oauthAuthentication, addSeoPageContentAction);
 router.get("/api/seopagecontent/get", getSeoPageContentAction); 
