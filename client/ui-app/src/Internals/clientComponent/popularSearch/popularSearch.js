@@ -133,11 +133,9 @@ const CardCarousel = () => {
                   <div className="popular-search__card-image-wrapper">
                     <img src={card.image} alt={card.alt} className="popular-search__card-image" />
                   </div>
-
                   <div className="popular-search__card-body">
                     <div className="popular-search__card-tag">Popular</div>
                     <h3 className="popular-search__card-title">{card.title}</h3>
-
                     <button
                       className="popular-search__card-button"
                       onClick={() => handleEnquireClick(card)}
@@ -177,7 +175,6 @@ const CardCarousel = () => {
           Please wait — our team will contact you within 24 hours.
         </Alert>
       </Snackbar>
-
     </>
   );
 };

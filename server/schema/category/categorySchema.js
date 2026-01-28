@@ -3,24 +3,13 @@ import mongoose from "mongoose"
 const categorySchema = new mongoose.Schema(
   {
     categoryImageKey: { type: String, default: "" },
-
     category: { type: String, trim: true },
-
     categoryType: {
       type: String,
       enum: ["Primary Category", "Sub Category"],
     },
-
     subCategoryType: { type: String, default: "" },
-
-    parentCategoryId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
-      default: null,
-    },
-
     title: { type: String, trim: true },
-
     keywords: {
       type: [String],
       default: [],
@@ -30,16 +19,11 @@ const categorySchema = new mongoose.Schema(
         message: "Each keyword must be a non-empty string.",
       },
     },
-
     description: { type: String, trim: true },
-
     slug: { type: String, unique: true, lowercase: true, trim: true },
-
     seoTitle: { type: String, default: "" },
     seoDescription: { type: String, default: "" },
-
     regionTags: { type: [String], default: [] },
-
     isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
