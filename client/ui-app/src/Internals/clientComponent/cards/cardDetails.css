@@ -108,15 +108,17 @@
 .business-CardDetails-bannerImage {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  transform: scale(1.03);
-  transition: transform 0.45s ease, filter 0.3s ease;
+  object-fit: contain;        
+  background-color: #000;      
+  transform: none;              
+  transition: filter 0.3s ease;
 }
+
 
 .business-CardDetails-mainImageContainer:hover
   .business-CardDetails-bannerImage {
-  transform: scale(1.08);
-  filter: brightness(1.04);
+  transform: none;            
+  filter: brightness(1.03);
 }
 
 /* dark gradient layer */
@@ -308,6 +310,46 @@
     padding: 1.5rem 1.65rem;
   }
 }
+
+
+.business-CardDetails-overviewText p:empty {
+  display: none;
+}
+
+.business-CardDetails-overviewText p:has(br:only-child),
+.business-CardDetails-overviewText p:has(span:only-child),
+.business-CardDetails-overviewText p:has(:only-child:empty) {
+  display: none;
+}
+
+.business-CardDetails-overviewText div {
+  margin: 0.45rem 0;
+}
+
+.business-CardDetails-overviewText * {
+  margin-top: 0;
+}
+
+.business-CardDetails-overviewText p {
+  margin: 0 0 0.6rem;
+}
+
+.business-CardDetails-overviewText br {
+  display: block;
+  content: "";
+  margin-bottom: 0.4rem;
+}
+
+.business-CardDetails-overviewText ul,
+.business-CardDetails-overviewText ol {
+  padding-left: 1.25rem;
+  margin: 0.5rem 0;
+}
+
+.business-CardDetails-overviewText li {
+  margin-bottom: 0.35rem;
+}
+
 
 /* Left column container */
 .business-CardDetails-leftColumn {

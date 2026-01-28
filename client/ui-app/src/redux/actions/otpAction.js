@@ -29,7 +29,6 @@ export const sendOtp = (phoneNumber) => async (dispatch) => {
   }
 };
 
-
 export const verifyOtp = (mobile, otp, userName = "") => async (dispatch) => {
   dispatch({ type: VERIFY_OTP_REQUEST });
 
@@ -86,8 +85,6 @@ export const updateOtpUser = (mobile, data) => async (dispatch) => {
   }
 };
 
-
-
 export const viewOtpUser = (mobile) => async (dispatch) => {
 
   dispatch({ type: VIEW_OTP_USER_REQUEST });
@@ -111,7 +108,6 @@ export const viewOtpUser = (mobile) => async (dispatch) => {
     });
   }
 };
-
 
 export const viewAllOtpUsers = () => async (dispatch) => {
   dispatch({ type: VIEWALL_OTP_USER_REQUEST });
@@ -139,8 +135,6 @@ export const viewAllOtpUsers = () => async (dispatch) => {
 //     throw error;
 //   }
 // };
-
-
 
 export const userLogout = () => (dispatch) => {
   localStorage.removeItem("authToken");
@@ -205,10 +199,6 @@ export const sendWhatsAppForLead = (leadId, customMessage = "") => async (dispat
   }
 };
 
-
-// -----------------------------------------------
-// SEND WHATSAPP TO ALL LEADS
-// -----------------------------------------------
 export const sendWhatsAppToLeadsBulk = (leadIds = [], customMessage = "") => async (dispatch) => {
   dispatch({ type: SEND_WHATSAPP_ALL_REQUEST });
 

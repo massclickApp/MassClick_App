@@ -93,11 +93,11 @@ const WriteReviewPage = () => {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
 
-  const slug = `${businessNameSlug}-${addressSlug}-${locationSlug}`;
+  const businessSlug = `${businessNameSlug}-${addressSlug}`;
 
   setShowSuccessModal(false);
 
-  navigate(`/business/${slug}`, { state: { id: businessId } });
+  navigate(`/${locationSlug}/${businessSlug}/${businessId}`);
 };
 
 

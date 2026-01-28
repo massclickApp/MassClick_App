@@ -423,6 +423,16 @@ useEffect(() => {
 
   const overviewHtml = business.businessDetails;
 
+
+  const normalizeOverviewHtml = (html = "") => {
+    return html
+      .replace(/<p>\s*(<br\s*\/?>|&nbsp;)?\s*<\/p>/gi, "")
+      .replace(/<div>\s*(<br\s*\/?>|&nbsp;)?\s*<\/div>/gi, "")
+      .replace(/(<br\s*\/?>\s*){2,}/gi, "<br>")
+      .replace(/ style="[^"]*"/gi, "")
+      .trim();
+  };
+
   return (
     <>
       <CardsSearch /><br /><br /><br /><br />
@@ -611,7 +621,6 @@ useEffect(() => {
               </div>
             </div>
 
-            {/* TABS */}
             <div className="business-CardDetails-tabsWrapper">
               <div className="business-CardDetails-tabs">
                 {[
@@ -645,7 +654,9 @@ useEffect(() => {
                 <h2>Overview</h2>
                 <div
                   className="business-CardDetails-overviewText"
-                  dangerouslySetInnerHTML={{ __html: overviewHtml }}
+                  dangerouslySetInnerHTML={{
+                    __html: normalizeOverviewHtml(overviewHtml),
+                  }}
                 />
               </section>
 
